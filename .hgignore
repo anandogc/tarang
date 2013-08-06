@@ -1,0 +1,9 @@
+syntax: glob
+
+.DS_Store
+
+*.swp
+*~.nib
+*~
+out/**
+*.h5

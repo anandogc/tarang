@@ -1,0 +1,181 @@
+/* Tarang-2
+ *
+ * Copyright (C) 2008, 2009  Mahendra K. Verma
+ *
+ * Mahendra K. Verma
+ * Indian Institute of Technology, Kanpur-208016
+ * UP, India
+ *
+ * mkv@iitk.ac.in
+ *
+ * This file is part of Tarang-2 .
+ *
+ * Tarang-2 is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ * Tarang-2 is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with Tarang-2; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, U
+ */
+
+/*! \file  IncVF.h
+ * 
+ * @brief  Class declaration of IncVF, Incompressible Vector Field 
+ *
+ * @author  M. K. Verma
+ * @version 4.0 MPI
+ * @date Sept 2008
+ *
+ * @bug   No known bugs
+ */
+ 
+//*********************************************************************************************
+
+#ifndef _H_Correlation
+#define _H_Correlation
+
+
+//! @brief Incompressible vector field IncVF 
+/*!
+ *  Inherits CVF that contains the complex vector field. <BR>
+ *  RVF that contains real vector field, typically Inverse tranform of CVF. <BR>
+ *  NLIN that contains the nonlinear term \f$ N_i = \mathcal{F} (D_j V_j V_i) \f$.<BR>
+ *  EnergyTr that contains energy transfer vars like flux, shell-to-shell transfers. <BR>
+ * 
+ *	Compute nonlinear terms <BR>
+ *  Compute energy transfer functions: <BR>
+ *	Isotropic: flux, shell-to-shell <BR>
+ *  Anisotropic: ring-to-ring in spherical shell and in cylinderical shells.
+ *
+ *	@sa IncSF.h
+ *	@sa Nlin.h
+ *  @sa EnergyTr.h
+ */
+ 
+#include "FluidVF.h"
+#include "FluidSF.h"
+
+//*********************************************************************************************	
+
+class Correlation
+{ 
+public:
+	
+	//!  Energy of Vx in shell k
+	static  Array<DP,1>		shell_ek1;
+	
+	//!  Energy of Vy in shell k
+	static Array<DP,1>		shell_ek2;
+	
+	//!  Energy of Vz in shell k
+	static Array<DP,1>		shell_ek3;
+
+	
+	//!  Energy Dissipation rate in shell k (without \f$ \nu \f$).
+	static Array<DP,1>		shell_dissk1;
+	static Array<DP,1>		shell_dissk2;
+	static Array<DP,1>		shell_dissk3;
+	
+	//! Sum \f$ \vec{K} \cdot (\Re\vec{V}(\vec{K}) \times  \Im\vec{V}(\vec{K})) \f$ in shell k
+	//! components along 1,2,3 directions.
+	
+	//!  Energy in ring(m,n) along e1 (toroidal direction).
+	static Array<DP,2>		ring_ek1;
+	
+	//!  Energy in ring(m,n) along e2 (poloidal direction).
+	static Array<DP,2>		ring_ek2;
+	
+	static Array<DP,2>		ring_ek3;
+	
+	//!  Energy Dissipation rate in ring(m,n) (without \f$ \nu \f$).
+	static Array<DP,2>		ring_dissk1, ring_dissk2, ring_dissk3;
+	
+	
+	
+	//!  Energy spectrum along the anisotropy direction.
+	static Array<DP,2>		cylindrical_ring_ek1;
+	
+	//!  Energy spectrum perpendicular to the anisotropy direction.
+	static Array<DP,2>		cylindrical_ring_ek2;
+	
+	//!  Energy Dissipation rate in ring(m,n) (without \f$ \nu \f$).
+	static Array<DP,2>		cylindrical_ring_dissk1, cylindrical_ring_dissk2;
+	
+	//! \f$ \sum \vec{K} \cdot (\Re\vec{V}(\vec{K}) \times  \Im\vec{V}(\vec{K})) \f$
+	/// in ring(m,n)
+	
+	//!  For scalars
+	static Array<DP,1>		shell_ek;
+	static Array<DP,1>		shell_dissk;
+	
+	static Array<DP,2>		ring_ek;
+	static Array<DP,2>		ring_dissk;
+	
+	static Array<DP,2>		cylindrical_ring_ek;
+	static Array<DP,2>		cylindrical_ring_dissk;
+	
+	
+	static Array<DP,2> ring_spectrum;
+	static Array<DP,2> cylindrical_ring_spectrum;
+
+	static void Initialize();
+	static DP Get_Nusselt_no(FluidVF& U, FluidSF& T);
+	static DP Get_cross_helicity(FluidVF &U, FluidVF& W);
+	
+	static void Compute_shell_spectrum(FluidVF& U);
+	static void Compute_shell_spectrum(FluidVF& U, FluidVF& W);
+	static void Compute_shell_spectrum(FluidVF& U, FluidSF& T);
+	
+	
+	static void Compute_ring_spectrum(FluidVF& U);
+	static void Compute_ring_spectrum(FluidVF& U, FluidVF& W);
+	static void Compute_ring_spectrum(FluidVF&U, FluidSF& T);
+	
+	static void Compute_cylindrical_ring_spectrum(FluidVF& U);
+	static void Compute_cylindrical_ring_spectrum(FluidVF& U, FluidVF& W);
+	static void Compute_cylindrical_ring_spectrum(FluidVF& U, FluidSF& T);
+	
+	
+	static void Compute_shell_spectrum_helicity(FluidVF& U);
+	static void Compute_ring_spectrum_helicity(FluidVF& U);
+	static void Compute_cylindrical_ring_spectrum_helicity(FluidVF& U);
+	
+	static void Compute_shell_spectrum(FluidSF& T);
+	static void Compute_shell_spectrum(FluidSF& T1, FluidSF& T2);
+	
+	static void Compute_ring_spectrum(FluidSF& T);
+	static void Compute_ring_spectrum(FluidSF& T1, FluidSF& T2);
+	
+	static void Compute_cylindrical_ring_spectrum(FluidSF& T);
+	static void Compute_cylindrical_ring_spectrum(FluidSF& T1, FluidSF& T2);
+
+	static void Compute_force_shell_spectrum(FluidVF& U);
+	static void Compute_force_ring_spectrum(FluidVF& U);
+	static void Compute_force_cylindrical_ring_spectrum(FluidVF& U);
+	
+	static void Compute_force_shell_spectrum(FluidSF& T);
+	static void Compute_force_ring_spectrum(FluidSF& T);
+	static void Compute_force_cylindrical_ring_spectrum(FluidSF& T);
+	
+	
+	static void Compute_Tk_shell_spectrum(FluidVF& U);
+	static void Compute_Tk_ring_spectrum(FluidVF& U);
+	static void Compute_Tk_cylindrical_ring_spectrum(FluidVF& U);
+	
+	static void Compute_Tk_shell_spectrum(FluidSF& T);
+	static void Compute_Tk_ring_spectrum(FluidSF& T);
+	static void Compute_Tk_cylindrical_ring_spectrum(FluidSF& T);
+};
+	
+
+#endif
+
+//************************************  End of IncVF.h  ***************************************
+
+

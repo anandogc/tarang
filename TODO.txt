@@ -1,0 +1,52 @@
+ 1.	 1)	Check local_Nx and make ChFF to run parallel.
+ 2.	 2)	Add Static Variables in Time_advance_incompress::Tridiagonal_solver.
+ 3.	 3)	Think for kz = 0 and ky = 0 case in ChFF.
+ 4.	 4)	ChFF -> Inline -> Universal.
+ 5.	 5)	Influence matrix, determinantz zero case.
+
+19 Jun 2013
+
+1) Work on Dealias , Satisfy_strong/weak/test_reality_condition of FFF_SLAB
+2) Adjust_arrays_after_reding_reuced.
+3) Test out of place fft
+ 4)	Get rid of field.N from Global.h
+
+1 Jul 2013
+ 1)	Move 'void FluidIO_incompress::Init_energy_transfer()'
+from IncIO.cc to EnergyTr.cc
+
+7 Jul 2013
+1) Add in place of Assign in Xderiv, Yderiv & Zderiv 
+2) sincostr_switch to sincostr_switch_Vx in para ang global
+3) Remove ShiftLeft and ShiftRight using stride in sin plan
+
+9 Jul 2013
+1) Shift global.cross_correlation to CrossCorrelation
+2) Work on Output_ring_spectrum in output_energy.cc. Try to recycle arrays.
+
+12 Jul 2013
+1) Work on Dealias and Last_componenet of ChFF_SLAB
+
+14 Jul 2013
+1) IN all inline.h for Get_* Assign_*, Add_*, cerr message if probe not in me.
+
+6th Aug 2013
+Tarang
+Is Xr necessary?
+
+SSS basis: energy, energyTr
+
+
+Compute ek1,dissk1 together.
+
+EnergyTr Inv(V) computations to be combined
+
+Buffer the spectrum output
+
+Compiler switch for sandeep and ambrish
+
+switch SSS etc, rewrite
+
+global.temp_array.X being used or not: signal.
+
+Double/float options for all including fftmpi...
