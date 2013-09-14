@@ -47,7 +47,7 @@
 
 
 
-void SSS_SLAB::Print_large_Fourier_elements(Array<complx,3> A)
+void SSS_SLAB::Print_large_Fourier_elements(Array<complx,3> A, string array_name)
 {
 	Array<DP,3> B=Array<DP,3>(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
 	
@@ -55,7 +55,7 @@ void SSS_SLAB::Print_large_Fourier_elements(Array<complx,3> A)
         for (int lz=0; lz<B.extent(1); lz++) // 0:Nz-1
 			for (int lx=0; lx<B.extent(2); lx++) {
 				if (abs(B(ly,lz,lx)) > MYEPS2)
-					cout << "my_id = " << my_id <<  " vect(k) = ( " << Get_kx(lx) << "," << ly  << "," << lz <<");  Array(k) = " <<  B(ly, lz, lx) << '\n';
+					cout << "my_id = " << my_id <<  " vect(k) = (" << Get_kx(lx) << "," << ly  << "," << lz <<");  "<< array_name << "(k) = " <<  B(ly, lz, lx) << '\n';
 			}
 
     cout << endl;
@@ -188,35 +188,39 @@ void SSS_SLAB::Test_reality_condition_in_Array(Array<complx,3> A)
  * @return CFF: \f$ V_2(0,ky,kz) = V_3(0,ky,kz) = 0 \f$  because sin(0) =0 [kx =0].
  */
 
-void SSS_SLAB::Zero_modes(Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az)
+void SSS_SLAB::Zero_modes(Array<complx,3> Bx, Array<complx,3> By, Array<complx,3> Bz)
 {
+	Array<DP,3> Ax(reinterpret_cast<DP*>(Bx.data()), Bx.shape()*shape(1,2,1), neverDeleteData);
+	Array<DP,3> Ay(reinterpret_cast<DP*>(By.data()), By.shape()*shape(1,2,1), neverDeleteData);
+	Array<DP,3> Az(reinterpret_cast<DP*>(Bz.data()), Bz.shape()*shape(1,2,1), neverDeleteData);
+
     // lx = 0 reside in master node
     global.program.sincostr_switch = sincostr_switch_Vx;
     
     if (global.program.sincostr_switch == "SCC") {
         if (master)
             Ax(Range::all(),Range::all(),0) = 0.0;
-        
+
         Ay(0,Range::all(),Range::all()) = 0.0;
-        
-        real(Az(Range::all(),0,Range::all())) = 0.0;
+
+        Az(Range::all(),0,Range::all()) = 0.0;
     }
     
     else if (global.program.sincostr_switch == "CSS") {
-        real(Ax(0,0,Range::all())) = 0.0;
+        Ax(0,0,Range::all()) = 0.0;
         
         if (master)
-            real(Ay(Range::all(),0,0)) = 0.0;
+            Ay(Range::all(),0,0) = 0.0;
         
         if (master)
             Az(0,Range::all(),0) = 0.0;
     }
     
     else if (global.program.sincostr_switch == "CCS") {
-        real(Ax(Range::all(),0,Range::all()))  = 0.0;
+        Ax(Range::all(),0,Range::all())  = 0.0;
         
         if (master)
-            real(Ay(0,0,0)) = 0.0;
+            Ay(0,0,0) = 0.0;
        
         if (master)
             Az(Range::all(),Range::all(),0) = 0.0;
@@ -227,7 +231,7 @@ void SSS_SLAB::Zero_modes(Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3
             Ax(0,Range::all(),0) = 0.0;
         
         if (master)
-            real(Az(0,0,Range::all())) = 0.0;
+            Az(0,0,Range::all()) = 0.0;
     }
     
     else if (global.program.sincostr_switch == "CSC") {
@@ -237,14 +241,14 @@ void SSS_SLAB::Zero_modes(Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3
             Ay(Range::all(),Range::all(),0) = 0.0;
         
         if (master)
-            real(Az(0,0,0)) = 0.0;
+            Az(0,0,0) = 0.0;
     }
     
     else if (global.program.sincostr_switch == "SCS") {
         if (master)
-            real(Ax(Range::all(),0,0)) = 0.0;
+            Ax(Range::all(),0,0) = 0.0;
         
-        real(Ay(0,0,Range::all())) = 0.0;
+        Ay(0,0,Range::all()) = 0.0;
     }
     
     else if (global.program.sincostr_switch == "CCC") {
@@ -252,15 +256,15 @@ void SSS_SLAB::Zero_modes(Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3
             Ay(0,Range::all(),0) = 0.0;
         
         if (master)
-            real(Az(Range::all(),0,0)) = 0.0;
+            Az(Range::all(),0,0) = 0.0;
     }
     
     else if (global.program.sincostr_switch == "SSS") {
         if (master)
-            real(Ax(0,0,0)) = 0.0;
+            Ax(0,0,0) = 0.0;
         
         if (master)
-            real(Ay(Range::all(),0,Range::all())) = 0.0;
+            Ay(Range::all(),0,Range::all()) = 0.0;
         
         if (master)
             Az(0,Range::all(),Range::all()) = 0.0;
@@ -273,32 +277,34 @@ void SSS_SLAB::Zero_modes(Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3
  */    
 void SSS_SLAB::Zero_modes(Array<complx,3> F)
 {
+	Array<DP,3> Fr(reinterpret_cast<DP*>(F.data()), F.shape()*shape(1,2,1), neverDeleteData);
+
     // lx = 0 reside in master node
     
     global.program.sincostr_switch = sincostr_switch_F;
     
     if (global.program.sincostr_switch == "SCC") {
         if (master)
-            F(Range::all(),Range::all(),0) = 0.0;
+            Fr(Range::all(),Range::all(),0) = 0.0;
     }
     
     else if (global.program.sincostr_switch == "CSS")
-        F(0,0,Range::all()) = 0.0;
+        Fr(0,0,Range::all()) = 0.0;
     
     else if (global.program.sincostr_switch == "CCS")
         F(Range::all(),0,Range::all())  = 0.0;
         
     else if (global.program.sincostr_switch == "SSC") {
         if (master)
-            F(0,Range::all(),0) = 0.0;
+            Fr(0,Range::all(),0) = 0.0;
     }
     
     else if (global.program.sincostr_switch == "CSC")
-        F(0,Range::all(),Range::all())  = 0.0;
+        Fr(0,Range::all(),Range::all())  = 0.0;
           
     else if (global.program.sincostr_switch == "SCS") {
         if (master)
-            F(Range::all(),0,0) = 0.0;
+            Fr(Range::all(),0,0) = 0.0;
     }
     
     else if (global.program.sincostr_switch == "CCC")
@@ -306,7 +312,7 @@ void SSS_SLAB::Zero_modes(Array<complx,3> F)
     
     else if (global.program.sincostr_switch == "SSS") {
         if (master)
-            F(0,0,0) = 0.0;
+            Fr(0,0,0) = 0.0;
     } 
 
 }

@@ -84,15 +84,24 @@ int Universal::Get_number_modes_in_shell(DP inner_radius, DP outer_radius)
 
 //*********************************************************************************************
 
-void Universal::Print_large_Fourier_elements(Array<complx,3> A)
+void Universal::Print_large_Fourier_elements(Array<complx,3> A, string array_name)
 {
-    #pragma omp parallel for
-    for (int ly=0; ly<A.extent(0); ly++) 
-        for (int lz=0; lz<A.extent(1); lz++) 
-	       for (int lx=0; lx<A.extent(2); lx++) 
-				if (abs(A(ly, lz, lx)) > MYEPS2) {
-					cout << "my_id = " << my_id <<  " vect(k) = ( " << Get_kx(lx) << "," << Get_ky(ly) << "," << Get_kz(lz) <<");  Array(k) = " << A(ly, lz, lx) << '\n';
-				}
+	if (global.program.basis_type != "FFFW") {
+	    for (int ly=0; ly<A.extent(0); ly++) 
+	        for (int lz=0; lz<A.extent(1); lz++) 
+		       for (int lx=0; lx<A.extent(2); lx++) 
+					if (abs(A(ly, lz, lx)) > MYEPS2) {
+						cout << "my_id = " << my_id <<  " vect(k) = (" << Get_kx(lx) << "," << Get_ky(ly) << "," << Get_kz(lz) <<");  " << array_name << "(k) = " << A(ly, lz, lx) << '\n';
+					}
+	}
+	else {
+		for (int lx=0; lx<A.extent(0); lx++) 
+	        for (int ly=0; ly<A.extent(1); ly++) 
+		       for (int lz=0; lz<A.extent(2); lz++)
+					if (abs(A(lx, ly, lz)) > MYEPS2) {
+						cout << "my_id = " << my_id <<  " vect(k) = (" << Get_kx(lx) << "," << Get_ky(ly) << "," << Get_kz(lz) <<");  " << array_name << "(k) = " << A(lx, ly, lz) << '\n';
+					}	
+	}
 	
     cout << endl;
 }

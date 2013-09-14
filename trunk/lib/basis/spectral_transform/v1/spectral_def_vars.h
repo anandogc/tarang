@@ -91,6 +91,7 @@ using namespace blitz ;
 
 #define DP 								float
 #define FFTW_PLAN_DP					fftwf_plan
+#define FFTW_MPI_PLAN_DFT_C2C_3D_DP  	fftwf_mpi_plan_dft_3d
 #define FFTW_MPI_PLAN_DFT_R2C_3D_DP  	fftwf_mpi_plan_dft_r2c_3d
 #define FFTW_MPI_PLAN_DFT_C2R_3D_DP  	fftwf_mpi_plan_dft_c2r_3d
 #define FFTW_MPI_PLAN_DFT_R2C_2D_DP  	fftwf_mpi_plan_dft_r2c_2d
@@ -121,6 +122,7 @@ using namespace blitz ;
 
 #define DP 						double
 #define FFTW_PLAN_DP					fftw_plan
+#define FFTW_MPI_PLAN_DFT_C2C_3D_DP  	fftw_mpi_plan_dft_3d
 #define FFTW_MPI_PLAN_DFT_R2C_3D_DP  	fftw_mpi_plan_dft_r2c_3d
 #define FFTW_MPI_PLAN_DFT_C2R_3D_DP  	fftw_mpi_plan_dft_c2r_3d
 #define FFTW_MPI_PLAN_DFT_R2C_2D_DP  	fftw_mpi_plan_dft_r2c_2d

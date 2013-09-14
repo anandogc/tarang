@@ -78,9 +78,8 @@ void FORCE::Const_energy_supply_alpha_beta(FluidVF& U, int lx, int ly, int lz, D
 		
 		if (!add_flag)
 			universal->Assign_local_spectral_field(lx, ly, lz, U.Force1, U.Force2, U.Force3, localForce);
-		else {
+		else 
 			universal->Add_local_spectral_field(lx, ly, lz, U.Force1, U.Force2, U.Force3, localForce);
-		}
 	}
 }
 

@@ -26,10 +26,8 @@
  #
 
 ADD_LIBRARY(fffw_slab
-			FFFW_slab_energy
 			FFFW_slab
-			FFFW_slab_tr
 			FFFW_slab_basic
-			FFFW_slab_ET
-			FFFW_slab_inline)
+			FFFW_slab_tr
+			FFFW_slab_energy)
 

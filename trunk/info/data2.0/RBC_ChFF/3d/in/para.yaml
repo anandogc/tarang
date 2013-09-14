@@ -4,7 +4,7 @@ program:
     decomposition: SLAB              #PENCIL, SLAB
     iter_or_diag: ITERATION           #ITERATION, DIAGNOSTICS
     alias_option: ALIAS
-    integration_scheme: Adam_Bashforth
+    integration_scheme: BDF1
     LES_switch: false
     apply_strong_realitycond_alltime_switch: false
     apply_weak_realitycond_alltime_switch: false
@@ -16,17 +16,17 @@ program:
     sincostr_switch: FFF 
     
 PHYSICS:
-    Pr_option: PRSMALL
+    Pr_option: PRLARGE
     Uscaling: USMALL
-    Rayleigh: 1707
-    Prandtl: 1
+    Rayleigh: 2000
+    Prandtl: 0.05
     temperature_grad: 1  
     
 field:
-    N: [32, 1, 30]
+    N: [32, 16, 16]
     kfactor:
 #    L: [1, 2.016, 2.016] 
-    L: [2, 4.032, 4.032] 
+    L: [2, 4.032, 4.032] #5.712] 
     diss_coefficients: [0.0, 0.0]               
     hyper_diss_coefficients: 
     hyper_diss_exponents: 
@@ -42,7 +42,7 @@ fft:
 
 time:
     init: 0
-    final: 1
+    final: 10
     dt_fixed: 0.01
     Courant_no: 0.2
     job_time:                       # 00:00:20
@@ -69,25 +69,25 @@ io:
     input_vx_vy_switch: true
     output_vx_vy_switch: true
     diagnostic_procedures: [0, 1]
-    N_in_reduced: #[16, 2, 16]
-    N_out_reduced: #[32, 32, 32]
+    N_in_reduced: [16, 8, 8]
+    N_out_reduced: [16, 8, 8]
     int_para: 
     double_para: [0.001, 0, 0.001]
     string_para:
 
     #if probes/init_cond not provided, comment "- coord" lines.
     init_cond_modes:
-            - coord: [1,0,1]
-              mode: [ (0,0), (0,0), (0,0.1) ]
+            - coord: [1,1,1]
+              mode: [ (.1,0), (0,0), (0,0.1) ]
               
-            - coord: [3,0,1]
-              mode: [ (0,0), (0,0), (0,-0.1) ]
+            - coord: [3,1,1]
+              mode: [ (.1,0), (0,0), (0,-0.1) ]
               
-            - coord: [2,0,1]
-              mode: [ (0,0), (0,0), (0.1,0) ]
+            - coord: [2,1,1]
+              mode: [ (.1,0), (0,0), (0.1,0) ]
               
-            - coord: [4,0,1]
-              mode: [ (0,0), (0,0), (-0.1,0) ]
+            - coord: [4,1,1]
+              mode: [ (.1,0), (0,0), (-0.1,0) ]
               
 #            - coord: [3,0,2]
 #              mode: [ (0.01,0.01), (0,0), (0,0) ]
@@ -124,7 +124,7 @@ io:
     time:
         global_save_first: 0.0  
         complex_field_save_first: 
-        field_frequent_save_first:
+        field_frequent_save_first: 
         field_reduced_save_first:  
         real_field_save_first: 
         field_k_save_first: 

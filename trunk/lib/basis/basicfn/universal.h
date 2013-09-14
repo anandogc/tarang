@@ -40,6 +40,7 @@
 #define _UNIVERAL_H
 
 #include "def_vars.h"
+#include "BasicIO.h"
 
 //*********************************************************************************************	
 
@@ -47,10 +48,19 @@
 class Universal
 {				
 public:
-    
+
+    //HDF5 IO plans
+    BasicIO::H5_plan H5_real;
+    BasicIO::H5_plan H5_full;
+    BasicIO::H5_plan H5_kz0_full;
+    BasicIO::H5_plan H5_in_reduced;
+    BasicIO::H5_plan H5_out_reduced;
+    BasicIO::H5_plan H5_in_kz0_reduced;
+    BasicIO::H5_plan H5_out_kz0_reduced;
+
     // basic
 	virtual int Get_number_modes_in_shell(DP inner_radius, DP outer_radius);
-	virtual void Print_large_Fourier_elements(Array<complx,3> A);
+	virtual void Print_large_Fourier_elements(Array<complx,3> A, string array_name="Array");
 	virtual void Array_mult_ksqr(Array<complx,3> A);
 	virtual void Array_divide_ksqr(Array<complx,3> A);
 	virtual void Array_exp_ksqr(Array<complx,3> A, DP factor);
@@ -683,7 +693,6 @@ public:
 	
 	virtual DP AnisKvect_polar_angle(int lx, int ly, int lz) = 0;
 	virtual DP AnisKvect_azimuthal_angle(int lx, int ly, int lz) = 0;
-    
 };
 
 #endif

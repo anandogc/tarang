@@ -186,7 +186,6 @@ void SpectralTransform::Zero_pad_last_col_SSS_SLAB(Array<DP,2> A)
 void SpectralTransform::Norm_SSS_SLAB(Array<complx,3> A) 
 {  
 	A = A/(8*DP(Nx)*DP(Ny)*DP(Nz));
-	// A = A/(2*DP(Nx)*DP(Ny)*DP(Nz));
 }
 
 void SpectralTransform::Norm_SSS_SLAB(Array<complx,2> A)
@@ -229,7 +228,6 @@ void SpectralTransform::Forward_transform_SSS_SLAB(string sincostr_switch, Array
 
 void SpectralTransform::Inverse_transform_SSS_SLAB(string sincostr_switch, Array<complx,3> A, Array<DP,3> Ar)
 {
-	// cout << "Inverse_transform_SSS_SLAB" << endl;
 	X_3d = A;
 	
 	ISinCostr_z(sincostr_switch[2], X_3d);

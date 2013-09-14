@@ -36,39 +36,40 @@
  */
 
 #include "Global.h"
-//#include "global_extern_vars.h"
 #include <getopt.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 
 	//*********************************************************************************************
 template<typename T>
 void operator >> (const YAML::Node& node, vector<complex<T> >& vec) {
-    string str;
-    string str_tmp;
-    int n=node.size();  
-    node[0] >> str;
-    for (int i=1; i<n; i++)
+	string str;
+	string str_tmp;
+	int n=node.size();  
+	node[0] >> str;
+	for (int i=1; i<n; i++)
 		{
-        node[i] >> str_tmp;
-        str+=", "+str_tmp;
+		node[i] >> str_tmp;
+		str+=", "+str_tmp;
 		}
 	
-    stringstream ss;
-    complex<T> c;
+	stringstream ss;
+	complex<T> c;
 	
-    string complx_str="";
-    bool real=false;
-    bool imag=false;
-    bool separator=false;
+	string complx_str="";
+	bool real=false;
+	bool imag=false;
+	bool separator=false;
 	
-    for (int i=0; i< str.length(); i++){
-        switch (str[i]){
-            case '(':
+	for (int i=0; i< str.length(); i++){
+		switch (str[i]){
+			case '(':
 				if (imag)
 					cerr<<"para.yaml: "<<str<<" is not a complex number";
 				real=true;
 				imag=false;
 				break;
-            case ',':
+			case ',':
 				if (real){
 					separator=true;
 					real=false;
@@ -94,17 +95,17 @@ void operator >> (const YAML::Node& node, vector<complex<T> >& vec) {
 				complx_str="";
 				ss.flush();
 				break;
-        }
-        if ((real || imag) && (str[i] != ' '))
-            complx_str+=str[i];
-    }
+		}
+		if ((real || imag) && (str[i] != ' '))
+			complx_str+=str[i];
+	}
 }
 
 template<typename T>
 void operator >> (const YAML::Node& node, Array<T,1 >& bl_arr) {
-    vector<T> vec;
-    node >> vec;
-    bl_arr.resize(vec.size());
+	vector<T> vec;
+	node >> vec;
+	bl_arr.resize(vec.size());
 	for (int i=0; i<vec.size(); i++)
 		bl_arr(i)=vec[i];
 }
@@ -112,34 +113,34 @@ void operator >> (const YAML::Node& node, Array<T,1 >& bl_arr) {
 
 template<typename T>
 void operator >> (const YAML::Node& node, Array<complex<T>,1 >& bl_arr) {
-    string str;
-    string str_tmp;
-    vector<complex<T> > vec;
-    int n=node.size();  
-    node[0] >> str;
-    for (int i=1; i<n; i++)
+	string str;
+	string str_tmp;
+	vector<complex<T> > vec;
+	int n=node.size();  
+	node[0] >> str;
+	for (int i=1; i<n; i++)
 		{
-        node[i] >> str_tmp;
-        str+=", "+str_tmp;
+		node[i] >> str_tmp;
+		str+=", "+str_tmp;
 		}
 	
-    stringstream ss;
-    complex<T> c;
+	stringstream ss;
+	complex<T> c;
 	
-    string complx_str="";
-    bool real=false;
-    bool imag=false;
-    bool separator=false;
+	string complx_str="";
+	bool real=false;
+	bool imag=false;
+	bool separator=false;
 	
-    for (int i=0; i< str.length(); i++){
-        switch (str[i]){
-            case '(':
+	for (int i=0; i< str.length(); i++){
+		switch (str[i]){
+			case '(':
 				if (imag)
 					cerr<<"para.yaml: "<<str<<" is not a complex number";
 				real=true;
 				imag=false;
 				break;
-            case ',':
+			case ',':
 				if (real){
 					separator=true;
 					real=false;
@@ -165,17 +166,17 @@ void operator >> (const YAML::Node& node, Array<complex<T>,1 >& bl_arr) {
 				complx_str="";
 				ss.flush();
 				break;
-        }
-        if ((real || imag) && (str[i] != ' '))
-            complx_str+=str[i];
-    }
+		}
+		if ((real || imag) && (str[i] != ' '))
+			complx_str+=str[i];
+	}
 	
-    bl_arr.resize(vec.size());
-    //cout<<"No of C numbers = "<<vec.size()<<endl;
-    for (int i=0; i< vec.size(); i++)
+	bl_arr.resize(vec.size());
+	//cout<<"No of C numbers = "<<vec.size()<<endl;
+	for (int i=0; i< vec.size(); i++)
 		{
-        bl_arr(i)=vec[i];
-        //cout<<i<<": "<<bl_arr(i)<<endl;
+		bl_arr(i)=vec[i];
+		//cout<<i<<": "<<bl_arr(i)<<endl;
 		}
 }
 
@@ -192,7 +193,7 @@ void Global::Assign_if_input_provided(const YAML::Node& node, const  string para
 //*********************************************************************************************
 
 
-void Global::Global_Parse(int argc, char** argv, bool is_test_module)
+void Global::Parse(int argc, char** argv, bool is_test_module)
 {
 	mpi.master=(mpi.my_id==mpi.master_id);
 
@@ -254,40 +255,63 @@ void Global::Global_Parse(int argc, char** argv, bool is_test_module)
 	}
 
 	if (stop){
-	    MPI_Finalize();
+		MPI_Finalize();
 		exit(0);
 	}	
 	
-    //Parse the parameter file
-    if (optind<argc){
-		io.data_dir = argv[optind];
-		ifstream para_yaml((io.data_dir+"/in/para.yaml").c_str());
-		YAML::Parser parser(para_yaml);
-		parser.GetNextDocument(para);
+	//Parse the parameter file
+	if (optind<argc){
+		struct stat st;
+
+		ifstream para_yaml;
+		if (stat(argv[optind], &st) != -1) {
+			if (S_ISDIR(st.st_mode)) {
+				io.data_dir = argv[optind];
+				para_yaml.open((io.data_dir+"/in/para.yaml").c_str());
+			}
+			else if (S_ISREG(st.st_mode) || S_ISLNK(st.st_mode) ) {
+				para_yaml.open(argv[optind]);
+			}
+		}
+		if (para_yaml.is_open()){
+			try {
+				YAML::Parser parser(para_yaml);
+				parser.GetNextDocument(para);
+			}
+			catch(YAML::ParserException& e) {
+				cerr << "Global::Parse: Error reading parameter file: \n" << e.what() << endl;
+			}
+
+		}
+		else {
+			if (mpi.master)
+				cerr << "Global::Parse: Unable to read parameter file." << endl;
+			exit(1);
+		}
 	} 
 }
 
 //*********************************************************************************************
 
-void Global::Global_Read()
+void Global::Read()
 {
 	// program
 	para["program"]["kind"] >> program.kind;
-    para["program"]["basis_type"] >> program.basis_type;
+	para["program"]["basis_type"] >> program.basis_type;
 	para["program"]["decomposition"] >> program.decomposition;
 	para["program"]["iter_or_diag"] >> program.iter_or_diag;
 	para["program"]["alias_option"] >> program.alias_option;
 	para["program"]["integration_scheme"] >> program.integration_scheme;
 	para["program"]["LES_switch"] >> program.LES_switch;
 	para["program"]["apply_strong_realitycond_alltime_switch"] >> program.apply_strong_realitycond_alltime_switch;
-    para["program"]["apply_weak_realitycond_alltime_switch"] >> program.apply_weak_realitycond_alltime_switch;
+	para["program"]["apply_weak_realitycond_alltime_switch"] >> program.apply_weak_realitycond_alltime_switch;
 	para["program"]["low_dimensional_switch"] >> program.low_dimensional_switch;
 	para["program"]["two_and_half_dimension"] >> program.two_and_half_dimension;
 	para["program"]["two_dimension"] >> program.two_dimension;
 	para["program"]["dt_option"] >> program.dt_option;
-    para["program"]["helicity_switch"] >> program.helicity_switch;
+	para["program"]["helicity_switch"] >> program.helicity_switch;
 	para["program"]["sincostr_switch"] >> program.sincostr_switch;
-    if (Input_provided(para, "PHYSICS")){
+	if (Input_provided(para, "PHYSICS")){
 		Assign_if_input_provided(para["PHYSICS"], "Pr_option", PHYSICS.Pr_option, string("PRLARGE"));
 		Assign_if_input_provided(para["PHYSICS"], "Uscaling", PHYSICS.Uscaling, string("USMALL"));
 		Assign_if_input_provided(para["PHYSICS"], "Rayleigh", PHYSICS.Rayleigh, 2000.0);
@@ -301,8 +325,8 @@ void Global::Global_Read()
 		Assign_if_input_provided(para["PHYSICS"], "Peclet", PHYSICS.Peclet, 1.0);
 		Assign_if_input_provided(para["PHYSICS"], "Peclet_c", PHYSICS.Peclet_c, 1.0);
 		
-		if ( (PHYSICS.temperature_grad != 1) && (PHYSICS.temperature_grad != -1) )
-			Show_error("PHYSICS.temperature_grad can be either +1 or -1"); 
+	//	if ( (PHYSICS.temperature_grad != 1) && (PHYSICS.temperature_grad != -1) )
+	//		Show_error("PHYSICS.temperature_grad can be either +1 or -1");
 	}
 	if (program.kind == "MRBC"){
 		para["MRBC"]["Pr_option"] >> MRBC.Pr_option;
@@ -418,6 +442,9 @@ void Global::Global_Read()
 		}
 	
 	// IO
+	if (Input_provided(para["io"], "data_dir"))
+		para["io"]["data_dir"] >> io.data_dir;
+	
 	para["io"]["input_field_procedure"] >> io.input_field_procedure;
 	para["io"]["input_vx_vy_switch"] >> io.input_vx_vy_switch;
 	para["io"]["output_vx_vy_switch"] >> io.output_vx_vy_switch;
@@ -441,7 +468,7 @@ void Global::Global_Read()
 	
 		// init cond modes
 	io.init_cond_modes.number=para["io"]["init_cond_modes"].size();
-    io.init_cond_modes.number_components = no_components_table[program.kind];
+	io.init_cond_modes.number_components = no_components_table[program.kind];
 	io.init_cond_modes.coords.resize(io.init_cond_modes.number, 4);
 	
 	if  (program.basis_type == "SSS") {
@@ -494,55 +521,55 @@ void Global::Global_Read()
 		para["io"]["probes"]["real_space"][i]["coord"][2] >> io.probes.real_space.coords(i,3);
 	}
 	
-	Assign_if_input_provided<DP>(para["io"]["time"], "global_save_first", io.time.global_save_next, myconstant.INF_TIME);
+	Assign_if_input_provided(para["io"]["time"], "global_save_first", io.time.global_save_next, myconstant.INF_TIME);
 	
-	Assign_if_input_provided<DP>(para["io"]["time"], "complex_field_save_first", io.time.complex_field_save_next , myconstant.INF_TIME);
+	Assign_if_input_provided(para["io"]["time"], "complex_field_save_first", io.time.complex_field_save_next , myconstant.INF_TIME);
 	
-	Assign_if_input_provided<DP>(para["io"]["time"], "field_frequent_save_first", io.time.field_frequent_save_next, myconstant.INF_TIME);
+	Assign_if_input_provided(para["io"]["time"], "field_frequent_save_first", io.time.field_frequent_save_next, myconstant.INF_TIME);
 	
-	Assign_if_input_provided<DP>(para["io"]["time"], "field_reduced_save_first", io.time.field_reduced_save_next , myconstant.INF_TIME);
+	Assign_if_input_provided(para["io"]["time"], "field_reduced_save_first", io.time.field_reduced_save_next , myconstant.INF_TIME);
 	
-	Assign_if_input_provided<DP>(para["io"]["time"], "real_field_save_first", io.time.real_field_save_next, myconstant.INF_TIME);
+	Assign_if_input_provided(para["io"]["time"], "real_field_save_first", io.time.real_field_save_next, myconstant.INF_TIME);
 	
-	Assign_if_input_provided<DP>(para["io"]["time"], "field_k_save_first"       , io.time.field_k_save_next       , myconstant.INF_TIME);
-	Assign_if_input_provided<DP>(para["io"]["time"], "field_r_save_first"       , io.time.field_r_save_next       , myconstant.INF_TIME);
-	Assign_if_input_provided<DP>(para["io"]["time"], "spectrum_save_first"      , io.time.spectrum_save_next      , myconstant.INF_TIME);
-	Assign_if_input_provided<DP>(para["io"]["time"], "pressure_save_first"      , io.time.pressure_save_next      , myconstant.INF_TIME);
-	Assign_if_input_provided<DP>(para["io"]["time"], "pressure_spectrum_save_first", io.time.pressure_spectrum_save_next, myconstant.INF_TIME);
-	Assign_if_input_provided<DP>(para["io"]["time"], "flux_save_first"          , io.time.flux_save_next          , myconstant.INF_TIME);
-	Assign_if_input_provided<DP>(para["io"]["time"], "shell_to_shell_save_first", io.time.shell_to_shell_save_next, myconstant.INF_TIME);
-	Assign_if_input_provided<DP>(para["io"]["time"], "ring_spectrum_save_first" , io.time.ring_spectrum_save_next , myconstant.INF_TIME);
-	Assign_if_input_provided<DP>(para["io"]["time"], "ring_to_ring_save_first"  , io.time.ring_to_ring_save_next  , myconstant.INF_TIME);
-	Assign_if_input_provided<DP>(para["io"]["time"], "cylindrical_ring_spectrum_save_first", io.time.cylindrical_ring_spectrum_save_next, myconstant.INF_TIME);
-	Assign_if_input_provided<DP>(para["io"]["time"], "cylindrical_ring_to_ring_save_first", io.time.cylindrical_ring_to_ring_save_next, myconstant.INF_TIME);
-	Assign_if_input_provided<DP>(para["io"]["time"], "structure_fn_save_first"  , io.time.structure_fn_save_next  , myconstant.INF_TIME);
-    Assign_if_input_provided<DP>(para["io"]["time"], "Tk_shell_spectrum_save_first"  , io.time.Tk_shell_spectrum_save_next  , myconstant.INF_TIME);
-    Assign_if_input_provided<DP>(para["io"]["time"], "Tk_ring_spectrum_save_first"  , io.time.Tk_ring_spectrum_save_next  , myconstant.INF_TIME);
-    Assign_if_input_provided<DP>(para["io"]["time"], "Tk_cylindrical_ring_spectrum_save_first"  , io.time.Tk_cylindrical_ring_spectrum_save_next  , myconstant.INF_TIME);
-	Assign_if_input_provided<DP>(para["io"]["time"], "cout_save_first"          , io.time.cout_save_next          , myconstant.INF_TIME);
+	Assign_if_input_provided(para["io"]["time"], "field_k_save_first"       , io.time.field_k_save_next       , myconstant.INF_TIME);
+	Assign_if_input_provided(para["io"]["time"], "field_r_save_first"       , io.time.field_r_save_next       , myconstant.INF_TIME);
+	Assign_if_input_provided(para["io"]["time"], "spectrum_save_first"      , io.time.spectrum_save_next      , myconstant.INF_TIME);
+	Assign_if_input_provided(para["io"]["time"], "pressure_save_first"      , io.time.pressure_save_next      , myconstant.INF_TIME);
+	Assign_if_input_provided(para["io"]["time"], "pressure_spectrum_save_first", io.time.pressure_spectrum_save_next, myconstant.INF_TIME);
+	Assign_if_input_provided(para["io"]["time"], "flux_save_first"          , io.time.flux_save_next          , myconstant.INF_TIME);
+	Assign_if_input_provided(para["io"]["time"], "shell_to_shell_save_first", io.time.shell_to_shell_save_next, myconstant.INF_TIME);
+	Assign_if_input_provided(para["io"]["time"], "ring_spectrum_save_first" , io.time.ring_spectrum_save_next , myconstant.INF_TIME);
+	Assign_if_input_provided(para["io"]["time"], "ring_to_ring_save_first"  , io.time.ring_to_ring_save_next  , myconstant.INF_TIME);
+	Assign_if_input_provided(para["io"]["time"], "cylindrical_ring_spectrum_save_first", io.time.cylindrical_ring_spectrum_save_next, myconstant.INF_TIME);
+	Assign_if_input_provided(para["io"]["time"], "cylindrical_ring_to_ring_save_first", io.time.cylindrical_ring_to_ring_save_next, myconstant.INF_TIME);
+	Assign_if_input_provided(para["io"]["time"], "structure_fn_save_first"  , io.time.structure_fn_save_next  , myconstant.INF_TIME);
+	Assign_if_input_provided(para["io"]["time"], "Tk_shell_spectrum_save_first"  , io.time.Tk_shell_spectrum_save_next  , myconstant.INF_TIME);
+	Assign_if_input_provided(para["io"]["time"], "Tk_ring_spectrum_save_first"  , io.time.Tk_ring_spectrum_save_next  , myconstant.INF_TIME);
+	Assign_if_input_provided(para["io"]["time"], "Tk_cylindrical_ring_spectrum_save_first"  , io.time.Tk_cylindrical_ring_spectrum_save_next  , myconstant.INF_TIME);
+	Assign_if_input_provided(para["io"]["time"], "cout_save_first"          , io.time.cout_save_next          , myconstant.INF_TIME);
 
 	
-	Assign_if_input_provided<DP>(para["io"]["time"], "global_save_interval"        , io.time.global_save_interval        , myconstant.INF_TIME);
-	Assign_if_input_provided<DP>(para["io"]["time"], "complex_field_save_interval" , io.time.complex_field_save_interval , myconstant.INF_TIME);
-	Assign_if_input_provided<DP>(para["io"]["time"], "field_frequent_save_interval", io.time.field_frequent_save_interval, myconstant.INF_TIME);
-	Assign_if_input_provided<DP>(para["io"]["time"], "field_reduced_save_interval" , io.time.field_reduced_save_interval , myconstant.INF_TIME);
-	Assign_if_input_provided<DP>(para["io"]["time"], "real_field_save_interval"    , io.time.real_field_save_interval    , myconstant.INF_TIME);
-	Assign_if_input_provided<DP>(para["io"]["time"], "field_k_save_interval"       , io.time.field_k_save_interval       , myconstant.INF_TIME);
-	Assign_if_input_provided<DP>(para["io"]["time"], "field_r_save_interval"       , io.time.field_r_save_interval       , myconstant.INF_TIME);
-	Assign_if_input_provided<DP>(para["io"]["time"], "spectrum_save_interval"      , io.time.spectrum_save_interval      , myconstant.INF_TIME);
-	Assign_if_input_provided<DP>(para["io"]["time"], "pressure_save_interval"      , io.time.pressure_save_interval      , myconstant.INF_TIME);
-	Assign_if_input_provided<DP>(para["io"]["time"], "pressure_spectrum_save_interval", io.time.pressure_spectrum_save_interval, myconstant.INF_TIME);
-	Assign_if_input_provided<DP>(para["io"]["time"], "flux_save_interval"          , io.time.flux_save_interval          , myconstant.INF_TIME);
-	Assign_if_input_provided<DP>(para["io"]["time"], "shell_to_shell_save_interval", io.time.shell_to_shell_save_interval, myconstant.INF_TIME);
-	Assign_if_input_provided<DP>(para["io"]["time"], "ring_spectrum_save_interval" , io.time.ring_spectrum_save_interval , myconstant.INF_TIME);
-	Assign_if_input_provided<DP>(para["io"]["time"], "ring_to_ring_save_interval"  , io.time.ring_to_ring_save_interval  , myconstant.INF_TIME);
-	Assign_if_input_provided<DP>(para["io"]["time"], "cylindrical_ring_spectrum_save_interval", io.time.cylindrical_ring_spectrum_save_interval, myconstant.INF_TIME);
-	Assign_if_input_provided<DP>(para["io"]["time"], "cylindrical_ring_to_ring_save_interval", io.time.cylindrical_ring_to_ring_save_interval, myconstant.INF_TIME);
-	Assign_if_input_provided<DP>(para["io"]["time"], "structure_fn_save_interval"  , io.time.structure_fn_save_interval  , myconstant.INF_TIME);
-    Assign_if_input_provided<DP>(para["io"]["time"], "Tk_shell_spectrum_save_interval"  , io.time.Tk_shell_spectrum_save_interval  , myconstant.INF_TIME);
-    Assign_if_input_provided<DP>(para["io"]["time"], "Tk_ring_spectrum_save_interval"  , io.time.Tk_ring_spectrum_save_interval  , myconstant.INF_TIME);
-    Assign_if_input_provided<DP>(para["io"]["time"], "Tk_cylindrical_ring_spectrum_save_interval"  , io.time.Tk_cylindrical_ring_spectrum_save_interval  , myconstant.INF_TIME);
-	Assign_if_input_provided<DP>(para["io"]["time"], "cout_save_interval"          , io.time.cout_save_interval          , myconstant.INF_TIME);
+	Assign_if_input_provided(para["io"]["time"], "global_save_interval"        , io.time.global_save_interval        , myconstant.INF_TIME);
+	Assign_if_input_provided(para["io"]["time"], "complex_field_save_interval" , io.time.complex_field_save_interval , myconstant.INF_TIME);
+	Assign_if_input_provided(para["io"]["time"], "field_frequent_save_interval", io.time.field_frequent_save_interval, myconstant.INF_TIME);
+	Assign_if_input_provided(para["io"]["time"], "field_reduced_save_interval" , io.time.field_reduced_save_interval , myconstant.INF_TIME);
+	Assign_if_input_provided(para["io"]["time"], "real_field_save_interval"    , io.time.real_field_save_interval    , myconstant.INF_TIME);
+	Assign_if_input_provided(para["io"]["time"], "field_k_save_interval"       , io.time.field_k_save_interval       , myconstant.INF_TIME);
+	Assign_if_input_provided(para["io"]["time"], "field_r_save_interval"       , io.time.field_r_save_interval       , myconstant.INF_TIME);
+	Assign_if_input_provided(para["io"]["time"], "spectrum_save_interval"      , io.time.spectrum_save_interval      , myconstant.INF_TIME);
+	Assign_if_input_provided(para["io"]["time"], "pressure_save_interval"      , io.time.pressure_save_interval      , myconstant.INF_TIME);
+	Assign_if_input_provided(para["io"]["time"], "pressure_spectrum_save_interval", io.time.pressure_spectrum_save_interval, myconstant.INF_TIME);
+	Assign_if_input_provided(para["io"]["time"], "flux_save_interval"          , io.time.flux_save_interval          , myconstant.INF_TIME);
+	Assign_if_input_provided(para["io"]["time"], "shell_to_shell_save_interval", io.time.shell_to_shell_save_interval, myconstant.INF_TIME);
+	Assign_if_input_provided(para["io"]["time"], "ring_spectrum_save_interval" , io.time.ring_spectrum_save_interval , myconstant.INF_TIME);
+	Assign_if_input_provided(para["io"]["time"], "ring_to_ring_save_interval"  , io.time.ring_to_ring_save_interval  , myconstant.INF_TIME);
+	Assign_if_input_provided(para["io"]["time"], "cylindrical_ring_spectrum_save_interval", io.time.cylindrical_ring_spectrum_save_interval, myconstant.INF_TIME);
+	Assign_if_input_provided(para["io"]["time"], "cylindrical_ring_to_ring_save_interval", io.time.cylindrical_ring_to_ring_save_interval, myconstant.INF_TIME);
+	Assign_if_input_provided(para["io"]["time"], "structure_fn_save_interval"  , io.time.structure_fn_save_interval  , myconstant.INF_TIME);
+	Assign_if_input_provided(para["io"]["time"], "Tk_shell_spectrum_save_interval"  , io.time.Tk_shell_spectrum_save_interval  , myconstant.INF_TIME);
+	Assign_if_input_provided(para["io"]["time"], "Tk_ring_spectrum_save_interval"  , io.time.Tk_ring_spectrum_save_interval  , myconstant.INF_TIME);
+	Assign_if_input_provided(para["io"]["time"], "Tk_cylindrical_ring_spectrum_save_interval"  , io.time.Tk_cylindrical_ring_spectrum_save_interval  , myconstant.INF_TIME);
+	Assign_if_input_provided(para["io"]["time"], "cout_save_interval"          , io.time.cout_save_interval          , myconstant.INF_TIME);
 	
 	//last
 	Assign_if_input_provided(para["io"]["time"], "global_save_last"        , io.time.global_save_last        , false);
@@ -561,10 +588,10 @@ void Global::Global_Read()
 	Assign_if_input_provided(para["io"]["time"], "ring_to_ring_save_last"  , io.time.ring_to_ring_save_last  , false);
 	Assign_if_input_provided(para["io"]["time"], "cylindrical_ring_spectrum_save_last", io.time.cylindrical_ring_spectrum_save_last, false);
 	Assign_if_input_provided(para["io"]["time"], "cylindrical_ring_to_ring_save_last", io.time.cylindrical_ring_to_ring_save_last, false);
-    Assign_if_input_provided(para["io"]["time"], "structure_fn_save_last"  , io.time.structure_fn_save_last  , false);
+	Assign_if_input_provided(para["io"]["time"], "structure_fn_save_last"  , io.time.structure_fn_save_last  , false);
 	Assign_if_input_provided(para["io"]["time"], "Tk_shell_spectrum_save_last"  , io.time.Tk_shell_spectrum_save_last  , false);
-    Assign_if_input_provided(para["io"]["time"], "Tk_ring_spectrum_save_last"  , io.time.Tk_ring_spectrum_save_last  , false);
-    Assign_if_input_provided(para["io"]["time"], "Tk_cylindrical_ring_spectrum_save_last"  , io.time.Tk_cylindrical_ring_spectrum_save_last  , false);
+	Assign_if_input_provided(para["io"]["time"], "Tk_ring_spectrum_save_last"  , io.time.Tk_ring_spectrum_save_last  , false);
+	Assign_if_input_provided(para["io"]["time"], "Tk_cylindrical_ring_spectrum_save_last"  , io.time.Tk_cylindrical_ring_spectrum_save_last  , false);
 	Assign_if_input_provided(para["io"]["time"], "cout_save_last"          , io.time.cout_save_last          , false);
 
 	// SPECTRUM
@@ -576,7 +603,7 @@ void Global::Global_Read()
 		para["spectrum"]["ring"]["no_sectors"] >> spectrum.ring.no_sectors;
 		Assign_if_input_provided<string>(para["spectrum"]["ring"],"sector_option",spectrum.ring.sector_option,"EQUISPACED");
 		
-		if (spectrum.ring.sector_option == "USER_DEFINED")  
+		if (spectrum.ring.sector_option == "USER_DEFINED")  {
 			if (para["spectrum"]["ring"]["sector_angles"].size() == (spectrum.ring.no_sectors+1)){
 				para["spectrum"]["ring"]["sector_angles"] >> spectrum.ring.sector_angles;
 				// provide the boundaries (no+1)
@@ -586,6 +613,7 @@ void Global::Global_Read()
 					cout << "WARNING: size(spectrum.ring.sector_angles) != number supplied.  Computer proceeds to make EQUISPACED sector_angles " << endl;
 				spectrum.ring.sector_option = "EQUISPACED";
 			}
+		}
 	}
 	
 	Assign_if_input_provided(para["spectrum"]["cylindrical_ring"], "turnon", spectrum.cylindrical_ring.turnon, false);
@@ -594,7 +622,7 @@ void Global::Global_Read()
 		para["spectrum"]["cylindrical_ring"]["no_slabs"] >> spectrum.cylindrical_ring.no_slabs;
 		Assign_if_input_provided<string>(para["spectrum"]["cylindrical_ring"], "kpll_option", spectrum.cylindrical_ring.kpll_option, "EQUISPACED");
 		
-		if (spectrum.cylindrical_ring.kpll_option == "USER_DEFINED") 
+		if (spectrum.cylindrical_ring.kpll_option == "USER_DEFINED") {
 			if (para["spectrum"]["cylindrical_ring"]["kpll_array"].size() == (spectrum.cylindrical_ring.no_slabs+1)) {
 				para["spectrum"]["cylindrical_ring"]["kpll_array"] >> spectrum.cylindrical_ring.kpll_array;
 					// provide the boundaries (no+1)
@@ -604,6 +632,7 @@ void Global::Global_Read()
 					cout << "WARNING: size(spectrum.cylindrical_ring.kpll_array) != number supplied.  Computer proceeds to make EQUISPACED kpll_array " << endl;
 				spectrum.cylindrical_ring.kpll_option = "EQUISPACED";
 			}
+		}
 	}
 	
 	
@@ -616,8 +645,8 @@ void Global::Global_Read()
 		Assign_if_input_provided(para["energy_transfer"], "helicity_shell_to_shell_switch", energy_transfer.helicity_shell_to_shell_switch, false);
 		
 		Assign_if_input_provided(para["energy_transfer"], "Elsasser", energy_transfer.Elsasser, true);
-        
-        Assign_if_input_provided(para["energy_transfer"], "Vpll_switch", energy_transfer.Vpll_switch, false);
+		
+		Assign_if_input_provided(para["energy_transfer"], "Vpll_switch", energy_transfer.Vpll_switch, false);
 		
 			// flux radii assign
 		Assign_if_input_provided(para["energy_transfer"]["flux"], "turnon", energy_transfer.flux.turnon, false);
@@ -625,7 +654,7 @@ void Global::Global_Read()
 		if (energy_transfer.flux.turnon) {
 			Assign_if_input_provided(para["energy_transfer"]["flux"], "no_spheres", energy_transfer.flux.no_spheres, 0);
 			
-			if ( Input_provided(para["energy_transfer"]["flux"],"radii") ) 
+			if ( Input_provided(para["energy_transfer"]["flux"],"radii") ) {
 				if (para["energy_transfer"]["flux"]["radii"].size() == energy_transfer.flux.no_spheres){
 						para["energy_transfer"]["flux"]["radii"] >> energy_transfer.flux.radii;
 				}
@@ -633,6 +662,7 @@ void Global::Global_Read()
 					if (mpi.master) 
 						cout << "WARNING: size(energy_transfer.flux.radii) != number supplied.  Computer builds the array " << endl;
 				}
+			}
 		}
 		
 			// SHELL-to-SHELL
@@ -641,7 +671,7 @@ void Global::Global_Read()
 		if (energy_transfer.shell_to_shell.turnon) {
 			Assign_if_input_provided(para["energy_transfer"]["shell_to_shell"], "no_shells", energy_transfer.shell_to_shell.no_shells, 0);
 			
-			if (Input_provided(para["energy_transfer"]["shell_to_shell"],"radii") ) 
+			if (Input_provided(para["energy_transfer"]["shell_to_shell"],"radii") ) {
 				if (para["energy_transfer"]["shell_to_shell"]["radii"].size() == energy_transfer.shell_to_shell.no_shells) {
 					para["energy_transfer"]["shell_to_shell"]["radii"]>> energy_transfer.shell_to_shell.radii;
 				}
@@ -650,9 +680,10 @@ void Global::Global_Read()
 					if (mpi.master) 
 						cout << "WARNING: size(energy_transfer.shell_to_shell.radii) != number supplied.  Computer builds the array " << endl;
 				}
+			}
 		}
 
-        
+		
 		// ring-to-ring
 		Assign_if_input_provided(para["energy_transfer"]["ring_to_ring"], "turnon", energy_transfer.ring_to_ring.turnon, false);
 		
@@ -660,7 +691,7 @@ void Global::Global_Read()
 				// Read ring radii
 			Assign_if_input_provided(para["energy_transfer"]["ring_to_ring"], "no_shells", energy_transfer.ring_to_ring.no_shells, 0);
 			
-			if (Input_provided(para["energy_transfer"]["ring_to_ring"],"radii") ) 
+			if (Input_provided(para["energy_transfer"]["ring_to_ring"],"radii") ) {
 				if (para["energy_transfer"]["ring_to_ring"]["radii"].size() == energy_transfer.ring_to_ring.no_shells) {
 						para["energy_transfer"]["ring_to_ring"]["radii"] >> energy_transfer.ring_to_ring.radii;
 				}
@@ -669,12 +700,13 @@ void Global::Global_Read()
 					if (mpi.master) 
 						cout << "WARNING: size(energy_transfer.ring_to_ring.radii) != number supplied.  Computer builds the array " << endl;
 				}
-            
+			}
+			
 			para["energy_transfer"]["ring_to_ring"]["no_sectors"] >> energy_transfer.ring_to_ring.no_sectors;
-            
+			
 			Assign_if_input_provided<string>(para["energy_transfer"]["ring_to_ring"],"sector_option", energy_transfer.ring_to_ring.sector_option, "EQUISPACED");
 
-			if (energy_transfer.ring_to_ring.sector_option == "USER_DEFINED")
+			if (energy_transfer.ring_to_ring.sector_option == "USER_DEFINED") {
 				if (para["energy_transfer"]["ring_to_ring"]["sector_angles"].size() == (energy_transfer.ring_to_ring.no_sectors+1)) {
 					para["energy_transfer"]["ring_to_ring"]["sector_angles"] >> energy_transfer.ring_to_ring.sector_angles;
 					// provide the boundaries (no+1)
@@ -684,6 +716,7 @@ void Global::Global_Read()
 						cout << "WARNING: size(energy_transfer.ring_to_ring.sector_angles) != number supplied.  Computer proceeds to make EQUISPACED sector_angles " << endl;
 					energy_transfer.ring_to_ring.sector_option = "EQUISPACED";
 				}
+			}
 		}
 		
 		// Cylindrical ring to ring
@@ -693,7 +726,7 @@ void Global::Global_Read()
 				// Read ring radii
 			Assign_if_input_provided(para["energy_transfer"]["cylindrical_ring_to_ring"], "no_shells", energy_transfer.cylindrical_ring_to_ring.no_shells, 0);
 			
-			if (Input_provided(para["energy_transfer"]["cylindrical_ring_to_ring"],"radii") ) 
+			if (Input_provided(para["energy_transfer"]["cylindrical_ring_to_ring"],"radii") ) {
 				if (para["energy_transfer"]["cylindrical_ring_to_ring"]["radii"].size() == energy_transfer.cylindrical_ring_to_ring.no_shells) {
 					para["energy_transfer"]["cylindrical_ring_to_ring"]["radii"] >> energy_transfer.cylindrical_ring_to_ring.radii;
 				}			
@@ -701,13 +734,14 @@ void Global::Global_Read()
 					if (mpi.master) 
 						cout << "WARNING: size(energy_transfer.cylindrical_ring_to_ring.radii) != number supplied.  Computer builds the array " << endl;
 				}
+			}
 			
 			para["energy_transfer"]["cylindrical_ring_to_ring"]["no_slabs"] >> energy_transfer.cylindrical_ring_to_ring.no_slabs;
 			
 			Assign_if_input_provided<string>(para["energy_transfer"]["cylindrical_ring_to_ring"],"kpll_option",energy_transfer.cylindrical_ring_to_ring.kpll_option, "EQUISPACED");
-            
 			
-			if (energy_transfer.cylindrical_ring_to_ring.kpll_option == "USER_DEFINED") 
+			
+			if (energy_transfer.cylindrical_ring_to_ring.kpll_option == "USER_DEFINED") {
 				if (para["energy_transfer"]["cylindrical_ring_to_ring"]["kpll_array"].size() == (energy_transfer.cylindrical_ring_to_ring.no_slabs+1)) {
 					para["energy_transfer"]["cylindrical_ring_to_ring"]["kpll_array"] >> energy_transfer.cylindrical_ring_to_ring.kpll_array;
 				}
@@ -716,6 +750,7 @@ void Global::Global_Read()
 						cout << "WARNING: size(energy_transfer.cylindrical_ring_to_ring.kpll_array) != number supplied.  Computer proceeds to make EQUISPACED kpll_array" << endl;
 					energy_transfer.cylindrical_ring_to_ring.kpll_option = "EQUISPACED";
 				}
+			}
 		
 		}
 	}

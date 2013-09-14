@@ -64,10 +64,12 @@ int main(int argc, char** argv)
 	MPI_Comm_rank(MPI_COMM_WORLD, &global.mpi.my_id);
 	MPI_Comm_size(MPI_COMM_WORLD, &global.mpi.numprocs);
 
-	global.Global_Parse(argc, argv);
-	global.Global_Read();
+	global.Parse(argc, argv);
+	global.Read();
 
-	global.Process_global_vars_basic();
+	global.Process_basic_vars();
+	
+    BasicIO::Initialize(); 
 
     if (global.program.basis_type == "FFF"){
 		if (global.program.decomposition == "SLAB")
@@ -107,10 +109,9 @@ int main(int argc, char** argv)
             exit(1);
     }
 
-    global.Process_global_vars_advanced();
+    global.Process_advanced_vars();
 	global.Print();
     
-    BasicIO::Initialize();
     Correlation::Initialize();
 	
 	if (global.program.decomposition=="PENCIL"){
@@ -172,48 +173,10 @@ int main(int argc, char** argv)
 			<< "TOTAL TIME ELAPSED: " << dif << " sec" << endl;
 	}
 
-		//	MPI_Comm_free(&global.mpi.MPI_NEW_COMM);
-	
 	BasicIO::Finalize();
 	MPI_Finalize();
-	/*
-	 if (argc == 1) {
-	 ifstream prog_para_file;				// prog_para_file defined only in the master node
-	 prog_para_file.open("prog_para.d");
-	 Read_prog_para(prog_para_file, globalvar_prog_kind, data_dir_name);
-	 }
-	 else if (argc == 2){
-	 if (string(argv[1]) == "--help" || string(argv[1]) == "-h")
-	 display_help = true;
-	 }
-	 else if (argc == 4) {
-	 globalvar_prog_kind = argv[1];
-	 data_dir_name = argv[2];
-	 pencil_or_slab = argv[3]
-	 }
-	 else
-	 display_help=true; 
-	 */
-	
-	/*
-	if (display_help == true && my_id == master_id){
-		cout<<my_id<<endl;
-		cout<<endl<<"Zero or two arguments can be given to "<<argv[0]<<endl<<endl;
-		
-		cout<<"Zero arguments:"<<endl;
-		cout<<"\tSolver and data directory are taken from prog_para.d"<<endl<<endl;
-		
-		cout<<"Two arguments:"<<endl;
-		cout<<"\tSolver is the first argument"<<endl;
-		cout<<"\tData directory is second argument"<<endl;
-		cout<<"e.g. mpirun -np 4 "<<argv[0]<<" INC_FLUID `pwd`"<<endl<<endl;
-		
-		cout<<"Solver is one of: INC_FLUID, INC_SCALAR, INC_MHD, RB_SLIP, NonBoussinesq."<<endl<<endl;
-		MPI_Finalize();
-		exit(1);
-	} 
-	 */
 
+	return 0;
 }
 
 

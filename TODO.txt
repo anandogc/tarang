@@ -7,28 +7,20 @@
 19 Jun 2013
 
 1) Work on Dealias , Satisfy_strong/weak/test_reality_condition of FFF_SLAB
-2) Adjust_arrays_after_reding_reuced.
-3) Test out of place fft
- 4)	Get rid of field.N from Global.h
+2) Test out of place fft
+3) Get rid of field.N from Global.h
 
 1 Jul 2013
  1)	Move 'void FluidIO_incompress::Init_energy_transfer()'
 from IncIO.cc to EnergyTr.cc
 
 7 Jul 2013
-1) Add in place of Assign in Xderiv, Yderiv & Zderiv 
-2) sincostr_switch to sincostr_switch_Vx in para ang global
-3) Remove ShiftLeft and ShiftRight using stride in sin plan
-
-9 Jul 2013
-1) Shift global.cross_correlation to CrossCorrelation
-2) Work on Output_ring_spectrum in output_energy.cc. Try to recycle arrays.
+1) sincostr_switch to sincostr_switch_Vx in para ang global
+2) Remove ShiftLeft and ShiftRight using stride in sin plan
 
 12 Jul 2013
 1) Work on Dealias and Last_componenet of ChFF_SLAB
 
-14 Jul 2013
-1) IN all inline.h for Get_* Assign_*, Add_*, cerr message if probe not in me.
 
 6th Aug 2013
 Tarang
@@ -50,3 +42,6 @@ switch SSS etc, rewrite
 global.temp_array.X being used or not: signal.
 
 Double/float options for all including fftmpi...
+
+17 Aug 2013
+DP FluidSF::Get_dt(): consider the else case (global.program.dt_option != 0)

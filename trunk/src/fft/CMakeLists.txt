@@ -39,7 +39,7 @@ ADD_EXECUTABLE(${EXECUTABLE_NAME}
 	
 #TARGET_LINK_LIBRARIES(${EXECUTABLE_NAME} fluid_incompressible fluid_base fields fffw_slab cfff_slab fff_pencil fff_slab  sff_pencil sff_slab ssf_pencil ssf_slab sss_pencil sss_slab Chff_slab basis_basicfn global spectral_transforms ${SYSTEM_LIBRARIES})
 
-TARGET_LINK_LIBRARIES(${EXECUTABLE_NAME} fluid_incompressible fluid_base fields chff_slab  sss_pencil ssf_pencil sff_pencil fff_pencil sss_slab ssf_slab sff_slab fff_slab basis_basicfn global spectral_transform ${SYSTEM_LIBRARIES})
+TARGET_LINK_LIBRARIES(${EXECUTABLE_NAME} fluid_incompressible fluid_base fields chff_slab  sss_pencil ssf_pencil sff_pencil fff_pencil sss_slab ssf_slab sff_slab fff_slab fffw_slab cfff_slab basis_basicfn global spectral_transform ${SYSTEM_LIBRARIES})
 
 ADD_CUSTOM_COMMAND(TARGET ${EXECUTABLE_NAME}
                    POST_BUILD

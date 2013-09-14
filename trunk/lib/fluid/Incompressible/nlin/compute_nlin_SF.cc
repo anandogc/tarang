@@ -86,7 +86,13 @@ void Nlin_incompress::Compute_nlin_scalar(FluidVF& U, FluidSF& T)
 	T.Inverse_transform();	// Fr = Inv_transform(F)
 
 	global.io.real_space_field_available = true;
-	
+    
+    if (!global.time.dt_computation_done) {
+		global.time.dt = U.Get_dt(T);
+		global.time.now = global.time.now + global.time.dt;
+		global.time.dt_computation_done = true;
+	}
+    
     // Output real field
     if (!global.io.output_real_field_done) {
 		fluidIO_incompress.Output_real_field(U, T);
@@ -96,11 +102,6 @@ void Nlin_incompress::Compute_nlin_scalar(FluidVF& U, FluidSF& T)
 		global.io.output_real_field_done = true;
 	}
 	
-	if (!global.time.dt_computation_done) {
-		global.time.dt = U.Get_dt(T);
-		global.time.now = global.time.now + global.time.dt;
-		global.time.dt_computation_done = true;
-	}
 	global.io.real_space_field_available = false;
 	
 	Compute_nlin_VxT(U, T);  // Computes only T.nlin = FT(Dj(ujT))
@@ -188,15 +189,35 @@ void Nlin_incompress::Compute_nlin_RBC(FluidVF& U, FluidSF& T)
 		
 		else
 			Compute_nlin_scalar(U, T);
+        
+        if (!global.io.output_field_k_done) {
+            fluidIO_incompress.Output_field_k(U, T);
+            fluidIO_incompress.Output_Tk_shell_spectrum(U, T);
+            fluidIO_incompress.Output_Tk_ring_spectrum(U, T);
+            fluidIO_incompress.Output_Tk_cylindrical_ring_spectrum(U, T);
+            global.io.output_field_k_done = true;
+        }
 		
 #ifdef GROSSMANN_LOHSE	
 		if (!global.io.output_nlin_magnitude_done) {
-			fluidIO_incompress.Output_field_k(U, T);
-			
-			global.io.output_field_k_done = true;
 
+            DP visc1, visc2, visc3, Tvisc;
+            universal->Laplacian(1.0, U.cvf.V1, global.temp_array.X);
+            visc1 = (-U.dissipation_coefficient)* sum(abs(global.temp_array.X));
+            
+            if (!global.program.two_dimension) {
+                universal->Laplacian(1.0, U.cvf.V2, global.temp_array.X);
+                visc2 = (-U.dissipation_coefficient)* sum(abs(global.temp_array.X));
+            }
+            
+            universal->Laplacian(1.0, U.cvf.V3, global.temp_array.X);
+            visc3 = (-U.dissipation_coefficient)* sum(abs(global.temp_array.X));
+            
+            universal->Laplacian(1.0, T.csf.F, global.temp_array.X);
+            Tvisc = (-T.diffusion_coefficient)* sum(abs(global.temp_array.X));
+            
 			// For RBC GL scaling analysis only.  Comment else
-			fluidIO_incompress.misc_file << "rms(nlin): time, U.nlin1, U.nlin2, U.nlin3, T.nlin: " << global.time.now << " " << sqrt(sum(sqr(abs(U.nlin1)))) << " " << sqrt(sum(sqr(abs(U.nlin2)))) << " " << sqrt(sum(sqr(abs(U.nlin3)))) << " " << sqrt(sum(sqr(abs(T.nlin)))) << endl;
+			fluidIO_incompress.misc_file << "rms(nlin): time, U.nlin1, U.nlin2, U.nlin3, T.nlin: " << global.time.now << "   " << sqrt(sum(sqr(abs(U.nlin1)))) << " " << sqrt(sum(sqr(abs(U.nlin2)))) << " " << sqrt(sum(sqr(abs(U.nlin3)))) << " " << sqrt(sum(sqr(abs(T.nlin)))) "    "<< visc1 << " " << visc2 << " " << visc3 << " " << Tvisc << endl;
 			
 			global.io.output_nlin_magnitude_done = true;
 		}
@@ -238,20 +259,40 @@ void Nlin_incompress::Compute_nlin_RBC(FluidVF& U, FluidSF& T)
 		
 		else
 			Compute_nlin_scalar(U, T);
+        
+        if (!global.io.output_field_k_done) {
+            fluidIO_incompress.Output_field_k(U, T);
+            fluidIO_incompress.Output_Tk_shell_spectrum(U, T);
+            fluidIO_incompress.Output_Tk_ring_spectrum(U, T);
+            fluidIO_incompress.Output_Tk_cylindrical_ring_spectrum(U, T);
+            global.io.output_field_k_done = true;
+        } 
 
-#ifdef GROSSMANN_LOHSE
+#ifdef GROSSMANN_LOHSE         
 		if (!global.io.output_nlin_magnitude_done) {
-			fluidIO_incompress.Output_field_k(U, T);
-			
-			global.io.output_field_k_done = true;
-			
+			         
+			DP visc1, visc2, visc3, Tvisc;
+            universal->Laplacian(1.0, U.cvf.V1, global.temp_array.X);
+            visc1 = (-U.dissipation_coefficient)* sum(abs(global.temp_array.X));
+            
+            if (!global.program.two_dimension) {
+                universal->Laplacian(1.0, U.cvf.V2, global.temp_array.X);
+                visc2 = (-U.dissipation_coefficient)* sum(abs(global.temp_array.X));
+            }
+            
+            universal->Laplacian(1.0, U.cvf.V3, global.temp_array.X);
+            visc3 = (-U.dissipation_coefficient)* sum(abs(global.temp_array.X));
+            
+            universal->Laplacian(1.0, T.csf.F, global.temp_array.X);
+            Tvisc = (-T.diffusion_coefficient)* sum(abs(global.temp_array.X));
+            
 			// For RBC GL scaling analysis only.  Comment else
-			fluidIO_incompress.misc_file << "rms(nlin): time, U.nlin1, U.nlin2, U.nlin3, T.nlin: " << global.time.now << " " << sqrt(sum(sqr(abs(U.nlin1)))) << " " << sqrt(sum(sqr(abs(U.nlin2)))) << " " << sqrt(sum(sqr(abs(U.nlin3)))) << " " << sqrt(sum(sqr(abs(T.nlin)))) << endl;
+			fluidIO_incompress.misc_file << "rms(nlin): time, U.nlin1, U.nlin2, U.nlin3, T.nlin: " << global.time.now << "   " << sqrt(sum(sqr(abs(U.nlin1)))) << " " << sqrt(sum(sqr(abs(U.nlin2)))) << " " << sqrt(sum(sqr(abs(U.nlin3)))) << "   " << sqrt(sum(sqr(abs(T.nlin)))) "  "<< visc1 << " " << visc2 << " " << visc3 << " " << Tvisc << endl;
 			
 			global.io.output_nlin_magnitude_done = true;
 		}
 #endif
-	}
+    }
 	
 }		
 

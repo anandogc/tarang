@@ -36,8 +36,8 @@
  */
 
 
-#ifndef _FOUR_SLAB_H
-#define _FOUR_SLAB_H
+#ifndef _FFF_SLAB_H
+#define _FFF_SLAB_H
 
 #include "def_vars.h"
 #include "basicfn_inline.h"

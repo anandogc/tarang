@@ -60,6 +60,7 @@ public:
 	ofstream		field_r_out_file;
 	
 	ofstream		global_file;
+    ofstream        global_real_space_file;
 	ofstream		spectrum_file;
 	ofstream		ring_spectrum_file;
 	ofstream		cylindrical_ring_spectrum_file;
@@ -308,14 +309,12 @@ public:
 
 			std::ostream_iterator<DP> file_it (file,"\t");
 
-			file << label << "\n\n";
+			file << "%%" << label << "\n";
 
 			for (int i=0; i<dim2; i++){	//print dim2 rows
 				std::copy ( A.data()+i*dim1, A.data()+(i+1)*dim1, file_it );	//print dim1 cols
 				file << '\n';
 			}
-
-			file << "\n\n";
 		}
 	}
 	
@@ -335,14 +334,12 @@ public:
 
 			std::ostream_iterator<DP> file_it (file,"\t");
 
-			file << label << "\n\n";
+			file << "%%" << label << "\n";
 
 			for (int i=0; i<dim2; i++){	//print dim2 rows
 				std::copy ( A1.data()+i*dim1, A1.data()+(i+1)*dim1, file_it );	//print dim1 cols
 				file << '\n';
 			}
-
-			file << '\n';
 
 			if (!global.program.two_dimension){
 				for (int i=0; i<dim2; i++){	//print dim2 rows
@@ -350,8 +347,6 @@ public:
 					file << '\n';
 				}
 			}
-
-			file << "\n\n";
 		}
 	}
 
@@ -372,7 +367,7 @@ public:
 
 			std::ostream_iterator<DP> file_it (file,"\t");
 
-			file << label << "\n\n";
+			file << "%%" << label << "\n";
 
 			for (int i=0; i<dim2; i++){	//print dim2 rows
 				std::copy ( A1.data()+i*dim1, A1.data()+(i+1)*dim1, file_it );	//print dim1 cols
@@ -381,22 +376,16 @@ public:
 
 
 			if (!global.program.two_dimension){
-				file << '\n';
-
 				for (int i=0; i<dim2; i++){	//print dim2 rows
 					std::copy ( A2.data()+i*dim1, A2.data()+(i+1)*dim1, file_it );	//print dim1 cols
 					file << '\n';
 				}
 			}
 
-			file << '\n';
-
 			for (int i=0; i<dim2; i++){	//print dim2 rows
 				std::copy ( A3.data()+i*dim1, A3.data()+(i+1)*dim1, file_it );	//print dim1 cols
 				file << '\n';
 			}
-			
-			file << "\n\n";
 		}
 	}
 

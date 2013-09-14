@@ -63,9 +63,11 @@ public:
 
 	
 	Array<complx,3> X_3d;
+	Array<DP,3> Xr_3d;
 	Array<complx,3> A3d_interm;
 	
 	Array<complx,2> X_2d;
+	Array<DP,2> Xr_2d;
 	Array<complx,2> A2d_interm;
 
 	//For Transpose
@@ -124,12 +126,14 @@ public:
 	
 	
 	
-	// for slab fftw
+	// for slab fftw and GP
+	FFTW_PLAN_DP c2c_xyz_forward_plan;
+	FFTW_PLAN_DP c2c_xyz_inverse_plan;
 	
 	// for FT
 	FFTW_PLAN_DP c2c_x_forward_plan, c2c_x_inverse_plan;
-	FFTW_PLAN_DP c2c_y_forward_plan, c2c_y_inverse_plan;
-	
+	FFTW_PLAN_DP c2c_y_forward_plan, c2c_y_inverse_plan;	
+
 	FFTW_PLAN_DP r2c_xyz_plan;
 	FFTW_PLAN_DP c2r_xyz_plan;
 
@@ -149,9 +153,6 @@ public:
 	FFTW_PLAN_DP costr_x_plan, costr_y_plan, costr_z_plan;
 	FFTW_PLAN_DP icostr_x_plan, icostr_y_plan, icostr_z_plan;
 	FFTW_PLAN_DP Chebyshevtr_x_plan;
-	
-	// for GP
-	FFTW_PLAN_DP c2c_forward_plan, c2c_inverse_plan;
 
 	
 	template<class T1, class T2, int N_rank>
@@ -160,14 +161,16 @@ public:
 	template <class T>
 	void Set_transpose_config(int send_config_id, int recv_config_id, MPI_Comm communicator, TransposeConfig& config);
 
-	
+	void FTc2c_xyz(Array<complx,3> A1, Array<complx,3> A2);
+	void IFTc2c_xyz(Array<complx,3> A2, Array<complx,3> A1);
+
 	// 3D: FFT original
-	void FTr2c_xyz(Array<complx,3> Ar, Array<complx,3> A);
-	void FTc2r_xyz(Array<complx,3> A, Array<complx,3> Ar);
+	void FTr2c_xyz(Array<DP,3> Ar, Array<complx,3> A);
+	void FTc2r_xyz(Array<complx,3> A, Array<DP,3> Ar);
 	
 	// 2D
-	void FTr2c_xz(Array<complx,2> Ar, Array<complx,2> A);
-	void FTc2r_xz(Array<complx,2> A, Array<complx,2> Ar);
+	void FTr2c_xz(Array<DP,2> Ar, Array<complx,2> A);
+	void FTc2r_xz(Array<complx,2> A, Array<DP,2> Ar);
 	void FTr2c_yz(Array<complx,2> Plane);
 	// for GP
 	void FTc2c_xyz(Array<complx,3> A);
@@ -238,19 +241,33 @@ public:
 	
 	void Init(string basis, string docomposition, int Nx, int Ny, int Nz, int num_p_hor=0);
 
-	//FFFW_SLAB
-	/*void Init_FFFW_SLAB();
+	//CFFF_SLAB
+	void Init_CFFF_SLAB();
 	//3D
-	void Zero_pad_last_plane_FFFW_SLAB(Array<complx,3> Ar);
-	void Norm_FFFW_SLAB(Array<complx,3> A);
-	void Forward_transform_FFFW_SLAB(Array<complx,3> Ar, Array<complx,3> A);
-	void Inverse_transform_FFFW_SLAB(Array<complx,3> A, Array<complx,3> Ar);
+	void Zero_pad_last_plane_CFFF_SLAB(Array<complx,3> Ar);
+	void Norm_CFFF_SLAB(Array<complx,3> A);
+	void Forward_transform_CFFF_SLAB(Array<complx,3> Ar, Array<complx,3> A);
+	void Inverse_transform_CFFF_SLAB(Array<complx,3> A, Array<complx,3> Ar);
 
 	//2D
-	void Zero_pad_last_col_FFFW_SLAB(Array<complx,2> Ar);
+	void Zero_pad_last_col_CFFF_SLAB(Array<complx,2> Ar);
+	void Norm_CFFF_SLAB(Array<complx,2> A);
+	void Forward_transform_CFFF_SLAB(Array<complx,2> Ar, Array<complx,2> A);
+	void Inverse_transform_CFFF_SLAB(Array<complx,2> A, Array<complx,2> Ar);
+
+	//FFFW_SLAB
+	void Init_FFFW_SLAB();
+	//3D
+	void Zero_pad_last_plane_FFFW_SLAB(Array<DP,3> Ar);
+	void Norm_FFFW_SLAB(Array<complx,3> A);
+	void Forward_transform_FFFW_SLAB(Array<DP,3> Ar, Array<complx,3> A);
+	void Inverse_transform_FFFW_SLAB(Array<complx,3> A, Array<DP,3> Ar);
+
+	//2D
+	void Zero_pad_last_col_FFFW_SLAB(Array<DP,2> Ar);
 	void Norm_FFFW_SLAB(Array<complx,2> A);
-	void Forward_transform_FFFW_SLAB(Array<complx,2> Ar, Array<complx,2> A);
-	void Inverse_transform_FFFW_SLAB(Array<complx,2> A, Array<complx,2> Ar);*/
+	void Forward_transform_FFFW_SLAB(Array<DP,2> Ar, Array<complx,2> A);
+	void Inverse_transform_FFFW_SLAB(Array<complx,2> A, Array<DP,2> Ar);
 
 
 	//FFF_SLAB

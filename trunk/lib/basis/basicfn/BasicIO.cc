@@ -38,65 +38,33 @@
  */
 
 #include "BasicIO.h"
+#include "Global_extern_vars.h"
+#include <universal.h>
 //*********************************************************************************************
 
-#define TERMINATE(function, message) \
-{	\
-	cerr << __FILE__ << ": In function '" << function << "': " << __LINE__ << message << endl;\
-	BasicIO::Finalize();\
-	MPI_Finalize();\
-}
+hid_t BasicIO::H5T_FLOAT=-1;
+hid_t BasicIO::H5T_DOUBLE=-1;
 
+hid_t BasicIO::H5T_COMPLEX_FLOAT=-1;
+hid_t BasicIO::H5T_COMPLEX_DOUBLE=-1;
 
 //public:
-string BasicIO::data_in_folder="/in/";     
-string BasicIO::data_out_folder="/out/";
+string BasicIO::data_in_folder="in";     
+string BasicIO::data_out_folder="out";
 
-TinyVector<int, 3> BasicIO::id_complex_array;
-TinyVector<int, 3> BasicIO::id_real_array;
-
-
-TinyVector<int, 3> BasicIO::shape_complex_array;
-TinyVector<int, 3> BasicIO::shape_real_array;
-
-TinyVector<int, 3> BasicIO::shape_full_complex_array;
-TinyVector<int, 3> BasicIO::shape_full_real_array;
-
-TinyVector<int, 3> BasicIO::direction_z_complex_array;
-TinyVector<int, 3> BasicIO::direction_z_real_array;
-
-TinyVector<int, 3> BasicIO::shape_in_reduced_array;
-TinyVector<int, 3> BasicIO::shape_out_reduced_array;
-
-TinyVector<int, 3> BasicIO::Fourier_directions;
-
-// for reading Fourier space data (both full and reduced)
-
-H5_IO BasicIO::full;
-H5_IO BasicIO::kz0_full;
-H5_IO BasicIO::reduced;
-H5_IO BasicIO::kz0_reduced;
-H5_IO BasicIO::real;
 
 	//private:
-hid_t  BasicIO::err=0;
+herr_t  BasicIO::err=0;
 
 map<string, string> BasicIO::transition_table;
 
-hid_t BasicIO::dataspace=0;
-hid_t BasicIO::memspace=0;
-hid_t BasicIO::dataset=0;
 hid_t BasicIO::acc_template=0;
 
 // define an info object to store MPI-IO information 
 MPI_Info BasicIO::FILE_INFO_TEMPLATE;
+hid_t BasicIO::dataset;
 hid_t BasicIO::file_identifier;
-int BasicIO::ierr;
 
-int BasicIO::rank=3;
-int BasicIO::dim1;
-int BasicIO::dim2;
-int BasicIO::dim3;
 DP *BasicIO::dataArray;
 
 string BasicIO::folder_name="";
@@ -118,85 +86,46 @@ void BasicIO::Initialize()
 	// create an MPI_INFO object -- on some platforms it is useful to
 	// pass some information onto the underlying MPI_File_open call
 
-	ierr = MPI_Info_create(&FILE_INFO_TEMPLATE);
-	ierr = H5Pset_sieve_buf_size(acc_template, SIEVE_BUF_SIZE);
-	ierr = H5Pset_alignment(acc_template, 524288, 262144);
+	err = MPI_Info_create(&FILE_INFO_TEMPLATE);
+	err = H5Pset_sieve_buf_size(acc_template, SIEVE_BUF_SIZE);
+	err = H5Pset_alignment(acc_template, 524288, 262144);
 
 	//
 	// visit http://www.mpi-forum.org/docs/mpi21-report/node267.htm for information on access_style, ..
 
-	ierr = MPI_Info_set(FILE_INFO_TEMPLATE, (char*)"access_style", (char*)"write_once");
-	ierr = MPI_Info_set(FILE_INFO_TEMPLATE, (char*)"collective_buffering", (char*)"true");
-	ierr = MPI_Info_set(FILE_INFO_TEMPLATE, (char*)"cb_block_size",  (char*)"1048576");
-	ierr = MPI_Info_set(FILE_INFO_TEMPLATE, (char*)"cb_buffer_size", (char*)"4194304");
+	err = MPI_Info_set(FILE_INFO_TEMPLATE, (char*)"access_style", (char*)"write_once");
+	err = MPI_Info_set(FILE_INFO_TEMPLATE, (char*)"collective_buffering", (char*)"true");
+	err = MPI_Info_set(FILE_INFO_TEMPLATE, (char*)"cb_block_size",  (char*)"1048576");
+	err = MPI_Info_set(FILE_INFO_TEMPLATE, (char*)"cb_buffer_size", (char*)"4194304");
 
 	// tell the HDF5 library that we want to use MPI-IO to do the writing 
-	ierr = H5Pset_fapl_mpio(acc_template, MPI_COMM_WORLD, FILE_INFO_TEMPLATE);
-
-	dim1=0;
-	dim2=0;
-	dim3=0;
+	err = H5Pset_fapl_mpio(acc_template, MPI_COMM_WORLD, FILE_INFO_TEMPLATE);
 	
 	//If data_out_folder does not exist then create it
-	string out_path = global.io.data_dir + data_out_folder;
+	string out_path = global.io.data_dir + "/" + data_out_folder;
 	mkdir(out_path.c_str(), S_IRWXU|S_IRWXG);
 
 	//Open the log file
-	if (global.mpi.master) LOG_file.open((global.io.data_dir + data_out_folder + "/" + LOG_filename).c_str());
+	if (global.mpi.master) LOG_file.open((global.io.data_dir + "/" + data_out_folder + "/" + LOG_filename).c_str());
 
-	transition_table["CV1"]="U.V1";
-	transition_table["CV2"]="U.V2";
-	transition_table["CV3"]="U.V3";
-	
-	transition_table["CW1"]="B.V1";
-	transition_table["CW2"]="B.V2";
-	transition_table["CW3"]="B.V3";
-	
-	transition_table["T"]="T.F";
-	
-	//initialize prefixes
-	prefix_prinfinity[0]="T";
-	
-	prefix_fluid[0]="CV1";
-	prefix_fluid[1]="CV2";
-	prefix_fluid[2]="CV3";
-	
-	prefix_fluid_T[0]="CV1";
-	prefix_fluid_T[1]="CV2";
-	prefix_fluid_T[2]="CV3";
-	prefix_fluid_T[3]="T";
-	
-	prefix_mhd[0]="CV1";
-	prefix_mhd[1]="CV2";
-	prefix_mhd[2]="CV3";
-	prefix_mhd[3]="CW1";
-	prefix_mhd[4]="CW2";
-	prefix_mhd[5]="CW3";
-	
-	prefix_mhd_T[0]="CV1";
-	prefix_mhd_T[1]="CV2";
-	prefix_mhd_T[2]="CV3";
-	prefix_mhd_T[3]="CW1";
-	prefix_mhd_T[4]="CW2";
-	prefix_mhd_T[5]="CW3";
-	prefix_mhd_T[6]="T";
-	
-	
-	//assign them to map
-	dataset_name_old[1]=prefix_prinfinity;
-	dataset_name_old[3]=prefix_fluid;
-	dataset_name_old[4]=prefix_fluid_T;
-	dataset_name_old[6]=prefix_mhd;
-	dataset_name_old[7]=prefix_mhd_T;
 
-	Set_parameters();
+	H5T_FLOAT = H5Tcopy(H5T_NATIVE_FLOAT);
+	H5T_DOUBLE = H5Tcopy(H5T_NATIVE_DOUBLE);
+
+	H5T_COMPLEX_FLOAT = H5Tcreate(H5T_COMPOUND, sizeof(complex<float>));
+	H5Tinsert(H5T_COMPLEX_FLOAT, "real", 0, H5T_NATIVE_FLOAT);
+	H5Tinsert(H5T_COMPLEX_FLOAT, "imag", sizeof(float), H5T_NATIVE_FLOAT);
+
+	H5T_COMPLEX_DOUBLE = H5Tcreate(H5T_COMPOUND, sizeof(complex<double>));
+	H5Tinsert(H5T_COMPLEX_DOUBLE, "real", 0, H5T_NATIVE_DOUBLE);
+	H5Tinsert(H5T_COMPLEX_DOUBLE, "imag", sizeof(double), H5T_NATIVE_DOUBLE);
 }
 
 
 void BasicIO::Finalize()
 {
-	ierr = H5Pclose(acc_template);
-	ierr = MPI_Info_free(&FILE_INFO_TEMPLATE);
+	err = H5Pclose(acc_template);
+	err = MPI_Info_free(&FILE_INFO_TEMPLATE);
 	if (global.mpi.master) LOG_file.close();
 	
 }
@@ -221,11 +150,11 @@ void BasicIO::End_frequent(){
 
 //*********************************************************************************************
 
-vector<H5_dataset_meta> BasicIO::Get_meta(string filename){
+vector<BasicIO::H5_dataset_meta> BasicIO::Get_meta(string filename){
 	vector<H5_dataset_meta> file_meta_data;
 	H5_dataset_meta dataset_meta_data;
 	int max_rank=3;
-	int max_object_name_length = 3;
+	int max_object_name_length = 5;
 	
 	herr_t   status;
 	hsize_t num_obj;
@@ -250,7 +179,7 @@ vector<H5_dataset_meta> BasicIO::Get_meta(string filename){
 		
 		if (object_type == H5G_DATASET){  //Member is a dataset
 			dataset_meta_data.name = object_name;
-			
+
 			dataset_id = H5Dopen(group_id, object_name, H5P_DEFAULT);
 			space = H5Dget_space(dataset_id);
 			
@@ -282,104 +211,15 @@ vector<H5_dataset_meta> BasicIO::Get_meta(string filename){
 //******************************************************************************
 
 
-void BasicIO::Read(Array<complx,3> A, string dataset_name, H5_IO config)
-{
-	Read_basic(reinterpret_cast<DP*>(A.data()), dataset_name, config);
-	
-	shape_complex_array = global.field.shape_complex_array;
-	
-	//cout << "shape complex array: " << shape_complex_array << endl;
-	
-	if (config == reduced || config == kz0_reduced) {
-		
-		cout << "basic IO set 0" << endl;
-		TinyVector<int, 3> direction_z_complex_array_complement(3);
-		direction_z_complex_array_complement = (direction_z_complex_array^1);
-		
-		if (Fourier_directions(0)*direction_z_complex_array_complement(0)){		//Fourier and not Z
-			Array<int,1> filter_y(shape_full_complex_array(0));
-			Array<int,1> my_filter_y(shape_complex_array(0));
-			
-			filter_y=0;
-			
-			filter_y(Ny-shape_in_reduced_array(0)/2)=1;
-			my_filter_y=filter_y(Range(id_complex_array(0)*shape_complex_array(0), (id_complex_array(0)+1)*shape_complex_array(0)-1));
-			
-			//cout << "filters: " << filter_y << " " << my_filter_y << endl;
-			int index = first(my_filter_y==1);
-			//cout << "myid, index: " << my_id << " " << id_complex_array(0) << " " << index << endl;
-			if ( (index >= 0) && (index < A.extent(0)) )
-			   A(index, Range::all(), Range::all()) = 0;
-			
-			cout << "Y: my_id, index " << my_id << " " << index << endl;
-		}
-
-		if (Fourier_directions(2)*direction_z_complex_array_complement(2)){		//Fourier and not Z
-			Array<int,1> filter_x(shape_full_complex_array(2));
-			Array<int,1> my_filter_x(shape_complex_array(2));
-			
-			filter_x=0;
-			
-			filter_x(Nx-shape_in_reduced_array(2)/4)=1;
-			my_filter_x=filter_x(Range(id_complex_array(2)*shape_complex_array(2), (id_complex_array(2)+1)*shape_complex_array(2)-1));
-			
-			int index = first(my_filter_x==1);
-			if ( (index >= 0) && (index < A.extent(2)) )
-				A(Range::all(), Range::all(), index) = 0;
-			
-			cout << "X: my_id, index " << my_id << " " << index << endl;
-		}
-	}
-}
-
-void BasicIO::Read(Array<DP,3> A, string dataset_name, H5_IO config)
-{
-	Read_basic(A.data(), dataset_name, config);
-}
-
 //******************************************************************************
-
-void BasicIO::Write(Array<complx,3> A, string dataset_name, H5_IO config)
-{
-	Write_basic(reinterpret_cast<DP*>(A.data()), dataset_name, config);
-}
-
-void BasicIO::Write(Array<DP,3> A, string dataset_name, H5_IO config)
-{
-	Write_basic(A.data(), dataset_name, config);
-}
-
-
-//******************************************************************************
-void BasicIO::Read_basic(DP *data, string dataset_name, H5_IO config)
+void BasicIO::Read(void *data, string dataset_name, H5_plan plan)
 {	
-
-	/*for (int i=0; i<numprocs; i++){
-		if (my_id == i)
-			cerr << "Read_basic: my_id = " << my_id << " " << dataset_name << "\n    in:\n" << config.in << endl;
-		usleep(100);
-		MPI_Barrier(MPI_COMM_WORLD);
-	}*/
-    
-	dataspace = H5Screate_simple(rank, config.in.dataspace.dimension.data(), NULL);
-    
-
-	err = H5Sselect_hyperslab(dataspace, H5S_SELECT_SET, config.in.dataspace.start.data(), config.in.dataspace.blockstride.data(), config.in.dataspace.blockcount.data(), config.in.dataspace.blockdim.data());
-    
-	MPI_Barrier(MPI_COMM_WORLD);
-	
-	memspace = H5Screate_simple(rank, config.in.memspace.dimension.data(), NULL);
-    
-	err = H5Sselect_hyperslab(memspace, H5S_SELECT_SET, config.in.memspace.start.data(), config.in.memspace.blockstride.data(), config.in.memspace.blockcount.data(), config.in.memspace.blockdim.data());
-    
-	MPI_Barrier(MPI_COMM_WORLD);
-	
 	folder_name = global.io.data_dir + "/" + data_in_folder;
 	file_name=folder_name + "/" + dataset_name+".h5";
 	file_identifier = H5Fopen(file_name.c_str(), H5F_ACC_RDONLY, acc_template);
     
     if (file_identifier<0){
-    	cerr << "BasicIO:: Unable to open " << file_name << " for reading." << endl;
+    	if (master) cerr << "BasicIO:: Unable to open " << file_name << " for reading." << endl;
     	return;
     }
     
@@ -390,61 +230,31 @@ void BasicIO::Read_basic(DP *data, string dataset_name, H5_IO config)
     
 	// and finally read data from disk -- in this call, we need to
 	//     include both the memory space and the data space.
-	err = H5Dread(dataset, H5_DATATYPE, memspace, dataspace, H5P_DEFAULT, data);
+	err = H5Dread(dataset, plan.datatype, plan.memspace, plan.dataspace, H5P_DEFAULT, data);
 	
-	MPI_Barrier(MPI_COMM_WORLD);
-    
 	H5Dclose(dataset);
-	H5Sclose(memspace);
-	H5Sclose(dataspace);
 	H5Fclose(file_identifier);
-	
 }
 
 //*********************************************************************************************
 
-void BasicIO::Write_basic(DP* data, string dataset_name, H5_IO config)
+void BasicIO::Write(const void* data, string dataset_name, H5_plan plan, string folder_suffix)
 {
-	/*for (int i=0; i<numprocs; i++){
-		if (my_id == i)
-			cerr << "Write_basic: my_id = " << my_id << " " << dataset_name << "\n    out:\n" << config.out << endl;
-		usleep(100);
-		MPI_Barrier(MPI_COMM_WORLD);
-	}*/
-
-	dataspace = H5Screate_simple(rank, config.out.dataspace.dimension.data(), NULL);
-
-    
-	// figure out the offset into the dataspace for the current processor 
-    err = H5Sselect_hyperslab(dataspace, H5S_SELECT_SET, config.out.dataspace.start.data(), config.out.dataspace.blockstride.data(), config.out.dataspace.blockcount.data(), config.out.dataspace.blockdim.data());
-    
-	memspace = H5Screate_simple(rank, config.out.memspace.dimension.data(), NULL);
-    
-	err = H5Sselect_hyperslab(memspace, H5S_SELECT_SET, config.out.memspace.start.data(), config.out.memspace.blockstride.data(), config.out.memspace.blockcount.data(), config.out.memspace.blockdim.data());
- 
     
     //Create the time.now folder in data_dir/out
-	folder_name = global.io.data_dir + data_out_folder; 
+	folder_name = global.io.data_dir + "/" + data_out_folder; 
 
 	if (frequent)
 		folder_name += "/frequent";
-
-	else if (config==reduced || config==kz0_reduced)
-		folder_name += "/reduced_time_" + To_string(global.time.now);
-	
-	else if (config==real)
-		folder_name += "/real_time_" + To_string(global.time.now);
-
 	else
-		folder_name += "/time_" + To_string(global.time.now);
-	
+		folder_name += "/" + folder_suffix;
 	
 	mkdir(folder_name.c_str(), S_IRWXU | S_IRWXG);
-    
     
 	//Open the file for writing
 	file_name= folder_name + "/" + dataset_name + ".h5";
 	file_identifier = H5Fcreate(file_name.c_str(), H5F_ACC_TRUNC, H5P_DEFAULT, acc_template);
+
     if (file_identifier<0){
     	cerr << "BasicIO:: Unable to open " << file_name << " for writing." << endl;
     	return;
@@ -452,83 +262,223 @@ void BasicIO::Write_basic(DP* data, string dataset_name, H5_IO config)
 
 	// now create the dataset -- if it is the first time through, otherwise
 	//     open the exisiting dataset
-	dataset = H5Dcreate2(file_identifier, dataset_name.c_str(), H5_DATATYPE,
-                         dataspace, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+
+	dataset = H5Dcreate2(file_identifier, dataset_name.c_str(), plan.datatype,
+                         plan.dataspace, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
     
 	// and finally write the data to disk -- in this call, we need to
 	//     include both the memory space and the data space.
-	err = H5Dwrite(dataset, H5_DATATYPE, memspace, dataspace, H5P_DEFAULT, data);
+	err = H5Dwrite(dataset, plan.datatype, plan.memspace, plan.dataspace, H5P_DEFAULT, data);
     
-	H5Sclose(memspace);
-	H5Sclose(dataspace);
 	H5Dclose(dataset);
 	H5Fclose(file_identifier);
 }
 
-template<class T, int N_rank>
-bool operator==(TinyVector<T,N_rank> A, TinyVector<T,N_rank> B){
-	for (int i=0; i<N_rank; i++)
-		if (A(i)!=B(i))
-			return false;
-	return true;
+
+/*************
+* Structures and Functions useful for:
+* BasicIO::H5_plan BasicIO::Set_plan(int rank, int* my_id, int* numprocs, Array<int,1>* dataspace_filter, Array<int,1>* memspace_filter, hid_t datatype)
+*
+* These structures and functions are not required anywhere else.
+*/
+
+struct H5_filter_blocks
+{
+	size_t dataspace_start;
+	size_t memspace_start;
+	size_t blocklength;
+
+	H5_filter_blocks(size_t dataspace_start, size_t memspace_start, size_t blocklength): dataspace_start(dataspace_start), memspace_start(memspace_start), blocklength(blocklength){}
+};
+
+ struct H5_hyperspace{
+	Array<hsize_t, 1> dimension;
+	Array<hsize_t, 1> start;
+	Array<hsize_t, 1> blockdim;
+	Array<hsize_t, 1> blockstride;
+	Array<hsize_t, 1> blockcount;
+
+	H5_hyperspace(size_t rank);
+};
+
+ostream &operator<<(ostream &out, H5_hyperspace hyperspace){
+	out << "dimension: " << hyperspace.dimension << '\n'
+	    << "start: " << hyperspace.start << '\n'
+	    << "blockdim: " << hyperspace.blockdim << '\n'
+	    << "blockstride: " << hyperspace.blockstride << '\n'
+	    << "blockcount: " << hyperspace.blockcount << endl;
+
+	return out;
 }
 
-ostream& operator<< (ostream &out, H5_space &h5_space)
-{
-	out << "            dimension = " << h5_space.dimension << endl;
-	out << "            blockdim = " << h5_space.blockdim << endl;
-	out << "            start = " << h5_space.start << endl;
-	out << "            blockstride = " << h5_space.blockstride << endl;
-	out << "            blockcount = " << h5_space.blockcount << endl;
+H5_hyperspace::H5_hyperspace(size_t rank){
+	dimension.resize(rank);
+	start.resize(rank);
+	blockdim.resize(rank);
+	blockstride.resize(rank);
+	blockcount.resize(rank);
 
-   return out;
-}
-
-bool operator== (H5_space &h5_space1, H5_space &h5_space2)
-{
-	return  (h5_space1.dimension == h5_space2.dimension) &&
-	        (h5_space1.blockdim == h5_space2.blockdim) &&
-	       (h5_space1.start == h5_space2.start) &&
-	       (h5_space1.blockstride == h5_space2.blockstride) &&
-	       (h5_space1.blockcount == h5_space2.blockcount);
+	dimension=0;
+	start=0;
+	blockdim=0;
+	blockstride=1;
+	blockcount=0;
 }
 
 
-ostream& operator<< (ostream &out, H5_space_group &H5_space_group)
+hsize_t Get_dataspace_start(Array<int,1> filter, hsize_t count){
+	size_t sum=0;
+	hsize_t index=0;
+	for (index=0; ( (index<filter.size()) && (sum<count) ); index++)
+		sum += filter(index);
+
+	return index-1;
+}
+
+void Get_properties_memspace(Array<int,1> filter, hsize_t begin_at, int my_id, int numprocs, hsize_t &start, hsize_t &blocklength)
 {
-	out << "        dataspace:\n" << H5_space_group.dataspace << endl;
-	out << "        memspace:\n" << H5_space_group.memspace << endl;
+	hsize_t local_start = my_id*filter.size()/numprocs;
+	hsize_t local_end = (my_id+1)*filter.size()/numprocs-1;
+	hsize_t end;
+
+	start = local_start + begin_at + first(filter(Range(local_start+begin_at, local_end))==1);
+	end = start + first(filter(Range(start, local_end))==0);
+
+	if (start<local_start || start >local_end){
+		start=0;
+		blocklength=0;
+	}
+	else if (end<local_start || end >local_end){
+		end=local_end+1;
+		blocklength=end-start;
+		start-=local_start;
+	}
+	else{
+		blocklength=end-start;
+		start-=local_start;
+	}
+}
+
+
+
+BasicIO::H5_plan BasicIO::Set_plan(int rank, int* my_id, int* numprocs, Array<int,1>* dataspace_filter, Array<int,1>* memspace_filter, hid_t datatype)
+{	
+	vector<H5_filter_blocks>* filter_blocks;
+	filter_blocks = new vector<H5_filter_blocks>[rank];
+
+	size_t local_start_index;
+	//size_t local_end;
+
+	hsize_t dataspace_start, memspace_start, blocklength;
 	
-   return out;
+	hsize_t dataspace_dimension[rank];
+	hsize_t memspace_dimension[rank];
+
+	for (int r=0; r<rank; r++){
+		if (sum(dataspace_filter[r]) != sum(memspace_filter[r])){
+			if (master)
+				cerr << "BasicIO::Set_plan: dataspace_filter["<<r<<"] and memspace_filter["<<r<<"] has different counts." << endl;
+			exit(1);
+		}
+
+		dataspace_dimension[r]=dataspace_filter[r].size();
+		memspace_dimension[r]=memspace_filter[r].size()/numprocs[r];
+
+		local_start_index = my_id[r]*memspace_filter[r].size()/numprocs[r];
+		//local_end = (my_id[r]+1)*memspace_filter[r].size()/numprocs[r]-1; 
+
+		int j=0;
+		do {
+			Get_properties_memspace(memspace_filter[r], j, my_id[r], numprocs[r], memspace_start, blocklength);
+			j = memspace_start + blocklength;
+
+			if (j>0){
+				dataspace_start = Get_dataspace_start(dataspace_filter[r],sum(memspace_filter[r](Range(0, local_start_index + memspace_start))));
+
+				filter_blocks[r].push_back(H5_filter_blocks(dataspace_start, memspace_start, blocklength));
+			}
+		}
+		while(j>0);
+	}
+
+
+	/*for (int r=0; r<rank; r++){
+		for (int j=0; j<filter_blocks[r].size(); j++){
+			cout << "j = " << my_id[r] << " " << j << " " << filter_blocks[r][j].dataspace_start << " " << filter_blocks[r][j].memspace_start << " " << filter_blocks[r][j].blocklength << endl;
+		}
+		cout << endl;
+	}*/
+
+	size_t num_combinations=1;
+	for (int r=0; r<rank; r++)
+		num_combinations*=filter_blocks[r].size();
+
+	vector<H5_hyperspace> dataspace;
+	vector<H5_hyperspace> memspace;
+
+	dataspace.reserve(num_combinations);
+	memspace.reserve(num_combinations);
+
+	for (size_t i=0; i<num_combinations; i++){
+		dataspace.push_back(H5_hyperspace(rank));
+		memspace.push_back(H5_hyperspace(rank));
+	}
+
+	H5_plan h5_plan;
+
+	h5_plan.dataspace = H5Screate_simple(rank, dataspace_dimension, NULL);
+	h5_plan.memspace = H5Screate_simple(rank, memspace_dimension, NULL);
+
+	//Select no elements in the hyperspace
+	H5Sselect_none(h5_plan.dataspace);
+	H5Sselect_none(h5_plan.memspace);
+
+	if (num_combinations>0){
+		//Perform all the combination
+		size_t repeat_rth_rank=num_combinations;
+		size_t index;
+
+		for (int r=0; r<rank; r++){
+			index=-1;
+			repeat_rth_rank = repeat_rth_rank/filter_blocks[r].size();
+
+			for (size_t j=0; j<num_combinations;){
+				index = (index+1)%filter_blocks[r].size();
+
+				for (size_t k=0; k<repeat_rth_rank; j++, k++){
+					dataspace[j].dimension(r)=dataspace_filter[r].size();
+					dataspace[j].start(r)=filter_blocks[r][index].dataspace_start;
+					dataspace[j].blockdim(r)=filter_blocks[r][index].blocklength;
+					dataspace[j].blockstride(r)=1;
+					dataspace[j].blockcount(r)=1;
+
+					memspace[j].dimension(r)=memspace_filter[r].size()/numprocs[r];
+					memspace[j].start(r)=filter_blocks[r][index].memspace_start;
+					memspace[j].blockdim(r)=filter_blocks[r][index].blocklength;
+					memspace[j].blockstride(r)=1;
+					memspace[j].blockcount(r)=1;
+				}
+			}
+		}
+
+	    
+		//Select required region in the hyperspace
+	    for (int i=0; i<num_combinations; i++){
+	    	/*if (my_id[2]==0){
+				cout << "Dataspace: " << my_id[2] << " " << dataspace[i].dimension << " " << dataspace[i].start << " " << dataspace[i].blockstride << " " << dataspace[i].blockcount << " " << dataspace[i].blockdim << endl;
+
+				cout << "Memspace: " << my_id[2] << " " << memspace[i].dimension << " " << memspace[i].start << " " << memspace[i].blockstride << " " << memspace[i].blockcount << " " << memspace[i].blockdim << endl;
+			}*/
+			
+
+	    	 H5Sselect_hyperslab(h5_plan.dataspace, H5S_SELECT_OR, dataspace[i].start.data(), dataspace[i].blockstride.data(), dataspace[i].blockcount.data(), dataspace[i].blockdim.data());
+
+	    	 H5Sselect_hyperslab(h5_plan.memspace, H5S_SELECT_OR, memspace[i].start.data(), memspace[i].blockstride.data(), memspace[i].blockcount.data(), memspace[i].blockdim.data());
+	    }
+	}
+
+	h5_plan.datatype = datatype;
+	return h5_plan;
 }
-
-bool operator== (H5_space_group &h5_space_group1, H5_space_group &h5_space_group2){
-	return (h5_space_group1.dataspace == h5_space_group2.dataspace);
-		   (h5_space_group1.memspace == h5_space_group2.memspace);
-}
-
-
-ostream& operator<< (ostream &out, H5_IO &h5_io)
-{
-   out << "    in:\n" << h5_io.in << endl;
-   out << "    out:\n" << h5_io.in << endl;
-
-   return out;
-}
-
-bool operator== (H5_IO &h5_io1, H5_IO &h5_io2){
-	return (h5_io1.in == h5_io2.in) &&
-	      (h5_io1.out == h5_io2.out);
-}
-
-ostream& operator<< (ostream &out, Filter_prop &prop)
-{
-   out << "    first_rise: " << prop.first_rise << endl;
-   out << "    first_fall: " << prop.first_fall << endl;
-   out << "    zero_length: " << prop.zero_length << endl;
-
-   return out;
-}
-
 //========================= Class declaration of BasicIO ends ============================== 
 

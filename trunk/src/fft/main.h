@@ -46,6 +46,8 @@ int test_transform();
 extern Array<DP,3> Ar, Ar_old;
 extern Array<complx,3> A, A_old;
 
+void test_CFFF_slab();
+void test_FFFW_slab();
 void test_FFF_slab();
 void test_SFF_slab();
 void test_SSF_slab();

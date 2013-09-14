@@ -1,4 +1,4 @@
-/* Tarang-2
+ /*Tarang-2
  *
  * Copyright (C) 2008, 2009  Mahendra K. Verma
  *
@@ -22,10 +22,10 @@
  * You should have received a copy of the GNU General Public License
  * along with Tarang-2; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, U
- */
+ 
 
 
-/*! \file four_inline.h 
+ *! \file four_inline.h 
  * 
  * @brief Inline functions to compute array indices \f$ \vec{i} \f$ given wavenumber  
  * \f$ \vec{k} \f$ and viceversa.
@@ -51,7 +51,7 @@
 
 #include "FFFW_slab.h"
 
-using namespace blitz;
+// using namespace blitz;
 
 
 //*********************************************************************************************
@@ -64,11 +64,7 @@ using namespace blitz;
  * \param lx  first local index of an array
  * \return kx corresponding to lx
  */
-inline int FFFW_SLAB::Get_kx(int lx)  
-{ 			
-    return  ((local_Nx_start + lx) <= N[1]/2) ? 
-            (local_Nx_start + lx) : (local_Nx_start + lx-N[1]); 
-} 
+inline int FFFW_SLAB::Get_kx(int lx)  {return  ((local_Nx_start + lx) <= Ny/2) ? (local_Nx_start + lx) : (local_Nx_start + lx-Nx); } 
  
 
 /*! @brief	Get local array index lx given grid waveno kx.
@@ -79,8 +75,7 @@ inline int FFFW_SLAB::Get_kx(int lx)
  * \param	kx  grid wavenumber along x
  * \return	lx  local array index along x
  */
-inline int FFFW_SLAB::Get_lx(int kx)  
-{ return  (kx >= 0) ? (kx-local_Nx_start) : (kx + N[1]-local_Nx_start); }	
+inline int FFFW_SLAB::Get_lx(int kx) { return  (kx >= 0) ? (kx-local_Nx_start) : (kx-local_Nx_start + Nx);  }	
 
 
 /*! @brief	Get array index ix given grid waveno kx.
@@ -90,8 +85,7 @@ inline int FFFW_SLAB::Get_lx(int kx)
  * \param	kx  grid wavenumber along x
  * \return	i1  array index along x
  */
-inline int FFFW_SLAB::Get_ix(int kx)			
-{ 	return  (kx >= 0) ? kx : (kx + N[1]);  }
+inline int FFFW_SLAB::Get_ix(int kx) {return  (kx >= 0) ? kx : (kx + Nx);  }
 
 
 /*! @brief	Get grid waveno ky given first local array index ly.
@@ -101,7 +95,7 @@ inline int FFFW_SLAB::Get_ix(int kx)
  * \param ly  second local index of an array
  * \return kx corresponding to lx
  */
- inline int FFFW_SLAB::Get_ky(int ly)  { return  (ly <= N[2]/2) ? ly : (ly-N[2]); } 
+ inline int FFFW_SLAB::Get_ky(int ly)  {return  (ly <= Ny/2) ? ly : (ly - Ny);  } 
 
 /*! @brief	Get local array index ly given grid waveno ky.
  * 
@@ -110,13 +104,13 @@ inline int FFFW_SLAB::Get_ix(int kx)
  * \param	ky  grid wavenumber along y
  * \return	ly  local array index along y
  */
-inline int FFFW_SLAB::Get_ly(int ky) { return  (ky >= 0) ? ky : (ky + N[2]); } 
+inline int FFFW_SLAB::Get_ly(int ky) { return  (ky >= 0) ? ky : (ky + Ny); } 
 
-inline int FFFW_SLAB::Get_iy(int ky) { return  0; } //This is not implemented for this basis
+inline int FFFW_SLAB::Get_iy(int ky) { return  (ky >= 0) ? ky : (ky + Ny); }
 
-inline int FFFW_SLAB::Get_kz(int lz)  { return lz; } 
+inline int FFFW_SLAB::Get_kz(int lz)  { return lz;} 
 
-inline int FFFW_SLAB::Get_lz(int kz)  { return kz; }
+inline int FFFW_SLAB::Get_lz(int kz)  { return kz;}
 
 	// array index
 inline int FFFW_SLAB::Get_iz(int kz)  { return kz; }
@@ -129,47 +123,53 @@ inline bool FFFW_SLAB::Probe_in_me(int kx, int ky, int kz)
 	return ((lx >= 0) && (lx < local_Nx));
 }
 
-inline void FFFW_SLAB::Get_spectral_field(int kx, int ky, int kz, Array<complx,3> A, complx &field)
+inline complx FFFW_SLAB::Get_spectral_field(int kx, int ky, int kz, Array<complx,3> A)
 { 
 	int lx = Get_lx(kx);
     int ly = Get_ly(ky);
 	
 	if  ((lx >= 0) && (lx < local_Nx))
-		field = A(lx, ly, kz); 
+		return A(lx, ly, kz);
+
+	return 0;
 }
 
-inline void FFFW_SLAB::Get_spectral_field(int kx, int ky, int kz, Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az, TinyVector<complx,3> &V)
+inline TinyVector<complx,3>  FFFW_SLAB::Get_spectral_field(int kx, int ky, int kz, Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az)
 {
 	
 	int lx = Get_lx(kx);
     int ly = Get_ly(ky);
 	
-	if  ((lx >= 0) && (lx < local_Nx)) 
-		V =  Ax(lx, ly, kz), Ay(lx, ly, kz), Az(lx, ly, kz);
+	if  ((ly >= 0) && (ly < local_Ny)) 
+		return TinyVector<complx,3>(Ax(ly, kz, lx), Ay(ly, kz, lx), Az(ly, kz, lx));
+
+	return TinyVector<complx,3>(0,0,0);
 
 }
 
 
-inline void FFFW_SLAB::Get_spectral_field(int kx, int ky, int kz, Array<complx,3> A,DP &field)
+/*
+inline DP FFFW_SLAB::Get_spectral_field(int kx, int ky, int kz, Array<complx,3> A)
 { 
 	cout << "MYERROR: FFFW_SLAB::Get_spectral_field(); Use complex data type " << endl; 
 }
 
-inline void FFFW_SLAB::Get_spectral_field(int kx, int ky, int kz, Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az, TinyVector<DP,3> &V)
+inline TinyVector<DP,3> FFFW_SLAB::Get_spectral_field(int kx, int ky, int kz, Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az)
 {
 	
 	cout << "MYERROR: FFFW_SLAB::Get_spectral_field(); Use complex data type " << endl;
 }
-
+*/
 	// Assign....
 
 inline void FFFW_SLAB::Assign_spectral_field(int kx, int ky, int kz, Array<complx,3> A, complx field)
 { 
-	int lx = Get_lx(kx);
+    int lx = Get_lx(kx);
     int ly = Get_ly(ky);
 	
 	if ((lx >= 0) && (lx < local_Nx))
 		A(lx, ly, kz) = field;
+
 }
 
 inline void FFFW_SLAB::Assign_spectral_field(int kx, int ky, int kz, Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az, TinyVector<complx,3> V)
@@ -177,10 +177,10 @@ inline void FFFW_SLAB::Assign_spectral_field(int kx, int ky, int kz, Array<compl
 	int lx = Get_lx(kx);
     int ly = Get_ly(ky);
 	
-	if ((lx >= 0) && (lx < local_Nx)) {
-		Ax(lx, ly, kz) = V(0);
-		Ay(lx, ly, kz) = V(1);
-		Az(lx, ly, kz) = V(2);
+	if ((ly >= 0) && (ly < local_Ny)) {
+		Ax(ly, kz, lx) = V(0);
+		Ay(ly, kz, lx) = V(1);
+		Az(ly, kz, lx) = V(2);
 	}
 }
 
@@ -201,8 +201,8 @@ inline void FFFW_SLAB::Add_spectral_field(int kx, int ky, int kz, Array<complx,3
 	int lx = Get_lx(kx);
     int ly = Get_ly(ky);
 	
-	if ((lx >= 0) && (lx < local_Nx))
-		A(lx, ly, kz) += field;
+	if ((ly >= 0) && (ly < local_Ny))
+		A(ly, kz, lx) += field;
 }
 
 inline void FFFW_SLAB::Add_spectral_field(int kx, int ky, int kz, Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az, TinyVector<complx,3> V)
@@ -210,10 +210,10 @@ inline void FFFW_SLAB::Add_spectral_field(int kx, int ky, int kz, Array<complx,3
 	int lx = Get_lx(kx);
     int ly = Get_ly(ky);
 	
-	if ((lx >= 0) && (lx < local_Nx)) {
-		Ax(lx, ly, kz) += V(0);
-		Ay(lx, ly, kz) += V(1);
-		Az(lx, ly, kz) += V(2);
+	if ((ly >= 0) && (ly < local_Ny)) {
+		Ax(ly, kz, lx) += V(0);
+		Ay(ly, kz, lx) += V(1);
+		Az(ly, kz, lx) += V(2);
 	}
 }
 
@@ -230,44 +230,44 @@ inline void FFFW_SLAB::Add_spectral_field(int kx, int ky, int kz, Array<complx,3
 
 	// Local get
 
-inline void FFFW_SLAB::Get_local_spectral_field(int lx, int ly, int lz, Array<complx,3> A, complx &field)
+inline complx FFFW_SLAB::Get_local_spectral_field(int lx, int ly, int lz, Array<complx,3> A)
 { 
-	field = A(lx, ly, lz); 
+	return A(ly, lz, lx);
 }
 
-inline void FFFW_SLAB::Get_local_spectral_field(int lx, int ly, int lz, Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az, TinyVector<complx,3> &V)
+inline TinyVector<complx,3> FFFW_SLAB::Get_local_spectral_field(int lx, int ly, int lz, Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az)
 {
 	
-	V =  Ax(lx, ly, lz), Ay(lx, ly, lz), Az(lx, ly, lz);
+	return TinyVector<complx,3>(Ax(ly, lz, lx), Ay(ly, lz, lx), Az(ly, lz, lx));
 }
+/*
 
-
-inline void FFFW_SLAB::Get_local_spectral_field(int lx, int ly, int lz, Array<complx,3> A,DP &field)
+inline DP FFFW_SLAB::Get_local_spectral_field(int lx, int ly, int lz, Array<complx,3> A)
 { 
 	cerr << "MYERROR: FFFW_SLAB::Get_local_spectral_field(); Use complex data type " << endl; 
 }
 
-inline void FFFW_SLAB::Get_local_spectral_field(int lx, int ly, int lz, Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az, TinyVector<DP,3> &V)
+inline  TinyVector<DP,3> FFFW_SLAB::Get_local_spectral_field(int lx, int ly, int lz, Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az)
 {
 	
 	 cerr << "MYERROR: FFFW_SLAB::Get_local_spectral_field(); Use complex data type " << endl;
 }
-
+*/
 
 inline void FFFW_SLAB::Assign_local_spectral_field(int lx, int ly, int lz, Array<complx,3> A, complx field)
 { 	
-	if ((lx >= 0) && (lx < local_Nx))
-		A(lx, ly, lz) = field;
+	if ((ly >= 0) && (ly < local_Ny))
+		A(ly, lz, lx) = field;
 }
 
 
 inline void FFFW_SLAB::Assign_local_spectral_field(int lx, int ly, int lz, Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az, TinyVector<complx,3> V)
 {	
 
-	if ((lx >= 0) && (lx < local_Nx)) {
-		Ax(lx, ly, lz) = V(0);
-		Ay(lx, ly, lz) = V(1);
-		Az(lx, ly, lz) = V(2);
+	if ((ly >= 0) && (ly < local_Ny)) {
+		Ax(ly, lz, lx) = V(0);
+		Ay(ly, lz, lx) = V(1);
+		Az(ly, lz, lx) = V(2);
 	}
 }
 
@@ -284,17 +284,17 @@ inline void FFFW_SLAB::Assign_local_spectral_field(int lx, int ly, int lz, Array
 
 inline void FFFW_SLAB::Add_local_spectral_field(int lx, int ly, int lz, Array<complx,3> A, complx field)
 { 	
-	if ((lx >= 0) && (lx < local_Nx))
-		A(lx, ly, lz) += field;
+	if ((ly >= 0) && (ly < local_Ny))
+		A(ly, lz, lx) += field;
 }
 
 inline void FFFW_SLAB::Add_local_spectral_field(int lx, int ly, int lz, Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az, TinyVector<complx,3> V)
 {	
 
-	if ((lx >= 0) && (lx < local_Nx)) {
-		Ax(lx, ly, lz) += V(0);
-		Ay(lx, ly, lz) += V(1);
-		Az(lx, ly, lz) += V(2);
+	if ((ly >= 0) && (ly < local_Ny)) {
+		Ax(ly, lz, lx) += V(0);
+		Ay(ly, lz, lx) += V(1);
+		Az(ly, lz, lx) += V(2);
 	}
 }
 
@@ -311,167 +311,74 @@ inline void FFFW_SLAB::Add_local_spectral_field(int lx, int ly, int lz, Array<co
 
 				 
 // REAL - SPACE FNS
-inline int FFFW_SLAB::Get_lx_real_space(int rx)  
-{ return  global.fft.transpose ? rx : (rx-local_Nx_start); }	
+//TODO - Hybrid
+////////////////
+inline int FFFW_SLAB::Get_lx_real_space(int rx)  {return  rx-local_Nx_start;}
 
-inline int FFFW_SLAB::Get_ly_real_space(int ry)  
-{ return  global.fft.transpose ? (ry-local_Nx_start) : ry; }	
+inline int FFFW_SLAB::Get_ly_real_space(int ry)  {return  ry;}	
 
-inline void FFFW_SLAB::Get_lz_real_space(int rz, int &lz, bool &is_real_part)  
-{	lz = rz/2;  
-	is_real_part = rz % 2;
-}
+inline int FFFW_SLAB::Get_lz_real_space(int rz) {return rz;}
 
-inline int FFFW_SLAB::Get_rx_real_space(int lx)  
-{ return  global.fft.transpose ? lx : (lx+local_Nx_start); }
+inline int FFFW_SLAB::Get_rx_real_space(int lx)  {return  lx+local_Nx_start; }
 
-inline int FFFW_SLAB::Get_ry_real_space(int ly)  
-{ return  global.fft.transpose ? (ly+local_Ny_start) : ly; }	
+inline int FFFW_SLAB::Get_ry_real_space(int ly)  {return  ly; }	
 
-inline void FFFW_SLAB::Get_rz_real_space(int lz, int& rz, bool is_real_part)  
-{	
-if (is_real_part)
-	rz = 2*lz;  
-else
-	rz = 2*lz+1;
-}	
+inline int FFFW_SLAB::Get_rz_real_space(int lz) {return lz;}
 
 inline bool FFFW_SLAB::Probe_in_me_real_space(int rx, int ry, int rz) 
 {
 	int lx = Get_lx_real_space(rx);
-    int ly = Get_ly_real_space(ry);
-	
-	if (global.fft.transpose)
-		return ((ly >= 0) && (ly < local_Ny));
-	else
-		return ((lx >= 0) && (lx < local_Nx));
+    return ((lx >= 0) && (lx < local_Nx));
 }
 
 
-inline void FFFW_SLAB::Get_real_field(int rx, int ry, int rz, Array<complx,3> A, DP &field)
+inline DP FFFW_SLAB::Get_real_field(int rx, int ry, int rz, Array<DP,3> A)
 {	
 
 	int lx = Get_lx_real_space(rx);
     int ly = Get_ly_real_space(ry);
-    
-    int lz;
-	bool is_real_part;
+    int lz = Get_lz_real_space(rz);
+	
+    if ((lx >= 0) && (lx < local_Nx))  
+         return (A(ly, lz, lx));
 
-    Get_lz_real_space(rz, lz, is_real_part);
-	
-	
-	if (global.fft.transpose) {
-		if ((ly >= 0) && (ly < local_Ny))  {
-			if (is_real_part)
-				field = real(A(ly, lx, lz));
-			else
-				field = imag(A(ly, lx, lz));
-		}	
-	}
-	
-	else {
-		if ((lx >= 0) && (lx < local_Nx))  {
-			if (is_real_part)
-				field = real(A(lx, ly, lz));
-			else
-				field = imag(A(lx, ly, lz));
-		}
-	}
+    return 0;
 }
 
-inline void FFFW_SLAB::Get_real_field(int rx, int ry, int rz, Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az, TinyVector<DP,3> &V)
+inline TinyVector<DP,3> FFFW_SLAB::Get_real_field(int rx, int ry, int rz, Array<DP,3> Ax, Array<DP,3> Ay, Array<DP,3> Az)
 {
 	int lx = Get_lx_real_space(rx);
     int ly = Get_ly_real_space(ry);
-    
-    int lz;  bool is_real_part;
-    Get_lz_real_space(rz, lz, is_real_part);
+    int lz = Get_lz_real_space(rz);
 	
-	if (global.fft.transpose) {
-		if ((ly >= 0) && (ly < local_Ny))  {
-			if (is_real_part)
-				V =  real(Ax(ly, lx, lz)), real(Ay(ly, lx, lz)), real(Az(ly, lx, lz));
-			else
-				V =  imag(Ax(ly, lx, lz)), imag(Ay(ly, lx, lz)), imag(Az(ly, lx, lz));
-		}	
-	}
-	
-	else {
-		if ((lx >= 0) && (lx < local_Nx))  {
-			if (is_real_part)
-				V =  real(Ax(lx, ly, lz)), real(Ay(lx, ly, lz)), real(Az(lx, ly, lz));
-			else
-				V =  imag(Ax(lx, ly, lz)), imag(Ay(lx, ly, lz)), imag(Az(lx, ly, lz));
-		}
-	}
+    if ((lx >= 0) && (lx < local_Nx))
+		return TinyVector<DP,3>(Ax(ly, lz, lx), Ay(ly, lz, lx), Az(ly, lz, lx));
+
+	return TinyVector<DP,3>(0,0,0);
 }
 
 
 
-inline void FFFW_SLAB::Assign_real_field(int rx, int ry, int rz, Array<complx,3> A, DP field)
+inline void FFFW_SLAB::Assign_real_field(int rx, int ry, int rz, Array<DP,3> A, DP field)
 {	
 	int lx = Get_lx_real_space(rx);
     int ly = Get_ly_real_space(ry);
+    int lz = Get_lz_real_space(rz);
 	
-	int lz;  bool is_real_part;
-    Get_lz_real_space(rz, lz, is_real_part);
-	
-	
-	if (global.fft.transpose) {
-		if ((ly >= 0) && (ly < local_Ny))  {
-			if (is_real_part)
-				real(A(ly, lx, lz)) = field;
-			else
-				imag(A(ly, lx, lz)) = field;
-		}	
-	}
-	
-	else {
-		if ((lx >= 0) && (lx < local_Nx))  {
-			if (is_real_part)
-				real(A(lx, ly, lz)) = field;
-			else
-				imag(A(lx, ly, lz)) = field;
-		}
-	}
+    if ((lx >= 0) && (lx < local_Nx))
+		A(ly, lz, lx) = field;
 }
 
-inline void FFFW_SLAB::Assign_real_field(int rx, int ry, int rz, Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az, TinyVector<DP,3> V)
+inline void FFFW_SLAB::Assign_real_field(int rx, int ry, int rz, Array<DP,3> Ax, Array<DP,3> Ay, Array<DP,3> Az, TinyVector<DP,3> V)
 {
 	int lx = Get_lx_real_space(rx);
     int ly = Get_ly_real_space(ry);
-    
-    int lz;  bool is_real_part;
-    Get_lz_real_space(rz, lz, is_real_part);
+    int lz = Get_lz_real_space(rz);
 	
-	if (global.fft.transpose) {
-		if ((ly >= 0) && (ly < local_Ny))  {
-			if (is_real_part) {
-				real(Ax(ly, lx, lz)) = V(0);
-				real(Ay(ly, lx, lz)) = V(1);
-				real(Az(ly, lx, lz)) = V(2);
-			}
-			else {
-				imag(Ax(ly, lx, lz)) = V(0);
-				imag(Ay(ly, lx, lz)) = V(1);
-				imag(Az(ly, lx, lz)) = V(2);
-			}
-		}	
-	}
-	
-	else {
-		if ((lx >= 0) && (lx < local_Nx))  {
-			if (is_real_part) {
-				real(Ax(lx, ly, lz)) = V(0);
-				real(Ay(lx, ly, lz)) = V(1);
-				real(Az(lx, ly, lz)) = V(2);
-			}
-			else {
-				imag(Ax(lx, ly, lz)) = V(0);
-				imag(Ay(lx, ly, lz)) = V(1);
-				imag(Az(lx, ly, lz)) = V(2);
-			}
-		}
+    if ((lx >= 0) && (lx < local_Nx)) {
+		Ax(ly, lz, lx) = V(0);
+		Ay(ly, lz, lx) = V(1);
+		Az(ly, lz, lx) = V(2);
 	}
 }
 
@@ -525,10 +432,10 @@ inline DP FFFW_SLAB::Kmagnitude(int lx, int ly, int lz)
 inline int FFFW_SLAB::Min_radius_outside() 
 {
 	if	(global.field.waveno_switch) 
-		return (int) ceil(sqrt(  pow2((N[1]/2)*kfactor[1]) + pow2(N[2]/2*kfactor[2]) + pow2(N[3]/2*kfactor[3]) ));
+		return (int) ceil(sqrt(  pow2((Nx/2)*kfactor[1]) + pow2(Ny/2*kfactor[2]) + pow2(Nz/2*kfactor[3]) ));
 	
 	else 
-		return (int) ceil(sqrt(pow2(N[1]/2) + pow2(N[2]/2) + pow2(N[3]/2)));
+		return (int) ceil(sqrt(pow2(Nx/2) + pow2(Ny/2) + pow2(Nz/2)));
 		
 }
 
@@ -542,25 +449,25 @@ inline int FFFW_SLAB::Max_radius_inside()
 	DP Kmag;
 	
 	if	(global.field.waveno_switch) {
-		if (N[2] > 1) {
-			Kmag = min( (N[1]/2)*kfactor[1], (N[2]/2)*kfactor[2]);
-			Kmag = min(Kmag, (N[3]/2)*kfactor[3]); 
+		if (Ny > 1) {
+			Kmag = min( (Nx/2)*kfactor[1], (Ny/2)*kfactor[2]);
+			Kmag = min(Kmag, (Nz/2)*kfactor[3]); 
 		} 
 		
-		else if (N[2] == 1)
-			Kmag = min((N[1]/2)*kfactor[1], (N[3]/2)*kfactor[3]);
+		else if (Ny == 1)
+			Kmag = min((Nx/2)*kfactor[1], (Nz/2)*kfactor[3]);
 		
 		ans = ((int) Kmag);
 	}
 	
 	else  {
-		if (N[2] > 1) {
-			ans = min(N[1]/2, N[2]/2);
-			ans = min(ans, N[3]/2);
+		if (Ny > 1) {
+			ans = min(Nx/2, Ny/2);
+			ans = min(ans, Nz/2);
 		}
 		
-		else if (N[2] == 1)
-			ans = min(N[1]/2, (N[3]/2));
+		else if (Ny == 1)
+			ans = min(Nx/2, (Nz/2));
 	}
 	
 	return ans;
@@ -587,7 +494,7 @@ inline DP FFFW_SLAB::Approx_number_modes_in_shell(int radius)
 {
 	DP ans = 0.0;
 	
-	if (N[2] > 1)	{
+	if (Ny > 1)	{
 		if	(global.field.waveno_switch)
 			ans = (4*M_PI*radius*radius)/(kfactor[1]*kfactor[2]*kfactor[3]);	
 	
@@ -595,7 +502,7 @@ inline DP FFFW_SLAB::Approx_number_modes_in_shell(int radius)
 			ans = (4*M_PI*radius*radius);
 	}
     
-	else if (N[2] == 1) 	{
+	else if (Ny == 1) 	{
 		if	(global.field.waveno_switch)
 			ans = (2*M_PI*radius)/(kfactor[1]*kfactor[3]);
 		
@@ -635,8 +542,8 @@ inline DP FFFW_SLAB::Multiplicity_factor(int lx, int ly, int lz)
 	else
 		factor = 0.5;
 		
-	if ( (kx == N[1]/2) || ((ky == N[2]/2)&& (N[2] > 1)) )
-		return 2*factor;		// for kx = -N[1]/2 or ky = -N[2]/2 ; 
+	if ( (kx == Nx/2) || ((ky == Ny/2)&& (Ny > 1)) )
+		return 2*factor;		// for kx = -Nx/2 or ky = -Ny/2 ; 
 								// Ignoring corner which would have factor 4
 	else
 		return factor;
@@ -647,7 +554,7 @@ inline DP FFFW_SLAB::Multiplicity_factor(int lx, int ly, int lz)
 /// Modal energy -- \f$ E(k) = |\vect{u}(\vect{k})|^2 /2 \f$
 inline DP FFFW_SLAB::Modal_energy(int lx, int ly, int lz, Array<complx,3> A)
 {
-	return pow2(abs(A(lx,ly,lz)))/2;	
+	return pow2(abs(A(ly, lz, lx)))/2;	
 }
 
 /**********************************************************************************************
@@ -665,8 +572,8 @@ inline DP FFFW_SLAB::Get_Modal_helicity
 
 	TinyVector<DP,3> Vreal, Vimag, VrcrossVi,  K;
 	
-	Vreal = real(Ax(lx, ly, lz)), real(Ay(lx, ly, lz)), real(Az(lx, ly, lz));
-	Vimag = imag(Ax(lx, ly, lz)), imag(Ay(lx, ly, lz)), imag(Az(lx, ly, lz));
+	Vreal = real(Ax(ly, lz, lx)), real(Ay(ly, lz, lx)), real(Az(ly, lz, lx));
+	Vimag = imag(Ax(ly, lz, lx)), imag(Ay(ly, lz, lx)), imag(Az(ly, lz, lx));
 		
 	VrcrossVi = cross(Vreal, Vimag);
 	Wavenumber(lx, ly, lz, K);
@@ -695,7 +602,7 @@ inline void FFFW_SLAB::Compute_Modal_vorticity
 	TinyVector<DP,3>  K;
 	TinyVector<complx,3> Vi;
 	
-	Vi = Ax(lx, ly, lz), Ay(lx, ly, lz), Az(lx, ly, lz);
+	Vi = Ax(ly, lz, lx), Ay(ly, lz, lx), Az(ly, lz, lx);
 
 	Wavenumber(lx, ly, lz,  K);
 	
@@ -717,7 +624,7 @@ inline void FFFW_SLAB::Compute_Modal_vorticity_y_component
 	TinyVector<DP,3>  K;
 	TinyVector<complx,3> Vi;
 	
-	Vi = Ax(lx, ly, lz), Ay(lx, ly, lz), Az(lx, ly, lz);
+	Vi = Ax(ly, lz, lx), Ay(ly, lz, lx), Az(ly, lz, lx);
 	
 	Wavenumber(lx, ly, lz,  K);
 	
@@ -810,13 +717,13 @@ inline DP FFFW_SLAB::Anis_max_Kpll()
 	DP maxKpll = 0;
 		
     if (global.field.anisotropy_dirn == 1)
-        maxKpll = ((N[1]/2) * kfactor[1]); 
+        maxKpll = ((Nx/2) * kfactor[1]); 
     
     else if (global.field.anisotropy_dirn == 2)
-        maxKpll = ((N[2]/2) * kfactor[2]); 
+        maxKpll = ((Ny/2) * kfactor[2]); 
         
     else if (global.field.anisotropy_dirn == 3)
-        maxKpll = ((N[3]/2) * kfactor[3]);
+        maxKpll = ((Nz/2) * kfactor[3]);
 	
 	return maxKpll;
 }
@@ -827,13 +734,13 @@ inline int FFFW_SLAB::Anis_max_Krho_radius_inside()
 	DP Kmag = 0.0;
 	
     if (global.field.anisotropy_dirn == 1)
-        Kmag = min( (N[2]/2)*kfactor[2], (N[3]/2)*kfactor[3] );
+        Kmag = min( (Ny/2)*kfactor[2], (Nz/2)*kfactor[3] );
     
     else if (global.field.anisotropy_dirn == 2)
-        Kmag = min( (N[1]/2)*kfactor[1], (N[3]/2)*kfactor[3] );  
+        Kmag = min( (Nx/2)*kfactor[1], (Nz/2)*kfactor[3] );  
     
     else if (global.field.anisotropy_dirn == 3)
-        Kmag = min( (N[1]/2)*kfactor[1], (N[2]/2)*kfactor[2] ); 
+        Kmag = min( (Nx/2)*kfactor[1], (Ny/2)*kfactor[2] ); 
 
     return ((int) Kmag);
 }

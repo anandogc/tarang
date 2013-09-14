@@ -93,7 +93,7 @@ void  SSF_SLAB::Xderiv(Array<complx,3> A, Array<complx,3> B)
             B(Range::all(),Range::all(),lx) = Kx * A(Range::all(),Range::all(),lx);
 		
         else if (global.program.sincostr_switch[0] == 'C')
-            B(Range::all(),Range::all(),lx) =  (-Kx) * A(Range::all(),Range::all(),lx);
+            B(Range::all(),Range::all(),lx) = (-Kx) * A(Range::all(),Range::all(),lx);
 	}
 }
 

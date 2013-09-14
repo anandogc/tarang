@@ -63,7 +63,7 @@ extern Uniform<DP> SPECrand;
  */
 
 // force spectrum F(k) = A k^{-e} saved in U.cvf.shell_ek;  hk_by_kek=h_F(k)/(k F(k))  
-void  FORCE::Compute_force_using_random_energy_helicity_spectrum_basic(FluidVF& U, DP inner_radius, DP outer_radius, DP force_spectrum_amplitude, DP force_spectrum_exponent, DP hk_by_kek)
+void  FORCE::Compute_force_using_random_energy_helicity_spectrum_basic(FluidVF& U, DP inner_radius, DP outer_radius, DP force_spectrum_amplitude, DP force_spectrum_exponent, DP hk_by_kek, bool add_flag)
 {
 	DP Kmag, ek, amp, phase1, phase2, phase3;
 	int index;
@@ -118,7 +118,9 @@ void  FORCE::Compute_force_using_random_energy_helicity_spectrum_basic(FluidVF& 
 							phase3 = 2*M_PI * SPECrand.random();
 						}
 						
-						Put_force_amp_phase_comp_conj(U, lx, ly, lz, amp, phase1, phase2, phase3);
+						Put_force_amp_phase_comp_conj(U, lx, ly, lz, amp, phase1, phase2, phase3, add_flag);
+                        
+                    //    cout << "li, amp = " << lx << " " << ly << " " << lz << " " << Kmag << " " << amp << endl;
 						
 					} // of if(Kmag > MYEPS)
 				}
@@ -127,18 +129,18 @@ void  FORCE::Compute_force_using_random_energy_helicity_spectrum_basic(FluidVF& 
 
 void  FORCE::Compute_force_using_random_energy_helicity_spectrum_basic_assign(FluidVF& U, DP inner_radius, DP outer_radius, DP force_spectrum_amplitude, DP force_spectrum_exponent, DP hk_by_kek)
 {
-	Compute_force_using_random_energy_helicity_spectrum_basic(U, inner_radius, outer_radius, force_spectrum_amplitude, force_spectrum_exponent, hk_by_kek);
+	Compute_force_using_random_energy_helicity_spectrum_basic(U, inner_radius, outer_radius, force_spectrum_amplitude, force_spectrum_exponent, hk_by_kek, false);
 }
 
 
 void  FORCE::Compute_force_using_random_energy_helicity_spectrum_basic_add(FluidVF& U, DP inner_radius, DP outer_radius, DP force_spectrum_amplitude, DP force_spectrum_exponent, DP hk_by_kek)
 {
-	Compute_force_using_random_energy_helicity_spectrum_basic(U, inner_radius, outer_radius, force_spectrum_amplitude, force_spectrum_exponent, hk_by_kek);
+	Compute_force_using_random_energy_helicity_spectrum_basic(U, inner_radius, outer_radius, force_spectrum_amplitude, force_spectrum_exponent, hk_by_kek, true);
 }
 
 //*********************************************************************************************
 
-void  FORCE::Compute_force_using_random_energy_spectrum_basic(FluidSF& T, DP inner_radius, DP outer_radius, DP force_spectrum_amplitude, DP force_spectrum_exponent)
+void  FORCE::Compute_force_using_random_energy_spectrum_basic(FluidSF& T, DP inner_radius, DP outer_radius, DP force_spectrum_amplitude, DP force_spectrum_exponent, bool add_flag)
 {
 	DP Kmag, ek, amp, phase;
 	int index;
@@ -181,7 +183,7 @@ void  FORCE::Compute_force_using_random_energy_spectrum_basic(FluidSF& T, DP inn
 						amp = sqrt(2*ek);
 						phase = 2*M_PI * SPECrand.random();
 						
-						Put_force_amp_phase_comp_conj(T, lx, ly, lz, amp, phase);
+						Put_force_amp_phase_comp_conj(T, lx, ly, lz, amp, phase, add_flag);
 					} // of if(Kmag > MYEPS)
 				}
 			}
@@ -193,12 +195,12 @@ void  FORCE::Compute_force_using_random_energy_spectrum_basic(FluidSF& T, DP inn
 
 void  FORCE::Compute_force_using_random_energy_spectrum_basic_assign(FluidSF& T, DP inner_radius, DP outer_radius, DP force_spectrum_amplitude, DP force_spectrum_exponent)
 {
-	Compute_force_using_random_energy_spectrum_basic(T, inner_radius, outer_radius, force_spectrum_amplitude, force_spectrum_exponent);
+	Compute_force_using_random_energy_spectrum_basic(T, inner_radius, outer_radius, force_spectrum_amplitude, force_spectrum_exponent, false);
 }
 
 void  FORCE::Compute_force_using_random_energy_spectrum_basic_add(FluidSF& T, DP inner_radius, DP outer_radius, DP force_spectrum_amplitude, DP force_spectrum_exponent)
 {
-	Compute_force_using_random_energy_spectrum_basic(T, inner_radius, outer_radius, force_spectrum_amplitude, force_spectrum_exponent);
+	Compute_force_using_random_energy_spectrum_basic(T, inner_radius, outer_radius, force_spectrum_amplitude, force_spectrum_exponent, true);
 }
 
 

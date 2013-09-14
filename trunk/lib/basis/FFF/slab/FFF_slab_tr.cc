@@ -121,7 +121,7 @@ void FFF_SLAB::Add_Yderiv(Array<complx,3> A, Array<complx,3> B)
 		for (int ly=0; ly<local_Ny; ly++) {
 			Ky = Get_ky(ly)*kfactor[2];
 			B(ly,Range::all(),Range::all()) += complx(0, Ky)* (A(ly,Range::all(),Range::all()));
-		} 
+		}
 }
 
 //*********************************************************************************************

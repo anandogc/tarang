@@ -41,7 +41,7 @@
 
 //*********************************************************************************************
 
-void Global::Process_global_vars_basic()
+void Global::Process_basic_vars()
 {
 		// Alias....
 	basis_type = program.basis_type;
@@ -212,7 +212,7 @@ void Global::Process_global_vars_basic()
 		no_diss_coeff = 1;
 	}
 
-	if (field.diss_coefficients.size() != no_diss_coeff) 
+	if ((program.kind.length()>0) && (field.diss_coefficients.size() != no_diss_coeff) ) 
 		Show_error("Number of Dissipation coefficeints must be equal to "+To_string(no_diss_coeff));
 
 	

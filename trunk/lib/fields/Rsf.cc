@@ -61,14 +61,6 @@ RSF::RSF(string field_name)
    
 **********************************************************************************************/
 
-/*void RSF::Forward_transform()
-{
-	global.program.sincostr_switch = sincostr_switch_F;
-	universal->Forward_transform_array(Fr);			
-}*/
-
-
-
 /**********************************************************************************************
 
 					Forward_transform_transpose_order(*Fr) = F 
@@ -91,12 +83,6 @@ void RSF::Forward_transform(CSF csf)
    
 **********************************************************************************************/
 
-/*void RSF::Inverse_transform()
-{
-	global.program.sincostr_switch = sincostr_switch_F;
-	universal->Inverse_transform_array(Fr);			
-}*/
-
 /**********************************************************************************************
 
 					Inverse_transform_transpose_order(F) = *Fr 
@@ -112,49 +98,18 @@ void RSF::Inverse_transform(CSF csf)
 }
 
 
-
-
-
-
-/*******************************************************************************
-
-    Outputs F in real space
-PS: In Pencil:SFF & SSF basis, z axis along the mid axis.  So complex data
- is jumbled up.  Therefore, complex<Ar> is copied to real<Ar> for writing.
- For reading, do the reverse.
-   
-*******************************************************************************/
-
 // field_kind = Tr
 void RSF::Write_real_field()
 {
- /*   if (global.program.decomposition == "SLAB")
-        BasicIO::Write_real_array(Fr, field_name+".Fr");
-    
-    else if (global.program.decomposition == "PENCIL") {
-        if  ((global.program.basis_type == "FFF") || (global.program.basis_type == "SSS"))
-            BasicIO::Write_real_array(Fr, field_name+".Fr");
-        else {
-            universal->Copy_realarray_complex_to_real(Fr, global.temp_array.Ar_copy);
-            BasicIO::Write_real_array(global.temp_array.Ar_copy, field_name+".Fr");
-        }
-    }*/
+  string folder_suffix="/real_" + To_string(global.time.now);
+
+  BasicIO::Write(Fr.data(), field_name+".Fr", universal->H5_real, folder_suffix);
 }
 
 
 void RSF::Read_real_field()
 {
- /*   if (global.program.decomposition == "SLAB")
-        BasicIO::Read_real_array(Fr, field_name+".Fr");
-    
-    else if (global.program.decomposition == "PENCIL") {
-       if  ((global.program.basis_type == "FFF") || (global.program.basis_type == "SSS"))
-           BasicIO::Read_real_array(Fr, field_name+".Fr");
-       else {
-           BasicIO::Read_real_array(global.temp_array.Ar_copy, field_name+".Fr");
-           universal->Copy_realarray_real_to_complex(global.temp_array.Ar_copy, Fr);
-       }
-    }*/
+  BasicIO::Read(Fr.data(), field_name+".Fr", universal->H5_real);
 }
 
 

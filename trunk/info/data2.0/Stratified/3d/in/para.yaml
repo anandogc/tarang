@@ -1,6 +1,6 @@
 program:
     kind: RBC
-    basis_type: SSS 
+    basis_type: FFF 
     decomposition: SLAB              #PENCIL, SLAB
     iter_or_diag: ITERATION           #ITERATION, DIAGNOSTICS
     alias_option: DEALIAS
@@ -11,26 +11,19 @@ program:
     low_dimensional_switch: false
     two_and_half_dimension: false
     two_dimension: false       
-    dt_option: 1               # 0=fixed; 1=dx/umax
+    dt_option: 0             # 0=fixed; 1=dx/umax
     helicity_switch: false
-    sincostr_switch: SCC 
+    sincostr_switch: FFF 
     
 PHYSICS:
     Pr_option: PRLARGE
     Uscaling: ULARGE
     Rayleigh: 100
-    Prandtl: 40
-    temperature_grad: +1
-    Chandrasekhar: 0
-    Prandtl_mag: 0
-    Prandtl_c: 0
-    Reynolds: 0
-    Reynolds_mag: 0
-    Peclet: 0
-    Peclet_c: 0
+    Prandtl: 1
+    temperature_grad: -10
     
 field:
-    N: [32, 16, 8]
+    N: [32, 32, 32]
     kfactor: [1, 1, 1]
     L: 
     diss_coefficients: [0.0, 0.0]               
@@ -43,14 +36,14 @@ field:
 
 fft:
     fftw3D_switch: false              #for fftw_original
-    transpose: false                #Should be always "true" for PENCIL
-    sincostr_switch: FFF                    #SINX, COSX, SCC, CSC, CCS, SSC, CSS, SCS
+    transpose: true                #Should be always "true" for PENCIL
+    sincostr_switch: SFF                    #SINX, COSX, SCC, CSC, CCS, SSC, CSS, SCS
 
 time:
     init: 0
-    final: 0.001
+    final: 30
     dt_fixed: 0.01
-    Courant_no: 0.2
+    Courant_no: 0.5
     job_time:                       # 00:00:20
 
 force:
@@ -58,11 +51,11 @@ force:
     W_switch: false
     T_switch: true
     # 0:decay, 1:ek_hk_suppy, 2:const_ek_hk, 3: modes, 4:TG, 5:ABC,  
-    field_procedure: 51   
+    field_procedure: 53  
     int_para: 
     #if ... provide ()
     #if ....
-    double_para: [2,4,1,0]
+    double_para: [2,4,0.0001,0,0,0.0001,0,0]
     string_para: 
     
     modes:
@@ -70,69 +63,62 @@ force:
 #          mode:
         
 io:
-    input_field_procedure: 4
+    input_field_procedure: 5
     #1:complex field, 2: complex_reduced field, 3: real field, 4: modes, 5: Ek,Hk; 6: TG, 7:ABC
-    input_vx_vy_switch: true
-    output_vx_vy_switch: true
-    diagnostic_procedures: 
-    N_in_reduced: 
-    N_out_reduced: 
+    input_vx_vy_switch: false
+    output_vx_vy_switch: false
+    diagnostic_procedures: [0, 1]
+    N_in_reduced: #[30, 30, 26]
+    N_out_reduced: #[32, 32, 32]
     int_para: 
-    double_para: [1, 0, 1]
+    double_para: [0.1, 0, 0.1]
     string_para:
 
     #if probes/init_cond not provided, comment "- coord" lines.
     init_cond_modes:
-            - coord: [1,0,1]
-              mode: [ 0.01, 0.0, 0.02]
+    #         - coord: [1,0,2]
+    #           mode: [ (1,0) ]
+
+            - coord: [1, 1, 1]
+              mode: [ (1,0), (0,0), (-1,0)  ]
               
-            - coord: [2,0,1]
-              mode: [ 0.0, 0.0, 0.02]
+            - coord: [1, 0, 1]
+              mode: [ (0,-1), (0,0), (0,1)  ]
               
-            - coord: [3,0,2]
-              mode: [ 0.001, 0.0, 0.05]
+            - coord: [-1, 0, 1]
+              mode: [ (0,1), (0,0), (0,-1)  ]
               
-            - coord: [4,0,3]
-              mode: [ 0.01,0,0 ]
+            - coord: [2,1,2]
+              mode: [ (0.01,0.09) ,(0.08,0) ,(-0.02,-0.1)]
+             
+  #          - coord: [3,1,2]
+  #            mode: [ (0.001,0.9), (0.08,0.11), (0.32,0.1) ]
               
-            - coord: [5,0,3]
-              mode: [ 1.01, 0, 1.0 ]
+ #           - coord: [5,2,2]
+ #             mode: [ (1,0), (0,-1.5) , (1.5,0)]
               
-            - coord: [7,0,5]
-              mode: [ 1.0, 0, 0 ]
+  #          - coord: [5,-2,2]
+  #            mode: [ (1,0), (0,1.5) , (1.5,0)]
               
-            - coord: [9,0,6]
-              mode: [ 1.0, 0, 0.02]
-              
-            - coord: [6,0,4]
-              mode: [ 1.0, 0, 0.3]
-              
-            - coord: [2,0,0]
-              mode: [ 0, 0, 0.16]
-              
-#            - coord: [-2,0,0]
-#              mode: [ (0,0), (0,0), (0,-0.16)]
+ #           - coord: [2,0,0]
+ #             mode: [ (0,0), (0,0), (-0.16,0)]
               
     probes:
         spectral_space:
-            - coord: [1, 0, 1]
-            - coord: [2, 0, 2]
-            - coord: [2, 0, 1]
-            - coord: [1, 0, 2]
-            - coord: [3, 0, 3]
-            - coord: [2, 0, 0]
+            - coord: [1, 1, 1]
+            - coord: [1, -1, 1]
         real_space:
             - coord: [1, 1, 1]
               
     time:
-        global_save_first:   0
-        complex_field_save_first: 
-        field_frequent_save_first: 0
+        global_save_first: 0
+        complex_field_save_first:
+        field_frequent_save_first: 
         field_reduced_save_first:  
-        real_field_save_first:  
-        field_k_save_first: 
+        real_field_save_first:
+        field_k_save_first:
         field_r_save_first: 
-        spectrum_save_first:
+        spectrum_save_first: 
         pressure_save_first:
         pressure_spectrum_save_first:
         flux_save_first: 
@@ -145,19 +131,19 @@ io:
         Tk_shell_spectrum_save_first:
         Tk_ring_spectrum_save_first:
         Tk_cylindrical_ring_spectrum_save_first:
-        cout_save_first: 0
+        cout_save_first: 0.0
 
         global_save_interval: 0.01
         complex_field_save_interval: 
-        field_frequent_save_interval: 0.01
+        field_frequent_save_interval:
         field_reduced_save_interval: 
         real_field_save_interval: 
-        field_k_save_interval: 0.01
+        field_k_save_interval: 
         field_r_save_interval: 
         pressure_save_interval: 
-        spectrum_save_interval: 10.0
+        spectrum_save_interval: 
         pressure_spectrum_save_interval: 
-        flux_save_interval: 10.0
+        flux_save_interval:
         shell_to_shell_save_interval: 
         ring_spectrum_save_interval: 
         ring_to_ring_save_interval:
@@ -169,9 +155,9 @@ io:
         Tk_cylindrical_ring_spectrum_save_interval:
         cout_save_interval: 0.01
         
-        global_save_last: true
+        global_save_last:
         complex_field_save_last: 
-        field_frequent_save_last:
+        field_frequent_save_last: true
         field_reduced_save_last: 
         real_field_save_last: 
         field_k_save_last: 
@@ -208,10 +194,11 @@ spectrum:
         kpll_array: 
 
 energy_transfer:
-    turnon: true
+    turnon: false
     helicity_flux_switch: false
     helicity_shell_to_shell_switch: false
     Elsasser: true
+    Vpll_switch: false
 
     flux:
         turnon: true

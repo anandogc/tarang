@@ -35,7 +35,8 @@
  */ 
 
 #include "SSS_pencil.h"
-#include "BasicIO.h"
+#include "BasicIO_SP.h"
+
 
 
 SSS_PENCIL::SSS_PENCIL()
@@ -86,13 +87,13 @@ SSS_PENCIL::SSS_PENCIL()
 		// array size proper or not?
 	bool Nxproperdiv, Nyproperdiv, Nzproperdiv; 
 	
-	Nxproperdiv = ((global.field.Nx%global.mpi.num_p_hor == 0) && (global.field.Nx%global.mpi.num_p_vert == 0));
-	Nyproperdiv = (global.field.Ny%global.mpi.num_p_hor == 0);
-	Nzproperdiv = ((global.field.Nz/2)%global.mpi.num_p_vert == 0);
+	Nxproperdiv = (global.field.Nx%global.mpi.num_p_vert == 0);
+	Nyproperdiv = ((global.field.Ny%global.mpi.num_p_vert == 0) && (global.field.Ny%global.mpi.num_p_hor == 0));
+	Nzproperdiv = ((global.field.Nz)%global.mpi.num_p_hor == 0);
 	
 	if (!(Nxproperdiv && Nyproperdiv && Nzproperdiv)) {
 		if (global.mpi.master) cerr << "ERROR: Array not being divided equally.  Check dimensions" << endl;
-		// exit(1);
+		exit(1);
 	}
 	
 	//global.mpi.num_p_hor is assigned in global via mpirun argument
@@ -106,24 +107,6 @@ SSS_PENCIL::SSS_PENCIL()
 
 	global.field.shape_complex_array = spectralTransform.local_Ny_hor,Nz/2,spectralTransform.local_Nx_vert;
 	global.field.shape_real_array = spectralTransform.local_Ny_vert,2*spectralTransform.local_Nz_hor,Nx;
-
-	//Useful for HDF5
-	BasicIO::shape_full_complex_array = Ny,Nz/2,Nx;
-	BasicIO::shape_full_real_array = Ny,Nz,Nx;
-	
-	BasicIO::direction_z_complex_array = 0,1,0;
-	BasicIO::direction_z_real_array = 0,1,0;
-	
-	BasicIO::id_complex_array = my_hor_pcoord,0,my_vert_pcoord;
-	BasicIO::id_real_array = my_vert_pcoord,my_hor_pcoord,0;
-	
-	if (global.io.N_in_reduced.size()==3)
-		BasicIO::shape_in_reduced_array = global.io.N_in_reduced[1],global.io.N_in_reduced[2]/2,global.io.N_in_reduced[0];
-	
-	if (global.io.N_out_reduced.size()==3)
-		BasicIO::shape_out_reduced_array = global.io.N_out_reduced[1],global.io.N_out_reduced[2]/2,global.io.N_out_reduced[0];
-	
-	BasicIO::Fourier_directions = 0,0,0;
 	
 	//************
 	
@@ -205,4 +188,29 @@ SSS_PENCIL::SSS_PENCIL()
 	
 	global.temp_array.Xr.resize(shape_real_array);
     global.temp_array.Xr2.resize(shape_real_array);
+
+    	
+	BasicIO::Array_properties<3> array_properties;
+	array_properties.shape_full_complex_array = Ny, Nz, Nx;
+	array_properties.shape_full_real_array = Ny, Nz, Nx;
+
+	array_properties.id_complex_array = my_y_pcoord, my_z_pcoord, my_x_pcoord;
+	array_properties.id_real_array = my_y_pcoord_real, my_z_pcoord_real, my_x_pcoord_real;
+
+	array_properties.numprocs_complex_array = num_y_procs, num_z_procs, num_x_procs;
+	array_properties.numprocs_real_array = num_y_procs_real, num_z_procs_real, num_x_procs_real;
+
+	if (global.io.N_in_reduced.size() == 3)
+		array_properties.shape_N_in_reduced = global.io.N_in_reduced[1], global.io.N_in_reduced[2]/2+1, global.io.N_in_reduced[0];
+	
+	if (global.io.N_out_reduced.size() == 3)
+		array_properties.shape_N_out_reduced = global.io.N_out_reduced[1], global.io.N_out_reduced[2]/2+1, global.io.N_out_reduced[0];
+
+	array_properties.Fourier_directions = 0,0,0;
+	array_properties.Z = 1;
+
+	array_properties.datatype_complex_space = BasicIO::H5T_DP;
+	array_properties.datatype_real_space = BasicIO::H5T_DP;
+
+	BasicIO::Set_H5_plans(array_properties, this);
 }

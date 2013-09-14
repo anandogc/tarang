@@ -97,7 +97,7 @@ int Iscalar_main()
         
         FluidVF  U(global.field.diss_coefficients[0], global.field.hyper_diss_coefficients[0], global.field.hyper_diss_exponents[0], global.force.U_switch, "U");
         
-      FluidSF T(global.field.diss_coefficients[1], global.field.hyper_diss_coefficients[1], global.field.hyper_diss_exponents[1], global.force.T_switch, "T"); 
+        FluidSF T(global.field.diss_coefficients[1], global.field.hyper_diss_coefficients[1], global.field.hyper_diss_exponents[1], global.force.T_switch, "T"); 
         
 		Pressure P;
 
@@ -108,19 +108,19 @@ int Iscalar_main()
         
 		fluidIO_incompress.Read_init_cond(U, T);
 		
-		cout << "Init energy: " << endl;
+		//cout << "Init energy: " << endl;
 		if (basis_type.find("Ch") != string::npos)
 			fluidIO_incompress.Output_cout_real_space(U,T);
 		
 		
-	/*	cout << "After reading the INIT COND " << endl;
+		/*cout << "After reading the INIT COND " << endl;
         cout << "V1" << endl; universal->Print_large_Fourier_elements(U.cvf.V1);
         cout << "V2" << endl; universal->Print_large_Fourier_elements(U.cvf.V2);
         cout << "V3" << endl; universal->Print_large_Fourier_elements(U.cvf.V3);
-        cout << "F" << endl;universal->Print_large_Fourier_elements(T.csf.F);
+        cout << "F" << endl;universal->Print_large_Fourier_elements(T.csf.F);*/
 		
         
-        cout << "Values at the boundaries: " << endl;
+       /* cout << "Values at the boundaries: " << endl;
         Array<complx,2> v_plus(local_Ny, local_Nz), v_minus(local_Ny, local_Nz);
         
         time_advance_incompress.Compute_fn_at_boundary(U.cvf.V1, v_plus, v_minus);
@@ -178,7 +178,7 @@ int Iscalar_main()
 
 			time_advance_incompress.Time_advance_step(U, T, P, Force);
 
-			U.Compute_divergence_field(global.temp_array.X2, total_abs_div, true);
+			U.Compute_divergence_field(global.temp_array.X2, total_abs_div, false);
             // true mean print nonzero div modes
             if (total_abs_div > MYEPS2) {
                 cout << "abs(sum(Divergence)) of  U = " << total_abs_div << "is large. " << '\n' << "Therefore exiting the program." << endl;
@@ -196,7 +196,7 @@ int Iscalar_main()
 		
 		if (basis_type.find("Ch") != string::npos)
 			fluidIO_incompress.Output_cout_real_space(U,T);
-        else 
+        else
 			fluidIO_incompress.Output_last(U, T, P);
 		
 		fluidIO_incompress.Close_files();

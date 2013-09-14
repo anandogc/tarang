@@ -41,7 +41,7 @@
 
 //****************************************************************************************
 
-void Global::Process_global_vars_advanced()
+void Global::Process_advanced_vars()
 {
 	// Time
 	time.now = time.init;

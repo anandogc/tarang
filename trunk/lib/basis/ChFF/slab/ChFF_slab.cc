@@ -38,7 +38,7 @@
  */ 
 
 #include "ChFF_slab.h"
-#include "BasicIO.h"
+#include "BasicIO_SP.h"
 
 ChFF_SLAB::ChFF_SLAB()
 {
@@ -148,44 +148,58 @@ ChFF_SLAB::ChFF_SLAB()
 		global.field.shape_complex_array = spectralTransform.local_Ny, global.field.Nz/2+1, global.field.Nx;
         global.field.shape_real_array = spectralTransform.local_Ny, global.field.Nz+2, global.field.Nx;
 		
-		BasicIO::shape_full_complex_array = Ny,Nz/2+1,Nx;
-		BasicIO::shape_full_real_array = Ny,Nz+2,Nx;
+		BasicIO::Array_properties<3> array_properties;
+		array_properties.shape_full_complex_array = Ny, Nz/2+1, Nx;
+		array_properties.shape_full_real_array = Ny, Nz+2, Nx;
+
+		array_properties.id_complex_array = 0, 0, my_id;
+		array_properties.id_real_array = my_id, 0, 0;
+
+		array_properties.numprocs_complex_array = 1, 1, numprocs;
+		array_properties.numprocs_real_array = numprocs, 1, 1;
+
+		if (global.io.N_in_reduced.size() == 3)
+			array_properties.shape_N_in_reduced = global.io.N_in_reduced[1], global.io.N_in_reduced[2]/2+1, global.io.N_in_reduced[0];
 		
-		BasicIO::direction_z_complex_array = 0,1,0;
-		BasicIO::direction_z_real_array = 0,1,0;
-		
-		BasicIO::id_complex_array = my_id,0,0;
-		BasicIO::id_real_array = my_id,0,0;
-		
-		if (global.io.N_in_reduced.size()==3)
-			BasicIO::shape_in_reduced_array = global.io.N_in_reduced[1],global.io.N_in_reduced[2]/2+1,global.io.N_in_reduced[0];
-		
-		if (global.io.N_out_reduced.size()==3)
-			BasicIO::shape_out_reduced_array = global.io.N_out_reduced[1],global.io.N_out_reduced[2]/2+1,global.io.N_out_reduced[0];
-		
-		BasicIO::Fourier_directions = 1,1,0;
+		if (global.io.N_out_reduced.size() == 3)
+			array_properties.shape_N_out_reduced = global.io.N_out_reduced[1], global.io.N_out_reduced[2]/2+1, global.io.N_out_reduced[0];
+
+		array_properties.Fourier_directions = 1,1,0;
+		array_properties.Z = 1;
+	
+		array_properties.datatype_complex_space = BasicIO::H5T_COMPLX;
+		array_properties.datatype_real_space = BasicIO::H5T_DP;
+
+		BasicIO::Set_H5_plans(array_properties, this);
 	}
 	
 	else if (Ny == 1) {
 		global.field.shape_complex_array = 1,spectralTransform.local_Nz,global.field.Nx;
         global.field.shape_real_array = 1,2*spectralTransform.local_Nz,global.field.Nx;
 		
-		BasicIO::shape_full_complex_array = 1,Nz/2+1,Nx;
-		BasicIO::shape_full_real_array = 1,Nz+2,Nx;
+		BasicIO::Array_properties<2> array_properties;
+		array_properties.shape_full_complex_array = Nz/2+1, Nx;
+		array_properties.shape_full_real_array = Nz+2, Nx;
+
+		array_properties.id_complex_array = 0, my_id;
+		array_properties.id_real_array = my_id, 0;
+
+		array_properties.numprocs_complex_array = 1, numprocs;
+		array_properties.numprocs_real_array = numprocs, 1;
+
+		if (global.io.N_in_reduced.size() == 3)
+			array_properties.shape_N_in_reduced = global.io.N_in_reduced[2]/2+1, global.io.N_in_reduced[0];
 		
-		BasicIO::direction_z_complex_array = 0,1,0;
-		BasicIO::direction_z_real_array = 0,1,0;
-		
-		BasicIO::id_complex_array = 0,my_id,0;
-		BasicIO::id_real_array = 0,my_id,0;
-		
-		if (global.io.N_in_reduced.size()==3)
-			BasicIO::shape_in_reduced_array = 1,global.io.N_in_reduced[2]/2+1,global.io.N_in_reduced[0];
-		
-		if (global.io.N_out_reduced.size()==3)
-			BasicIO::shape_out_reduced_array = 1,global.io.N_out_reduced[2]/2+1,global.io.N_out_reduced[0];
-		
-		BasicIO::Fourier_directions = 0,1,0;
+		if (global.io.N_out_reduced.size() == 3)
+			array_properties.shape_N_out_reduced = global.io.N_out_reduced[2]/2+1, global.io.N_out_reduced[0];
+
+		array_properties.Fourier_directions = 1,0;
+		array_properties.Z = 0;
+	
+		array_properties.datatype_complex_space = BasicIO::H5T_COMPLX;
+		array_properties.datatype_real_space = BasicIO::H5T_DP;
+
+		BasicIO::Set_H5_plans(array_properties, this);
 	}
     
 	// alias
@@ -229,5 +243,7 @@ ChFF_SLAB::ChFF_SLAB()
 	global.temp_array.Xreal.resize(local_Ny, local_Nz, Nx);
 	global.temp_array.influence_matrix.resize(local_Ny,local_Nz,2,2);
 
-	
+	// Being used in void ArrayOps::Get_XY_plane(Array<complx,3> A, Array<complx,2> plane_xy, int kz, string configuration)
+	global.temp_array.plane_xy.resize(Ny, Nx);
+    global.temp_array.plane_xy_inproc.resize(spectralTransform.local_Ny, Nx);
 }

@@ -108,7 +108,7 @@ void FORCE::Force_energy_helicity_supply_or_level_basic(FluidVF& U, string force
 	
 	int lx, ly, lz;
 	DP Kmag, alpha_k, beta_k, sk;
-	
+
 	for (int kx = kx_min; kx <= kx_max; kx++)
 		for (int ky = ky_min; ky <= ky_max; ky++)  
 			for (int kz = 0; kz <= kz_max; kz++) {
@@ -173,9 +173,9 @@ void FORCE::Force_energy_helicity_supply_or_level_basic(FluidVF& U, string force
 								}
 							} // end of (force_type == "CONSTANT_ENERGY")	
 							
-							if (force_type == "ENERGY_SUPPLY") 
+							if (force_type == "ENERGY_SUPPLY")
 								Const_energy_supply_alpha_beta(U, lx, ly, lz, alpha_k, beta_k, add_flag);
-							
+
 							else if (force_type == "CONSTANT_ENERGY") 
 								Const_energy_alpha_beta(U, lx, ly, lz, alpha_k, beta_k, add_flag);
 						}		
@@ -222,10 +222,9 @@ void FORCE::Force_energy_helicity_supply_or_level_basic(FluidSF& T, string force
 		return;
 	
 	int nf; 
-	DP energy_supply_per_mode, energy_per_mode;
+	DP energy_supply_per_mode;
+    DP energy_per_mode;
 	DP modal_energy;
-	
-	DP energy_supply_scalar_per_mode;
 	
 	int kx_max, ky_max, kz_max, kx_min, ky_min, kz_min;
 	
@@ -233,10 +232,11 @@ void FORCE::Force_energy_helicity_supply_or_level_basic(FluidSF& T, string force
 	
 	
 	if (force_type == "ENERGY_SUPPLY")
-		energy_supply_per_mode = energy_supply / nf;
+		energy_supply_per_mode = energy_supply/nf;
 	
-	else if (force_type == "CONSTANT_ENERGY") 
+	else if (force_type == "CONSTANT_ENERGY")
 		energy_per_mode = energy_level / nf;
+    
 	
 	kx_max = (int) ceil(outer_radius/kfactor[1]);
 			
@@ -257,7 +257,7 @@ void FORCE::Force_energy_helicity_supply_or_level_basic(FluidSF& T, string force
 					
 	
 	int lx, ly, lz;	
-	DP Kmag, alpha_k, alpha_k_scalar;
+	DP Kmag, alpha_k;
 		
 	for (int kx = kx_min; kx <= kx_max; kx++)
 		for (int ky = ky_min; ky <= ky_max; ky++)  
@@ -274,13 +274,13 @@ void FORCE::Force_energy_helicity_supply_or_level_basic(FluidSF& T, string force
 						
 						if (modal_energy > MYEPS) {
 							if (force_type == "ENERGY_SUPPLY") {
-								alpha_k = energy_supply_scalar_per_mode/ (2*modal_energy);
-								Const_energy_supply_alpha(T, lx, ly, lz, alpha_k_scalar, add_flag);
+								alpha_k = energy_supply_per_mode/ (2*modal_energy);
+								Const_energy_supply_alpha(T, lx, ly, lz, alpha_k, add_flag);
 							}
 							
 							else if (force_type == "CONSTANT_ENERGY") {
 								alpha_k = sqrt(energy_per_mode/modal_energy);
-								Const_energy_alpha(T, lx, ly, lz, alpha_k_scalar, add_flag);
+								Const_energy_alpha(T, lx, ly, lz, alpha_k, add_flag);
 							}
 							
 							

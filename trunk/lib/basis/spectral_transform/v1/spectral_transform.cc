@@ -95,9 +95,11 @@ void SpectralTransform::Init(string basis, string decomposition, int Nx, int Ny,
 	}
 	
 
-    /*if (basis=="FFFW" && docomposition=="SLAB")
-        Init_FFFW_SLAB();*/
-    if (basis=="FFF" && decomposition=="SLAB")
+    if (basis=="CFFF" && decomposition=="SLAB")
+        Init_CFFF_SLAB();
+    else if (basis=="FFFW" && decomposition=="SLAB")
+        Init_FFFW_SLAB();
+    else if (basis=="FFF" && decomposition=="SLAB")
         Init_FFF_SLAB();
 	else if (basis=="SFF" && decomposition=="SLAB")
         Init_SFF_SLAB();
@@ -124,37 +126,59 @@ void SpectralTransform::Init(string basis, string decomposition, int Nx, int Ny,
 //*********************************************************************************************
 
 // 3D: FFFW original
-void SpectralTransform::FTr2c_xyz(Array<complx,3> Ar, Array<complx,3> A)
+void SpectralTransform::FTr2c_xyz(Array<DP,3> Ar, Array<complx,3> A)
 {
-	//FFTW_EXECUTE_DFT_R2C_DP(r2c_xyz_plan, reinterpret_cast<DP*>(A.data()), reinterpret_cast<FFTW_COMPLEX_DP*>(A.data()));
+	// FFTW_EXECUTE_DFT_R2C_DP(r2c_xyz_plan, reinterpret_cast<DP*>(Ar.data()), reinterpret_cast<FFTW_COMPLEX_DP*>(A.data()));
+	Xr_3d = Ar;
+	fftw_execute(r2c_xyz_plan);
+	A=X_3d;
 }
 
-void SpectralTransform::FTc2r_xyz(Array<complx,3> A, Array<complx,3> Ar)
+void SpectralTransform::FTc2r_xyz(Array<complx,3> A, Array<DP,3> Ar)
 {
-	//FFTW_EXECUTE_DFT_C2R_DP(c2r_xyz_plan, reinterpret_cast<FFTW_COMPLEX_DP*>(A.data()), reinterpret_cast<DP*>(A.data()));
+	// FFTW_EXECUTE_DFT_C2R_DP(c2r_xyz_plan, reinterpret_cast<FFTW_COMPLEX_DP*>(A.data()), reinterpret_cast<DP*>(Ar.data()));
+	X_3d=A;
+	fftw_execute(c2r_xyz_plan);
+	Ar = Xr_3d;
 }
 
 // 2D FFFW 
-void SpectralTransform::FTr2c_xz(Array<complx,2> Ar, Array<complx,2> A)
+void SpectralTransform::FTr2c_xz(Array<DP,2> Ar, Array<complx,2> A)
 {
-	FFTW_EXECUTE_DFT_R2C_DP(r2c_xz_plan, reinterpret_cast<DP*>(Ar.data()), reinterpret_cast<FFTW_COMPLEX_DP*>(A.data()));
+	// FFTW_EXECUTE_DFT_R2C_DP(r2c_xz_plan, reinterpret_cast<DP*>(Ar.data()), reinterpret_cast<FFTW_COMPLEX_DP*>(A.data()));
+	Xr_2d = Ar;
+	fftw_execute(r2c_xyz_plan);
+	A=X_2d;	
 }
 
-void SpectralTransform::FTc2r_xz(Array<complx,2> A, Array<complx,2> Ar)
+void SpectralTransform::FTc2r_xz(Array<complx,2> A, Array<DP,2> Ar)
 {
-	FFTW_EXECUTE_DFT_C2R_DP(c2r_xz_plan, reinterpret_cast<FFTW_COMPLEX_DP*>(A.data()), reinterpret_cast<DP*>(Ar.data()));
+	// FFTW_EXECUTE_DFT_C2R_DP(c2r_xz_plan, reinterpret_cast<FFTW_COMPLEX_DP*>(A.data()), reinterpret_cast<DP*>(Ar.data()));
+	X_2d=A;
+	fftw_execute(c2r_xyz_plan);
+	Ar = Xr_2d;
+}
+
+// 3D: CFFT
+void SpectralTransform::FTc2c_xyz(Array<complx,3> A1, Array<complx,3> A2)
+{
+	FFTW_MPI_EXECUTE_DFT_DP(c2c_xyz_forward_plan, reinterpret_cast<FFTW_COMPLEX_DP*>(A1.data()), reinterpret_cast<FFTW_COMPLEX_DP*>(A2.data()));
+}
+
+void SpectralTransform::IFTc2c_xyz(Array<complx,3> A2, Array<complx,3> A1)
+{
+	FFTW_MPI_EXECUTE_DFT_DP(c2c_xyz_inverse_plan, reinterpret_cast<FFTW_COMPLEX_DP*>(A2.data()), reinterpret_cast<FFTW_COMPLEX_DP*>(A1.data()));
 }
 
 // GP
-// 3D: FFT original
 void SpectralTransform::FTc2c_xyz(Array<complx,3> A)
 {
-	FFTW_MPI_EXECUTE_DFT_DP(c2c_forward_plan, reinterpret_cast<FFTW_COMPLEX_DP*>(A.data()), reinterpret_cast<FFTW_COMPLEX_DP*>(A.data()));
+	FFTW_MPI_EXECUTE_DFT_DP(c2c_xyz_forward_plan, reinterpret_cast<FFTW_COMPLEX_DP*>(A.data()), reinterpret_cast<FFTW_COMPLEX_DP*>(A.data()));
 }
 
 void SpectralTransform::IFTc2c_xyz(Array<complx,3> A)
 {
-	FFTW_MPI_EXECUTE_DFT_DP(c2c_inverse_plan, reinterpret_cast<FFTW_COMPLEX_DP*>(A.data()), reinterpret_cast<FFTW_COMPLEX_DP*>(A.data()));
+	FFTW_MPI_EXECUTE_DFT_DP(c2c_xyz_inverse_plan, reinterpret_cast<FFTW_COMPLEX_DP*>(A.data()), reinterpret_cast<FFTW_COMPLEX_DP*>(A.data()));
 }
 
 

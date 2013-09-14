@@ -128,7 +128,7 @@ void Global::program::Print(int my_level)
 		<<'\n'<<Indent(my_level+1)<<"sincostr_switch_VxVy: " << sincostr_switch_VxVy
 		<<'\n'<<Indent(my_level+1)<<"sincostr_switch_VxVz: " << sincostr_switch_VxVz
 		<<'\n'<<Indent(my_level+1)<<"sincostr_switch_VyVz: " << sincostr_switch_VyVz
-		<<'\n'<<Indent(my_level+1)<<"program.sincostr_switch_FVx: " << sincostr_switch_FVx
+		<<'\n'<<Indent(my_level+1)<<"sincostr_switch_FVx: " << sincostr_switch_FVx
 		<<'\n'<<Indent(my_level+1)<<"sincostr_switch_FVy: " << sincostr_switch_FVy
 		<<'\n'<<Indent(my_level+1)<<"sincostr_switch_FVz: " << sincostr_switch_FVz
 		<<'\n'<<Indent(my_level+1)<<"sincostr_switch_divergence " << sincostr_switch_divergence

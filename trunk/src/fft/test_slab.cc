@@ -38,15 +38,84 @@
 #include "main.h"
 
 //*********************************************************************************************					
+
+void test_CFFF_slab(){
+	global.program.basis_type = "CFFF";
+	global.program.decomposition = "SLAB";
+	global.program.sincostr_switch = "FFF";
+	
+	
+	global.Process_basic_vars();
+	universal=new CFFF_SLAB;
+	global.Process_advanced_vars();
+	
+    //global.Print();
+	
+	if (master) {
+		cout <<  "FFT-transform for basis = " << global.program.basis_type << " and decomposition = " << global.program.decomposition <<  endl;
+		cout << "L[i] = " << global.field.L[1] << "  " << global.field.L[2] << "  " << global.field.L[3] << endl;
+	}
+	
+	//	result += test_1dtransform();
+	A.resize(shape_complex_array);
+	A_old.resize(shape_complex_array);
+	
+	Ar.resize(shape_real_array);
+	Ar_old.resize(shape_real_array);
+	
+	
+	// Assign nos to kx,ky,kz (first three args)
+	universal->Assign_spectral_field(1,0,1, A, complx(0,-1));
+	universal->Assign_spectral_field(-1,0,1, A, complx(0,1));
+	
+    test_transform();
+	
+	MPI_Barrier(MPI_COMM_WORLD);
+}
+
+void test_FFFW_slab(){
+	global.program.basis_type = "FFFW";
+	global.program.decomposition = "SLAB";
+	global.program.sincostr_switch = "FFF";
+	
+	
+	global.Process_basic_vars();
+	universal=new FFFW_SLAB;
+	global.Process_advanced_vars();
+	
+    //global.Print();
+	
+	if (master) {
+		cout <<  "FFT-transform for basis = " << global.program.basis_type << " and decomposition = " << global.program.decomposition <<  endl;
+		cout << "L[i] = " << global.field.L[1] << "  " << global.field.L[2] << "  " << global.field.L[3] << endl;
+	}
+	
+	//	result += test_1dtransform();
+	A.resize(shape_complex_array);
+	A_old.resize(shape_complex_array);
+	
+	Ar.resize(shape_real_array);
+	Ar_old.resize(shape_real_array);
+	
+	
+	// Assign nos to kx,ky,kz (first three args)
+	universal->Assign_spectral_field(1,0,1, A, complx(0,-1));
+	universal->Assign_spectral_field(-1,0,1, A, complx(0,1));
+	
+    test_transform();
+	
+	MPI_Barrier(MPI_COMM_WORLD);
+}
+
 void test_FFF_slab(){
 	global.program.basis_type = "FFF";
 	global.program.decomposition = "SLAB";
 	global.program.sincostr_switch = "FFF";
 	
 	
-	global.Process_global_vars_basic();
+	global.Process_basic_vars();
 	universal=new FFF_SLAB;
-	global.Process_global_vars_advanced();
+	global.Process_advanced_vars();
 	
     //global.Print();
 	
@@ -77,9 +146,9 @@ void test_SFF_slab(){
 	global.program.decomposition = "SLAB";
 	global.program.sincostr_switch = "CFF";
 	
-	global.Process_global_vars_basic();
+	global.Process_basic_vars();
 	universal=new SFF_SLAB;
-	global.Process_global_vars_advanced();
+	global.Process_advanced_vars();
 	
 	if (master) {
 		cout <<  "FFT-transform for basis = " << global.program.basis_type << " and decomposition = " << global.program.decomposition <<  endl;
@@ -104,9 +173,9 @@ void test_SSF_slab(){
 	global.program.decomposition = "SLAB";
 	global.program.sincostr_switch = "CSF";
 	
-	global.Process_global_vars_basic();
+	global.Process_basic_vars();
 	universal=new SSF_SLAB;
-	global.Process_global_vars_advanced();
+	global.Process_advanced_vars();
 	
 	if (master) {
 		cout <<  "FFT-transform for basis = " << global.program.basis_type << " and decomposition = " << global.program.decomposition <<  endl;
@@ -130,9 +199,9 @@ void test_SSS_slab(){
 	global.program.decomposition = "SLAB";
 	global.program.sincostr_switch = "S0S";
 	
-	global.Process_global_vars_basic();
+	global.Process_basic_vars();
 	universal=new SSS_SLAB;
-	global.Process_global_vars_advanced();
+	global.Process_advanced_vars();
 	
 	if (master) {
 		cout <<  "FFT-transform for basis = " << global.program.basis_type << " and decomposition = " << global.program.decomposition <<  endl;
@@ -157,9 +226,9 @@ void test_ChFF_slab(){
 	global.program.decomposition = "SLAB";
 	global.program.sincostr_switch = "C0F";
 
-	global.Process_global_vars_basic();
+	global.Process_basic_vars();
 	universal=new ChFF_SLAB;
-	global.Process_global_vars_advanced();
+	global.Process_advanced_vars();
 	
 	if (master) {
 		cout <<  "FFT-transform for basis = " << global.program.basis_type << " and decomposition = " << global.program.decomposition <<  endl;

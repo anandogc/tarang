@@ -33,6 +33,4 @@ ADD_LIBRARY(basis_basicfn
 	shell_etc_indices
 	ArrayOps
 	BasicIO
-       BasicIO_SP
-	BasicIO_tarang1
 )

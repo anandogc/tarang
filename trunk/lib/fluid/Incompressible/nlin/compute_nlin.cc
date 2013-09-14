@@ -64,7 +64,14 @@ void Nlin_incompress::Compute_nlin(FluidVF& U)
 	
 	U.Inverse_transform();  // Vir = Inv_transform(Vi)
 	
-
+    global.io.real_space_field_available = true;
+    
+    if (!global.time.dt_computation_done) {
+		global.time.dt = U.Get_dt();
+		global.time.now = global.time.now + global.time.dt;
+		global.time.dt_computation_done = true;
+	}
+    
 	if (!global.io.output_real_field_done) {
 		fluidIO_incompress.Output_real_field(U);
 		fluidIO_incompress.Output_field_r(U);
@@ -73,12 +80,8 @@ void Nlin_incompress::Compute_nlin(FluidVF& U)
 		global.io.output_real_field_done = true;
 	} 
 	
-	if (!global.time.dt_computation_done) {
-		global.time.dt = U.Get_dt();
-		global.time.now = global.time.now + global.time.dt;
-		global.time.dt_computation_done = true;
-	}
-	
+    global.io.real_space_field_available = false;
+    
 	Compute_nlin_diag(U);
 	
 	Compute_nlin_offdiag(U);

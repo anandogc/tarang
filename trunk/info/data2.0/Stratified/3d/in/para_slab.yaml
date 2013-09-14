@@ -1,37 +1,30 @@
 program:
     kind: RBC
-    basis_type: SSS 
+    basis_type: SFF 
     decomposition: SLAB              #PENCIL, SLAB
     iter_or_diag: ITERATION           #ITERATION, DIAGNOSTICS
     alias_option: DEALIAS
-    integration_scheme: RK4
+    integration_scheme: EULER
     LES_switch: false
     apply_strong_realitycond_alltime_switch: false
-    apply_weak_realitycond_alltime_switch: false
+    apply_weak_realitycond_alltime_switch: true
     low_dimensional_switch: false
     two_and_half_dimension: false
     two_dimension: false       
-    dt_option: 1               # 0=fixed; 1=dx/umax
+    dt_option: 0               # 0=fixed; 1=dx/umax
     helicity_switch: false
-    sincostr_switch: SCC 
+    sincostr_switch: SFF 
     
-PHYSICS:
+RBC:
     Pr_option: PRLARGE
-    Uscaling: ULARGE
-    Rayleigh: 100
-    Prandtl: 40
+    Uscaling: USMALL
+    Ra: 1000
+    Pr: 1
     temperature_grad: +1
-    Chandrasekhar: 0
-    Prandtl_mag: 0
-    Prandtl_c: 0
-    Reynolds: 0
-    Reynolds_mag: 0
-    Peclet: 0
-    Peclet_c: 0
     
 field:
-    N: [32, 16, 8]
-    kfactor: [1, 1, 1]
+    N: [64, 64, 64]
+    kfactor: [1,1,1]
     L: 
     diss_coefficients: [0.0, 0.0]               
     hyper_diss_coefficients: 
@@ -43,14 +36,14 @@ field:
 
 fft:
     fftw3D_switch: false              #for fftw_original
-    transpose: false                #Should be always "true" for PENCIL
+    transpose: true                #Should be always "true" for PENCIL
     sincostr_switch: FFF                    #SINX, COSX, SCC, CSC, CCS, SSC, CSS, SCS
 
 time:
     init: 0
-    final: 0.001
-    dt_fixed: 0.01
-    Courant_no: 0.2
+    final: 0.002
+    dt_fixed: 0.001
+    Courant_no: 0.1
     job_time:                       # 00:00:20
 
 force:
@@ -70,72 +63,59 @@ force:
 #          mode:
         
 io:
-    input_field_procedure: 4
+    input_field_procedure: 2
     #1:complex field, 2: complex_reduced field, 3: real field, 4: modes, 5: Ek,Hk; 6: TG, 7:ABC
     input_vx_vy_switch: true
     output_vx_vy_switch: true
     diagnostic_procedures: 
-    N_in_reduced: 
-    N_out_reduced: 
+    N_in_reduced: [32, 32, 32]
+    N_out_reduced: [32, 32, 32]
     int_para: 
     double_para: [1, 0, 1]
     string_para:
 
     #if probes/init_cond not provided, comment "- coord" lines.
     init_cond_modes:
-            - coord: [1,0,1]
-              mode: [ 0.01, 0.0, 0.02]
+            - coord: [1,1,1]
+              mode: [ (1,0), (0,-3), (1,0) ]
               
-            - coord: [2,0,1]
-              mode: [ 0.0, 0.0, 0.02]
+            - coord: [1,-1,1]
+              mode: [ (1,0), (0,3), (1,0) ]
               
-            - coord: [3,0,2]
-              mode: [ 0.001, 0.0, 0.05]
+            - coord: [3,1,2]
+              mode: [ (1,0), (0,-2), (1,0) ]
               
-            - coord: [4,0,3]
-              mode: [ 0.01,0,0 ]
+            - coord: [3,-1,2]
+              mode: [ (1,0), (0,2), (1,0) ]
               
-            - coord: [5,0,3]
-              mode: [ 1.01, 0, 1.0 ]
+            - coord: [5,2,2]
+              mode: [ (1,0), (0,-1.5) , (1.5,0)]
               
-            - coord: [7,0,5]
-              mode: [ 1.0, 0, 0 ]
-              
-            - coord: [9,0,6]
-              mode: [ 1.0, 0, 0.02]
-              
-            - coord: [6,0,4]
-              mode: [ 1.0, 0, 0.3]
+            - coord: [5,-2,2]
+              mode: [ (1,0), (0,1.5) , (1.5,0)]
               
             - coord: [2,0,0]
-              mode: [ 0, 0, 0.16]
-              
-#            - coord: [-2,0,0]
-#              mode: [ (0,0), (0,0), (0,-0.16)]
+              mode: [ (0,0), (0,0), (-0.16,0)]
               
     probes:
         spectral_space:
-            - coord: [1, 0, 1]
-            - coord: [2, 0, 2]
-            - coord: [2, 0, 1]
-            - coord: [1, 0, 2]
-            - coord: [3, 0, 3]
-            - coord: [2, 0, 0]
+            - coord: [1, 1, 1]
+            - coord: [1, -1, 1]
         real_space:
             - coord: [1, 1, 1]
               
     time:
-        global_save_first:   0
-        complex_field_save_first: 
-        field_frequent_save_first: 0
+        global_save_first:   0.0
+        complex_field_save_first: 0
+        field_frequent_save_first:
         field_reduced_save_first:  
-        real_field_save_first:  
-        field_k_save_first: 
-        field_r_save_first: 
-        spectrum_save_first:
+        real_field_save_first: 0
+        field_k_save_first: 0
+        field_r_save_first: 0
+        spectrum_save_first: 0
         pressure_save_first:
         pressure_spectrum_save_first:
-        flux_save_first: 
+        flux_save_first: 0
         shell_to_shell_save_first: 
         ring_spectrum_save_first: 
         ring_to_ring_save_first:
@@ -145,29 +125,29 @@ io:
         Tk_shell_spectrum_save_first:
         Tk_ring_spectrum_save_first:
         Tk_cylindrical_ring_spectrum_save_first:
-        cout_save_first: 0
+        cout_save_first: 0.0
 
         global_save_interval: 0.01
         complex_field_save_interval: 
-        field_frequent_save_interval: 0.01
+        field_frequent_save_interval:
         field_reduced_save_interval: 
         real_field_save_interval: 
-        field_k_save_interval: 0.01
-        field_r_save_interval: 
+        field_k_save_interval: 0.001
+        field_r_save_interval: 0.001
         pressure_save_interval: 
-        spectrum_save_interval: 10.0
+        spectrum_save_interval: 0.01
         pressure_spectrum_save_interval: 
-        flux_save_interval: 10.0
-        shell_to_shell_save_interval: 
+        flux_save_interval: 0.01
+        shell_to_shell_save_interval: 0.1
         ring_spectrum_save_interval: 
         ring_to_ring_save_interval:
-        cylindrical_ring_spectrum_save_interval: 
+        cylindrical_ring_spectrum_save_interval: 0.01
         cylindrical_ring_to_ring_save_interval: 
         structure_fn_save_interval: 
         Tk_shell_spectrum_save_interval:
         Tk_ring_spectrum_save_interval:
         Tk_cylindrical_ring_spectrum_save_interval:
-        cout_save_interval: 0.01
+        cout_save_interval: 0.0001
         
         global_save_last: true
         complex_field_save_last: 

@@ -85,7 +85,7 @@ void FluidIO::Read_init_cond(FluidVF& U)
     // preprocess the data
     int input_proc = global.io.input_field_procedure;
     
-    if ((input_proc==1) || (input_proc==2) || (input_proc==3) || (input_proc==5)) {
+    if ((input_proc==1) || (input_proc==2) || (input_proc==3) || (input_proc==4) || (input_proc==5)) {
         U.Satisfy_strong_reality_condition_field();
         
         if ((basis_type == "SFF") || (basis_type == "SSF") || (basis_type == "SSS")) 
@@ -133,7 +133,7 @@ void FluidIO::Read_init_cond(FluidVF& U, FluidSF& T)
     // preprocess the data
     int input_proc = global.io.input_field_procedure;
     
-    if ((input_proc==1) || (input_proc==2) || (input_proc==3) || (input_proc==5)) {
+    if ((input_proc==1) || (input_proc==2) || (input_proc==3) || (input_proc==4) || (input_proc==5)) {
         if (global.program.apply_strong_realitycond_alltime_switch){
 	        U.Satisfy_strong_reality_condition_field();
 	        T.Satisfy_strong_reality_condition_field();
@@ -170,7 +170,7 @@ void FluidIO::Read_init_cond(FluidVF& U, FluidSF& T1, FluidSF& T2)
     // preprocess the data
     int input_proc = global.io.input_field_procedure;
     
-    if ((input_proc==1) || (input_proc==2) || (input_proc==3)) {
+    if ((input_proc==1) || (input_proc==2) || (input_proc==3) || (input_proc==4)) {
         U.Satisfy_strong_reality_condition_field();
         T1.Satisfy_strong_reality_condition_field();
         T2.Satisfy_strong_reality_condition_field();
@@ -225,7 +225,7 @@ void FluidIO::Read_init_cond(FluidVF& U, FluidVF& W)
     // preprocess the data
     int input_proc = global.io.input_field_procedure;
     
-    if ((input_proc==1) || (input_proc==2) || (input_proc==3) || (input_proc==5) || (input_proc==102)) {
+    if ((input_proc==1) || (input_proc==2) || (input_proc==3) || (input_proc==4) || (input_proc==5) || (input_proc==102)) {
         
         U.Satisfy_strong_reality_condition_field();
         W.Satisfy_strong_reality_condition_field();
@@ -272,7 +272,7 @@ void FluidIO::Read_init_cond(FluidVF& U, FluidVF& W, FluidSF& T)
     // preprocess the data
     int input_proc = global.io.input_field_procedure;
     
-    if ((input_proc==1) || (input_proc==2) || (input_proc==3) || (input_proc==5)) {
+    if ((input_proc==1) || (input_proc==2) || (input_proc==3) || (input_proc==4) || (input_proc==5)) {
         
         U.Satisfy_strong_reality_condition_field();
         W.Satisfy_strong_reality_condition_field();

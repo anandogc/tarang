@@ -29,29 +29,44 @@
 ########################################
 #tarang_field_version_convert
 ########################################
-ADD_EXECUTABLE(tarang_field_version_convert
-	tarang_field_version_convert
+#ADD_EXECUTABLE(tarang_field_version_convert
+#	tarang_field_version_convert
+#	)
+#	
+#TARGET_LINK_LIBRARIES(tarang_field_version_convert basis_basicfn global ${SYSTEM_LIBRARIES})
+#
+#ADD_CUSTOM_COMMAND(TARGET tarang_field_version_convert
+#                   POST_BUILD
+#                   COMMAND mv -f tarang_field_version_convert ${PROJECT_BINARY_DIR}
+#                   COMMENT "moving tarang_field_version_convert executable to PROJECT_BINARY_DIR" )
+#########################################
+
+########################################
+#tarang_field_version_convert2.2
+########################################
+ADD_EXECUTABLE(tarang_field_version_convert2.2
+	tarang_field_version_convert2.2
 	)
 	
-TARGET_LINK_LIBRARIES(tarang_field_version_convert basis_basicfn global ${SYSTEM_LIBRARIES})
+TARGET_LINK_LIBRARIES(tarang_field_version_convert2.2 basis_basicfn global ${SYSTEM_LIBRARIES})
 
-ADD_CUSTOM_COMMAND(TARGET tarang_field_version_convert
+ADD_CUSTOM_COMMAND(TARGET tarang_field_version_convert2.2
                    POST_BUILD
-                   COMMAND mv -f tarang_field_version_convert ${PROJECT_BINARY_DIR}
-                   COMMENT "moving tarang_field_version_convert executable to PROJECT_BINARY_DIR" )
+                   COMMAND mv -f tarang_field_version_convert2.2 ${PROJECT_BINARY_DIR}
+                   COMMENT "moving tarang_field_version_convert2.2 executable to PROJECT_BINARY_DIR" )
 ########################################
 
 ########################################
 #TARANG ASCII to HDF5
 ########################################
-ADD_EXECUTABLE(tarang_ascii_to_hdf5
-	tarang_ascii_to_hdf5
-	)
-	
-TARGET_LINK_LIBRARIES(tarang_ascii_to_hdf5 basis_basicfn global ${SYSTEM_LIBRARIES})
-
-ADD_CUSTOM_COMMAND(TARGET tarang_ascii_to_hdf5
-                   POST_BUILD
-                   COMMAND mv -f tarang_ascii_to_hdf5 ${PROJECT_BINARY_DIR}
-                   COMMENT "moving tarang_ascii_to_hdf5 executable to PROJECT_BINARY_DIR" )
+#ADD_EXECUTABLE(tarang_ascii_to_hdf5
+#	tarang_ascii_to_hdf5
+#	)
+#	
+#TARGET_LINK_LIBRARIES(tarang_ascii_to_hdf5 basis_basicfn global ${SYSTEM_LIBRARIES})
+#
+#ADD_CUSTOM_COMMAND(TARGET tarang_ascii_to_hdf5
+#                   POST_BUILD
+#                   COMMAND mv -f tarang_ascii_to_hdf5 ${PROJECT_BINARY_DIR}
+#                   COMMENT "moving tarang_ascii_to_hdf5 executable to PROJECT_BINARY_DIR" )
 ########################################

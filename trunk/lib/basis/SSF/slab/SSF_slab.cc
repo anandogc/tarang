@@ -35,7 +35,8 @@
  */ 
 
 #include "SSF_slab.h"
-#include "BasicIO.h"
+#include "BasicIO_SP.h"
+
 
 SSF_SLAB::SSF_SLAB()
 {
@@ -118,26 +119,35 @@ SSF_SLAB::SSF_SLAB()
 		global.field.shape_complex_array = global.field.Ny, global.field.Nz/2+1, spectralTransform.local_Nx;
         global.field.shape_real_array = spectralTransform.local_Ny, global.field.Nz+2, global.field.Nx;
 		
-		BasicIO::shape_full_complex_array = Ny,Nz/2+1,Nx;
-		BasicIO::shape_full_real_array = Ny,Nz+2,Nx;
+    	BasicIO::Array_properties<3> array_properties;
+		array_properties.shape_full_complex_array = Ny, Nz/2+1, Nx;
+		array_properties.shape_full_real_array = Ny, Nz+2, Nx;
+
+		array_properties.id_complex_array = 0, 0, my_id;
+		array_properties.id_real_array = my_id, 0, 0;
+
+		array_properties.numprocs_complex_array = 1, 1, numprocs;
+		array_properties.numprocs_real_array = numprocs, 1, 1;
+
+		if (global.io.N_in_reduced.size() == 3)
+			array_properties.shape_N_in_reduced = global.io.N_in_reduced[1], global.io.N_in_reduced[2]/2+1, global.io.N_in_reduced[0];
 		
-		BasicIO::direction_z_complex_array = 0,1,0;
-		BasicIO::direction_z_real_array = 0,1,0;
-		
-		BasicIO::id_complex_array = my_id,0,0;
-		BasicIO::id_real_array = 0,0,my_id;
-		
-		if (global.io.N_in_reduced.size()==3)
-			BasicIO::shape_in_reduced_array = global.io.N_in_reduced[1],global.io.N_in_reduced[2]/2+1,global.io.N_in_reduced[0];
-		
-		if (global.io.N_out_reduced.size()==3)
-			BasicIO::shape_out_reduced_array = global.io.N_out_reduced[1],global.io.N_out_reduced[2]/2+1,global.io.N_out_reduced[0];
-		
-		BasicIO::Fourier_directions = 0,1,0;
+		if (global.io.N_out_reduced.size() == 3)
+			array_properties.shape_N_out_reduced = global.io.N_out_reduced[1], global.io.N_out_reduced[2]/2+1, global.io.N_out_reduced[0];
+
+		array_properties.Fourier_directions = 0,1,0;
+		array_properties.Z = 1;
+
+		array_properties.datatype_complex_space = BasicIO::H5T_COMPLX;
+		array_properties.datatype_real_space = BasicIO::H5T_DP;
+
+		BasicIO::Set_H5_plans(array_properties, this);
 	}
 	
 	else if (Ny == 1) {
-		if (my_id == 0) cerr << "ERROR: 2D Not implemented for FFF basis, Please use SSS basis " << endl;
+		if (master)
+			cerr << "ERROR: 2D Not implemented for SSF basis, Please use SSS basis " << endl;
+		exit(1);
 	}
     
     // alias

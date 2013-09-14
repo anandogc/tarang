@@ -41,7 +41,7 @@
 
 //*********************************************************************************************
 
-void Global::Global_init_default()
+void Global::Init_defaults()
 {
 		// program
 	program.kind = "FLUID_INCOMPRESS";
@@ -59,22 +59,6 @@ void Global::Global_init_default()
 	program.dt_option = 0;
 	program.sincostr_switch = "FFF";
 	
-	/*if (program.kind == "RBC"){
-		para["RBC"]["Pr_option"] >> RBC.Pr_option;
-		para["RBC"]["Uscaling"] >> RBC.Uscaling;
-		
-		if (Input_provided(para["RBC"] ,"Ra"))
-			para["RBC"]["Ra"] >> RBC.Ra;
-		else
-			para["RBC"]["r"] >> RBC.r;
-			
-		para["RBC"]["Pr"] >> RBC.Pr;
-		para["RBC"]["temperature_grad"] >> RBC.temperature_grad;
-		if ( (RBC.temperature_grad != 1) || (RBC.temperature_grad != -1) )
-			Show_error("RBC.temperature_grad can be either +1 or -1");
-	}*/
-	
-	
 	// field
 	field.incompressible = true;
 	field.waveno_switch = true;
@@ -85,7 +69,6 @@ void Global::Global_init_default()
 	field.N[2] = 16;
 	field.N[3] = 14;
 
-	
 
 	field.kfactor.resize(4);
 	field.kfactor[0] = 0;
@@ -121,6 +104,7 @@ void Global::Global_init_default()
 	
 	
 	// IO
+	io.data_dir = ".";
 	io.input_field_procedure = 4;
 	io.input_vx_vy_switch = false;
 	io.output_vx_vy_switch = false;

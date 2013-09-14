@@ -67,6 +67,7 @@ void FluidIO_incompress::Output_pressure_spectrum(Pressure& P)
 			Print_array(pressure_file, "pressure cylindrical ring spectrum", Correlation::cylindrical_ring_ek);
 		}
         
+#ifdef GROSSMANN_LOHSE        
         // For RBC GL scaling analysis only.  Comment else
         global.program.sincostr_switch = global.program.sincostr_switch_divergence;
         universal->Xderiv(P.F, global.temp_array.X);
@@ -80,8 +81,8 @@ void FluidIO_incompress::Output_pressure_spectrum(Pressure& P)
         sum_rmsgradp += sqrt(sum(sqr(abs(global.temp_array.X))));
         
         misc_file << "rms(p): time, rms(|grad(p)|): " << global.time.now << " " << sum_rmsgradp << endl;
-		
         // print grad(p) ended
+#endif
         
 		global.io.time.pressure_spectrum_save_next += global.io.time.pressure_spectrum_save_interval;
 	}

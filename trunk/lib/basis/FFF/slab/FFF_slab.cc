@@ -35,7 +35,8 @@
  */ 
 
 #include "FFF_slab.h"
-#include "BasicIO.h"
+#include "BasicIO_SP.h"
+ 
 
 FFF_SLAB::FFF_SLAB()
 {
@@ -103,39 +104,49 @@ FFF_SLAB::FFF_SLAB()
 		exit(1);
 	}
 	
-    spectralTransform.Init("FFF", "SLAB", Nx, Ny, Nz);
+	spectralTransform.Init("FFF", "SLAB", Nx, Ny, Nz);
 	
 	global.field.maxlx = global.field.Nx-1;
 	global.field.maxly = spectralTransform.local_Ny-1;
 	global.field.maxlz = global.field.Nz/2;
 
-    if (Ny > 1) {
-        global.field.shape_complex_array = spectralTransform.local_Ny,global.field.Nz/2+1,global.field.Nx;
-        global.field.shape_real_array = global.field.Ny,global.field.Nz+2,spectralTransform.local_Nx;
+	if (Ny > 1) {
+		global.field.shape_complex_array = spectralTransform.local_Ny,global.field.Nz/2+1,global.field.Nx;
+		global.field.shape_real_array = global.field.Ny,global.field.Nz+2,spectralTransform.local_Nx;
+		BasicIO::Array_properties<3> array_properties;
 
-		BasicIO::shape_full_complex_array = Ny,Nz/2+1,Nx;
-		BasicIO::shape_full_real_array = Ny,Nz+2,Nx;
+		array_properties.shape_full_complex_array = Ny, Nz/2+1, Nx;
+		array_properties.shape_full_real_array = Ny, Nz+2, Nx;
 
-		BasicIO::direction_z_complex_array = 0,1,0;
-		BasicIO::direction_z_real_array = 0,1,0;
+		array_properties.id_complex_array = my_id, 0, 0;
+		array_properties.id_real_array = 0, 0, my_id;
+
+		array_properties.numprocs_complex_array = numprocs, 1, 1;
+		array_properties.numprocs_real_array = 1, 1, numprocs;
+
+		if (global.io.N_in_reduced.size() == 3)
+			array_properties.shape_N_in_reduced = global.io.N_in_reduced[1], global.io.N_in_reduced[2]/2+1, global.io.N_in_reduced[0];
 		
-		BasicIO::id_complex_array = my_id,0,0;
-		BasicIO::id_real_array = 0,0,my_id;
+		if (global.io.N_out_reduced.size() == 3)
+			array_properties.shape_N_out_reduced = global.io.N_out_reduced[1], global.io.N_out_reduced[2]/2+1, global.io.N_out_reduced[0];
 
-		if (global.io.N_in_reduced.size()==3)
-			BasicIO::shape_in_reduced_array = global.io.N_in_reduced[1],global.io.N_in_reduced[2]/2+1,global.io.N_in_reduced[0];
-		
-		if (global.io.N_out_reduced.size()==3)
-			BasicIO::shape_out_reduced_array = global.io.N_out_reduced[1],global.io.N_out_reduced[2]/2+1,global.io.N_out_reduced[0];
+		array_properties.Fourier_directions = 1,1,1;
+		array_properties.Z = 1;
 
-		BasicIO::Fourier_directions = 1,1,1;
-    }
-    
-    else if (Ny == 1) {
-        if (my_id == 0) cerr << "ERROR: 2D Not implemented for FFF basis, Please use FFTW basis (uses original FFTW functions)" << endl;
-    }
+		array_properties.datatype_complex_space = BasicIO::H5T_COMPLX;
+		array_properties.datatype_real_space = BasicIO::H5T_DP;
 
-    // alias..
+		BasicIO::Set_H5_plans(array_properties, this);
+	}
+	
+	else if (Ny == 1) {
+		if (master)
+			cerr << "ERROR: 2D Not implemented for FFF basis, Please use FFTW basis (uses original FFTW functions)" << endl;
+		exit(1);
+	}
+
+
+	// alias..
 	kfactor.resize(4);
 	kfactor[0]= global.field.kfactor[0];
 	kfactor[1]= global.field.kfactor[1];
@@ -151,20 +162,20 @@ FFF_SLAB::FFF_SLAB()
 	local_Nz_start=spectralTransform.local_Nz_start;
 
 	shape_complex_array = global.field.shape_complex_array;
-    shape_real_array = global.field.shape_real_array;
+	shape_real_array = global.field.shape_real_array;
 	
 	global.temp_array.X.resize(shape_complex_array);
-    global.temp_array.X2.resize(shape_complex_array);
+	global.temp_array.X2.resize(shape_complex_array);
 	
 	global.temp_array.Xr.resize(shape_real_array);
-    global.temp_array.Xr2.resize(shape_real_array);
+	global.temp_array.Xr2.resize(shape_real_array);
 	
-    // temp arrays
-    // Being used in void ArrayOps::Get_XY_plane(Array<complx,3> A, Array<complx,2> plane_xy, int kz, string configuration)
+	// temp arrays
+	// Being used in void ArrayOps::Get_XY_plane(Array<complx,3> A, Array<complx,2> plane_xy, int kz, string configuration)
 	global.temp_array.plane_xy.resize(Ny, Nx);
 
-    global.temp_array.plane_xy_inproc.resize(spectralTransform.local_Ny, Nx);
+	global.temp_array.plane_xy_inproc.resize(spectralTransform.local_Ny, Nx);
 	
-    
+
 }
 

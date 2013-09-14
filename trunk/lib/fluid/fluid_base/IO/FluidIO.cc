@@ -66,6 +66,9 @@ void FluidIO::Open_base_files()
 		filename = global.io.data_dir+ filename;   global_file.open(filename.c_str());
 		if (!global_file.is_open()) 
 			cout << "UNABLE TO OPEN FILE global_file (glob.d) " << endl;
+        
+        filename = "/out/glob_real.d";
+		filename = global.io.data_dir+ filename;   global_real_space_file.open(filename.c_str());
 		
 		filename = "/out/spectrum.d";
 		filename = global.io.data_dir+ filename;   spectrum_file.open(filename.c_str());
@@ -147,7 +150,8 @@ void FluidIO::Close_base_files()
 		field_out_reduced_file.close();
 		realfield_out_file.close();
 		
-		global_file.close(); 
+		global_file.close();
+        global_real_space_file.close();
 		spectrum_file.close();
 		ring_spectrum_file.close();
 		cylindrical_ring_spectrum_file.close();

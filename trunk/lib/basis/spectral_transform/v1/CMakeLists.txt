@@ -29,7 +29,8 @@ ADD_LIBRARY(spectral_transform
 spectral_transform.cc
 TransposeConfig.cc
 
-#basis_functions/FFFW_slab.cc
+basis_functions/CFFF_slab.cc
+basis_functions/FFFW_slab.cc
 basis_functions/FFF_slab.cc
 basis_functions/SFF_slab.cc
 basis_functions/SSF_slab.cc

@@ -45,6 +45,10 @@
 
 
 #include "CFFF/slab/CFFF_slab.h"
+#include "CFFF/slab/CFFF_slab_inline.h"
+
+#include "FFFW/slab/FFFW_slab.h"
+#include "FFFW/slab/FFFW_slab_inline.h"
 
 #include "FFF/slab/FFF_slab.h"
 #include "FFF/slab/FFF_slab_inline.h"

@@ -50,7 +50,7 @@ extern Uniform<DP> SPECrand;
  *	@param phase1, phase2, phase3	Phases
  *
  */
-void FORCE::Put_force_amp_phase_comp_conj(FluidVF U, int lx, int ly, int lz,  DP amp, DP phase1, DP phase2, DP phase3)
+void FORCE::Put_force_amp_phase_comp_conj(FluidVF U, int lx, int ly, int lz,  DP amp, DP phase1, DP phase2, DP phase3, bool add_flag)
 {
 	complx fperp1, fperp2;
 	complx fpll, fh1, fh2;
@@ -116,17 +116,29 @@ void FORCE::Put_force_amp_phase_comp_conj(FluidVF U, int lx, int ly, int lz,  DP
         
 	if (basis_type == "FFF") {
 		Flocal_complex = F_FOUR;
-		universal->Assign_local_spectral_field(lx, ly, lz, U.Force1, U.Force2, U.Force3, Flocal_complex);
+        
+        if (!add_flag)
+            universal->Assign_local_spectral_field(lx, ly, lz, U.Force1, U.Force2, U.Force3, Flocal_complex);
+        else
+            universal->Add_local_spectral_field(lx, ly, lz, U.Force1, U.Force2, U.Force3, Flocal_complex);
 	}
 	
 	else if (basis_type == "SSS") {
         Convert_from_Fourier_space(F_FOUR, Flocal_real);
-        universal->Assign_local_spectral_field(lx, ly, lz, U.Force1, U.Force2, U.Force3, Flocal_real);
+        
+        if (!add_flag)
+            universal->Assign_local_spectral_field(lx, ly, lz, U.Force1, U.Force2, U.Force3, Flocal_real);
+        else
+            universal->Add_local_spectral_field(lx, ly, lz, U.Force1, U.Force2, U.Force3, Flocal_real);
 	}
 	
 	else {
 		Convert_from_Fourier_space(F_FOUR, Flocal_complex);
-		universal->Assign_local_spectral_field(lx, ly, lz, U.Force1, U.Force2, U.Force3, Flocal_complex); 
+        
+        if (!add_flag)
+            universal->Assign_local_spectral_field(lx, ly, lz, U.Force1, U.Force2, U.Force3, Flocal_complex);
+        else
+            universal->Add_local_spectral_field(lx, ly, lz, U.Force1, U.Force2, U.Force3, Flocal_complex);
 	}
 }
 
@@ -141,7 +153,7 @@ void FORCE::Put_force_amp_phase_comp_conj(FluidVF U, int lx, int ly, int lz,  DP
  *	@param amp  Amplitude of the vector.
  *
  */
-void FORCE::Put_force_amp_phase_comp_conj(FluidSF& T, int lx, int ly, int lz, DP amp, DP phase)
+void FORCE::Put_force_amp_phase_comp_conj(FluidSF& T, int lx, int ly, int lz, DP amp, DP phase, bool add_flag)
 {
 	
 	DP Glocal_real;
@@ -151,17 +163,30 @@ void FORCE::Put_force_amp_phase_comp_conj(FluidSF& T, int lx, int ly, int lz, DP
 	
 	if (basis_type == "FFF") {
 		Glocal_complex = G_Four;
-		universal->Assign_local_spectral_field(lx, ly, lz, T.Force, Glocal_complex);
+        
+        if (!add_flag)
+            universal->Assign_local_spectral_field(lx, ly, lz, T.Force, Glocal_complex);
+        else
+            universal->Add_local_spectral_field(lx, ly, lz, T.Force, Glocal_complex);
     }
 	
 	else if (basis_type == "SSS") {
 		Convert_from_Fourier_space(G_Four, Glocal_real);
-		universal->Assign_local_spectral_field(lx, ly, lz, T.Force, Glocal_real);
+        
+        if (!add_flag)
+            universal->Assign_local_spectral_field(lx, ly, lz, T.Force, Glocal_real);
+        else
+            universal->Add_local_spectral_field(lx, ly, lz, T.Force, Glocal_real);
+            
 	}
 	
 	else {
-		Convert_from_Fourier_space(G_Four, Glocal_complex);	
-		universal->Assign_local_spectral_field(lx, ly, lz, T.Force, Glocal_complex);
+		Convert_from_Fourier_space(G_Four, Glocal_complex);
+        
+        if (!add_flag)
+            universal->Assign_local_spectral_field(lx, ly, lz, T.Force, Glocal_complex);
+        else
+            universal->Add_local_spectral_field(lx, ly, lz, T.Force, Glocal_complex);
 	}
 }
 

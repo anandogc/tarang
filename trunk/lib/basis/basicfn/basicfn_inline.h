@@ -90,7 +90,6 @@ inline DP imag_cprod(complx V, complx W)
 	return (-real(V)*imag(W) +imag(V)*real(W));
 }
 
-
 inline DP Vsqr(complx F)
 {
     return (pow2(real(F)) + pow2(imag(F)));
@@ -429,6 +428,11 @@ inline void Real_to_fourier_index(int i_last, int& k_last, int& is_real)
 	else
 		is_real = 0;
 
+}
+
+template<class T1, class T2, int N>
+Array<T2,N> Cast_array(Array<T1,N> A1, TinyVector<int,N> shape_A2, preexistingMemoryPolicy delete_policy=neverDeleteData){
+	return Array<T2,N>(reinterpret_cast<T2*>(A1.data()), shape_A2, delete_policy);
 }
 
 #endif

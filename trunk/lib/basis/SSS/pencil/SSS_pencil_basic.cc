@@ -45,7 +45,7 @@
 ***********************************************************************************************/
 
 
-void SSS_PENCIL::Print_large_Fourier_elements(Array<complx,3> A)
+void SSS_PENCIL::Print_large_Fourier_elements(Array<complx,3> A, string array_name)
 {
 	Array<DP,3> B=Array<DP,3>(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
 	
@@ -53,7 +53,7 @@ void SSS_PENCIL::Print_large_Fourier_elements(Array<complx,3> A)
         for (int lz=0; lz<B.extent(1); lz++) // 0:Nz-1
 			for (int lx=0; lx<B.extent(2); lx++) {
 				if (abs(B(ly,lz,lx)) > MYEPS2)
-					cout << "my_id = " << my_id <<  " vect(k) = ( " << Get_kx(lx) << "," << ly  << "," << lz <<");  Array(k) = " <<  B(ly, lz, lx) << '\n';
+					cout << "my_id = " << my_id <<  " vect(k) = (" << Get_kx(lx) << "," << ly  << "," << lz <<");  " << array_name << "(k) = " <<  B(ly, lz, lx) << '\n';
 			}
 	
     cout << endl;

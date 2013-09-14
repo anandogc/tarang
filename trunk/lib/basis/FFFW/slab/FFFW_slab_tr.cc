@@ -37,163 +37,34 @@
 #include "FFFW_slab.h"
 #include "FFFW_slab_inline.h"
 
-	
-//*********************************************************************************************
-/* void FFFW_SLAB::Init_fftw_plan(Array<complx,3> A)
-{
-		//	Transform::Init_fftw_plan_all(A);
-}*/
-//*********************************************************************************************
-
-void FFFW_SLAB::Zero_pad_last_plane(Array<complx,3> Ar)
-{
-	Ar(Range::all(),Range::all(),Nz/2) = 0.0;
-}
-
-//*********************************************************************************************
-
-void FFFW_SLAB::Norm(Array<complx,3> A) 
-{
-	A = A/(DP(Nx) * DP(Ny) * DP(Nz));
-}
-
-
 //*********************************************************************************************
 
 // Ar: yxz, A: xyz
-void FFFW_SLAB::Forward_transform_array_transpose_order(Array<complx,3> Ar, Array<complx,3> A)
+void FFFW_SLAB::Forward_transform(Array<DP,3> Ar, Array<complx,3> A)
 {
-	if (Ny > 1)  {
-		Zero_pad_last_plane(Ar);							 // Zero_pad the row=Nz
-		
-		for (int ly=0; ly<local_Ny; ly++) {
-			global.temp_array.plane_xz = Ar(ly, Range::all(), Range::all());
-            Transform::FTr2c_xz(global.temp_array.plane_xz);
-			Ar(ly, Range::all(), Range::all()) = global.temp_array.plane_xz;
-		}
-		
-		Transform::Transpose_array_SLAB(Ar, A, 'Y', 'X', 'Z', 'Z');
-		
-		for (int lx=0; lx<local_Nx; lx++) 
-			for (int lz=0; lz<=Nz/2; lz++) {
-				global.temp_array.col_y = A(lx, Range::all(), lz);
-                Transform::FTc2c_y(global.temp_array.col_y);
-				A(lx, Range::all(), lz) = global.temp_array.col_y;
-			}
-		
-		Norm(A);
-	}
-	
-	else if (Ny == 1) {
-		cout << "ERROR:  ArrayFFT_FFFW_transpose_order for 2D array not" 
-			 <<		"allowed in FOUR basis " << endl;
-		exit(1);
-	}
-}
-
-
-//*********************************************************************************************
-
-void FFFW_SLAB::Forward_transform_array(Array<complx,3> A) 
-{
-	
-	if (global.fft.fftw3D_switch == true) {
-		Zero_pad_last_plane(A);
-		
-		if (Ny > 1){ 
-            Transform::FTr2c_xyz(A);
-        }
-		
-		else if (Ny == 1) {
-			global.temp_array.plane_xz = A(Range::all(), 0, Range::all());			
-            Transform::FTr2c_xz(global.temp_array.plane_xz); 
-			A(Range::all(), 0, Range::all()) = global.temp_array.plane_xz;
-		}
-		
-		Norm(A);
-	}
-	
-	// not original switch.. split in 2D and 1D ffts.
-	else {
-		if (Ny > 1) {
-			Transform::Transpose_array_SLAB(A, global.temp_array.Ar, 'X', 'Y', 'Z', 'Z');
-			Forward_transform_array_transpose_order(global.temp_array.Ar, A);	// Norm done here
-		}
-		
-		else if (Ny == 1) {
-			cout << "ERROR: USE ORIGINAL FFT FOR 2D. " << endl;
-            exit(1);
-		}
-	}
-	
-}
-
-//*********************************************************************************************
-
-
-void FFFW_SLAB::Inverse_transform_array_transpose_order(Array<complx,3> A, Array<complx,3> Ar)
-{
-	global.temp_array.X2 = A;
-	
-	if (Ny > 1) {
-		for (int lx=0; lx<local_Nx; lx++) 
-			for (int lz=0; lz<=Nz/2; lz++) {
-				global.temp_array.col_y = A(lx, Range::all(), lz);
-				Transform::IFTc2c_y(global.temp_array.col_y);
-				A(lx, Range::all(), lz) = global.temp_array.col_y;
-			}
-		
-		Transform::Transpose_array_SLAB(A, Ar, 'X', 'Y', 'Z', 'Z');
-		
-		for (int ly=0; ly < local_Ny; ly++)	{
-			global.temp_array.plane_xz = Ar(ly, Range::all(), Range::all());
-			Transform::FTc2r_xz(global.temp_array.plane_xz);
-			Ar(ly, Range::all(), Range::all()) = global.temp_array.plane_xz;
-		}
-		
-		Zero_pad_last_plane(Ar);
-	}
-	
-	else if (Ny == 1) {
-		cout << "ERROR:  ArrayIFFT_FFFW_transpose_order for 2D array not allowed in FOUR basis " << endl;
-		exit(1);
-	}
-	
-	A = global.temp_array.X2;
+    if (Ny > 1) 
+        spectralTransform.Forward_transform_FFFW_SLAB(Ar,A);
+    
+    else if (Ny == 1){
+     //   spectralTransform.Forward_transform_FFFW_SLAB(Ar(Range::all(),0,Range::all()),A(Range::all(),0,Range::all()));
+    }
 }
 
 
 //*********************************************************************************************
 
 
-void FFFW_SLAB::Inverse_transform_array(Array<complx,3> A)
+void FFFW_SLAB::Inverse_transform(Array<complx,3> A, Array<DP,3> Ar)
 {
-	
-	if (global.fft.fftw3D_switch == true) {
-		if (Ny > 1)
-			Transform::FTc2r_xyz(A);
-		
-		else if (Ny == 1) {
-			global.temp_array.plane_xz = A(Range::all(), 0, Range::all());
-            Transform::FTc2r_xz(global.temp_array.plane_xz);
-			A(Range::all(), 0, Range::all()) = global.temp_array.plane_xz;
-		}
-	}
-	
-    // By splitting it up...
-	else {
-		if (Ny > 1) {
-			Inverse_transform_array_transpose_order(A, global.temp_array.Ar);
-			Transform::Transpose_array_SLAB(global.temp_array.Ar, A, 'Y', 'X', 'Z', 'Z'); 
-		}
-		
-		else if (Ny == 1) {
-			cout << "ERROR: USE ORIGINAL FFT FOR 2D. " << endl;
-            exit(1);
-		}
-	}
-	
+    if (Ny > 1)
+        spectralTransform.Inverse_transform_FFFW_SLAB(A, Ar);
+    
+    else if (Ny == 1){
+    //   spectralTransform.Inverse_transform_FFFW_SLAB(Ar(Range::all(),0,Range::all()),A(Range::all(),0,Range::all()));
+   }
 }
+
+
 
 //*********************************************************************************************
 
@@ -201,16 +72,27 @@ void FFFW_SLAB::Xderiv(Array<complx,3> A, Array<complx,3> B)
 {
 	DP Kx;
 	
-	for (int lx = 0; lx < local_Nx; lx++) {
+	for (int lx = 0; lx < Nx; lx++) {
 		Kx = Get_kx(lx)*kfactor[1];
-		B(lx,Range::all(),Range::all()) = complex<DP>(0, Kx)* (A(lx,Range::all(),Range::all())); 	
+		B(Range::all(),Range::all(),lx) = complx(0, Kx)* (A(Range::all(),Range::all(),lx)); 	
 	}
-}	
+}
+
+void FFFW_SLAB::Add_Xderiv(Array<complx,3> A, Array<complx,3> B)
+{
+	DP Kx;
+	
+	for (int lx = 0; lx < Nx; lx++) {
+		Kx = Get_kx(lx)*kfactor[1];
+		B(Range::all(),Range::all(),lx) += complx(0, Kx)* (A(Range::all(),Range::all(),lx));
+	}
+}
 
 void  FFFW_SLAB::Xderiv(Array<DP,3> A, Array<DP,3> B)
 {
-	cerr << "This is not defined for this basis. "<<endl;
+	if (master) cerr <<  "Xderiv(real array)  is not defined for this basis. "<<endl;
 }
+
 
 
 //*********************************************************************************************
@@ -222,13 +104,26 @@ void FFFW_SLAB::Yderiv(Array<complx,3> A, Array<complx,3> B)
 	DP Ky;
 	
 	if (Ny > 1)
-		for (int ly=0; ly<Ny; ly++) {
+		for (int ly=0; ly<local_Ny; ly++) {
 			Ky = Get_ky(ly)*kfactor[2];
-			B(Range::all(),ly,Range::all()) = complex<DP>(0, Ky)* (A(Range::all(),ly,Range::all())); 
+			B(ly,Range::all(),Range::all()) = complx(0, Ky)* (A(ly,Range::all(),Range::all())); 
 		}
 	
 	else 
 		B = 0.0;
+}
+
+
+
+void FFFW_SLAB::Add_Yderiv(Array<complx,3> A, Array<complx,3> B)
+{
+	DP Ky;
+	
+	if (Ny > 1)
+		for (int ly=0; ly<local_Ny; ly++) {
+			Ky = Get_ky(ly)*kfactor[2];
+			B(ly,Range::all(),Range::all()) += complx(0, Ky)* (A(ly,Range::all(),Range::all()));
+		}
 }
 
 //*********************************************************************************************
@@ -240,9 +135,73 @@ void FFFW_SLAB::Zderiv(Array<complx,3> A, Array<complx,3> B)
     
     for (int lz=0; lz<=Nz/2; lz++) {
 		Kz = lz*kfactor[3];
-		B(Range::all(),Range::all(),lz) = complex<DP>(0, Kz)*(A(Range::all(),Range::all(),lz)); 	
+		B(Range::all(),lz,Range::all()) = complx(0, Kz)*(A(Range::all(),lz,Range::all())); 	
 	}
 }
+
+
+void FFFW_SLAB::Add_Zderiv(Array<complx,3> A, Array<complx,3> B)
+{
+	DP Kz;
+    
+    for (int lz=0; lz<=Nz/2; lz++) {
+		Kz = lz*kfactor[3];
+		B(Range::all(),lz,Range::all()) += complx(0, Kz)*(A(Range::all(),lz,Range::all()));
+	}
+}
+
+/**********************************************************************************************
+ 
+ B =  factor*Laplacian(A)
+ 
+ ***********************************************************************************************/
+
+void FFFW_SLAB::Laplacian(DP factor, Array<complx,3> A, Array<complx,3> B)
+{
+	
+	DP Ksqr;
+	
+	for (int ly=0; ly<A.extent(0); ly++) {
+		Ksqr = my_pow(Get_ky(ly)*kfactor[2],2);
+		
+        for (int lz=0; lz<A.extent(1); lz++) {
+			Ksqr += my_pow(Get_lz(lz)*kfactor[3],2);
+			
+            for (int lx=0; lx<A.extent(2); lx++) {
+				Ksqr +=  my_pow(Get_kx(lx)*kfactor[1],2);
+				
+				B(ly,lz,lx) = (-factor*Ksqr)*A(ly,lz,lx);
+			}
+		}
+	}
+}
+
+/**********************************************************************************************
+ 
+ B = B - factor*Laplacian(A) = B + factor*K^2 A
+ 
+ ***********************************************************************************************/
+
+void FFFW_SLAB::Subtract_Laplacian(DP factor, Array<complx,3> A, Array<complx,3> B)
+{
+	
+	DP Ksqr, Ksqr_factor;
+	
+	for (int ly=0; ly<A.extent(0); ly++) {
+		Ksqr = my_pow(Get_ky(ly)*kfactor[2],2);
+		
+        for (int lz=0; lz<A.extent(1); lz++) {
+			Ksqr += my_pow(Get_lz(lz)*kfactor[3],2);
+			
+            for (int lx=0; lx<A.extent(2); lx++) {
+				Ksqr_factor = factor * (Ksqr+my_pow(Get_kx(lx)*kfactor[1],2));
+				
+				B(ly,lz,lx) += Ksqr_factor*A(ly,lz,lx);
+			}
+		}
+	}
+}
+
 
 //********************************	End of four_tr.cc *****************************************
 

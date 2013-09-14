@@ -47,92 +47,64 @@
 
 #include "def_vars.h"
 #include "Global_extern_vars.h"
-// #include "basis.h"
 
-struct H5_dataset_meta {
-	string name;
-	vector<hsize_t> dimensions;
-	H5T_class_t datatype;
-};
+class Universal;
 
-struct H5_space{
-	TinyVector<hsize_t, 3> dimension;
-	TinyVector<hsize_t, 3> start;
-	TinyVector<hsize_t, 3> blockstride;
-	TinyVector<hsize_t, 3> blockcount;
-	TinyVector<hsize_t, 3> blockdim;
-
-};
-
-
-struct H5_space_group{
-	H5_space dataspace;
-	H5_space memspace;
-
-};
-
-
-struct H5_IO {
-	H5_space_group in;
-	H5_space_group out;
-
-};
-
-struct Filter_prop {
-	int first_rise;
-	int first_fall;
-	int zero_length;
-};
-
-ostream& operator<< (ostream &out, H5_space &h5_space);
-bool operator== (H5_space &h5_space1, H5_space &h5_space2);
-
-ostream& operator<< (ostream &out, H5_space_group &h5_space_group);
-bool operator== (H5_space_group &h5_space_group1, H5_space_group &h5_space_group2);
-
-ostream& operator<< (ostream &out, H5_IO &h5_io);
-bool operator== (H5_IO &h5_io1, H5_IO &h5_io2);
-
-
-ostream& operator<< (ostream &out, Filter_prop &prop);
 
 class BasicIO
 {
 	public:
 
-	static string data_in_folder, data_out_folder;
-	
-	static TinyVector<int, 3> id_complex_array;
-	static TinyVector<int, 3> id_real_array;
-	
-	
-	static TinyVector<int, 3> shape_complex_array;
-	static TinyVector<int, 3> shape_real_array;
-	
-	static TinyVector<int, 3> shape_full_complex_array;
-	static TinyVector<int, 3> shape_full_real_array;
-	
-	static TinyVector<int, 3> direction_z_complex_array;
-	static TinyVector<int, 3> direction_z_real_array;
-	
-	static TinyVector<int, 3> shape_in_reduced_array;
-	static TinyVector<int, 3> shape_out_reduced_array;
-	
-	static TinyVector<int, 3> Fourier_directions;
+	static hid_t H5T_FLOAT;
+	static hid_t H5T_DOUBLE;
 
-    
-	static H5_IO full;
-	static H5_IO kz0_full;
-	static H5_IO reduced;
-	static H5_IO kz0_reduced;
-	static H5_IO real;  
-    
+	static hid_t H5T_COMPLEX_FLOAT;
+	static hid_t H5T_COMPLEX_DOUBLE;
+
+	struct H5_dataset_meta {
+		string name;
+		vector<hsize_t> dimensions;
+		H5T_class_t datatype;
+	};
+
+	struct H5_plan{
+		hid_t dataspace;
+		hid_t memspace;
+
+		hid_t datatype;
+	};
+
+	template<int rank>
+	struct Array_properties {
+		TinyVector<int,rank> shape_full_complex_array;
+		TinyVector<int,rank> shape_full_real_array;
+
+		TinyVector<int,rank> id_complex_array;
+		TinyVector<int,rank> id_real_array;
+
+		TinyVector<int,rank> numprocs_complex_array;
+		TinyVector<int,rank> numprocs_real_array;
+
+		TinyVector<int,rank> shape_N_in_reduced;
+		TinyVector<int,rank> shape_N_out_reduced;
+
+		TinyVector<int,rank> Fourier_directions;
+		int Z;
+
+		hid_t datatype_complex_space;
+		hid_t datatype_real_space;
+
+		Array_properties():shape_N_in_reduced(0), shape_N_out_reduced(0){};
+	};
+
+	static string data_in_folder, data_out_folder;
 
 	private:
 		static string LOG_filename;
 		static ofstream LOG_file;
 		static time_t rawtime;
 
+		//Required for Tarant-1 to Tarang-2 convertor
 		static map<string, string> transition_table;
 	
 		static string prefix_prinfinity[1];
@@ -141,20 +113,15 @@ class BasicIO
 		static string prefix_mhd[6];
 		static string prefix_mhd_T[7];
 		static map<int,string*> dataset_name_old;
+		//Convertor properties ends
 	
-		static hid_t err;
-		static int rank;
-		static hsize_t start_3d[3];
-		static hsize_t stride_3d[3];
-		static hsize_t count_3d[3];
-		
-		static hid_t dataspace, memspace, dataset;
+		static herr_t err;
 		static hid_t acc_template;
 
 		// define an info object to store MPI-IO information 
 		static MPI_Info FILE_INFO_TEMPLATE;
+		static hid_t dataset;
 		static hid_t file_identifier;
-		static int ierr;
 
 		static int dim1, dim2, dim3;
 		static DP *dataArray;
@@ -172,16 +139,14 @@ class BasicIO
 	
 		static vector<H5_dataset_meta> Get_meta(string filename);
     
-    	static void Set_parameters();
+		template<typename Planner, int rank>
+    	static void Set_H5_plans(Array_properties<rank> array_properties, Planner* planner);
+
+    	static H5_plan Set_plan(int rank, int* my_id, int* numprocs, Array<int,1>* dataspace_filter, Array<int,1>* memspace_filter, hid_t datatype);
     
 
-        static void Read(Array<complx,3> A, string dataset_name, H5_IO config);
-        static void Read(Array<DP,3> A, string dataset_name, H5_IO config);
-        static void Read_basic(DP* data, string dataset_name, H5_IO config);
-
-        static void Write(Array<complx,3> A, string dataset_name, H5_IO config);
-        static void Write(Array<DP,3> A, string dataset_name, H5_IO config);
-        static void Write_basic(DP* data, string dataset_name, H5_IO config);
+        static void Read(void* data, string dataset_name, H5_plan plan);
+        static void Write(const void* data, string dataset_name, H5_plan plan, string folder_suffix="");
     
 	
 		//Tarang-1 to Tarang-2 field converter

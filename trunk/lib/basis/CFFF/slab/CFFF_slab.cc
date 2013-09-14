@@ -35,7 +35,8 @@
  */ 
 
 #include "CFFF_slab.h"
-#include "BasicIO.h"
+#include "BasicIO_SP.h"
+ 
 
 CFFF_SLAB::CFFF_SLAB()
 {
@@ -54,18 +55,38 @@ CFFF_SLAB::CFFF_SLAB()
 		for (int i=1; i<=3; i++) 
 			global.field.kfactor[i] = 2*M_PI/global.field.L[i];
 	}
-    
+	
+	else  {
+		global.field.kfactor.resize(4);
+		global.field.kfactor[0] = 1.0;
+		
+		if (global.program.kind == "RBC") {
+			global.field.kfactor[1] =  1.0;
+			global.field.kfactor[2] =  1.0;
+			global.field.kfactor[3] =  1.0;
+		}
+		else {
+			global.field.kfactor[1] = 1.0;
+			global.field.kfactor[2] = 1.0;
+			global.field.kfactor[3] = 1.0;
+		}
+		
+		global.field.L.resize(4);
+		global.field.L[0] = 1.0;
+		for (int i=1; i<=3; i++) 
+			global.field.L[i] = 2*M_PI/global.field.kfactor[i];
+	}
 	
 	for (int i=1; i<=3; i++) {
 		global.field.Delta_x[i] =  global.field.L[i]/global.field.N[i];
 		global.field.xfactor[i] = 1/global.field.kfactor[i];
 	}
 	
-    // Proper allocation or not?
+		// Proper allocation or not?
 	
 	bool Nxproperdiv, Nyproperdiv, Nzproperdiv; 
 	
-	if (global.field.Ny > 1) {
+/*	if (global.field.Ny > 1) {
 		Nxproperdiv = (global.field.Nx%global.mpi.numprocs == 0);
 		Nyproperdiv = (global.field.Ny%global.mpi.numprocs == 0);
 		Nzproperdiv = true;
@@ -73,45 +94,60 @@ CFFF_SLAB::CFFF_SLAB()
 	
 	else if (global.field.Ny == 1) {
 		Nxproperdiv = (global.field.Nx%global.mpi.numprocs == 0);
-		Nzproperdiv = (global.field.Nz%global.mpi.numprocs == 0);
-		Nyproperdiv = true; 
+		Nzproperdiv = ((global.field.Nz/2+1)%global.mpi.numprocs == 0);
+		Nyproperdiv = true;
 	}
 	
 	if (!(Nxproperdiv && Nyproperdiv && Nzproperdiv)) {
 		cout << "N div " << global.field.Nx << " "<< global.field.Ny << " " << global.field.Nz << " " << Nxproperdiv << " " << Nyproperdiv << "  " << Nzproperdiv << endl;
 		if (global.mpi.master) cerr << "ERROR in FFF_slab.cc: Array not being divided equally.  Check dimensions" << endl;
 		exit(1);
+	} */
+	
+	spectralTransform.Init("CFFF", "SLAB", Nx, Ny, Nz);
+	
+	global.field.maxlx = global.field.Nx-1;
+	global.field.maxly = spectralTransform.local_Ny-1;
+	global.field.maxlz = global.field.Nz;
+
+	if (Ny > 1) {
+		global.field.shape_complex_array = spectralTransform.local_Ny, Nz, Nx;
+		global.field.shape_real_array = spectralTransform.local_Nz, Ny, 2*Nx;
+
+		BasicIO::Array_properties<3> array_properties;
+
+		array_properties.shape_full_complex_array = Ny, Nz, Nx;
+		array_properties.shape_full_real_array = Ny, Nz, 2*Nx;
+
+		array_properties.id_complex_array = my_id, 0, 0;
+		array_properties.id_real_array = my_id, 0, 0;
+
+		array_properties.numprocs_complex_array = numprocs, 1, 1;
+		array_properties.numprocs_real_array = numprocs, 1, 1;
+
+		if (global.io.N_in_reduced.size() == 3)
+			array_properties.shape_N_in_reduced = global.io.N_in_reduced[1], global.io.N_in_reduced[2], global.io.N_in_reduced[0];
+		
+		if (global.io.N_out_reduced.size() == 3)
+			array_properties.shape_N_out_reduced = global.io.N_out_reduced[1], global.io.N_out_reduced[2], 2*global.io.N_out_reduced[0];
+
+		array_properties.Fourier_directions = 1,1,1;
+		array_properties.Z = 1;
+
+		array_properties.datatype_complex_space = BasicIO::H5T_COMPLX;
+		array_properties.datatype_real_space = BasicIO::H5T_COMPLX;
+
+		BasicIO::Set_H5_plans(array_properties, this);
 	}
-    
-    spectralTransform.Init("CFFF", "SLAB", Nx, Ny, Nz);
-    
-    global.fft.maxlx = global.fft.slab.local_Nx-1;
-	global.fft.maxly = global.field.Ny-1;
-	global.fft.maxlz = global.field.Nz-1;
 	
-	
-    if (Ny > 1) {
-        global.fft.complex_arraydim_1 = spectralTransform.local_Nx;
-        global.fft.complex_arraydim_2 = global.field.Ny;
-        global.fft.complex_arraydim_3 = global.field.Nz;
-        
-        global.fft.real_arraydim_1 = spectralTransform.local_Ny;
-        global.fft.real_arraydim_2 = global.field.Nx;
-        global.fft.real_arraydim_3 = global.field.Nz;
-    }
-    
-    else if (Ny == 1) { 
-        global.fft.real_arraydim_1 = spectralTransform.local_Nx;
-        global.fft.real_arraydim_2 = 1;
-        global.fft.real_arraydim_3 = global.field.Nz;
-        
-        global.fft.real_arraydim_1 = spectralTransform.local_Nz;
-        global.fft.real_arraydim_2 = 1;
-        global.fft.real_arraydim_3 = global.field.Nx;
-    }
-    
-    
-    // alias..
+	else if (Ny == 1) {
+		if (master)
+			cerr << "ERROR: 2D Not implemented for FFF basis, Please use FFTW basis (uses original FFTW functions)" << endl;
+		exit(1);
+	}
+
+
+	// alias..
 	kfactor.resize(4);
 	kfactor[0]= global.field.kfactor[0];
 	kfactor[1]= global.field.kfactor[1];
@@ -125,106 +161,22 @@ CFFF_SLAB::CFFF_SLAB()
 	local_Nx_start=spectralTransform.local_Nx_start;
 	local_Ny_start=spectralTransform.local_Ny_start;
 	local_Nz_start=spectralTransform.local_Nz_start;
-    
-    complex_arraydim_1 = global.fft.complex_arraydim_1;
-    complex_arraydim_2 = global.fft.complex_arraydim_2;
-    complex_arraydim_3 = global.fft.complex_arraydim_3;
-    
-    real_arraydim_1 = global.fft.real_arraydim_1;
-    real_arraydim_2 = global.fft.real_arraydim_2;
-    real_arraydim_3 = global.fft.real_arraydim_3;
-	
-		// temp arrays
-	
-    global.temp_array.X.resize(complex_arraydim_1, complex_arraydim_2, complex_arraydim_3);
-	global.temp_array.X2.resize(complex_arraydim_1, complex_arraydim_2, complex_arraydim_3);
-    
-	global.temp_array.Xr.resize(real_arraydim_1,real_arraydim_2,real_arraydim_3);
-    global.temp_array.Xr2.resize(real_arraydim_1,real_arraydim_2,real_arraydim_3);
-	
-    
-	//*****************************************************************************************
-	//set BasicIO parameters
-    // FOR READIND full array
-	
-   // DATASPACE
-	// Along X
-	BasicIO::rfull_dataspace_dimension[0] = Nx;
-	BasicIO::rfull_dataspace_start[0] = my_id*local_Nx;
-	BasicIO::rfull_dataspace_blockcount[0] = 1;
-	BasicIO::rfull_dataspace_blockstride[0] = 1;
-	BasicIO::rfull_dataspace_blockdim[0] = local_Nx;
-	
-	BasicIO::rfull_dataspace_dimension[1] = Ny;
-	BasicIO::rfull_dataspace_start[1] = 0;
-	BasicIO::rfull_dataspace_blockcount[1] = 1;
-	BasicIO::rfull_dataspace_blockstride[1] = 1;
-	BasicIO::rfull_dataspace_blockdim[1] = Ny;
-	
-	BasicIO::rfull_dataspace_dimension[2] = Nz*2;
-	BasicIO::rfull_dataspace_start[2] = 0;
-	BasicIO::rfull_dataspace_blockcount[2] = 1;
-	BasicIO::rfull_dataspace_blockstride[2] = 1;
-	BasicIO::rfull_dataspace_blockdim[2] = Nz*2;
-	
-	// MEM SPACE (A Array)
-	BasicIO::rfull_memspace_dimension[0] = local_Nx;
-	BasicIO::rfull_memspace_start[0] = 0;
-	BasicIO::rfull_memspace_blockcount[0] = 1;
-	BasicIO::rfull_memspace_blockstride[0] = 1;
-	BasicIO::rfull_memspace_blockdim[0] = local_Nx;
-	
-	BasicIO::rfull_memspace_dimension[1] = Ny;
-	BasicIO::rfull_memspace_start[1] = 0;
-	BasicIO::rfull_memspace_blockcount[1] = 1;
-	BasicIO::rfull_memspace_blockstride[1] = 1;
-	BasicIO::rfull_memspace_blockdim[1] = Ny;
-	
-	BasicIO::rfull_memspace_dimension[2] = Nz*2;
-	BasicIO::rfull_memspace_start[2] = 0;
-	BasicIO::rfull_memspace_blockcount[2] = 1;
-	BasicIO::rfull_memspace_blockstride[2] = 1;
-	BasicIO::rfull_memspace_blockdim[2] = Nz*2;
 
-	//*****************************************************************************************
+	shape_complex_array = global.field.shape_complex_array;
+	shape_real_array = global.field.shape_real_array;
 	
-    // FOR WRITING FULL ARRAY
-    // DATASPACE
-    BasicIO::wfull_dataspace_dimension[0] = Nx;
-    BasicIO::wfull_dataspace_start[0] = my_id*local_Nx;
-    BasicIO::wfull_dataspace_blockstride[0] = 1;
-    BasicIO::wfull_dataspace_blockcount[0] = 1;
-    BasicIO::wfull_dataspace_blockdim[0] = local_Nx;
-    
-    BasicIO::wfull_dataspace_dimension[1] = Ny;
-    BasicIO::wfull_dataspace_start[1] = 0;
-    BasicIO::wfull_dataspace_blockstride[1] = 1;
-    BasicIO::wfull_dataspace_blockcount[1] = 1;
-    BasicIO::wfull_dataspace_blockdim[1] = Ny;
-    
-    BasicIO::wfull_dataspace_dimension[2] = Nz*2;
-    BasicIO::wfull_dataspace_start[2] = 0;
-    BasicIO::wfull_dataspace_blockstride[2] = 1;
-    BasicIO::wfull_dataspace_blockcount[2] = 1;
-    BasicIO::wfull_dataspace_blockdim[2] = Nz*2;
-    
-    // MEMSPACE
-    BasicIO::wfull_memspace_dimension[0] = local_Nx;
-    BasicIO::wfull_memspace_start[0] = 0;
-    BasicIO::wfull_memspace_blockstride[0] = 1;
-    BasicIO::wfull_memspace_blockcount[0] = 1;
-    BasicIO::wfull_memspace_blockdim[0] = local_Nx;
-    
-    BasicIO::wfull_memspace_dimension[1] = Ny;
-    BasicIO::wfull_memspace_start[1] = 0;
-    BasicIO::wfull_memspace_blockstride[1] = 1;
-    BasicIO::wfull_memspace_blockcount[1] = 1;
-    BasicIO::wfull_memspace_blockdim[1] = Ny;
-    
-    BasicIO::wfull_memspace_dimension[2] = Nz*2;
-    BasicIO::wfull_memspace_start[2] = 0;
-    BasicIO::wfull_memspace_blockstride[2] = 1;
-    BasicIO::wfull_memspace_blockcount[2] = 1;
-    BasicIO::wfull_memspace_blockdim[2] = Nz*2;    
+	global.temp_array.X.resize(shape_complex_array);
+	global.temp_array.X2.resize(shape_complex_array);
+	
+	global.temp_array.Xr.resize(shape_real_array);
+	global.temp_array.Xr2.resize(shape_real_array);
+	
+	// temp arrays
+	// Being used in void ArrayOps::Get_XY_plane(Array<complx,3> A, Array<complx,2> plane_xy, int kz, string configuration)
+//	global.temp_array.plane_xy.resize(Ny, Nx);
+
+//	global.temp_array.plane_xy_inproc.resize(spectralTransform.local_Ny, Nx);
+	
+
 }
 

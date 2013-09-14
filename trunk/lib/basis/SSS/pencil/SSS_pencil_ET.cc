@@ -499,6 +499,8 @@ DP SSS_PENCIL::Local_shell_mult_vorticity
 	
 	return result;
  */
+
+	return 0;
 }
 
 //
@@ -546,6 +548,8 @@ DP SSS_PENCIL::Local_shell_mult_vector_potential
 	
 	return result;
  */
+
+	return 0;
 }
 
 
@@ -597,6 +601,8 @@ void SSS_PENCIL::Local_shell_mult_vorticity_all
 				}							
 			}
  */
+
+	result =0;
 }
 
 
@@ -646,6 +652,7 @@ void SSS_PENCIL::Local_shell_mult_vector_potential_all
 				}							
 			}
  */
+	result =0;
 	
 }
 

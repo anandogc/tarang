@@ -26,10 +26,8 @@
  #
 
 ADD_LIBRARY(cfff_slab
-			CFFF_slab_energy
 			CFFF_slab
-			CFFF_slab_tr
 			CFFF_slab_basic
-			CFFF_slab_ET
-			CFFF_slab_inline)
+			CFFF_slab_tr
+			CFFF_slab_energy)
 

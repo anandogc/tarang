@@ -206,7 +206,7 @@ void FluidVF::Zero_Prandtl_number_compute_temperature(FluidSF& T)
 
 void FluidVF::Infinite_Prandtl_number_compute_velocity(FluidSF& T)
 {
-	global.temp_array.X = T.csf.F;
+	//global.temp_array.X = T.csf.F;
 	global.program.sincostr_switch = sincostr_switch_Vx; // cvf.V1 and T.csf.F has same basis
 	universal->Xderiv(T.csf.F, global.temp_array.X);
 	universal->Array_divide_ksqr(global.temp_array.X);  //X contains -Pressure
@@ -280,9 +280,9 @@ Function 2: for CVF: Y = Y+ factor*dt*U.nlin;
 void FluidVF::Add_nlin_factor_dt(DP factor)
 {	
 	if (abs(factor) > MYEPS2) {
-		cvf.V1 = cvf.V1 + (factor*global.time.dt)*(nlin1);
-		cvf.V2 = cvf.V2 + (factor*global.time.dt)*(nlin2);
-		cvf.V3 = cvf.V3 + (factor*global.time.dt)*(nlin3);
+		cvf.V1 += (factor*global.time.dt)*(nlin1);
+		cvf.V2 += (factor*global.time.dt)*(nlin2);
+		cvf.V3 += (factor*global.time.dt)*(nlin3);
 	}
 	
 }
@@ -291,9 +291,9 @@ void FluidVF::Add_nlin_factor_dt(DP factor)
 void FluidVF::Add_field_nlin_factor_dt(PlainCVF& Y, DP factor)
 {	
 	if (abs(factor) > MYEPS2) {
-		Y.V1 = Y.V1 + (factor*global.time.dt)* (nlin1);         
-		Y.V2 = Y.V2 + (factor*global.time.dt)* (nlin2);
-		Y.V3 = Y.V3 + (factor*global.time.dt)* (nlin3);
+		Y.V1 += (factor*global.time.dt)* (nlin1);         
+		Y.V2 += (factor*global.time.dt)* (nlin2);
+		Y.V3 += (factor*global.time.dt)* (nlin3);
 	}
 }
 
@@ -310,7 +310,7 @@ void FluidVF::Add_field_nlin_factor_dt(PlainCVF& Y, DP factor)
  */
 void FluidVF::Mult_field_exp_ksqr_dt(DP a)
 {
-	if (abs(a) > MYEPS)
+	if (abs(a) > MYEPS) {
 		if (!hyper_dissipation_switch) {
 			universal->Array_exp_ksqr(cvf.V1, -dissipation_coefficient*a*global.time.dt);
 			universal->Array_exp_ksqr(cvf.V2, -dissipation_coefficient*a*global.time.dt);
@@ -324,6 +324,7 @@ void FluidVF::Mult_field_exp_ksqr_dt(DP a)
 			
 			universal->Array_exp_ksqr(cvf.V3, -dissipation_coefficient*a*global.time.dt, -hyper_dissipation_coefficient*a*global.time.dt, hyper_dissipation_exponent);
 		}
+	}
 	
 }
 
@@ -342,7 +343,7 @@ void FluidVF::Mult_field_exp_ksqr_dt(DP a)
 
 void FluidVF::Mult_nlin_exp_ksqr_dt(DP a)
 {
-	if (abs(a) > MYEPS)
+	if (abs(a) > MYEPS) {
 		if (!hyper_dissipation_switch) {
 			universal->Array_exp_ksqr(nlin1, -dissipation_coefficient*a*global.time.dt);
 			universal->Array_exp_ksqr(nlin2, -dissipation_coefficient*a*global.time.dt);
@@ -355,8 +356,8 @@ void FluidVF::Mult_nlin_exp_ksqr_dt(DP a)
 			universal->Array_exp_ksqr(nlin2, -dissipation_coefficient*a*global.time.dt, -hyper_dissipation_coefficient*a*global.time.dt, hyper_dissipation_exponent);
 			
 			universal->Array_exp_ksqr(nlin3, -dissipation_coefficient*a*global.time.dt, -hyper_dissipation_coefficient*a*global.time.dt, hyper_dissipation_exponent);
-		} 
-	
+		}
+	}
 }
 
 

@@ -186,13 +186,14 @@ void FluidSF::Add_field_nlin_factor_dt(PlainCSF& S, DP factor)
 void FluidSF::Mult_field_exp_ksqr_dt(DP a)
 {
     if (global.program.kind != "GP") {
-        if (abs(a) > MYEPS)
+        if (abs(a) > MYEPS) {
             if (!hyper_diffusion_switch){
                 universal->Array_exp_ksqr(csf.F, -diffusion_coefficient*a*global.time.dt); 
         	}
             else {
                 universal->Array_exp_ksqr(csf.F, -diffusion_coefficient*a*global.time.dt, -hyper_diffusion_coefficient*a*global.time.dt, hyper_diffusion_exponent);
             }
+        }
     }
 	
     else {
@@ -213,13 +214,14 @@ void FluidSF::Mult_field_exp_ksqr_dt(DP a)
 void FluidSF::Mult_nlin_exp_ksqr_dt(DP a)
 {
     if (global.program.kind != "GP") {
-        if (abs(a) > MYEPS)
+        if (abs(a) > MYEPS) {
             if (!hyper_diffusion_switch) {					  
                 universal->Array_exp_ksqr(nlin, -diffusion_coefficient*a*global.time.dt); 
         	}
             else {
                 universal->Array_exp_ksqr(nlin, -diffusion_coefficient*a*global.time.dt, -hyper_diffusion_coefficient*a*global.time.dt, hyper_diffusion_exponent);
             }
+        }
     }
     
     else {

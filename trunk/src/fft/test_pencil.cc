@@ -36,7 +36,6 @@
 
 
 #include "main.h"
-#include "transpose_pencil.h"
 
 //*********************************************************************************************					
 void test_FFF_pencil(){
@@ -48,9 +47,9 @@ void test_FFF_pencil(){
 	global.field.shape_real_array = shape(local_Ny_hor,Nz+2,local_Nx_vert);
 	
 	
-	global.Process_global_vars_basic();
+	global.Process_basic_vars();
 	universal=new FFF_PENCIL;
-	global.Process_global_vars_advanced();
+	global.Process_advanced_vars();
 	
 	//global.Print();
 	
@@ -109,9 +108,9 @@ void test_SFF_pencil(){
 	global.program.sincostr_switch = "SFF";
 	
 	
-	global.Process_global_vars_basic();
+	global.Process_basic_vars();
 	universal=new SFF_PENCIL;
-	global.Process_global_vars_advanced();
+	global.Process_advanced_vars();
 	
 	
 	
@@ -173,9 +172,9 @@ void test_SSF_pencil(){
 	global.program.sincostr_switch = "SCF";
 	
 	
-	global.Process_global_vars_basic();
+	global.Process_basic_vars();
 	universal=new SSF_PENCIL;
-	global.Process_global_vars_advanced();
+	global.Process_advanced_vars();
 	
 	
 	
@@ -203,9 +202,9 @@ void test_SSS_pencil(){
 	global.program.sincostr_switch = "SSS";
 	
 	
-	global.Process_global_vars_basic();
+	global.Process_basic_vars();
 	universal=new SSS_PENCIL;
-	global.Process_global_vars_advanced();
+	global.Process_advanced_vars();
 	
 	
 	
@@ -230,7 +229,7 @@ void test_SSS_pencil(){
 
 void test_transpose_pencil()
 {
-	 global.Process_global_vars_basic();
+	 global.Process_basic_vars();
 	
 	 spectralTransform.Init("SSS", "PENCIL", Nx, Ny, Nz, global.mpi.num_p_hor);
 	 
@@ -257,7 +256,7 @@ void test_transpose_pencil()
 	 
 	MPI_Barrier(MPI_COMM_WORLD);
 	
-	spectralTransform.Transpose_array(Ay, Az, spectralTransform.YZ);
+	//spectralTransform.Transpose_array(Ay, Az, spectralTransform.YZ);
 	
 	MPI_Barrier(MPI_COMM_WORLD);
 	

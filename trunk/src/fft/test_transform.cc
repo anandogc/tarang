@@ -48,6 +48,14 @@ DP f(int rx, int ry, int rz)
 		x = rx*global.field.L[1]/Nx;
 		y = ry*global.field.L[2]/Ny;
 		z = rz*global.field.L[3]/Nz;
+		return 8*sin(k0*x)*cos(k0*y)*cos(k0*z);
+	}
+
+	else if (global.program.basis_type == "FFFW") {
+		x = rx*global.field.L[1]/Nx;
+		y = ry*global.field.L[2]/Ny;
+		z = rz*global.field.L[3]/Nz;
+		return 8*sin(k0*x)*cos(k0*y)*cos(k0*z);
 	}
 	
 	else if (global.program.basis_type == "SFF") {
@@ -90,8 +98,6 @@ int test_transform()
 {
     DP value, value_find;
 	
-	cout << "test transform local_Nx, local_Nz = " << local_Nx << " "<< local_Nz << " " << local_Nx_start << " " << local_Nz_start << 	endl;
-    
 	// Spectral->real->spectral
 	if (master)
 		cout << "Testing Spectral->real->spectral : " << endl << endl;
@@ -103,6 +109,8 @@ int test_transform()
     
 	universal->Inverse_transform(A, Ar);
 	
+	A=0;
+
 	ArrayOps::Print_array_all_procs(Ar);
     
 	universal->Forward_transform(Ar, A);
@@ -121,7 +129,7 @@ int test_transform()
 		cout << "Energy of A-A_old = " << total_A_minusA_old << endl << endl << endl;
 	MPI_Barrier(MPI_COMM_WORLD);
 	
-	//return 0;
+	return 0;
 	// real->spectral->real
 	if (master)
 		cout << "Testing real->spectral->real : " << endl << endl;

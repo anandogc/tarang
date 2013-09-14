@@ -91,7 +91,8 @@ using namespace blitz ;
 
 #define DP 								float
 #define MPI_DP							MPI_FLOAT
-#define H5_DATATYPE  H5T_NATIVE_FLOAT	 // for HDF5
+#define H5T_DP 							H5T_FLOAT	 // for HDF5
+#define H5T_COMPLX						H5T_COMPLEX_FLOAT
 
 #define ZERO 0.0f
 #define ONE 1.0f
@@ -112,9 +113,10 @@ const int MY_PRECISION = 6
 
 #elif defined(DOUBLE_DP)
 
-#define DP 						double
+#define DP								double
 #define MPI_DP							MPI_DOUBLE
-#define H5_DATATYPE  H5T_NATIVE_DOUBLE   // for HDF5
+#define H5T_DP 							H5T_DOUBLE   // for HDF5
+#define H5T_COMPLX						H5T_COMPLEX_DOUBLE
 
 #define ZERO 0.0
 #define ONE 1.0

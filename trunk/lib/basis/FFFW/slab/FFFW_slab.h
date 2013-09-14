@@ -36,9 +36,12 @@
  */
 
 
-#ifndef _FOUR_SLAB_H
-#define _FOUR_SLAB_H
+#ifndef _FFFW_SLAB_H
+#define _FFFW_SLAB_H
 
+#include "def_vars.h"
+#include "basicfn_inline.h"
+#include "spectral_transform.h"
 #include "universal.h"
 #include "ArrayOps.h"
 
@@ -51,7 +54,12 @@ class FFFW_SLAB:public Universal
 {				
 public:
 	FFFW_SLAB();
-#include "universal_fn_names.h"
+	#include "universal_fn_names.h"
+	void Array_exp_ksqr(Array<complx,3> A, DP factor);
+	
+	void Array_exp_ksqr(Array<complx,3> A, DP factor, DP hyper_factor, int hyper_exponent);
+	
+	void Compute_divergence(Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az, Array<complx,3> div, string field_or_nlin, DP &total_abs_div, bool print_switch);
 };
 
 #endif

@@ -223,7 +223,7 @@ void CVF::Compute_total_energy()
 
 void CVF::Compute_total_k2energy()
 {
-	total_k2energy = 2*(universal->Get_total_Sn(V1, 2)+ universal->Get_total_Sn(V2, 2) + universal->Get_total_Sn(V3, 2));		
+	total_k2energy = TWO*(universal->Get_total_Sn(V1, 2)+ universal->Get_total_Sn(V2, 2) + universal->Get_total_Sn(V3, 2));
 }
 
 void CVF::Compute_total_kn_energy(int n, DP &result)
@@ -234,7 +234,7 @@ void CVF::Compute_total_kn_energy(int n, DP &result)
 
 void CVF::Compute_total_k2Hc(Array<complx,3> W1, Array<complx,3> W2, Array<complx,3> W3)
 {
-	total_k2Hc = 2*(universal->Get_total_Sn(V1, W1, 2) + universal->Get_total_Sn(V2, W2, 2) + universal->Get_total_Sn(V3, W3, 2));	
+	total_k2Hc = TWO*(universal->Get_total_Sn(V1, W1, 2) + universal->Get_total_Sn(V2, W2, 2) + universal->Get_total_Sn(V3, W3, 2));
 }
 
 
@@ -363,45 +363,49 @@ use IOdir as global variable and control...
 // field_name = U or W
 void CVF::Write_complex_field()
 {
-    BasicIO::Write(V1, field_name+".V1", BasicIO::full);
+	string folder_suffix="/time_" + To_string(global.time.now);
+
+    BasicIO::Write(V1.data(), field_name+".V1", universal->H5_full, folder_suffix);
 	
     if (!global.program.two_dimension)
-        BasicIO::Write(V2, field_name+".V2", BasicIO::full);
+        BasicIO::Write(V2.data(), field_name+".V2", universal->H5_full, folder_suffix);
 	
     if (global.field.incompressible && global.io.output_vx_vy_switch)
-        BasicIO::Write(V3, field_name+".V3kz0", BasicIO::kz0_full);
+        BasicIO::Write(V3.data(), field_name+".V3kz0", universal->H5_kz0_full, folder_suffix);
     else
-        BasicIO::Write(V3, field_name+".V3", BasicIO::full);
+        BasicIO::Write(V3.data(), field_name+".V3", universal->H5_full, folder_suffix);
 }
 
 
 
 void CVF::Write_reduced_complex_field()
 {
-    BasicIO::Write(V1, field_name+".V1", BasicIO::reduced);
+	string folder_suffix="/reduced_" + To_string(global.time.now);
+
+    BasicIO::Write(V1.data(), field_name+".V1", universal->H5_out_reduced, folder_suffix);
     
     if (!global.program.two_dimension)
-        BasicIO::Write(V2, field_name+".V2", BasicIO::reduced);
+        BasicIO::Write(V2.data(), field_name+".V2", universal->H5_out_reduced, folder_suffix);
 	
 	if (global.field.incompressible && global.io.output_vx_vy_switch)
-        BasicIO::Write(V3, field_name+".V3kz0", BasicIO::kz0_reduced);
+        BasicIO::Write(V3.data(), field_name+".V3kz0", universal->H5_out_kz0_reduced, folder_suffix);
     else
-        BasicIO::Write(V3, field_name+".V3", BasicIO::reduced);
+        BasicIO::Write(V3.data(), field_name+".V3", universal->H5_out_reduced, folder_suffix);
 }
 
 
 //
 void CVF::Read_complex_field()
 {
-	BasicIO::Read(V1, field_name+".V1", BasicIO::full);
+	BasicIO::Read(V1.data(), field_name+".V1", universal->H5_full);
 	
     if (!global.program.two_dimension)
-        BasicIO::Read(V2, field_name+".V2", BasicIO::full);
-	
-	if (global.field.incompressible && global.io.output_vx_vy_switch)
-        BasicIO::Read(V3, field_name+".V3kz0", BasicIO::kz0_full);
+        BasicIO::Read(V2.data(), field_name+".V2", universal->H5_full);
+
+	if (global.field.incompressible && global.io.input_vx_vy_switch)
+        BasicIO::Read(V3.data(), field_name+".V3kz0", universal->H5_kz0_full);
     else
-        BasicIO::Read(V3, field_name+".V3", BasicIO::full);
+        BasicIO::Read(V3.data(), field_name+".V3", universal->H5_full);
 }
 
 void CVF::Read_reduced_complex_field()
@@ -410,15 +414,15 @@ void CVF::Read_reduced_complex_field()
     V2 = 0.0;
     V3 = 0.0;
     
-	BasicIO::Read(V1, field_name+".V1", BasicIO::reduced);
+	BasicIO::Read(V1.data(), field_name+".V1", universal->H5_in_reduced);
     
     if (!global.program.two_dimension)
-        BasicIO::Read(V2, field_name+".V2", BasicIO::reduced);
+        BasicIO::Read(V2.data(), field_name+".V2", universal->H5_in_reduced);
 	
-	if (global.field.incompressible && global.io.output_vx_vy_switch)
-        BasicIO::Read(V3, field_name+".V3kz0", BasicIO::kz0_reduced);
+	if (global.field.incompressible && global.io.input_vx_vy_switch)
+        BasicIO::Read(V3.data(), field_name+".V3kz0", universal->H5_in_kz0_reduced);
     else
-        BasicIO::Read(V3, field_name+".V3", BasicIO::reduced);
+        BasicIO::Read(V3.data(), field_name+".V3", universal->H5_in_reduced);
 }
 
 

@@ -36,7 +36,7 @@
 ADD_LIBRARY(global
 	Global
 	Global_read
-	Global_init_default
+	Global_init_defaults
 	Global_print
 	Global_process_basic_vars
 	Global_process_advanced_vars

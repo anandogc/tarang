@@ -1,3 +1,4 @@
+
 /* Tarang-2
  *
  * Copyright (C) 2008, 2009  Mahendra K. Verma
@@ -35,7 +36,7 @@
  */ 
 
 
- #include "Ifluid_main.h"
+#include "Ifluid_main.h"
 #include "shell_etc_indices.h"
 
 //****************************************************************************************					
@@ -67,7 +68,7 @@ int Ifluid_main()
             cout << "abs(sum(Divergence)) of the initial field U = " << total_abs_div << "is large. " << '\n' << "Therefore exiting the program." << endl;
             //return (1);
         }
-        		
+        
         fluidIO_incompress.Output_all_inloop(U, P);  // for initial cond
                
 		if (my_id == master_id)  

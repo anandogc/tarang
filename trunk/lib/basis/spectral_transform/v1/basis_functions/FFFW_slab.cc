@@ -41,58 +41,53 @@
 {
     if (Ny > 1) {
         local_Nx = Nx/numprocs;
-        local_Ny = Ny/numprocs;
-        local_Nz = Nz/2+1;
+        local_Ny = Ny;
+        local_Nz = (Nz/2+1);
         
-        local_Nx_start = my_id * local_Nx;
-        local_Ny_start = my_id * local_Ny;
+        local_Nx_start = my_id * local_Nz;
+        local_Ny_start = 0;
         local_Nz_start = 0;
 
-        shape_complex_array_3d = shape(local_Nx,Ny,Nz/2+1);
-        shape_real_array_3d = shape(local_Ny,Nx,Nz/2+1);
-
-        X.resize(shape_complex_array_3d);
-        Xr.resize(shape_real_array_3d);
+        X_3d.resize(local_Nx,Ny,Nz/2+1);
+        Xr_3d.resize(local_Nx,Ny,Nz+2);
     }
     else if (Ny == 1) {
         local_Nx = Nx/numprocs;
         local_Ny = 1;
-        local_Nz = (Nz/2+1)/numprocs;
+        local_Nz = (Nz/2+1);
         
         local_Nx_start = my_id * local_Nx;
         local_Ny_start = 0;
         local_Nz_start = my_id * local_Nz;
 
-        X_2d.resize(shape_complex_array_2d);
-        Xr_2d.resize(shape_real_array_2d);
+        X_2d.resize(local_Nx,Nz/2+1);
+        Xr_2d.resize(local_Nx,Nz);
     }
 
-	
     //Initialize plans
 		
     if (Ny > 1) {
-        r2c_xyz_plan = FFTW_MPI_PLAN_DFT_R2C_3D_DP(Nx, Ny, Nz,reinterpret_cast<DP*>(Xr.data()), reinterpret_cast<FFTW_COMPLEX_DP*>(X.data()),MPI_COMM_WORLD, FFTW_PLAN_FLAG | FFTW_MPI_TRANSPOSED_IN);
-        
-        c2r_xyz_plan = FFTW_MPI_PLAN_DFT_C2R_3D_DP(Nx, Ny, Nz,reinterpret_cast<FFTW_COMPLEX_DP*>(X.data()), reinterpret_cast<DP*>(Xr.data()), MPI_COMM_WORLD, FFTW_PLAN_FLAG | FFTW_MPI_TRANSPOSED_OUT);
-        
+        c2r_xyz_plan = FFTW_MPI_PLAN_DFT_C2R_3D_DP(Nx, Ny, Nz,reinterpret_cast<FFTW_COMPLEX_DP*>(X_3d.data()), reinterpret_cast<DP*>(Xr_3d.data()), MPI_COMM_WORLD, FFTW_PLAN_FLAG);
+
+        r2c_xyz_plan = FFTW_MPI_PLAN_DFT_R2C_3D_DP(Nx, Ny, Nz,reinterpret_cast<DP*>(Xr_3d.data()), reinterpret_cast<FFTW_COMPLEX_DP*>(X_3d.data()),MPI_COMM_WORLD, FFTW_PLAN_FLAG);
     }
     
     else if (Ny == 1) {
-    	r2c_xz_plan = FFTW_MPI_PLAN_DFT_R2C_2D_DP(Nx, Nz, reinterpret_cast<DP*>(plane_xz.data()),reinterpret_cast<FFTW_COMPLEX_DP*>(plane_xz.data()),MPI_COMM_WORLD, FFTW_PLAN_FLAG);
+        c2r_xz_plan = FFTW_MPI_PLAN_DFT_C2R_2D_DP(Nx, Nz,reinterpret_cast<FFTW_COMPLEX_DP*>(X_2d.data()), reinterpret_cast<DP*>(Xr_2d.data()),MPI_COMM_WORLD, FFTW_PLAN_FLAG);
         
-        c2r_xz_plan = FFTW_MPI_PLAN_DFT_C2R_2D_DP(Nx, Nz,reinterpret_cast<FFTW_COMPLEX_DP*>(plane_xz.data()), reinterpret_cast<DP*>(plane_xz.data()),MPI_COMM_WORLD, FFTW_PLAN_FLAG);
+        r2c_xz_plan = FFTW_MPI_PLAN_DFT_R2C_2D_DP(Nx, Nz, reinterpret_cast<DP*>(Xr_2d.data()),reinterpret_cast<FFTW_COMPLEX_DP*>(X_2d.data()),MPI_COMM_WORLD, FFTW_PLAN_FLAG);
     }
 }
 //*********************************************************************************************
 
-void SpectralTransform::Zero_pad_last_plane_FFFW_SLAB(Array<complx,3> Ar)
+void SpectralTransform::Zero_pad_last_plane_FFFW_SLAB(Array<DP,3> Ar)
 {
-	Ar(Range::all(),Range::all(),Nz/2) = 0.0;
+	Ar(Nz,Range::all(),Range::all()) = 0.0;
 }
 
-void SpectralTransform::Zero_pad_last_col_FFFW_SLAB(Array<complx,2> Ar)
+void SpectralTransform::Zero_pad_last_col_FFFW_SLAB(Array<DP,2> Ar)
 {
-	Ar(Range::all(),Nz/2) = 0.0;
+	Ar(Nz,Range::all()) = 0.0;
 }
 
 //*********************************************************************************************
@@ -110,29 +105,31 @@ void SpectralTransform::Norm_FFFW_SLAB(Array<complx,2> A)
 //*************************************************************************************
 
 
-void SpectralTransform::Forward_transform_FFFW_SLAB(Array<complx,3> Ar, Array<complx,3> A)
+void SpectralTransform::Forward_transform_FFFW_SLAB(Array<DP,3> Ar, Array<complx,3> A)
 {
     FTr2c_xyz(Ar, A);
+    Norm_FFFW_SLAB(A);
 }
         
-
-void SpectralTransform::Forward_transform_FFFW_SLAB(Array<complx,2> Ar, Array<complx,2> A)
-{
-    FTr2c_xz(Ar, A);
-}
-
 //*********************************************************************************************
 
-void SpectralTransform::Inverse_transform_FFFW_SLAB(Array<complx,3> A, Array<complx,3> Ar)
+void SpectralTransform::Inverse_transform_FFFW_SLAB(Array<complx,3> A, Array<DP,3> Ar)
 {
     FTc2r_xyz(A, Ar);
 }
 
+//*********************************************************************************************
+
+void SpectralTransform::Forward_transform_FFFW_SLAB(Array<DP,2> Ar, Array<complx,2> A)
+{
+    FTr2c_xz(Ar, A);
+    Norm_FFFW_SLAB(A);
+}
 
 //**************************************************************************************
 
 
-void SpectralTransform::Inverse_transform_FFFW_SLAB(Array<complx,2> A, Array<complx,2> Ar)
+void SpectralTransform::Inverse_transform_FFFW_SLAB(Array<complx,2> A, Array<DP,2> Ar)
 {
 	FTc2r_xz(A, Ar);
 }

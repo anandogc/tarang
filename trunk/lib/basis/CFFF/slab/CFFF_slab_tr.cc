@@ -36,89 +36,62 @@
 
 #include "CFFF_slab.h"
 #include "CFFF_slab_inline.h"
-
-	
-//*********************************************************************************************
-/* void CFFF_SLAB::Init_fftw_plan(Array<complx,3> A)
-{
-		//	Transform::Init_fftw_plan_all(A);
-}*/
-//*********************************************************************************************
-
-void CFFF_SLAB::Zero_pad_last_plane(Array<complx,3> Ar)
-{
-}
-
-//*********************************************************************************************
-
-void CFFF_SLAB::Norm(Array<complx,3> A)
-{
-	A = A/(DP(Nx) * DP(Ny) * DP(Nz));
-}
-
+#include "basicfn_inline.h"
 
 //*********************************************************************************************
 
 // Ar: yxz, A: xyz
-void CFFF_SLAB::Forward_transform_array_transpose_order(Array<complx,3> Ar, Array<complx,3> A)
+void CFFF_SLAB::Forward_transform(Array<DP,3> Ar, Array<complx,3> A)
 {
-}
-
-
-//*********************************************************************************************
-
-void CFFF_SLAB::Forward_transform_array(Array<complx,3> A)
-{
-	
-	if (global.fft.fftw3D_switch == true) {
-        Transform::FTc2c_xyz(A);
-        Norm(A);
-	}
-	
-	// not original switch.. split in 2D and 1D ffts.
-	else {
-			cout << "ERROR: USE ORIGINAL FFTW " << endl;
-            exit(1);
-    }
-	
-}
-
-//*********************************************************************************************
-
-
-void CFFF_SLAB::Inverse_transform_array_transpose_order(Array<complx,3> A, Array<complx,3> Ar)
-{
+    if (Ny > 1) 
+        spectralTransform.Forward_transform_CFFF_SLAB(Cast_array<DP,complx>(Ar, global.field.shape_complex_array), A);
+    
+    else if (Ny == 1)
+        if (my_id == 0) cerr << "ERROR: 2D Not implemented for FFF basis, Please use FFTW basis (uses original FFTW functions)" << endl;
 }
 
 
 //*********************************************************************************************
 
 
-void CFFF_SLAB::Inverse_transform_array(Array<complx,3> A)
+void CFFF_SLAB::Inverse_transform(Array<complx,3> A, Array<DP,3> Ar)
 {
-	
-	if (global.fft.fftw3D_switch == true) {
-			Transform::IFTc2c_xyz(A);
-	}
-	
-    // By splitting it up...
-	else {
-        cout << "ERROR: USE ORIGINAL FFT FOR 2D. " << endl;
-        exit(1);
-	}
-	
+    if (Ny > 1)
+        spectralTransform.Inverse_transform_CFFF_SLAB(A, Cast_array<DP,complx>(Ar, global.field.shape_complex_array));
+    
+    else if (Ny == 1)
+       if (my_id == 0) cerr << "ERROR: 2D Not implemented for FFF basis, Please use FFTW basis (uses original FFTW functions)" << endl;
 }
+
+
 
 //*********************************************************************************************
 
 void CFFF_SLAB::Xderiv(Array<complx,3> A, Array<complx,3> B)
 {
-}	
+	DP Kx;
+	
+	for (int lx = 0; lx < Nx; lx++) {
+		Kx = Get_kx(lx)*kfactor[1];
+		B(Range::all(),Range::all(),lx) = complx(0, Kx)* (A(Range::all(),Range::all(),lx)); 	
+	}
+}
+
+void CFFF_SLAB::Add_Xderiv(Array<complx,3> A, Array<complx,3> B)
+{
+	DP Kx;
+	
+	for (int lx = 0; lx < Nx; lx++) {
+		Kx = Get_kx(lx)*kfactor[1];
+		B(Range::all(),Range::all(),lx) += complx(0, Kx)* (A(Range::all(),Range::all(),lx));
+	}
+}
 
 void  CFFF_SLAB::Xderiv(Array<DP,3> A, Array<DP,3> B)
 {
-	cerr << "This is not defined for this basis. "<<endl;
+	if (master) cerr <<  "Xderiv(real array)  is not defined for this basis. "<<endl;
 }
+
 
 
 //*********************************************************************************************
@@ -127,6 +100,29 @@ void  CFFF_SLAB::Xderiv(Array<DP,3> A, Array<DP,3> B)
 
 void CFFF_SLAB::Yderiv(Array<complx,3> A, Array<complx,3> B)
 {
+	DP Ky;
+	
+	if (Ny > 1)
+		for (int ly=0; ly<local_Ny; ly++) {
+			Ky = Get_ky(ly)*kfactor[2];
+			B(ly,Range::all(),Range::all()) = complx(0, Ky)* (A(ly,Range::all(),Range::all())); 
+		}
+	
+	else 
+		B = 0.0;
+}
+
+
+
+void CFFF_SLAB::Add_Yderiv(Array<complx,3> A, Array<complx,3> B)
+{
+	DP Ky;
+	
+	if (Ny > 1)
+		for (int ly=0; ly<local_Ny; ly++) {
+			Ky = Get_ky(ly)*kfactor[2];
+			B(ly,Range::all(),Range::all()) += complx(0, Ky)* (A(ly,Range::all(),Range::all()));
+		}
 }
 
 //*********************************************************************************************
@@ -134,7 +130,77 @@ void CFFF_SLAB::Yderiv(Array<complx,3> A, Array<complx,3> B)
 
 void CFFF_SLAB::Zderiv(Array<complx,3> A, Array<complx,3> B)
 {
+	DP Kz;
+    
+    for (int lz=0; lz<=Nz/2; lz++) {
+		Kz = lz*kfactor[3];
+		B(Range::all(),lz,Range::all()) = complx(0, Kz)*(A(Range::all(),lz,Range::all())); 	
+	}
 }
+
+
+void CFFF_SLAB::Add_Zderiv(Array<complx,3> A, Array<complx,3> B)
+{
+	DP Kz;
+    
+    for (int lz=0; lz<=Nz/2; lz++) {
+		Kz = lz*kfactor[3];
+		B(Range::all(),lz,Range::all()) += complx(0, Kz)*(A(Range::all(),lz,Range::all()));
+	}
+}
+
+/**********************************************************************************************
+ 
+ B =  factor*Laplacian(A)
+ 
+ ***********************************************************************************************/
+
+void CFFF_SLAB::Laplacian(DP factor, Array<complx,3> A, Array<complx,3> B)
+{
+	
+	DP Ksqr;
+	
+	for (int ly=0; ly<A.extent(0); ly++) {
+		Ksqr = my_pow(Get_ky(ly)*kfactor[2],2);
+		
+        for (int lz=0; lz<A.extent(1); lz++) {
+			Ksqr += my_pow(Get_lz(lz)*kfactor[3],2);
+			
+            for (int lx=0; lx<A.extent(2); lx++) {
+				Ksqr +=  my_pow(Get_kx(lx)*kfactor[1],2);
+				
+				B(ly,lz,lx) = (-factor*Ksqr)*A(ly,lz,lx);
+			}
+		}
+	}
+}
+
+/**********************************************************************************************
+ 
+ B = B - factor*Laplacian(A) = B + factor*K^2 A
+ 
+ ***********************************************************************************************/
+
+void CFFF_SLAB::Subtract_Laplacian(DP factor, Array<complx,3> A, Array<complx,3> B)
+{
+	
+	DP Ksqr, Ksqr_factor;
+	
+	for (int ly=0; ly<A.extent(0); ly++) {
+		Ksqr = my_pow(Get_ky(ly)*kfactor[2],2);
+		
+        for (int lz=0; lz<A.extent(1); lz++) {
+			Ksqr += my_pow(Get_lz(lz)*kfactor[3],2);
+			
+            for (int lx=0; lx<A.extent(2); lx++) {
+				Ksqr_factor = factor * (Ksqr+my_pow(Get_kx(lx)*kfactor[1],2));
+				
+				B(ly,lz,lx) += Ksqr_factor*A(ly,lz,lx);
+			}
+		}
+	}
+}
+
 
 //********************************	End of four_tr.cc *****************************************
 

@@ -54,6 +54,53 @@ hsize_t BasicIO::count_3d[3];
 //Tarang-1 to Tarang-2 field converter
 //**********************
 
+void BasicIO::Tarang1_Tarang2_convertor_init(){
+	transition_table["CV1"]="U.V1";
+	transition_table["CV2"]="U.V2";
+	transition_table["CV3"]="U.V3";
+	
+	transition_table["CW1"]="B.V1";
+	transition_table["CW2"]="B.V2";
+	transition_table["CW3"]="B.V3";
+	
+	transition_table["T"]="T.F";
+	
+	//initialize prefixes
+	prefix_prinfinity[0]="T";
+	
+	prefix_fluid[0]="CV1";
+	prefix_fluid[1]="CV2";
+	prefix_fluid[2]="CV3";
+	
+	prefix_fluid_T[0]="CV1";
+	prefix_fluid_T[1]="CV2";
+	prefix_fluid_T[2]="CV3";
+	prefix_fluid_T[3]="T";
+	
+	prefix_mhd[0]="CV1";
+	prefix_mhd[1]="CV2";
+	prefix_mhd[2]="CV3";
+	prefix_mhd[3]="CW1";
+	prefix_mhd[4]="CW2";
+	prefix_mhd[5]="CW3";
+	
+	prefix_mhd_T[0]="CV1";
+	prefix_mhd_T[1]="CV2";
+	prefix_mhd_T[2]="CV3";
+	prefix_mhd_T[3]="CW1";
+	prefix_mhd_T[4]="CW2";
+	prefix_mhd_T[5]="CW3";
+	prefix_mhd_T[6]="T";
+	
+	
+	//assign them to map
+	dataset_name_old[1]=prefix_prinfinity;
+	dataset_name_old[3]=prefix_fluid;
+	dataset_name_old[4]=prefix_fluid_T;
+	dataset_name_old[6]=prefix_mhd;
+	dataset_name_old[7]=prefix_mhd_T;
+}
+
 void BasicIO::CV_Input_HDF5(int number_of_fields, ...)
 {
 	va_list vl;

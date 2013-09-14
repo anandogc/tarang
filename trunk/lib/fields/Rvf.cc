@@ -61,21 +61,6 @@ RVF::RVF(string field_name)
 				Forward transform: Inplace 
    
 **********************************************************************************************/
-
-/*void RVF::Forward_transform()
-{
-	global.program.sincostr_switch = sincostr_switch_Vx;
-	universal->Forward_transform_array(V1r);			
-	
-	if (!global.program.two_dimension) {  // for 3d and 2.5d
-		global.program.sincostr_switch = sincostr_switch_Vy;
-		universal->Forward_transform_array(V2r);
-	}
-	
-	global.program.sincostr_switch = sincostr_switch_Vz;
-	universal->Forward_transform_array(V3r);			
-} */
-
 /**********************************************************************************************
 
 			Forward_transform(*Vir) = Vi 
@@ -105,22 +90,6 @@ void RVF::Forward_transform(CVF cvf)
    
 **********************************************************************************************/
 
-/* void RVF::Inverse_transform()
-{
-	global.program.sincostr_switch = sincostr_switch_Vx;
-	universal->Inverse_transform_array(V1r);			
-
-	if (!global.program.two_dimension) {  // for 3d and 2.5d
-		global.program.sincostr_switch = sincostr_switch_Vy;
-		universal->Inverse_transform_array(V2r);	
-	}
-
-	global.program.sincostr_switch = sincostr_switch_Vz;
-	universal->Inverse_transform_array(V3r);		
-}
- */
-
-
 /**********************************************************************************************
 
 			Inverse_transform(Vi) = *Vir 
@@ -145,44 +114,28 @@ void RVF::Inverse_transform(CVF cvf)
 	universal->Inverse_transform(cvf.V3, V3r);
 }
 
-
-/*******************************************************************************
-
-			 Outputs Vi in real space
- 
- PS: In Pencil:SFF & SSF basis, z axis along the mid axis.  So complex data
- is jumbled up.  Therefore, complex<Ar> is copied to real<Ar> for writing.
- For reading, do the reverse.
-   
-********************************************************************************/
 // field_kind = Ur or Wr
 void RVF::Write_real_field()
 {
-    BasicIO::Write(V1r, field_name+".V1r", BasicIO::real);
-	
-/*	if (my_id==0)
-		cout << "my_id , V1r : " << my_id << V1r << endl;
-	MPI_Barrier(MPI_COMM_WORLD);
-	if (my_id==1)
-		cout << "my_id , V1r : " << my_id << V1r << endl;
-	MPI_Barrier(MPI_COMM_WORLD);
- */
-	
+   	string folder_suffix="/real_" + To_string(global.time.now);
+
+	BasicIO::Write(V1r.data(), field_name+".V1r", universal->H5_real, folder_suffix);
+
     if (!global.program.two_dimension)
-        BasicIO::Write(V2r, field_name+".V2r", BasicIO::real);
+		BasicIO::Write(V2r.data(), field_name+".V2r", universal->H5_real, folder_suffix);
 	
-	BasicIO::Write(V3r, field_name+".V3r", BasicIO::real);
+	BasicIO::Write(V3r.data(), field_name+".V3r", universal->H5_real, folder_suffix);
 }
 
 
 void RVF::Read_real_field()
 {
-    BasicIO::Read(V1r, field_name+".V1r", BasicIO::real);
-	
+	BasicIO::Read(V1r.data(), field_name+".V1r", universal->H5_real);
+
     if (!global.program.two_dimension)
-        BasicIO::Read(V2r, field_name+".V2r", BasicIO::real);
+		BasicIO::Read(V2r.data(), field_name+".V2r", universal->H5_real);
 	
-	BasicIO::Read(V3r, field_name+".V3r", BasicIO::real);
+	BasicIO::Read(V3r.data(), field_name+".V3r", universal->H5_real);
 }
 
 //**************************  End of RVF class definitions ************************************

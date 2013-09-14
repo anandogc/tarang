@@ -39,11 +39,11 @@
 #ifndef _H_Global
 #define _H_Global
 
+#include "def_vars.h"
+
 #include <yaml-cpp/yaml.h>
 #include <vector>
 #include <map>
-
-#include "def_vars.h"
 
 //*********************************************************************************************
 
@@ -101,7 +101,7 @@ public:
 		string	Uscaling;					// UBscaling (ULARGE... ) for RB
 		DP		Rayleigh;							// Rayleigh number
 		DP		Prandtl;							// Prandtl number
-		int		temperature_grad;			// +1 for convection; -1 for stratification;
+		int		temperature_grad;			// +1 for convection; -x for stratification;
 		
 		DP Chandrasekhar; // Chandrashekhar number
 		DP Prandtl_mag; //Magnetic Prandlt number
@@ -542,11 +542,11 @@ public:
 
 	Global();
 
-	void Global_Parse(int argc, char** argv, bool is_test_module=false);
-	void Global_Read();
-	void Global_init_default();
-	void Process_global_vars_basic();
-	void Process_global_vars_advanced();
+	void Parse(int argc, char** argv, bool is_test_module=false);
+	void Read();
+	void Init_defaults();
+	void Process_basic_vars();
+	void Process_advanced_vars();
 	void Assign_parameters();
 	void Alias_some_global_vars();
 	bool Input_provided(const YAML::Node& node, const string parameter);

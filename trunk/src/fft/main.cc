@@ -44,7 +44,6 @@
  */
 
 #include "main.h"
-#include "transpose_pencil.h"
 
 Universal *universal;
 Global global;
@@ -67,11 +66,12 @@ int main(int argc, char** argv)
 	MPI_Comm_size(MPI_COMM_WORLD, &global.mpi.numprocs);
 	global.mpi.master= (global.mpi.my_id == global.mpi.master_id);
 	
-	global.Global_Parse(argc, argv);
+	global.Parse(argc, argv);
 
 	int result = 0;
 
-	global.Global_init_default();
+	global.Init_defaults();
+	BasicIO::Initialize();
 
 	SPECrand.seed((unsigned int)time(0));				// Initialize random number seed
 	
@@ -94,21 +94,23 @@ int main(int argc, char** argv)
 	cout << "Nx = " << global.field.N[1] << ", Ny = " << global.field.N[2] << " , Nz = " << global.field.N[3] << endl;
 	
 	
-    // test_FFF_slab();
-	// test_SFF_slab();
-	// test_SSF_slab();
-	// test_SSS_slab();
-	// test_ChFF_slab();
+    test_CFFF_slab();
+    //test_FFFW_slab();
+    //test_FFF_slab();
+	//test_SFF_slab();
+	//test_SSF_slab();
+	//test_SSS_slab();
+	//test_ChFF_slab();
 	//test_transpose_slab();
 	
 	//test_FFF_pencil();
 	//test_SFF_pencil();
 	//test_SSF_pencil();
-	test_SSS_pencil();
+	//test_SSS_pencil();
 	
 	//test_transpose_pencil();
 	
-	
+	BasicIO::Finalize();
     MPI_Finalize();
 	return 0;
 }

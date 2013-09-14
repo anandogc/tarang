@@ -761,7 +761,7 @@ void  FluidIO::Init_cond_modes_Chebyshev(FluidVF&U)
 //******************************************************************************
 void  FluidIO::Init_cond_modes_scalar_Chebyshev(FluidVF&U, FluidSF& T)
 {
-	//Init_cond_modes_Chebyshev(U);
+	Init_cond_modes_Chebyshev(U);
     
    	(T.csf.F) = 0.0;
     
@@ -804,8 +804,6 @@ void  FluidIO::Init_cond_modes_RBC_Chebyshev(FluidVF&U, FluidSF& T)
 	}
 	
 	else if (global.PHYSICS.Pr_option == "PRINFTY") {
-		
-		cout << "here Init_cond_modes_RBC_Chebyshev " << endl;
 		(U.cvf.V1) = 0.0;
 		(U.cvf.V2) = 0.0;
 		(U.cvf.V3) = 0.0;

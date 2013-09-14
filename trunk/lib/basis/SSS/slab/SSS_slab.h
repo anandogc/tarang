@@ -58,7 +58,7 @@ public:
 	
 	#include "universal_fn_names.h"
 	
-	void Print_large_Fourier_elements(Array<complx,3> A);
+	void Print_large_Fourier_elements(Array<complx,3> A, string array_name);
 	
 	void Zero_modes(Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az);
 	

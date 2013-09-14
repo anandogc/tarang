@@ -158,13 +158,13 @@ void CSF::Compute_total_energy()
 
 void CSF::Compute_total_k2energy()
 {
-	total_k2energy = 2 * universal->Get_total_Sn(F, 2);
+	total_k2energy = TWO * universal->Get_total_Sn(F, 2);
 }
 
 
 void CSF::Compute_total_kn_energy(int n, DP &result)
 {
-	result = 2 * universal->Get_total_Sn(F, n);
+	result = TWO * universal->Get_total_Sn(F, n);
 }
 //
 //
@@ -209,72 +209,28 @@ void CSF::Dealias()
 // field_kind = T
 void CSF::Write_complex_field()
 {
- /*   if (global.program.decomposition == "SLAB")
-        BasicIO::Write_complex_array(F, field_name+".F");
-    
-    else if (global.program.decomposition == "PENCIL") {
-        if (global.program.basis_type == "SSF")
-             BasicIO::Write_complex_array(F, field_name+".F");
-       
-        else {
-            universal->Copy_array_complex_to_real(F, global.temp_array.Acopy);
-            BasicIO::Write_complex_array(global.temp_array.Acopy, field_name+".F");
-        }
-    } */
+   	string folder_suffix="/time_" + To_string(global.time.now);
+	
+	BasicIO::Write(F.data(), field_name+".F", universal->H5_full, folder_suffix);
 }
 
 void CSF::Write_reduced_complex_field()
 {
- /*   if (global.program.decomposition == "SLAB")
-        BasicIO::Write_reduced_complex_array(F, field_name+".F");
-    
-    else if (global.program.decomposition == "PENCIL") {
-        if (global.program.basis_type == "SSF")
-            BasicIO::Write_reduced_complex_array(F, field_name+".F");
-        
-        else {
-            universal->Copy_array_complex_to_real(F, global.temp_array.Acopy);
-            BasicIO::Write_reduced_complex_array(global.temp_array.Acopy, field_name+".F");
-        }
-    } */
+   	string folder_suffix="/reduced_" + To_string(global.time.now);
+    BasicIO::Write(F.data(), field_name+".F", universal->H5_out_reduced, folder_suffix);
 }
 
 
 void CSF::Read_complex_field()
 {
-/*    if (global.program.decomposition == "SLAB")
-        BasicIO::Read_complex_array(F, field_name+".F");
-    
-    else if (global.program.decomposition == "PENCIL") {
-        if (global.program.basis_type == "SSF")
-            BasicIO::Read_complex_array(F, field_name+".F");
-        
-        else {
-            BasicIO::Read_complex_array(global.temp_array.Acopy, field_name+".F");
-            universal->Copy_array_real_to_complex(global.temp_array.Acopy, F);
-        }
-    } */
+	BasicIO::Read(F.data(), field_name+".F", universal->H5_full);
 }
 
 void CSF::Read_reduced_complex_field()
 {
- /*   F = 0.0;
-    
-    if (global.program.decomposition == "SLAB")
-        BasicIO::Read_reduced_complex_array(F, field_name+".F");
-    
-    else if (global.program.decomposition == "PENCIL") {
-        if (global.program.basis_type == "SSF")
-            BasicIO::Read_reduced_complex_array(F, field_name+".F");
-        
-        else {
-            BasicIO::Read_reduced_complex_array(global.temp_array.Acopy, field_name+".F");
-            universal->Copy_array_real_to_complex(global.temp_array.Acopy, F);
-        }
-    }
-    
-    universal->Adjust_array_after_reading_reduced(F);
-  */
+    F = 0.0;
+
+	BasicIO::Read(F.data(), field_name+".F", universal->H5_in_reduced);
 }
 
 

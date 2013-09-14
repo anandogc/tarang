@@ -128,8 +128,7 @@ DP Correlation::Get_Nusselt_no(FluidVF& U, FluidSF& T)
             return ( 2* universal->Get_total_energy(U.cvf.V1, T.csf.F) );
         
         
-        else if (global.PHYSICS.Pr_option == "PRLARGE")
-        {
+        else if (global.PHYSICS.Pr_option == "PRLARGE") {
             if (global.PHYSICS.Uscaling == "USMALL")
                 return ( 1 + 2* universal->Get_total_energy(U.cvf.V1, T.csf.F) );
             
@@ -138,8 +137,7 @@ DP Correlation::Get_Nusselt_no(FluidVF& U, FluidSF& T)
                         * universal->Get_total_energy(U.cvf.V1, T.csf.F) );
         }
         
-        else if (global.PHYSICS.Pr_option == "PRSMALL")
-        {
+        else if (global.PHYSICS.Pr_option == "PRSMALL") {
             if (global.PHYSICS.Uscaling == "USMALL")
                 return ( 1 + 2*pow2(global.PHYSICS.Prandtl)
                         * universal->Get_total_energy(U.cvf.V1, T.csf.F) );
@@ -166,8 +164,7 @@ DP Correlation::Get_Nusselt_no(FluidVF& U, FluidSF& T)
             return ( 2* universal->Get_total_energy_real_space(U.rvf.V1r, T.rsf.Fr) );
         
         
-        else if (global.PHYSICS.Pr_option == "PRLARGE")
-        {
+        else if (global.PHYSICS.Pr_option == "PRLARGE") {
             if (global.PHYSICS.Uscaling == "USMALL")
                 return ( 1 + 2* universal->Get_total_energy_real_space(U.rvf.V1r, T.rsf.Fr) );
             
@@ -176,8 +173,7 @@ DP Correlation::Get_Nusselt_no(FluidVF& U, FluidSF& T)
                         * universal->Get_total_energy_real_space(U.rvf.V1r, T.rsf.Fr) );
         }
         
-        else if (global.PHYSICS.Pr_option == "PRSMALL")
-        {
+        else if (global.PHYSICS.Pr_option == "PRSMALL") {
             if (global.PHYSICS.Uscaling == "USMALL")
                 return ( 1 + 2*pow2(global.PHYSICS.Prandtl)
                         * universal->Get_total_energy_real_space(U.rvf.V1r, T.rsf.Fr) );
@@ -195,7 +191,8 @@ DP Correlation::Get_Nusselt_no(FluidVF& U, FluidSF& T)
                 return ( 1 + 2* sqrt(global.PHYSICS.Rayleigh) *universal->Get_total_energy_real_space(U.rvf.V1r, T.rsf.Fr) );
         }
     }
-    
+ 	
+ 	return 0; //To avoid compiler complain   
 }
 
 /** @brief Computes cross helicity V.W/2.

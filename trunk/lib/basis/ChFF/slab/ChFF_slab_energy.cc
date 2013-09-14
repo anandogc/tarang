@@ -54,7 +54,7 @@ DP ChFF_SLAB::Get_local_energy_real_space(Array<DP,3> Ar)
     DP sum = 0.0;
 
 	for (int ly=0; ly<Ar.extent(0); ly++)
-        for (int lz=0; lz<(Ar.extent(1)-1); lz++)
+        for (int lz=0; lz<Ar.extent(1); lz++)
             for (int lx=0; lx<Ar.extent(2); lx++) {
                 rx = Get_rx_real_space(lx);
                 factor =  sin((rx)*M_PI/Nx);
@@ -102,7 +102,7 @@ DP ChFF_SLAB::Get_local_energy_real_space(Array<DP,3> Ar, Array<DP,3> Br)
     DP sum = 0.0;
     
 	for (int ly=0; ly<Ar.extent(0); ly++)
-        for (int lz=0; lz<(Ar.extent(1)-1); lz++)
+        for (int lz=0; lz<Ar.extent(1); lz++)
             for (int lx=0; lx<Ar.extent(2); lx++) {
                 rx = Get_rx_real_space(lx);
                 factor =  sin((rx)*M_PI/Nx);
