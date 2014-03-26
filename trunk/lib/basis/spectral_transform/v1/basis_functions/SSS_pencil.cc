@@ -74,7 +74,7 @@
 	
 	// Along X
 	kind[0]=FFTW_RODFT10;
-	sintr_x_plan = fftw_plan_many_r2r(1, Nx_plan, 2*local_Ny_vert*local_Nz_hor,
+	sintr_x_plan = FFTW_PLAN_MANY_R2R(1, Nx_plan, 2*local_Ny_vert*local_Nz_hor,
 		reinterpret_cast<DP*>(X_3d.data()), NULL,
 		1, Nx,
 		reinterpret_cast<DP*>(X_3d.data()), NULL,
@@ -82,7 +82,7 @@
 		kind, FFTW_MEASURE);
 	
 	kind[0]=FFTW_REDFT10;
-	costr_x_plan = fftw_plan_many_r2r(1, Nx_plan, 2*local_Ny_vert*local_Nz_hor,
+	costr_x_plan = FFTW_PLAN_MANY_R2R(1, Nx_plan, 2*local_Ny_vert*local_Nz_hor,
 		reinterpret_cast<DP*>(X_3d.data()), NULL,
 		1, Nx,
 		reinterpret_cast<DP*>(X_3d.data()), NULL,
@@ -90,7 +90,7 @@
 		kind, FFTW_MEASURE);
 	
 	kind[0]=FFTW_RODFT01;
-	isintr_x_plan = fftw_plan_many_r2r(1, Nx_plan, 2*local_Ny_vert*local_Nz_hor,
+	isintr_x_plan = FFTW_PLAN_MANY_R2R(1, Nx_plan, 2*local_Ny_vert*local_Nz_hor,
 		reinterpret_cast<DP*>(X_3d.data()), NULL,
 		1, Nx,
 		reinterpret_cast<DP*>(X_3d.data()), NULL,
@@ -99,7 +99,7 @@
 	
 	
 	kind[0]=FFTW_REDFT01;
-	icostr_x_plan = fftw_plan_many_r2r(1, Nx_plan, 2*local_Ny_vert*local_Nz_hor,
+	icostr_x_plan = FFTW_PLAN_MANY_R2R(1, Nx_plan, 2*local_Ny_vert*local_Nz_hor,
 		reinterpret_cast<DP*>(X_3d.data()), NULL,
 		1, Nx,
 		reinterpret_cast<DP*>(X_3d.data()), NULL,
@@ -109,7 +109,7 @@
 	
 	// Along Y
 	kind[0]=FFTW_RODFT10;
-	sintr_y_plan = fftw_plan_many_r2r(1, Ny_plan, 2*local_Nx_vert*local_Nz_hor,
+	sintr_y_plan = FFTW_PLAN_MANY_R2R(1, Ny_plan, 2*local_Nx_vert*local_Nz_hor,
 		reinterpret_cast<DP*>(X_3d.data()), NULL,
 		2*local_Nx_vert*local_Nz_hor, 1,
 		reinterpret_cast<DP*>(X_3d.data()), NULL,
@@ -117,7 +117,7 @@
 		kind, FFTW_MEASURE);
 	
 	kind[0]=FFTW_REDFT10;
-	costr_y_plan = fftw_plan_many_r2r(1, Ny_plan, 2*local_Nx_vert*local_Nz_hor,
+	costr_y_plan = FFTW_PLAN_MANY_R2R(1, Ny_plan, 2*local_Nx_vert*local_Nz_hor,
 		reinterpret_cast<DP*>(X_3d.data()), NULL,
 		2*local_Nx_vert*local_Nz_hor, 1,
 		reinterpret_cast<DP*>(X_3d.data()), NULL,
@@ -125,7 +125,7 @@
 		kind, FFTW_MEASURE);
 	
 	kind[0]=FFTW_RODFT01;
-	isintr_y_plan = fftw_plan_many_r2r(1, Ny_plan, 2*local_Nx_vert*local_Nz_hor,
+	isintr_y_plan = FFTW_PLAN_MANY_R2R(1, Ny_plan, 2*local_Nx_vert*local_Nz_hor,
 		reinterpret_cast<DP*>(X_3d.data()), NULL,
 		2*local_Nx_vert*local_Nz_hor, 1,
 		reinterpret_cast<DP*>(X_3d.data()), NULL,
@@ -134,7 +134,7 @@
 	
 	
 	kind[0]=FFTW_REDFT01;
-	icostr_y_plan = fftw_plan_many_r2r(1, Ny_plan, 2*local_Nx_vert*local_Nz_hor,
+	icostr_y_plan = FFTW_PLAN_MANY_R2R(1, Ny_plan, 2*local_Nx_vert*local_Nz_hor,
 		reinterpret_cast<DP*>(X_3d.data()), NULL,
 		2*local_Nx_vert*local_Nz_hor, 1,
 		reinterpret_cast<DP*>(X_3d.data()), NULL,
@@ -144,7 +144,7 @@
 	// Along-Z
 	
 	kind[0]=FFTW_RODFT10;
-	sintr_z_plan = fftw_plan_many_r2r(1, Nz_plan, local_Nx_vert,
+	sintr_z_plan = FFTW_PLAN_MANY_R2R(1, Nz_plan, local_Nx_vert,
 		reinterpret_cast<DP*>(X_3d.data()), NULL,
 		local_Nx_vert, 1,
 		reinterpret_cast<DP*>(X_3d.data()), NULL,
@@ -152,7 +152,7 @@
 		kind, FFTW_MEASURE);
 	
 	kind[0]=FFTW_REDFT10;
-	costr_z_plan = fftw_plan_many_r2r(1, Nz_plan, local_Nx_vert,
+	costr_z_plan = FFTW_PLAN_MANY_R2R(1, Nz_plan, local_Nx_vert,
 		reinterpret_cast<DP*>(X_3d.data()), NULL,
 		local_Nx_vert, 1,
 		reinterpret_cast<DP*>(X_3d.data()), NULL,
@@ -160,7 +160,7 @@
 		kind, FFTW_MEASURE);
 	
 	kind[0]=FFTW_RODFT01;
-	isintr_z_plan = fftw_plan_many_r2r(1, Nz_plan, local_Nx_vert,
+	isintr_z_plan = FFTW_PLAN_MANY_R2R(1, Nz_plan, local_Nx_vert,
 		reinterpret_cast<DP*>(X_3d.data()), NULL,
 		local_Nx_vert, 1,
 		reinterpret_cast<DP*>(X_3d.data()), NULL,
@@ -169,7 +169,7 @@
 	
 	
 	kind[0]=FFTW_REDFT01;
-	icostr_z_plan = fftw_plan_many_r2r(1, Nz_plan, local_Nx_vert,
+	icostr_z_plan = FFTW_PLAN_MANY_R2R(1, Nz_plan, local_Nx_vert,
 		reinterpret_cast<DP*>(X_3d.data()), NULL,
 		local_Nx_vert, 1,
 		reinterpret_cast<DP*>(X_3d.data()), NULL,

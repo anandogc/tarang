@@ -71,9 +71,9 @@ void SpectralTransform::Init_CFFF_SLAB()
     //Initialize plans
     
     if (Ny > 1) {
-        c2c_xyz_forward_plan = FFTW_MPI_PLAN_DFT_3D_DP(Ny, Nz, Nx,reinterpret_cast<FFTW_COMPLEX_DP*>(Xr_3d.data()), reinterpret_cast<FFTW_COMPLEX_DP*>(X_3d.data()), MPI_COMM_WORLD, FFTW_FORWARD, FFTW_PLAN_FLAG);
+        c2c_xyz_forward_plan = FFTW_MPI_PLAN_DFT_3D(Ny, Nz, Nx,reinterpret_cast<FFTW_COMPLEX*>(Xr_3d.data()), reinterpret_cast<FFTW_COMPLEX*>(X_3d.data()), MPI_COMM_WORLD, FFTW_FORWARD, FFTW_PLAN_FLAG);
         
-        c2c_xyz_inverse_plan = FFTW_MPI_PLAN_DFT_3D_DP(Ny, Nz, Nx,reinterpret_cast<FFTW_COMPLEX_DP*>(X_3d.data()), reinterpret_cast<FFTW_COMPLEX_DP*>(Xr_3d.data()), MPI_COMM_WORLD, FFTW_BACKWARD, FFTW_PLAN_FLAG);
+        c2c_xyz_inverse_plan = FFTW_MPI_PLAN_DFT_3D(Ny, Nz, Nx,reinterpret_cast<FFTW_COMPLEX*>(X_3d.data()), reinterpret_cast<FFTW_COMPLEX*>(Xr_3d.data()), MPI_COMM_WORLD, FFTW_BACKWARD, FFTW_PLAN_FLAG);
 
     }
     

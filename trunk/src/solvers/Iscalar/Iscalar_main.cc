@@ -50,44 +50,145 @@ int Iscalar_main()
     
 	else if (global.program.kind == "RBC") {
         // For RBC assign from the RBC parameters
-        if (global.PHYSICS.Pr_option == "PRZERO") {
-            global.field.diss_coefficients[0] = 1.0;
-            global.field.diss_coefficients[1] = 0.0;
-        }
-        
-        else if (global.PHYSICS.Pr_option == "PRLARGE") {
-            if (global.PHYSICS.Uscaling == "USMALL") {
-                global.field.diss_coefficients[0] = global.PHYSICS.Prandtl;              //  Coeff of grad^2 u
-                global.field.diss_coefficients[1]  = 1.0;			// Coeff of grad^2 T
-            }
-            else if (global.PHYSICS.Uscaling == "ULARGE") {
-                global.field.diss_coefficients[0] = sqrt(global.PHYSICS.Prandtl/global.PHYSICS.Rayleigh);             
-                global.field.diss_coefficients[1]  = 1/sqrt(global.PHYSICS.Prandtl*global.PHYSICS.Rayleigh);			
-            }
-        }
-        
-        else if (global.PHYSICS.Pr_option == "PRSMALL")  {
-            if (global.PHYSICS.Uscaling == "USMALL")  {
-                global.field.diss_coefficients[0] = 1.0;             
-                global.field.diss_coefficients[1]  = 1/global.PHYSICS.Prandtl;			
-            }
-            else if (global.PHYSICS.Uscaling == "ULARGE")  {
-                global.field.diss_coefficients[0] = sqrt(global.PHYSICS.Prandtl/global.PHYSICS.Rayleigh);             
-                global.field.diss_coefficients[1]  = 1/sqrt(global.PHYSICS.Prandtl*global.PHYSICS.Rayleigh);			
-            }
-        }
-        
-        else if (global.PHYSICS.Pr_option == "PRINFTY")  {
-            if (global.PHYSICS.Uscaling == "USMALL")  {
-                global.field.diss_coefficients[0] = global.PHYSICS.Prandtl;             
-                global.field.diss_coefficients[1]  = 1.0;			
-            }
-            else if (global.PHYSICS.Uscaling == "ULARGE")  {
-                global.field.diss_coefficients[0] = 1/sqrt(global.PHYSICS.Rayleigh);	             
-                global.field.diss_coefficients[1]  = 1/sqrt(global.PHYSICS.Rayleigh);
-            }
-        }
-    }
+		if (global.program.basis_type == "SFF") { // box size (1,Ly,Lz)
+			
+			if (global.PHYSICS.Pr_option == "PRZERO") {
+				global.field.diss_coefficients[0] = 1.0;
+				global.field.diss_coefficients[1] = 0.0;
+			}
+			
+			else if (global.PHYSICS.Pr_option == "PRLARGE") {
+				if (global.PHYSICS.Uscaling == "USMALL") {
+					global.field.diss_coefficients[0] = global.PHYSICS.Prandtl;              //  Coeff of grad^2 u
+					global.field.diss_coefficients[1]  = 1.0;			// Coeff of grad^2 T
+				}
+				else if (global.PHYSICS.Uscaling == "ULARGE") {
+					global.field.diss_coefficients[0] = sqrt(global.PHYSICS.Prandtl/global.PHYSICS.Rayleigh);             
+					global.field.diss_coefficients[1]  = 1/sqrt(global.PHYSICS.Prandtl*global.PHYSICS.Rayleigh);			
+				}
+			}
+			
+			else if (global.PHYSICS.Pr_option == "PRSMALL")  {
+				if (global.PHYSICS.Uscaling == "USMALL")  {
+					global.field.diss_coefficients[0] = 1.0;             
+					global.field.diss_coefficients[1]  = 1/global.PHYSICS.Prandtl;			
+				}
+				else if (global.PHYSICS.Uscaling == "ULARGE")  {
+					global.field.diss_coefficients[0] = sqrt(global.PHYSICS.Prandtl/global.PHYSICS.Rayleigh);             
+					global.field.diss_coefficients[1]  = 1/sqrt(global.PHYSICS.Prandtl*global.PHYSICS.Rayleigh);			
+				}
+			}
+			
+			else if (global.PHYSICS.Pr_option == "PRINFTY")  {
+				if (global.PHYSICS.Uscaling == "USMALL")  {
+					global.field.diss_coefficients[0] = global.PHYSICS.Prandtl;             
+					global.field.diss_coefficients[1]  = 1.0;			
+				}
+				else if (global.PHYSICS.Uscaling == "ULARGE")  {
+					global.field.diss_coefficients[0] = 1/sqrt(global.PHYSICS.Rayleigh);	             
+					global.field.diss_coefficients[1]  = 1/sqrt(global.PHYSICS.Rayleigh);
+				}
+			}
+		}
+		
+		// No slip case
+		else if (global.program.basis_type == "ChFF") { // box size (2,Ly,Lz)
+			if (global.PHYSICS.Pr_option == "PRZERO") {
+				global.field.diss_coefficients[0] = 1.0;
+				global.field.diss_coefficients[1] = 0.0;
+			}
+			
+			else if (global.PHYSICS.Pr_option == "PRLARGE") {
+				if (global.PHYSICS.Uscaling == "USMALL") {
+					global.field.diss_coefficients[0] = global.PHYSICS.Prandtl;              //  Coeff of grad^2 u
+					global.field.diss_coefficients[1]  = 1.0;			// Coeff of grad^2 T
+				}
+				else if (global.PHYSICS.Uscaling == "ULARGE") {
+					global.field.diss_coefficients[0] = sqrt(8*global.PHYSICS.Prandtl/global.PHYSICS.Rayleigh);
+					global.field.diss_coefficients[1]  = 1/sqrt(global.PHYSICS.Prandtl*global.PHYSICS.Rayleigh/8);
+				}
+			}
+			
+			else if (global.PHYSICS.Pr_option == "PRSMALL")  {
+				if (global.PHYSICS.Uscaling == "USMALL")  {
+					global.field.diss_coefficients[0] = 1.0;
+					global.field.diss_coefficients[1]  = 1/global.PHYSICS.Prandtl;
+				}
+				else if (global.PHYSICS.Uscaling == "ULARGE")  {
+					global.field.diss_coefficients[0] = sqrt(8*global.PHYSICS.Prandtl/global.PHYSICS.Rayleigh);
+					global.field.diss_coefficients[1]  = 1/sqrt(global.PHYSICS.Prandtl*global.PHYSICS.Rayleigh/8);
+				}
+			}
+			
+			else if (global.PHYSICS.Pr_option == "PRINFTY")  {
+				if (global.PHYSICS.Uscaling == "USMALL")  {
+					global.field.diss_coefficients[0] = global.PHYSICS.Prandtl;
+					global.field.diss_coefficients[1]  = 1.0;
+				}
+				else if (global.PHYSICS.Uscaling == "ULARGE")  {
+					global.field.diss_coefficients[0] = 1/sqrt(global.PHYSICS.Rayleigh/8);
+					global.field.diss_coefficients[1]  = 1/sqrt(global.PHYSICS.Rayleigh/8);
+				}
+			}
+		}
+
+		else {
+		    if (global.PHYSICS.Pr_option == "PRZERO") {
+		        global.field.diss_coefficients[0] = 1.0;
+		        global.field.diss_coefficients[1] = 0.0;
+		    }
+		    
+		    else if (global.PHYSICS.Pr_option == "PRLARGE") {
+		        if (global.PHYSICS.Uscaling == "USMALL") {
+		            global.field.diss_coefficients[0] = global.PHYSICS.Prandtl;              //  Coeff of grad^2 u
+		            global.field.diss_coefficients[1]  = 1.0;			// Coeff of grad^2 T
+		        }
+		        else if (global.PHYSICS.Uscaling == "ULARGE") {
+		            global.field.diss_coefficients[0] = sqrt(global.PHYSICS.Prandtl/global.PHYSICS.Rayleigh);             
+		            global.field.diss_coefficients[1]  = 1/sqrt(global.PHYSICS.Prandtl*global.PHYSICS.Rayleigh);			
+		        }
+		    }
+		    
+		    else if (global.PHYSICS.Pr_option == "PRSMALL")  {
+		        if (global.PHYSICS.Uscaling == "USMALL")  {
+		            global.field.diss_coefficients[0] = 1.0;             
+		            global.field.diss_coefficients[1]  = 1/global.PHYSICS.Prandtl;			
+		        }
+		        else if (global.PHYSICS.Uscaling == "ULARGE")  {
+		            global.field.diss_coefficients[0] = sqrt(global.PHYSICS.Prandtl/global.PHYSICS.Rayleigh);             
+		            global.field.diss_coefficients[1]  = 1/sqrt(global.PHYSICS.Prandtl*global.PHYSICS.Rayleigh);			
+		        }
+		    }
+		    
+		    else if (global.PHYSICS.Pr_option == "PRINFTY")  {
+		        if (global.PHYSICS.Uscaling == "USMALL")  {
+		            global.field.diss_coefficients[0] = global.PHYSICS.Prandtl;             
+		            global.field.diss_coefficients[1]  = 1.0;			
+		        }
+		        else if (global.PHYSICS.Uscaling == "ULARGE")  {
+		            global.field.diss_coefficients[0] = 1/sqrt(global.PHYSICS.Rayleigh);	             
+		            global.field.diss_coefficients[1]  = 1/sqrt(global.PHYSICS.Rayleigh);
+		        }
+		    }
+		}
+	}
+		else if (global.program.kind == "STRATIFIED") {
+			if (global.PHYSICS.Uscaling == "USMALL")  {
+		        global.field.diss_coefficients[0] = global.PHYSICS.Prandtl;             
+		        global.field.diss_coefficients[1]  = 1.0;			
+			}
+			else if (global.PHYSICS.Uscaling == "ULARGE")  {
+				if (master)
+					cout << "Under Construction" << endl;
+		            //global.field.diss_coefficients[0] = 1/sqrt(global.PHYSICS.Grashof);	             
+		            //global.field.diss_coefficients[1]  = 1/ ( global.PHYSICS.Prandtl * sqrt(global.PHYSICS.Grashof));
+		    }
+	}
+	
+	
+	if (master) {
+		cout << "diss coeff = " << global.field.diss_coefficients[0] << " " << global.field.diss_coefficients[1] << endl;
+	} 
     
 	// ITERATION...
 	if (global.program.iter_or_diag == "ITERATION") {
@@ -318,11 +419,9 @@ int Iscalar_main()
                 }
                     
 				case (13) : {
-                    filename = "/out/realfield_out.d";
-                    filename = global.io.data_dir+ filename;
-                    fluidIO_incompress.realfield_out_file.open(filename.c_str());
+                    U.Inverse_transform();
+                    T.Inverse_transform();
                     fluidIO_incompress.Output_real_field(U, T);
-                    fluidIO_incompress.Close_files();
                     break;
                 }
 				case (14) : {

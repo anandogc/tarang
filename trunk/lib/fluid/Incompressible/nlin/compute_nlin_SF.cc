@@ -66,7 +66,7 @@ void Nlin_incompress::Compute_nlin(FluidVF& U, FluidSF& T)
 	if (global.program.kind == "INC_SCALAR")
 		Compute_nlin_scalar(U, T);
 	
-	else if (global.program.kind == "RBC") 
+	else if (global.program.kind == "RBC" || global.program.kind ==  "STRATIFIED")
 		Compute_nlin_RBC(U, T);
 }
 
@@ -199,7 +199,7 @@ void Nlin_incompress::Compute_nlin_RBC(FluidVF& U, FluidSF& T)
         }
 		
 #ifdef GROSSMANN_LOHSE	
-		if (!global.io.output_nlin_magnitude_done) {
+		if (!global.io.output_nlin_magnitude_done && global.time.now >= global.io.time.global_save_next) {
 
             DP visc1, visc2, visc3, Tvisc;
             universal->Laplacian(1.0, U.cvf.V1, global.temp_array.X);
@@ -216,8 +216,44 @@ void Nlin_incompress::Compute_nlin_RBC(FluidVF& U, FluidSF& T)
             universal->Laplacian(1.0, T.csf.F, global.temp_array.X);
             Tvisc = (-T.diffusion_coefficient)* sum(abs(global.temp_array.X));
             
-			// For RBC GL scaling analysis only.  Comment else
-			fluidIO_incompress.misc_file << "rms(nlin): time, U.nlin1, U.nlin2, U.nlin3, T.nlin: " << global.time.now << "   " << sqrt(sum(sqr(abs(U.nlin1)))) << " " << sqrt(sum(sqr(abs(U.nlin2)))) << " " << sqrt(sum(sqr(abs(U.nlin3)))) << " " << sqrt(sum(sqr(abs(T.nlin)))) "    "<< visc1 << " " << visc2 << " " << visc3 << " " << Tvisc << endl;
+            
+            
+            DP U_nlin1_local = sum(sqr(abs(U.nlin1)));
+            DP U_nlin2_local = sum(sqr(abs(U.nlin2)));
+            DP U_nlin3_local = sum(sqr(abs(U.nlin3)));
+       
+            DP U_nlin1_total;
+            DP U_nlin2_total;
+            DP U_nlin3_total;
+            
+            DP T_nlin_local = sum(sqr(abs(T.nlin)));
+            DP T_nlin_total;
+            
+            DP visc1_total;
+            DP visc2_total;
+            DP visc3_total;
+            
+            DP Tvisc_total;
+              
+			MPI_Reduce(&U_nlin1_local, &U_nlin1_total, 1, MPI_DP, MPI_SUM, 0, MPI_COMM_WORLD);
+			MPI_Reduce(&U_nlin2_local, &U_nlin2_total, 1, MPI_DP, MPI_SUM, 0, MPI_COMM_WORLD);
+			MPI_Reduce(&U_nlin3_local, &U_nlin3_total, 1, MPI_DP, MPI_SUM, 0, MPI_COMM_WORLD);
+			
+			MPI_Reduce(&T_nlin_local, &T_nlin_total, 1, MPI_DP, MPI_SUM, 0, MPI_COMM_WORLD);
+			
+			MPI_Reduce(&visc1, &visc1_total, 1, MPI_DP, MPI_SUM, 0, MPI_COMM_WORLD);
+			MPI_Reduce(&visc2, &visc2_total, 1, MPI_DP, MPI_SUM, 0, MPI_COMM_WORLD);
+			MPI_Reduce(&visc3, &visc3_total, 1, MPI_DP, MPI_SUM, 0, MPI_COMM_WORLD);
+			
+			MPI_Reduce(&Tvisc, &Tvisc_total, 1, MPI_DP, MPI_SUM, 0, MPI_COMM_WORLD);
+			
+			U_nlin1_total = sqrt(U_nlin1_total);
+			U_nlin2_total = sqrt(U_nlin2_total);
+			U_nlin3_total = sqrt(U_nlin3_total);
+			
+            T_nlin_total = sqrt(T_nlin_local);
+			
+			fluidIO_incompress.misc_file << "rms(nlin): " << global.time.now << " " << U_nlin1_total << " " << U_nlin2_total << " " << U_nlin3_total << " " << T_nlin_total << " " << visc1_total << " " << visc2_total << " " << visc3_total << " " << Tvisc_total << endl;
 			
 			global.io.output_nlin_magnitude_done = true;
 		}
@@ -269,7 +305,7 @@ void Nlin_incompress::Compute_nlin_RBC(FluidVF& U, FluidSF& T)
         } 
 
 #ifdef GROSSMANN_LOHSE         
-		if (!global.io.output_nlin_magnitude_done) {
+		if (!global.io.output_nlin_magnitude_done && global.time.now >= global.io.time.global_save_next) {
 			         
 			DP visc1, visc2, visc3, Tvisc;
             universal->Laplacian(1.0, U.cvf.V1, global.temp_array.X);
@@ -284,15 +320,62 @@ void Nlin_incompress::Compute_nlin_RBC(FluidVF& U, FluidSF& T)
             visc3 = (-U.dissipation_coefficient)* sum(abs(global.temp_array.X));
             
             universal->Laplacian(1.0, T.csf.F, global.temp_array.X);
+            
             Tvisc = (-T.diffusion_coefficient)* sum(abs(global.temp_array.X));
             
+            //cout << my_id << " " << global.time.now << " " << sum(abs(T.csf.F)) << endl;
+            
+			DP U_nlin1_local = sum(sqr(abs(U.nlin1)));
+            DP U_nlin2_local = sum(sqr(abs(U.nlin2)));
+            DP U_nlin3_local = sum(sqr(abs(U.nlin3)));
+       
+            DP U_nlin1_total;
+            DP U_nlin2_total;
+            DP U_nlin3_total;
+            
+            DP T_nlin_local = sum(sqr(abs(T.nlin)));
+            DP T_nlin_total;
+            
+            DP visc1_total;
+            DP visc2_total;
+            DP visc3_total;
+            
+            DP Tvisc_total;
+            
+			MPI_Reduce(&U_nlin1_local, &U_nlin1_total, 1, MPI_DP, MPI_SUM, 0, MPI_COMM_WORLD);
+			MPI_Reduce(&U_nlin2_local, &U_nlin2_total, 1, MPI_DP, MPI_SUM, 0, MPI_COMM_WORLD);
+			MPI_Reduce(&U_nlin3_local, &U_nlin3_total, 1, MPI_DP, MPI_SUM, 0, MPI_COMM_WORLD);
+			
+			MPI_Reduce(&T_nlin_local, &T_nlin_total, 1, MPI_DP, MPI_SUM, 0, MPI_COMM_WORLD);
+			
+			
+			
+			MPI_Reduce(&visc1, &visc1_total, 1, MPI_DP, MPI_SUM, 0, MPI_COMM_WORLD);
+			MPI_Reduce(&visc2, &visc2_total, 1, MPI_DP, MPI_SUM, 0, MPI_COMM_WORLD);
+			MPI_Reduce(&visc3, &visc3_total, 1, MPI_DP, MPI_SUM, 0, MPI_COMM_WORLD);
+			
+			MPI_Reduce(&Tvisc, &Tvisc_total, 1, MPI_DP, MPI_SUM, 0, MPI_COMM_WORLD);
+			
+			U_nlin1_total = sqrt(U_nlin1_total);
+			U_nlin2_total = sqrt(U_nlin2_total);
+			U_nlin3_total = sqrt(U_nlin3_total);
+			
+            T_nlin_total = sqrt(T_nlin_local);
+
+			
 			// For RBC GL scaling analysis only.  Comment else
-			fluidIO_incompress.misc_file << "rms(nlin): time, U.nlin1, U.nlin2, U.nlin3, T.nlin: " << global.time.now << "   " << sqrt(sum(sqr(abs(U.nlin1)))) << " " << sqrt(sum(sqr(abs(U.nlin2)))) << " " << sqrt(sum(sqr(abs(U.nlin3)))) << "   " << sqrt(sum(sqr(abs(T.nlin)))) "  "<< visc1 << " " << visc2 << " " << visc3 << " " << Tvisc << endl;
+			fluidIO_incompress.misc_file << "rms(nlin): " << global.time.now << " " << U_nlin1_total << " " << U_nlin2_total << " " << U_nlin3_total << " " << T_nlin_total << " " << visc1_total << " " << visc2_total << " " << visc3_total << " " << Tvisc_total << endl;
 			
 			global.io.output_nlin_magnitude_done = true;
 		}
 #endif
     }
+	
+/*	// Linear theory
+	U.nlin1 = 0.0;
+	U.nlin2 = 0.0;
+	U.nlin3 = 0.0;
+	T.nlin = 0.0; */
 	
 }		
 

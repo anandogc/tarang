@@ -80,7 +80,7 @@ void FluidIO_incompress::Output_pressure_spectrum(Pressure& P)
         universal->Zderiv(P.F, global.temp_array.X);        
         sum_rmsgradp += sqrt(sum(sqr(abs(global.temp_array.X))));
         
-        misc_file << "rms(p): time, rms(|grad(p)|): " << global.time.now << " " << sum_rmsgradp << endl;
+        misc_file << "rms(p) " << global.time.now << " " << sum_rmsgradp << endl;
         // print grad(p) ended
 #endif
         

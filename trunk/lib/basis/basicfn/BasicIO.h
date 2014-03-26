@@ -115,18 +115,15 @@ class BasicIO
 		static map<int,string*> dataset_name_old;
 		//Convertor properties ends
 	
-		static herr_t err;
 		static hid_t acc_template;
 
 		// define an info object to store MPI-IO information 
 		static MPI_Info FILE_INFO_TEMPLATE;
-		static hid_t dataset;
-		static hid_t file_identifier;
 
 		static int dim1, dim2, dim3;
 		static DP *dataArray;
 
-		static string folder_name, file_name;
+		static string file_path;
 		static bool frequent;
 
 	public:
@@ -136,8 +133,9 @@ class BasicIO
 		static void Log(string message);
 		static void Begin_frequent();
 		static void End_frequent();
-	
-		static vector<H5_dataset_meta> Get_meta(string filename);
+
+		static bool File_exists(const std::string& name);
+		static vector<H5_dataset_meta> Get_meta(string filename, string path="/");
     
 		template<typename Planner, int rank>
     	static void Set_H5_plans(Array_properties<rank> array_properties, Planner* planner);
@@ -145,17 +143,9 @@ class BasicIO
     	static H5_plan Set_plan(int rank, int* my_id, int* numprocs, Array<int,1>* dataspace_filter, Array<int,1>* memspace_filter, hid_t datatype);
     
 
-        static void Read(void* data, string dataset_name, H5_plan plan);
-        static void Write(const void* data, string dataset_name, H5_plan plan, string folder_suffix="");
-    
-	
-		//Tarang-1 to Tarang-2 field converter
-        static void CV_Input_HDF5(int number_of_fields, ...);
-        static void CV_Input_plane_HDF5(int number_of_fields, ...);
-        static void CV_Output_HDF5(int number_of_fields, ...);
-        static void CV_Output_plane_HDF5(int number_of_fields, ...);
-        static void Read_DP_Array(string dataset_name, DP *dataArray, int dim1, int dim2, int dim3);
-        static void Write_DP_Array(string dataset_name, DP *dataArray, int dim1, int dim2, int dim3);
+        static void Read(void *data, H5_plan plan, string file_name, string dataset_name="");
+		static void Write(const void* data, H5_plan plan, string folder_name, string file_name, string dataset_name="");
+
 };
 
 

@@ -81,7 +81,7 @@ int Ifluid_main()
             time_advance_incompress.Compute_homgeneous_soln_influence_matrix(U,P);
         
         //        cout << "influence matrix = " << global.temp_array.influence_matrix << endl;
-        
+#ifndef GPU
 		do 	{
 			global.time.dt_computation_done = false;
 			global.io.output_real_field_done = false;
@@ -108,6 +108,9 @@ int Ifluid_main()
             }
 		}
 		while ( (global.time.now < global.time.final) && (clock() < global.time.job_time_final) );
+#else
+		Time_iterate_fluid_gpu();
+#endif
         
         fluidIO_incompress.Output_last(U, P);
 		
@@ -227,11 +230,8 @@ int Ifluid_main()
                 }
                     
 				case (13) : {
-                    filename = "/out/realfield_out.d";
-                    filename = global.io.data_dir+ filename;   
-                    fluidIO_incompress.realfield_out_file.open(filename.c_str());
+                    U.Inverse_transform();
                     fluidIO_incompress.Output_real_field(U); 
-                    fluidIO_incompress.Close_files();
                     break;
                 }
 				case (14) : {

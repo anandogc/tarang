@@ -193,7 +193,7 @@ void Global::Assign_if_input_provided(const YAML::Node& node, const  string para
 //*********************************************************************************************
 
 
-void Global::Parse(int argc, char** argv, bool is_test_module)
+void Global::Parse(int argc, char** argv, bool parse_para)
 {
 	mpi.master=(mpi.my_id==mpi.master_id);
 
@@ -254,6 +254,12 @@ void Global::Parse(int argc, char** argv, bool is_test_module)
 		}
 	}
 
+	if (optind>=argc && parse_para) {
+		if (mpi.master)
+			cout << "Usage: mpirun -np num_procs " << argv[0] << "  [-v,-version] [-h,-help] [-n,-nh <num_hor_procs>] [/path/to/data]" << endl;
+		stop=true;
+	}
+
 	if (stop){
 		MPI_Finalize();
 		exit(0);
@@ -264,29 +270,42 @@ void Global::Parse(int argc, char** argv, bool is_test_module)
 		struct stat st;
 
 		ifstream para_yaml;
+		string para_path="";
+
 		if (stat(argv[optind], &st) != -1) {
 			if (S_ISDIR(st.st_mode)) {
 				io.data_dir = argv[optind];
-				para_yaml.open((io.data_dir+"/in/para.yaml").c_str());
+				para_path = io.data_dir+"/in/para.yaml";
 			}
 			else if (S_ISREG(st.st_mode) || S_ISLNK(st.st_mode) ) {
-				para_yaml.open(argv[optind]);
+				para_path = argv[optind];
+			}
+			else{
+				cerr << "Global::Parse: '" + string(argv[optind]) + "' is neither a file nor a folder." << endl;
+				exit(1);
 			}
 		}
-		if (para_yaml.is_open()){
-			try {
-				YAML::Parser parser(para_yaml);
-				parser.GetNextDocument(para);
-			}
-			catch(YAML::ParserException& e) {
-				cerr << "Global::Parse: Error reading parameter file: \n" << e.what() << endl;
-			}
+		else{
+				cerr << "Global::Parse: '" + string(argv[optind]) + "' is neither a file nor a folder." << endl;
+				exit(1);
+		}
+		if (parse_para) {
+			para_yaml.open(para_path.c_str());
+			if (para_yaml.is_open()){
+				try {
+					YAML::Parser parser(para_yaml);
+					parser.GetNextDocument(para);
+				}
+				catch(YAML::ParserException& e) {
+					cerr << "Global::Parse: Error reading parameter file: \n" << e.what() << endl;
+				}
 
-		}
-		else {
-			if (mpi.master)
-				cerr << "Global::Parse: Unable to read parameter file." << endl;
-			exit(1);
+			}
+			else {
+				if (mpi.master)
+					cerr << "Global::Parse: Unable to open '" + para_path + "'." << endl;
+				exit(1);
+			}
 		}
 	} 
 }
@@ -312,18 +331,18 @@ void Global::Read()
 	para["program"]["helicity_switch"] >> program.helicity_switch;
 	para["program"]["sincostr_switch"] >> program.sincostr_switch;
 	if (Input_provided(para, "PHYSICS")){
-		Assign_if_input_provided(para["PHYSICS"], "Pr_option", PHYSICS.Pr_option, string("PRLARGE"));
-		Assign_if_input_provided(para["PHYSICS"], "Uscaling", PHYSICS.Uscaling, string("USMALL"));
-		Assign_if_input_provided(para["PHYSICS"], "Rayleigh", PHYSICS.Rayleigh, 2000.0);
-		Assign_if_input_provided(para["PHYSICS"], "Prandtl", PHYSICS.Prandtl, 1.0);
-		Assign_if_input_provided(para["PHYSICS"], "temperature_grad", PHYSICS.temperature_grad, 1);
-		Assign_if_input_provided(para["PHYSICS"], "Chandrasekhar", PHYSICS.Chandrasekhar, 0.0);
-		Assign_if_input_provided(para["PHYSICS"], "Prandtl_mag", PHYSICS.Prandtl_mag, 1.0);
-		Assign_if_input_provided(para["PHYSICS"], "Prandtl_c", PHYSICS.Prandtl_c, 1.0);
-		Assign_if_input_provided(para["PHYSICS"], "Reynolds", PHYSICS.Reynolds, 1.0);
-		Assign_if_input_provided(para["PHYSICS"], "Reynolds_mag", PHYSICS.Reynolds_mag, 1.0);
-		Assign_if_input_provided(para["PHYSICS"], "Peclet", PHYSICS.Peclet, 1.0);
-		Assign_if_input_provided(para["PHYSICS"], "Peclet_c", PHYSICS.Peclet_c, 1.0);
+		Assign_if_input_provided<string>(para["PHYSICS"], "Pr_option", PHYSICS.Pr_option, string("PRLARGE"));
+		Assign_if_input_provided<string>(para["PHYSICS"], "Uscaling", PHYSICS.Uscaling, string("USMALL"));
+		Assign_if_input_provided<DP>(para["PHYSICS"], "Rayleigh", PHYSICS.Rayleigh, 2000.0);
+		Assign_if_input_provided<DP>(para["PHYSICS"], "Prandtl", PHYSICS.Prandtl, 1.0);
+		Assign_if_input_provided<int>(para["PHYSICS"], "temperature_grad", PHYSICS.temperature_grad, 1);
+		Assign_if_input_provided<DP>(para["PHYSICS"], "Chandrasekhar", PHYSICS.Chandrasekhar, 0.0);
+		Assign_if_input_provided<DP>(para["PHYSICS"], "Prandtl_mag", PHYSICS.Prandtl_mag, 1.0);
+		Assign_if_input_provided<DP>(para["PHYSICS"], "Prandtl_c", PHYSICS.Prandtl_c, 1.0);
+		Assign_if_input_provided<DP>(para["PHYSICS"], "Reynolds", PHYSICS.Reynolds, 1.0);
+		Assign_if_input_provided<DP>(para["PHYSICS"], "Reynolds_mag", PHYSICS.Reynolds_mag, 1.0);
+		Assign_if_input_provided<DP>(para["PHYSICS"], "Peclet", PHYSICS.Peclet, 1.0);
+		Assign_if_input_provided<DP>(para["PHYSICS"], "Peclet_c", PHYSICS.Peclet_c, 1.0);
 		
 	//	if ( (PHYSICS.temperature_grad != 1) && (PHYSICS.temperature_grad != -1) )
 	//		Show_error("PHYSICS.temperature_grad can be either +1 or -1");
@@ -372,8 +391,10 @@ void Global::Read()
 		para["field"]["L"][2] >> field.L[3];
 
 	}
-	else
-		cout << "WARNING: Improper field.kfactor or field.L provided, default values will be taken." << endl;
+	else {
+		if (mpi.master) 
+			cout << "WARNING: Improper field.kfactor or field.L provided, default values will be taken." << endl;
+	}
 	
 	int no_diss_coeff = para["field"]["diss_coefficients"].size();
 	field.diss_coefficients.resize(no_diss_coeff);
@@ -452,12 +473,12 @@ void Global::Read()
 	if (Input_provided(para["io"],"diagnostic_procedures"))
 		para["io"]["diagnostic_procedures"] >> io.diagnostic_procedures;
 	
-	if (Input_provided(para["io"],"N_in_reduced")) {
+	if ( (io.input_field_procedure==2) && (Input_provided(para["io"],"N_in_reduced") ) ) {
 		io.N_in_reduced.resize(3);
 		para["io"]["N_in_reduced"] >> io.N_in_reduced;
 	}
 	
-	if (Input_provided(para["io"],"N_out_reduced")) {
+	if ( (io.input_field_procedure==2) && (Input_provided(para["io"],"N_out_reduced") ) ) {
 		io.N_out_reduced.resize(3);
 		para["io"]["N_out_reduced"] >> io.N_out_reduced;
 	}
@@ -467,26 +488,26 @@ void Global::Read()
 	para["io"]["string_para"] >> io.string_para;
 	
 		// init cond modes
-	io.init_cond_modes.number=para["io"]["init_cond_modes"].size();
-	io.init_cond_modes.number_components = no_components_table[program.kind];
-	io.init_cond_modes.coords.resize(io.init_cond_modes.number, 4);
-	
-	if  (program.basis_type == "SSS") {
-		Array<int, 1> blitz_int_temp_array;
-		Array<DP, 1> blitz_DP_temp_array;
+	if (io.input_field_procedure==4) {
+		io.init_cond_modes.number=para["io"]["init_cond_modes"].size();
+		io.init_cond_modes.number_components = no_components_table[program.kind];
+		io.init_cond_modes.coords.resize(io.init_cond_modes.number, 4);
 		
-		io.init_cond_modes.field_array_real.resize(io.init_cond_modes.number,io.init_cond_modes.number_components);
-		for (int i=0; i<io.init_cond_modes.number; i++) {
-			para["io"]["init_cond_modes"][i]["coord"]>>blitz_int_temp_array;
-			para["io"]["init_cond_modes"][i]["mode"]>>blitz_DP_temp_array;
+		if  (program.basis_type == "SSS") {
+			Array<int, 1> blitz_int_temp_array;
+			Array<DP, 1> blitz_DP_temp_array;
 			
-			io.init_cond_modes.coords(i,0) = 0;
-			io.init_cond_modes.coords(i, Range(1,3)) = blitz_int_temp_array;
-			io.init_cond_modes.field_array_real(i, Range::all()) = blitz_DP_temp_array;
+			io.init_cond_modes.field_array_real.resize(io.init_cond_modes.number,io.init_cond_modes.number_components);
+			for (int i=0; i<io.init_cond_modes.number; i++) {
+				para["io"]["init_cond_modes"][i]["coord"]>>blitz_int_temp_array;
+				para["io"]["init_cond_modes"][i]["mode"]>>blitz_DP_temp_array;
+				
+				io.init_cond_modes.coords(i,0) = 0;
+				io.init_cond_modes.coords(i, Range(1,3)) = blitz_int_temp_array;
+				io.init_cond_modes.field_array_real(i, Range::all()) = blitz_DP_temp_array;
+			}
 		}
-	}
-	else
-		{
+		else {
 			Array<int, 1> blitz_int_temp_array;
 			Array<complx, 1> blitz_complx_temp_array;
 			
@@ -501,6 +522,7 @@ void Global::Read()
 				io.init_cond_modes.field_array_complex(i, Range::all()) = blitz_complx_temp_array;
 			}
 		}
+	}
 
 		// Probes
 	io.probes.spectral_space.number = para["io"]["probes"]["spectral_space"].size();
@@ -655,12 +677,12 @@ void Global::Read()
 			Assign_if_input_provided(para["energy_transfer"]["flux"], "no_spheres", energy_transfer.flux.no_spheres, 0);
 			
 			if ( Input_provided(para["energy_transfer"]["flux"],"radii") ) {
-				if (para["energy_transfer"]["flux"]["radii"].size() == energy_transfer.flux.no_spheres){
+				if (para["energy_transfer"]["flux"]["radii"].size() == energy_transfer.flux.no_spheres + 1){
 						para["energy_transfer"]["flux"]["radii"] >> energy_transfer.flux.radii;
 				}
 				else {
 					if (mpi.master) 
-						cout << "WARNING: size(energy_transfer.flux.radii) != number supplied.  Computer builds the array " << endl;
+						cout << "WARNING: size(energy_transfer.flux.radii) != number supplied + 1.  Computer builds the array " << endl;
 				}
 			}
 		}
@@ -755,12 +777,4 @@ void Global::Read()
 		}
 	}
 }
-
-
-
-
-
-
-
-
 

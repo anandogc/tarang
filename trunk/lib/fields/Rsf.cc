@@ -101,19 +101,16 @@ void RSF::Inverse_transform(CSF csf)
 // field_kind = Tr
 void RSF::Write_real_field()
 {
-  string folder_suffix="/real_" + To_string(global.time.now);
+  string folder_name="real_" + To_string(global.time.now);
 
-  BasicIO::Write(Fr.data(), field_name+".Fr", universal->H5_real, folder_suffix);
+  BasicIO::Write(Fr.data(), universal->H5_real, folder_name, field_name+".Fr");
 }
 
 
 void RSF::Read_real_field()
 {
-  BasicIO::Read(Fr.data(), field_name+".Fr", universal->H5_real);
+  BasicIO::Read(Fr.data(), universal->H5_real, field_name+".Fr");
 }
 
 
 //************************ END of RSF class Definitions ***************************************
-
-
-

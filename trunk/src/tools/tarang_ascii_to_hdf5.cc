@@ -35,9 +35,7 @@
  */ 
  
 #include "BasicIO.h"
-#include <iostream>
-
-using namespace std;
+#include "BasicIO_SP.h"
 
 Global global;
 
@@ -51,6 +49,19 @@ string file_name;
 bool is_plane;
 	
 ifstream file_in;
+
+
+struct IO_plans{
+    BasicIO::H5_plan H5_real;
+    BasicIO::H5_plan H5_full;
+    BasicIO::H5_plan H5_kz0_full;
+    BasicIO::H5_plan H5_in_reduced;
+    BasicIO::H5_plan H5_out_reduced;
+    BasicIO::H5_plan H5_in_kz0_reduced;
+    BasicIO::H5_plan H5_out_kz0_reduced;
+};
+
+IO_plans tarang_2_3;
 
 int main(int argc, char** argv)
 {	
@@ -71,45 +82,78 @@ int main(int argc, char** argv)
         return 1;
 	}
 
-	global.Global_init_default();
-	global.Process_global_vars_basic();
-
-	BasicIO::data_in_folder=argv[1];
-	BasicIO::data_out_folder=argv[1];
-	
+	global.Parse(argc, argv, false);
 	BasicIO::Initialize();
-	
-	string simulation_type = argv[2];
 
-	if (argc==7)
-		is_plane = true;
-	else
-		is_plane = false;
+	global.io.input_vx_vy_switch = (argc==7);
 
-	local_Nx = atoi(argv[3]);
-	Ny = atoi(argv[4]);
-	Nz = atoi(argv[5]);
+    
+	global.io.output_vx_vy_switch=global.io.input_vx_vy_switch;
 
-	file_name = BasicIO::data_in_folder + "/field_in.d";
+	global.field.N[1] = atoi(argv[3]);
+	global.field.N[2] = atoi(argv[4]);
+	global.field.N[3] = atoi(argv[5]);
+
+	global.Process_basic_vars();
+
+	global.program.kind = argv[2];
+
+	if (Nx*Ny*Nz <= 0){
+		cerr << "Invalid grid size." << endl;
+		exit(1);
+	}
+
+	if (master) {
+		cout << "N = [" << Nx << "," << Ny << "," << Nz << "]" << endl;
+		cout << boolalpha << "input_vx_vy_switch = " << global.io.input_vx_vy_switch << endl;
+		cout << boolalpha << "output_vx_vy_switch = " << global.io.output_vx_vy_switch << endl;
+		
+		cout << endl;
+	}
+
+
+	file_name = global.io.data_dir + "/tarang1/field_in.d";
 	file_in.open(file_name.c_str());
+
+
+	//Configure tarang 2.3 output
+	
+	BasicIO::Array_properties<3> array_properties;
+
+	array_properties.shape_full_complex_array = Ny, Nz/2+1, Nx;
+	array_properties.shape_full_real_array = Ny, Nz+2, Nx;
+
+	array_properties.id_complex_array = my_id, 0, 0;
+	array_properties.id_real_array = 0, 0, my_id;
+
+	array_properties.numprocs_complex_array = numprocs, 1, 1;
+	array_properties.numprocs_real_array = 1, 1, numprocs;
+
+	array_properties.Fourier_directions = 1,1,1;
+	array_properties.Z = 1;
+
+	array_properties.datatype_complex_space = BasicIO::H5T_COMPLX;
+	array_properties.datatype_real_space = BasicIO::H5T_DP;
+
+	BasicIO::Set_H5_plans(array_properties, &tarang_2_3);
+
 
 	int status;
 
-	if (simulation_type == "PRINFTY")
+	if (global.program.kind == "PRINFTY")
 			status = Convert_PRINFTY();
-	else if (simulation_type == "FLUID")
+	/*else if (simulation_type == "FLUID")
 			status = Convert_FLUID();
 	else if (simulation_type == "RBC")
 			status = Convert_RBC();
 	else if (simulation_type == "MHD")
 			status = Convert_MHD();
 	else if (simulation_type == "MRBC")
-			status = Convert_MRBC();
+			status = Convert_MRBC();*/
 	else{
 			cerr << "Not a valid Simulation type." << endl;
 			return(1);
 		}
-	
 
 	BasicIO::Finalize();
 	MPI_Finalize();
@@ -122,36 +166,49 @@ void Read_complex_array(Array<complx, 3> &A, int Nz, string field_name)
 {	
 	cout << "Reading " << field_name << " ..." << flush;
 	complx temp_x;
-	for (int i=0; i<local_Nx; i++)
+	for (int i=0; i<Nx; i++)
 		for (int j=0; j<Ny; j++)
 			for (int k=0; k<Nz/2+1; k++) {
 				if (file_in >> temp_x){
 					A(i,j,k) = (complx)temp_x;
 				}
 				else {
-					cout << endl << "ERROR: INPUT DATA < Required size. (" << (i+1) << "x" << (j+1) << "x" << k << ") points read." << endl;
+					cout << endl << "ERROR: INPUT DATA < Required size. (" << i << "x" << j << "x" << k << ") points read." << endl;
 					exit(1);
 				}
 
 			}
-	cout << "Done. (" << local_Nx << "x" << Ny << "x" << Nz/2+1 << ") points read."<<endl;
+	cout << "Done. (" << Nx << "x" << Ny << "x" << Nz/2+1 << ") points read."<<endl;
 }
 
 
 int Convert_PRINFTY()
 {
 	cout << "Allocating 1 Array ..." << flush;
-	Array<complx, 3> T(local_Nx, Ny, Nz/2+1);
+	Array<complx, 3> A(Nx, Ny, Nz/2+1);
+	Array<complx, 3> B(Ny, Nz/2+1, Nx);
 	cout << "Done" << endl;
 
 	
-	Read_complex_array(T, Nz, "T");
-	BasicIO::CV_Output_HDF5(1, &T);
+	Read_complex_array(A, Nz, "T");
+
+	complx* A_data = A.data();
+	complx* B_data = B.data();
+
+	for (int x=0; x<Nx; x++){
+		for (int y=0; y<local_Ny; y++){
+			for (int z=0; z<Nz/2+1; z++){
+				*(B_data+y*Nx*(Nz/2+1) + z*Nx + x) = *(A_data + x*(Nz/2+1)*local_Ny + y*(Nz/2+1) + z);
+			}
+		}
+	}
+
+	BasicIO::Write(B_data, tarang_2_3.H5_full, BasicIO::data_out_folder, "T.F");
 
 	return 0;
 }
 
-int Convert_FLUID()
+/*int Convert_FLUID()
 {
 	cout << "Allocating 3 Arrays ..." << flush;
 	Array<complx, 3> CV1(local_Nx, Ny, Nz/2+1);
@@ -289,3 +346,4 @@ int Convert_MRBC()
 		BasicIO::CV_Output_HDF5(7, &CV1, &CV2, &CV3, &CW1, &CW2, &CW3, &T);
 	return 0;
 }
+*/

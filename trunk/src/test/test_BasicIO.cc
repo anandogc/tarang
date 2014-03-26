@@ -50,7 +50,7 @@ Uniform<DP> SPECrand;
 
 int main(int argc, char** argv)
 {
-	MPI_Init(&argc, &argv);
+	/*MPI_Init(&argc, &argv);
 	MPI_Comm_rank(MPI_COMM_WORLD, &global.mpi.my_id);
 	MPI_Comm_size(MPI_COMM_WORLD, &global.mpi.numprocs);
 	
@@ -110,28 +110,6 @@ int main(int argc, char** argv)
 	filter[1] = 1;
 	filter[2] = 1;
 
-/*	Array<int,1> data_filter[2];
-	data_filter[0].resize(8);
-	data_filter[0]=0;
-	data_filter[0](Range(0,3))=1;
-	data_filter[0](Range(5,7))=1;
-
-	data_filter[1].resize(8);
-	data_filter[1]=0;
-	data_filter[1](Range(0,3))=1;
-	data_filter[1](Range(5,7))=1;
-
-
-	Array<int,1> mem_filter[2];
-	mem_filter[0].resize(16);
-	mem_filter[0]=0;
-	mem_filter[0](Range(0,3))=1;
-	mem_filter[0](Range(13,15))=1;	
-
-	mem_filter[1].resize(16);
-	mem_filter[1]=0;
-	mem_filter[1](Range(0,3))=1;
-	mem_filter[1](Range(13,15))=1;*/	
 
 	int my_id[3];
 	my_id[0] = global.mpi.my_id;
@@ -163,7 +141,7 @@ int main(int argc, char** argv)
 
 
 	BasicIO::Finalize();
-	MPI_Finalize();
+	MPI_Finalize();*/
 	
 	return 0;
 }

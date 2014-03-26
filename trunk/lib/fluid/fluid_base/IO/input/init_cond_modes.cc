@@ -134,8 +134,9 @@ void  FluidIO::Init_cond_modes(FluidVF&U, FluidSF& T)
 	if (global.program.kind == "INC_SCALAR")
 		Init_cond_modes_scalar(U, T);
 	
-	else if (global.program.kind == "RBC") 
+	else if (global.program.kind == "RBC" || global.program.kind == "STRATIFIED")
 		Init_cond_modes_RBC(U, T);
+
 }
 
 

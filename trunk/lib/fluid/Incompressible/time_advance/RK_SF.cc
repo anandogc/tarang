@@ -162,7 +162,7 @@ void Time_advance_incompress::RK4(FluidVF& U, FluidSF& T, Pressure& P, FORCE& Fo
 		T.csf.F = T.csf.F + (tot_Srhs.F);
 	}
 	
-	else if (global.program.kind == "RBC") {
+	else if (global.program.kind == "RBC" || global.program.kind == "STRATIFIED") {
 		if (global.PHYSICS.Pr_option == "PRZERO") {
 				
 			U.cvf.V1 = U.cvf.V1 + (tot_Vrhs.V1);

@@ -41,7 +41,7 @@
 //*********************************************************************************************	
 
 TransposeConfig::TransposeConfig():
-sendcount(0),sendtype(NULL),recvcount(0),recvtype(NULL),communicator(NULL), numprocs(0){}
+sendcount(0),sendtype(0),recvcount(0),recvtype(0),communicator(0), numprocs(0){}
 
 TransposeConfig::TransposeConfig(int sendcount, MPI_Datatype sendtype, int recvcount, MPI_Datatype recvtype, MPI_Comm communicator, int numprocs):
 sendcount(sendcount),sendtype(sendtype),recvcount(recvcount),recvtype(recvtype),communicator(communicator), numprocs(numprocs){}

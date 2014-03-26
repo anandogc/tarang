@@ -127,32 +127,32 @@ public:
 	
 	
 	// for slab fftw and GP
-	FFTW_PLAN_DP c2c_xyz_forward_plan;
-	FFTW_PLAN_DP c2c_xyz_inverse_plan;
+	FFTW_PLAN c2c_xyz_forward_plan;
+	FFTW_PLAN c2c_xyz_inverse_plan;
 	
 	// for FT
-	FFTW_PLAN_DP c2c_x_forward_plan, c2c_x_inverse_plan;
-	FFTW_PLAN_DP c2c_y_forward_plan, c2c_y_inverse_plan;	
+	FFTW_PLAN c2c_x_forward_plan, c2c_x_inverse_plan;
+	FFTW_PLAN c2c_y_forward_plan, c2c_y_inverse_plan;	
 
-	FFTW_PLAN_DP r2c_xyz_plan;
-	FFTW_PLAN_DP c2r_xyz_plan;
+	FFTW_PLAN r2c_xyz_plan;
+	FFTW_PLAN c2r_xyz_plan;
 
-	FFTW_PLAN_DP r2c_xz_plan;
-	FFTW_PLAN_DP c2r_xz_plan;
+	FFTW_PLAN r2c_xz_plan;
+	FFTW_PLAN c2r_xz_plan;
 
-	FFTW_PLAN_DP r2c_yz_plan;
-	FFTW_PLAN_DP c2r_yz_plan;
+	FFTW_PLAN r2c_yz_plan;
+	FFTW_PLAN c2r_yz_plan;
 
-	FFTW_PLAN_DP r2c_z_plan;
-	FFTW_PLAN_DP c2r_z_plan;
+	FFTW_PLAN r2c_z_plan;
+	FFTW_PLAN c2r_z_plan;
 	
 	
 	// for ST/CT
-	FFTW_PLAN_DP sintr_x_plan, sintr_y_plan, sintr_z_plan;
-	FFTW_PLAN_DP isintr_x_plan, isintr_y_plan, isintr_z_plan;
-	FFTW_PLAN_DP costr_x_plan, costr_y_plan, costr_z_plan;
-	FFTW_PLAN_DP icostr_x_plan, icostr_y_plan, icostr_z_plan;
-	FFTW_PLAN_DP Chebyshevtr_x_plan;
+	FFTW_PLAN sintr_x_plan, sintr_y_plan, sintr_z_plan;
+	FFTW_PLAN isintr_x_plan, isintr_y_plan, isintr_z_plan;
+	FFTW_PLAN costr_x_plan, costr_y_plan, costr_z_plan;
+	FFTW_PLAN icostr_x_plan, icostr_y_plan, icostr_z_plan;
+	FFTW_PLAN Chebyshevtr_x_plan;
 
 	
 	template<class T1, class T2, int N_rank>

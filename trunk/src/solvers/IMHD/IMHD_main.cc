@@ -245,11 +245,9 @@ int IMHD_main()
                 }
                     
 				case (13) : {
-                    filename = "/out/realfield_out.d";
-                    filename = global.io.data_dir+ filename;
-                    fluidIO_incompress.realfield_out_file.open(filename.c_str());
+                    U.Inverse_transform();
+                    B.Inverse_transform();
                     fluidIO_incompress.Output_real_field(U, B);
-                    fluidIO_incompress.Close_files();
                     break;
                 }
 				case (14) : {

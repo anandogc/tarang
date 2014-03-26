@@ -128,57 +128,57 @@ void SpectralTransform::Init(string basis, string decomposition, int Nx, int Ny,
 // 3D: FFFW original
 void SpectralTransform::FTr2c_xyz(Array<DP,3> Ar, Array<complx,3> A)
 {
-	// FFTW_EXECUTE_DFT_R2C_DP(r2c_xyz_plan, reinterpret_cast<DP*>(Ar.data()), reinterpret_cast<FFTW_COMPLEX_DP*>(A.data()));
+	// FFTW_EXECUTE_DFT_R2C(r2c_xyz_plan, reinterpret_cast<DP*>(Ar.data()), reinterpret_cast<FFTW_COMPLEX*>(A.data()));
 	Xr_3d = Ar;
-	fftw_execute(r2c_xyz_plan);
+	FFTW_EXECUTE(r2c_xyz_plan);
 	A=X_3d;
 }
 
 void SpectralTransform::FTc2r_xyz(Array<complx,3> A, Array<DP,3> Ar)
 {
-	// FFTW_EXECUTE_DFT_C2R_DP(c2r_xyz_plan, reinterpret_cast<FFTW_COMPLEX_DP*>(A.data()), reinterpret_cast<DP*>(Ar.data()));
+	// FFTW_EXECUTE_DFT_C2R(c2r_xyz_plan, reinterpret_cast<FFTW_COMPLEX*>(A.data()), reinterpret_cast<DP*>(Ar.data()));
 	X_3d=A;
-	fftw_execute(c2r_xyz_plan);
+	FFTW_EXECUTE(c2r_xyz_plan);
 	Ar = Xr_3d;
 }
 
 // 2D FFFW 
 void SpectralTransform::FTr2c_xz(Array<DP,2> Ar, Array<complx,2> A)
 {
-	// FFTW_EXECUTE_DFT_R2C_DP(r2c_xz_plan, reinterpret_cast<DP*>(Ar.data()), reinterpret_cast<FFTW_COMPLEX_DP*>(A.data()));
+	// FFTW_EXECUTE_DFT_R2C(r2c_xz_plan, reinterpret_cast<DP*>(Ar.data()), reinterpret_cast<FFTW_COMPLEX*>(A.data()));
 	Xr_2d = Ar;
-	fftw_execute(r2c_xyz_plan);
+	FFTW_EXECUTE(r2c_xyz_plan);
 	A=X_2d;	
 }
 
 void SpectralTransform::FTc2r_xz(Array<complx,2> A, Array<DP,2> Ar)
 {
-	// FFTW_EXECUTE_DFT_C2R_DP(c2r_xz_plan, reinterpret_cast<FFTW_COMPLEX_DP*>(A.data()), reinterpret_cast<DP*>(Ar.data()));
+	// FFTW_EXECUTE_DFT_C2R(c2r_xz_plan, reinterpret_cast<FFTW_COMPLEX*>(A.data()), reinterpret_cast<DP*>(Ar.data()));
 	X_2d=A;
-	fftw_execute(c2r_xyz_plan);
+	FFTW_EXECUTE(c2r_xyz_plan);
 	Ar = Xr_2d;
 }
 
 // 3D: CFFT
 void SpectralTransform::FTc2c_xyz(Array<complx,3> A1, Array<complx,3> A2)
 {
-	FFTW_MPI_EXECUTE_DFT_DP(c2c_xyz_forward_plan, reinterpret_cast<FFTW_COMPLEX_DP*>(A1.data()), reinterpret_cast<FFTW_COMPLEX_DP*>(A2.data()));
+	FFTW_MPI_EXECUTE_DFT(c2c_xyz_forward_plan, reinterpret_cast<FFTW_COMPLEX*>(A1.data()), reinterpret_cast<FFTW_COMPLEX*>(A2.data()));
 }
 
 void SpectralTransform::IFTc2c_xyz(Array<complx,3> A2, Array<complx,3> A1)
 {
-	FFTW_MPI_EXECUTE_DFT_DP(c2c_xyz_inverse_plan, reinterpret_cast<FFTW_COMPLEX_DP*>(A2.data()), reinterpret_cast<FFTW_COMPLEX_DP*>(A1.data()));
+	FFTW_MPI_EXECUTE_DFT(c2c_xyz_inverse_plan, reinterpret_cast<FFTW_COMPLEX*>(A2.data()), reinterpret_cast<FFTW_COMPLEX*>(A1.data()));
 }
 
 // GP
 void SpectralTransform::FTc2c_xyz(Array<complx,3> A)
 {
-	FFTW_MPI_EXECUTE_DFT_DP(c2c_xyz_forward_plan, reinterpret_cast<FFTW_COMPLEX_DP*>(A.data()), reinterpret_cast<FFTW_COMPLEX_DP*>(A.data()));
+	FFTW_MPI_EXECUTE_DFT(c2c_xyz_forward_plan, reinterpret_cast<FFTW_COMPLEX*>(A.data()), reinterpret_cast<FFTW_COMPLEX*>(A.data()));
 }
 
 void SpectralTransform::IFTc2c_xyz(Array<complx,3> A)
 {
-	FFTW_MPI_EXECUTE_DFT_DP(c2c_xyz_inverse_plan, reinterpret_cast<FFTW_COMPLEX_DP*>(A.data()), reinterpret_cast<FFTW_COMPLEX_DP*>(A.data()));
+	FFTW_MPI_EXECUTE_DFT(c2c_xyz_inverse_plan, reinterpret_cast<FFTW_COMPLEX*>(A.data()), reinterpret_cast<FFTW_COMPLEX*>(A.data()));
 }
 
 
@@ -187,27 +187,27 @@ void SpectralTransform::IFTc2c_xyz(Array<complx,3> A)
 
 void SpectralTransform::FTr2c_yz(Array<complx,3> X)
 {
-    fftw_execute_dft_r2c(r2c_yz_plan,reinterpret_cast<DP*>(X.data()), reinterpret_cast<FFTW_COMPLEX_DP*>(X.data()));
+    FFTW_EXECUTE_DFT_R2C(r2c_yz_plan,reinterpret_cast<DP*>(X.data()), reinterpret_cast<FFTW_COMPLEX*>(X.data()));
 }
 
 
 
 void SpectralTransform::FTc2r_yz(Array<complx,3> X)
 {
-    fftw_execute_dft_c2r(c2r_yz_plan,reinterpret_cast<FFTW_COMPLEX_DP*>(X.data()), reinterpret_cast<DP*>(X.data()));
+    FFTW_EXECUTE_DFT_C2R(c2r_yz_plan,reinterpret_cast<FFTW_COMPLEX*>(X.data()), reinterpret_cast<DP*>(X.data()));
 }
 
 
 void SpectralTransform::FTr2c_yz(Array<DP,3> Xr)
 {
-    fftw_execute_dft_r2c(r2c_yz_plan,reinterpret_cast<DP*>(Xr.data()), reinterpret_cast<FFTW_COMPLEX_DP*>(Xr.data()));
+    FFTW_EXECUTE_DFT_R2C(r2c_yz_plan,reinterpret_cast<DP*>(Xr.data()), reinterpret_cast<FFTW_COMPLEX*>(Xr.data()));
 }
 
 
 
 void SpectralTransform::FTc2r_yz(Array<DP,3> Xr)
 {
-    fftw_execute_dft_c2r(c2r_yz_plan,reinterpret_cast<FFTW_COMPLEX_DP*>(Xr.data()), reinterpret_cast<DP*>(Xr.data()));
+    FFTW_EXECUTE_DFT_C2R(c2r_yz_plan,reinterpret_cast<FFTW_COMPLEX*>(Xr.data()), reinterpret_cast<DP*>(Xr.data()));
 }
 
 
@@ -215,24 +215,24 @@ void SpectralTransform::FTc2r_yz(Array<DP,3> Xr)
 // c2c
 void SpectralTransform::FTc2c_x(Array<complx,3> A)
 {
-	FFTW_EXECUTE_DFT_DP(c2c_x_forward_plan, reinterpret_cast<FFTW_COMPLEX_DP*>(A.data()), reinterpret_cast<FFTW_COMPLEX_DP*>(A.data()));
+	FFTW_EXECUTE_DFT(c2c_x_forward_plan, reinterpret_cast<FFTW_COMPLEX*>(A.data()), reinterpret_cast<FFTW_COMPLEX*>(A.data()));
 }
 
 
 void SpectralTransform::IFTc2c_x(Array<complx,3> A)
 {
-	FFTW_EXECUTE_DFT_DP(c2c_x_inverse_plan, reinterpret_cast<FFTW_COMPLEX_DP*>(A.data()), reinterpret_cast<FFTW_COMPLEX_DP*>(A.data()));
+	FFTW_EXECUTE_DFT(c2c_x_inverse_plan, reinterpret_cast<FFTW_COMPLEX*>(A.data()), reinterpret_cast<FFTW_COMPLEX*>(A.data()));
 }
 
 void SpectralTransform::FTc2c_y(Array<complx,3> A)
 {
-	FFTW_EXECUTE_DFT_DP(c2c_y_forward_plan, reinterpret_cast<FFTW_COMPLEX_DP*>(A.data()), reinterpret_cast<FFTW_COMPLEX_DP*>(A.data()));
+	FFTW_EXECUTE_DFT(c2c_y_forward_plan, reinterpret_cast<FFTW_COMPLEX*>(A.data()), reinterpret_cast<FFTW_COMPLEX*>(A.data()));
 }
 
 
 void SpectralTransform::IFTc2c_y(Array<complx,3> A)
 {
-	FFTW_EXECUTE_DFT_DP(c2c_y_inverse_plan, reinterpret_cast<FFTW_COMPLEX_DP*>(A.data()), reinterpret_cast<FFTW_COMPLEX_DP*>(A.data()));
+	FFTW_EXECUTE_DFT(c2c_y_inverse_plan, reinterpret_cast<FFTW_COMPLEX*>(A.data()), reinterpret_cast<FFTW_COMPLEX*>(A.data()));
 }
 
 
@@ -240,46 +240,46 @@ void SpectralTransform::IFTc2c_y(Array<complx,3> A)
 // r2c, c2c FFF_PENCIL, SFF_SLAB
 void SpectralTransform::FTr2c_z(Array<complx,2> A)
 {
-	FFTW_EXECUTE_DFT_R2C_DP(r2c_z_plan, reinterpret_cast<DP*>(A.data()), reinterpret_cast<FFTW_COMPLEX_DP*>(A.data()));
+	FFTW_EXECUTE_DFT_R2C(r2c_z_plan, reinterpret_cast<DP*>(A.data()), reinterpret_cast<FFTW_COMPLEX*>(A.data()));
 }
 
 void SpectralTransform::FTc2r_z(Array<complx,2> A)
 {
-	FFTW_EXECUTE_DFT_C2R_DP(c2r_z_plan, reinterpret_cast<FFTW_COMPLEX_DP*>(A.data()), reinterpret_cast<DP*>(A.data()));
+	FFTW_EXECUTE_DFT_C2R(c2r_z_plan, reinterpret_cast<FFTW_COMPLEX*>(A.data()), reinterpret_cast<DP*>(A.data()));
 }
 
 void SpectralTransform::FTr2c_z(Array<DP,2> A)
 {
-	FFTW_EXECUTE_DFT_R2C_DP(r2c_z_plan, reinterpret_cast<DP*>(A.data()), reinterpret_cast<FFTW_COMPLEX_DP*>(A.data()));
+	FFTW_EXECUTE_DFT_R2C(r2c_z_plan, reinterpret_cast<DP*>(A.data()), reinterpret_cast<FFTW_COMPLEX*>(A.data()));
 }
 
 void SpectralTransform::FTc2r_z(Array<DP,2> A)
 {
-	FFTW_EXECUTE_DFT_C2R_DP(c2r_z_plan, reinterpret_cast<FFTW_COMPLEX_DP*>(A.data()), reinterpret_cast<DP*>(A.data()));
+	FFTW_EXECUTE_DFT_C2R(c2r_z_plan, reinterpret_cast<FFTW_COMPLEX*>(A.data()), reinterpret_cast<DP*>(A.data()));
 }
 
 void SpectralTransform::FTr2c_z(Array<complx,3> A)
 {
 	for (int ly=0; ly<A.extent(0); ly++)
-		FFTW_EXECUTE_DFT_R2C_DP(r2c_z_plan, reinterpret_cast<DP*>(A(ly,Range::all(),Range::all()).data()), reinterpret_cast<FFTW_COMPLEX_DP*>(A(ly,Range::all(),Range::all()).data()));
+		FFTW_EXECUTE_DFT_R2C(r2c_z_plan, reinterpret_cast<DP*>(A(ly,Range::all(),Range::all()).data()), reinterpret_cast<FFTW_COMPLEX*>(A(ly,Range::all(),Range::all()).data()));
 }
 
 void SpectralTransform::FTc2r_z(Array<complx,3> A)
 {
 	for (int ly=0; ly<A.extent(0); ly++)
-		FFTW_EXECUTE_DFT_C2R_DP(c2r_z_plan, reinterpret_cast<FFTW_COMPLEX_DP*>(A(ly,Range::all(),Range::all()).data()), reinterpret_cast<DP*>(A(ly,Range::all(),Range::all()).data()));
+		FFTW_EXECUTE_DFT_C2R(c2r_z_plan, reinterpret_cast<FFTW_COMPLEX*>(A(ly,Range::all(),Range::all()).data()), reinterpret_cast<DP*>(A(ly,Range::all(),Range::all()).data()));
 }
 
 void SpectralTransform::FTr2c_z(Array<DP,3> A)
 {
 	for (int ly=0; ly<A.extent(0); ly++)
-		FFTW_EXECUTE_DFT_R2C_DP(r2c_z_plan, reinterpret_cast<DP*>(A(ly,Range::all(),Range::all()).data()), reinterpret_cast<FFTW_COMPLEX_DP*>(A(ly,Range::all(),Range::all()).data()));
+		FFTW_EXECUTE_DFT_R2C(r2c_z_plan, reinterpret_cast<DP*>(A(ly,Range::all(),Range::all()).data()), reinterpret_cast<FFTW_COMPLEX*>(A(ly,Range::all(),Range::all()).data()));
 }
 
 void SpectralTransform::FTc2r_z(Array<DP,3> A)
 {
 	for (int ly=0; ly<A.extent(0); ly++)
-		FFTW_EXECUTE_DFT_C2R_DP(c2r_z_plan, reinterpret_cast<FFTW_COMPLEX_DP*>(A(ly,Range::all(),Range::all()).data()), reinterpret_cast<DP*>(A(ly,Range::all(),Range::all()).data()));
+		FFTW_EXECUTE_DFT_C2R(c2r_z_plan, reinterpret_cast<FFTW_COMPLEX*>(A(ly,Range::all(),Range::all()).data()), reinterpret_cast<DP*>(A(ly,Range::all(),Range::all()).data()));
 }
 
 
@@ -289,23 +289,23 @@ void SpectralTransform::FTc2r_z(Array<DP,3> A)
 void SpectralTransform::SinCostr_x(char sincostr_switch, Array<DP,3> Ar)
 {
 	if (sincostr_switch == 'S') {
-		FFTW_EXECUTE_R2R_DP(sintr_x_plan, reinterpret_cast<DP*>(Ar.data()), reinterpret_cast<DP*>(Ar.data()));
+		FFTW_EXECUTE_R2R(sintr_x_plan, reinterpret_cast<DP*>(Ar.data()), reinterpret_cast<DP*>(Ar.data()));
 		ArrayShiftRight(Ar, 'X');
 	}
 	
 	else if (sincostr_switch == 'C')
-		FFTW_EXECUTE_R2R_DP(costr_x_plan, reinterpret_cast<DP*>(Ar.data()), reinterpret_cast<DP*>(Ar.data()));
+		FFTW_EXECUTE_R2R(costr_x_plan, reinterpret_cast<DP*>(Ar.data()), reinterpret_cast<DP*>(Ar.data()));
 }
 
 void SpectralTransform::ISinCostr_x(char sincostr_switch, Array<DP,3> Ar)
 {
     if (sincostr_switch == 'S') {
 		ArrayShiftLeft(Ar, 'X');
-		FFTW_EXECUTE_R2R_DP(isintr_x_plan, reinterpret_cast<DP*>(Ar.data()), reinterpret_cast<DP*>(Ar.data()));
+		FFTW_EXECUTE_R2R(isintr_x_plan, reinterpret_cast<DP*>(Ar.data()), reinterpret_cast<DP*>(Ar.data()));
 	}
 	
 	else if (sincostr_switch == 'C')
-		FFTW_EXECUTE_R2R_DP(icostr_x_plan, reinterpret_cast<DP*>(Ar.data()), reinterpret_cast<DP*>(Ar.data()));
+		FFTW_EXECUTE_R2R(icostr_x_plan, reinterpret_cast<DP*>(Ar.data()), reinterpret_cast<DP*>(Ar.data()));
 }
 
 
@@ -314,11 +314,11 @@ void SpectralTransform::ISinCostr_x(char sincostr_switch, Array<DP,3> Ar)
 void SpectralTransform::SinCostr_y(char sincostr_switch, Array<complx,3> A)
 {
 	if (sincostr_switch == 'S') {
-	    FFTW_EXECUTE_R2R_DP(sintr_y_plan, reinterpret_cast<DP*>(A.data()), reinterpret_cast<DP*>(A.data()));
+	    FFTW_EXECUTE_R2R(sintr_y_plan, reinterpret_cast<DP*>(A.data()), reinterpret_cast<DP*>(A.data()));
 		ArrayShiftRight(A, 'Y');
 	}
 	else if (sincostr_switch == 'C')
-		FFTW_EXECUTE_R2R_DP(costr_y_plan, reinterpret_cast<DP*>(A.data()), reinterpret_cast<DP*>(A.data()));
+		FFTW_EXECUTE_R2R(costr_y_plan, reinterpret_cast<DP*>(A.data()), reinterpret_cast<DP*>(A.data()));
 }
 
 
@@ -326,17 +326,17 @@ void SpectralTransform::ISinCostr_y(char sincostr_switch, Array<complx,3> A)
 {
 	if (sincostr_switch == 'S') {
 		ArrayShiftLeft(A, 'Y');
-	    FFTW_EXECUTE_R2R_DP(isintr_y_plan, reinterpret_cast<DP*>(A.data()), reinterpret_cast<DP*>(A.data()));
+	    FFTW_EXECUTE_R2R(isintr_y_plan, reinterpret_cast<DP*>(A.data()), reinterpret_cast<DP*>(A.data()));
 	}
 	else if (sincostr_switch == 'C') 
-		FFTW_EXECUTE_R2R_DP(icostr_y_plan, reinterpret_cast<DP*>(A.data()), reinterpret_cast<DP*>(A.data()));
+		FFTW_EXECUTE_R2R(icostr_y_plan, reinterpret_cast<DP*>(A.data()), reinterpret_cast<DP*>(A.data()));
 }
 
 
 // Chebyshev transform via fftw cosine transform
 void SpectralTransform::Chebyshevtr_x(Array<DP,3> A)
 {
-    FFTW_EXECUTE_R2R_DP(Chebyshevtr_x_plan, reinterpret_cast<DP*>(A.data()), reinterpret_cast<DP*>(A.data()));
+    FFTW_EXECUTE_R2R(Chebyshevtr_x_plan, reinterpret_cast<DP*>(A.data()), reinterpret_cast<DP*>(A.data()));
     // Postprocess (see definition)
     A(Range::all(),Range::all(),Range(1,Nx-2)) *= 2.0;
     
@@ -348,7 +348,7 @@ void SpectralTransform::IChebyshevtr_x(Array<DP,3> A)
 	// Preprocess (see definition)
     A(Range::all(),Range::all(),Range(1,Nx-2)) /= 2.0;
     
-	FFTW_EXECUTE_R2R_DP(Chebyshevtr_x_plan, reinterpret_cast<DP*>(A.data()), reinterpret_cast<DP*>(A.data()));
+	FFTW_EXECUTE_R2R(Chebyshevtr_x_plan, reinterpret_cast<DP*>(A.data()), reinterpret_cast<DP*>(A.data()));
 }
 
 // transform along z
@@ -370,12 +370,12 @@ void SpectralTransform::ISinCostr_z(char sincostr_switch, Array<complx,3> A)
 void SpectralTransform::SinCostr_x(char sincostr_switch, Array<DP,2> Ar)
 {
     if (sincostr_switch == 'S') {
-		FFTW_EXECUTE_R2R_DP(sintr_x_plan, reinterpret_cast<DP*>(Ar.data()), reinterpret_cast<DP*>(Ar.data()));
+		FFTW_EXECUTE_R2R(sintr_x_plan, reinterpret_cast<DP*>(Ar.data()), reinterpret_cast<DP*>(Ar.data()));
 		ArrayShiftRight(Ar, 'X');
 	}
 	
 	else if (sincostr_switch == 'C')
-		FFTW_EXECUTE_R2R_DP(costr_x_plan, reinterpret_cast<DP*>(Ar.data()), reinterpret_cast<DP*>(Ar.data()));
+		FFTW_EXECUTE_R2R(costr_x_plan, reinterpret_cast<DP*>(Ar.data()), reinterpret_cast<DP*>(Ar.data()));
 }
 
 // SpectralTransform::inverse
@@ -383,11 +383,11 @@ void SpectralTransform::ISinCostr_x(char sincostr_switch, Array<DP,2> Ar)
 {
     if (sincostr_switch == 'S') {
 		ArrayShiftLeft(Ar, 'X');
-		FFTW_EXECUTE_R2R_DP(isintr_x_plan, reinterpret_cast<DP*>(Ar.data()), reinterpret_cast<DP*>(Ar.data()));
+		FFTW_EXECUTE_R2R(isintr_x_plan, reinterpret_cast<DP*>(Ar.data()), reinterpret_cast<DP*>(Ar.data()));
 	}
 	
 	else if (sincostr_switch == 'C')
-		FFTW_EXECUTE_R2R_DP(icostr_x_plan, reinterpret_cast<DP*>(Ar.data()), reinterpret_cast<DP*>(Ar.data()));
+		FFTW_EXECUTE_R2R(icostr_x_plan, reinterpret_cast<DP*>(Ar.data()), reinterpret_cast<DP*>(Ar.data()));
 }
 
 
@@ -397,7 +397,7 @@ void SpectralTransform::ISinCostr_x(char sincostr_switch, Array<DP,2> Ar)
 // Used in ChFF
 void SpectralTransform::Chebyshevtr_x(Array<DP,2> A)
 {
-    FFTW_EXECUTE_R2R_DP(Chebyshevtr_x_plan, reinterpret_cast<DP*>(A.data()), reinterpret_cast<DP*>(A.data()));
+    FFTW_EXECUTE_R2R(Chebyshevtr_x_plan, reinterpret_cast<DP*>(A.data()), reinterpret_cast<DP*>(A.data()));
     // Postprocess (see definition)
     A(Range::all(),Range(1,Nx-2)) *= 2.0;
     
@@ -409,29 +409,29 @@ void SpectralTransform::IChebyshevtr_x(Array<DP,2> A)
 	// Preprocess (see definition)
     A(Range::all(),Range(1,Nx-2)) /= 2.0;
     
-	FFTW_EXECUTE_R2R_DP(Chebyshevtr_x_plan, reinterpret_cast<DP*>(A.data()), reinterpret_cast<DP*>(A.data()));
+	FFTW_EXECUTE_R2R(Chebyshevtr_x_plan, reinterpret_cast<DP*>(A.data()), reinterpret_cast<DP*>(A.data()));
 }
 
 // transform along z
 void SpectralTransform::SinCostr_z(char sincostr_switch, Array<complx,2> A)
 {
 	if (sincostr_switch == 'S') {
-		FFTW_EXECUTE_R2R_DP(sintr_z_plan, reinterpret_cast<DP*>(A.data()), reinterpret_cast<DP*>(A.data()));
+		FFTW_EXECUTE_R2R(sintr_z_plan, reinterpret_cast<DP*>(A.data()), reinterpret_cast<DP*>(A.data()));
 		ArrayShiftRight(A, 'Z');
 	}
 	else if (sincostr_switch == 'C')
-		FFTW_EXECUTE_R2R_DP(costr_z_plan, reinterpret_cast<DP*>(A.data()), reinterpret_cast<DP*>(A.data()));
+		FFTW_EXECUTE_R2R(costr_z_plan, reinterpret_cast<DP*>(A.data()), reinterpret_cast<DP*>(A.data()));
 }
 
 void SpectralTransform::ISinCostr_z(char sincostr_switch, Array<complx,2> A)
 {
 	if (sincostr_switch == 'S') {
 		ArrayShiftLeft(A, 'Z');
-		FFTW_EXECUTE_R2R_DP(isintr_z_plan, reinterpret_cast<DP*>(A.data()), reinterpret_cast<DP*>(A.data()));
+		FFTW_EXECUTE_R2R(isintr_z_plan, reinterpret_cast<DP*>(A.data()), reinterpret_cast<DP*>(A.data()));
 	}
 	
 	else if (sincostr_switch == 'C')
-		FFTW_EXECUTE_R2R_DP(icostr_z_plan, reinterpret_cast<DP*>(A.data()), reinterpret_cast<DP*>(A.data()));
+		FFTW_EXECUTE_R2R(icostr_z_plan, reinterpret_cast<DP*>(A.data()), reinterpret_cast<DP*>(A.data()));
 }
 
 

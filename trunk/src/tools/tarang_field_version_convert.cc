@@ -35,197 +35,164 @@
  */ 
 
 #include "BasicIO.h"
-#include <iostream>
-
-using namespace std;
+#include "BasicIO_SP.h"
 
 Global global;
 
-int Convert_PRINFTY(string file_name, vector<H5_dataset_meta> field_meta);
-int Convert_FLUID(string file_name, vector<H5_dataset_meta> field_meta);
-int Convert_RBC(string file_name, vector<H5_dataset_meta> field_meta);
-int Convert_MHD(string file_name, vector<H5_dataset_meta> field_meta);
-int Convert_MRBC(string file_name, vector<H5_dataset_meta> field_meta);
+// SpectralTransform spectralTransform;
 
+Uniform<DP> SPECrand;
+
+struct H5_Planner{
+    BasicIO::H5_plan H5_real;
+    BasicIO::H5_plan H5_full;
+    BasicIO::H5_plan H5_kz0_full;
+    BasicIO::H5_plan H5_in_reduced;
+    BasicIO::H5_plan H5_out_reduced;
+    BasicIO::H5_plan H5_in_kz0_reduced;
+    BasicIO::H5_plan H5_out_kz0_reduced;
+};
 
 int main(int argc, char** argv)
 {
-	  	
 	MPI_Init(&argc, &argv);
+
+
 	MPI_Comm_rank(MPI_COMM_WORLD, &global.mpi.my_id);
 	MPI_Comm_size(MPI_COMM_WORLD, &global.mpi.numprocs);
 
-	global.mpi.master = (global.mpi.my_id == 0);
+	global.Parse(argc, argv, false);
+
+
+	BasicIO::data_in_folder = ".";
+	BasicIO::data_out_folder = ".";
 	
-	if (argc != 2){
-        cerr<< "Usage:\n    " << argv[0] << " /path/to/input/file/\nThis path must contain input.h5" << endl;
-        return 1;
+    BasicIO::Initialize();
+
+	master = (global.mpi.my_id == 0);
+
+    vector<BasicIO::H5_dataset_meta> meta;
+
+	if (!BasicIO::File_exists(global.io.data_dir + "/input.h5")) {
+		if (master)
+			cout << global.io.data_dir + "/input.h5 does not exists." << endl;
+		return 1;
 	}
 
-	vector<H5_dataset_meta> field_meta;
+    meta = BasicIO::Get_meta(global.io.data_dir + "/input.h5", "/");
 
-	global.Global_init_default();
-	global.Process_global_vars_basic();
+    global.field.N[1]=meta[0].dimensions[0];
+    global.field.N[2]=meta[0].dimensions[1];
+    global.field.N[3]=meta[0].dimensions[2]-2;
 
-	BasicIO::data_in_folder=argv[1];
-	BasicIO::data_out_folder=argv[1];
+	global.Process_basic_vars();
+
+	int local_Ny=Ny/numprocs;
+
+    Array<complx,3> A(Nx,local_Ny,Nz/2+1);
+    Array<complx,3> B(local_Ny,Nz/2+1,Nx);
+
+
+ 	//Configure tarang 1 input
+    H5_Planner tarang1;
+
+	BasicIO::Array_properties<3> array_properties;
+
+	array_properties.shape_full_complex_array = Nx, Ny, Nz+2;
+	array_properties.shape_full_real_array = Nx, Ny, Nz+2;
+
+	array_properties.id_complex_array = 0, my_id, 0;
+	array_properties.id_real_array = 0, my_id, 0;
+
+	array_properties.numprocs_complex_array = 1, numprocs, 1;
+	array_properties.numprocs_real_array = 1, numprocs, 1;
+
+	array_properties.Fourier_directions = 1,1,1;
+	array_properties.Z = 2;
+
+	array_properties.datatype_complex_space = BasicIO::H5T_DP;
+	array_properties.datatype_real_space = BasicIO::H5T_DP;
 	
-	BasicIO::Initialize();
+	BasicIO::Set_H5_plans(array_properties, &tarang1);
 
-	int local_Nx, Ny, Nz;
+	
+	//Configure tarang 2.3 output
+	H5_Planner tarang_2_3;
 
-	string file_name = BasicIO::data_in_folder + "/input.h5";
+	array_properties.shape_full_complex_array = Ny, Nz/2+1, Nx;
+	array_properties.shape_full_real_array = Nx, Ny, Nz+2;
 
-	field_meta = BasicIO::Get_meta(file_name);
+	array_properties.id_complex_array = my_id, 0, 0;
+	array_properties.id_real_array = 0, my_id, 0;
 
-	int num_fields = field_meta.size();
+	array_properties.numprocs_complex_array = numprocs, 1, 1;
+	array_properties.numprocs_real_array = 1, numprocs, 1;
 
-	int status;
+	array_properties.Fourier_directions = 1,1,1;
+	array_properties.Z = 1;
 
-	switch (num_fields){
-		case 1:		
-			status = Convert_PRINFTY(file_name, field_meta);
-			break;
-		case 3:		
-			status = Convert_FLUID(file_name, field_meta);
-			break;
-		case 4:		
-			status = Convert_RBC(file_name, field_meta);
-			break;
-		case 6:		
-			status = Convert_MHD(file_name, field_meta);
-			break;
-		case 7:		
-			status = Convert_MRBC(file_name, field_meta);
-			break;
-		default:
-			cerr << "Not a tarang-1 field" << endl;
-			break;
+	array_properties.datatype_complex_space = BasicIO::H5T_COMPLX;
+	array_properties.datatype_real_space = BasicIO::H5T_DP;
+
+	BasicIO::Set_H5_plans(array_properties, &tarang_2_3);
+
+	static map<string, string> transition_table;
+	transition_table["CV1"]="U.V1";
+	transition_table["CV2"]="U.V2";
+	transition_table["CV3"]="U.V3";
+	
+	transition_table["CW1"]="B.V1";
+	transition_table["CW2"]="B.V2";
+	transition_table["CW3"]="B.V3";
+	
+	transition_table["T"]="T.F";
+
+	string output_dataset_name;
+	bool vx_vy_switch;
+
+
+	for (int i=0; i<meta.size(); i++) {
+		Nx=meta[i].dimensions[0];
+		Ny=meta[i].dimensions[1];
+		Nz=meta[i].dimensions[2]-2;
+
+		vx_vy_switch=(Nz==0);
+
+		output_dataset_name = transition_table[meta[i].name];
+
+		if (vx_vy_switch)
+			output_dataset_name += "kz0";
+
+		if (master)
+			cout << "Converting " << meta[i].name << " -> " << output_dataset_name << " .." << flush;
+
+		if (!vx_vy_switch)
+			BasicIO::Read(A.data(), tarang1.H5_full, "input", "/"+meta[i].name);
+		else
+			BasicIO::Read(A.data(), tarang1.H5_kz0_full, "input", "/"+meta[i].name);
+
+		for (int x=0; x<Nx; x++){
+			for (int y=0; y<local_Ny; y++){
+				for (int z=0; z<Nz/2+1; z++){
+					B(y,z,x) = A(x,y,z);
+				}
+			}
+		}
+
+		// cout << B(0,1,0) << " " << A(0,0,1) << endl;
+
+
+		if (!vx_vy_switch)
+			BasicIO::Write(B.data(), tarang_2_3.H5_full, "", output_dataset_name);
+		else
+			BasicIO::Write(B.data(), tarang_2_3.H5_kz0_full, "", output_dataset_name);
+
+		if (master) cout << "done" << endl;
 	}
 
+	
 	BasicIO::Finalize();
 	MPI_Finalize();
 	
-	return 0;
-}
-
-
-int Convert_PRINFTY(string file_name, vector<H5_dataset_meta> field_meta)
-{
-	local_Nx = field_meta[0].dimensions[0]/global.mpi.numprocs;
-	Ny = field_meta[0].dimensions[1];
-	Nz = field_meta[0].dimensions[2]-2;
-	
-	Array<complx, 3> T(local_Nx, Ny, Nz/2+1);
-
-	BasicIO::CV_Input_HDF5(1, &T);
-	BasicIO::CV_Output_HDF5(1, &T);
-
-	return 0;
-}
-
-int Convert_FLUID(string file_name, vector<H5_dataset_meta> field_meta)
-{
-	Nx = field_meta[0].dimensions[0];
-	Ny = field_meta[0].dimensions[1];
-	Nz = field_meta[0].dimensions[2]-2;
-
-	local_Nx = Nx/global.mpi.numprocs;
-
-	if (global.mpi.master)
-		cout << "INC_FLUID: [" << Nx << ", " << Ny << ", " << Nz <<  "] " << endl;
-	
-	Array<complx, 3> CV1(local_Nx, Ny, Nz/2+1);
-	Array<complx, 3> CV2(local_Nx, Ny, Nz/2+1);
-	Array<complx, 3> CV3(local_Nx, Ny, Nz/2+1);
-
-	if (field_meta[2].dimensions[2] == 2){
-		BasicIO::CV_Input_plane_HDF5(3, &CV1, &CV2, &CV3);
-		BasicIO::CV_Output_plane_HDF5(3, &CV1, &CV2, &CV3);
-	}
-	else{
-		BasicIO::CV_Input_HDF5(3, &CV1, &CV2, &CV3);
-		BasicIO::CV_Output_HDF5(3, &CV1, &CV2, &CV3);
-	}
-	
-	return 0;
-}
-
-int Convert_RBC(string file_name, vector<H5_dataset_meta> field_meta)
-{
-
-	local_Nx = field_meta[0].dimensions[0]/global.mpi.numprocs;
-	Ny = field_meta[0].dimensions[1];
-	Nz = field_meta[0].dimensions[2]-2;
-	
-	Array<complx, 3> CV1(local_Nx, Ny, Nz/2+1);
-	Array<complx, 3> CV2(local_Nx, Ny, Nz/2+1);
-	Array<complx, 3> CV3(local_Nx, Ny, Nz/2+1);
-
-	Array<complx, 3> T(local_Nx, Ny, Nz/2+1);
-
-	if (field_meta[2].dimensions[2] == 2){
-		BasicIO::CV_Input_plane_HDF5(4, &CV1, &CV2, &CV3, &T);
-		BasicIO::CV_Output_plane_HDF5(4, &CV1, &CV2, &CV3, &T);
-	}
-	else{
-		BasicIO::CV_Input_HDF5(4, &CV1, &CV2, &CV3, &T);
-		BasicIO::CV_Output_HDF5(4, &CV1, &CV2, &CV3, &T);
-	}
-
-	return 0;
-}
-
-int Convert_MHD(string file_name, vector<H5_dataset_meta> field_meta)
-{
-	local_Nx = field_meta[0].dimensions[0]/global.mpi.numprocs;
-	Ny = field_meta[0].dimensions[1];
-	Nz = field_meta[0].dimensions[2]-2;
-	
-	Array<complx, 3> CV1(local_Nx, Ny, Nz/2+1);
-	Array<complx, 3> CV2(local_Nx, Ny, Nz/2+1);
-	Array<complx, 3> CV3(local_Nx, Ny, Nz/2+1);
-
-	Array<complx, 3> CW1(local_Nx, Ny, Nz/2+1);
-	Array<complx, 3> CW2(local_Nx, Ny, Nz/2+1);
-	Array<complx, 3> CW3(local_Nx, Ny, Nz/2+1);
-
-	if (field_meta[2].dimensions[2] == 2){
-		BasicIO::CV_Input_plane_HDF5(6, &CV1, &CV2, &CV3, &CW1, &CW2, &CW3);
-		BasicIO::CV_Output_plane_HDF5(6, &CV1, &CV2, &CV3, &CW1, &CW2, &CW3);
-	}
-	else{
-		BasicIO::CV_Input_HDF5(6, &CV1, &CV2, &CV3, &CW1, &CW2, &CW3);
-		BasicIO::CV_Output_HDF5(6, &CV1, &CV2, &CV3, &CW1, &CW2, &CW3);
-	}
-	
-	return 0;
-}
-
-int Convert_MRBC(string file_name, vector<H5_dataset_meta> field_meta)
-{
-	local_Nx = field_meta[0].dimensions[0]/global.mpi.numprocs;
-	Ny = field_meta[0].dimensions[1];
-	Nz = field_meta[0].dimensions[2]-2;
-	
-	Array<complx, 3> CV1(local_Nx, Ny, Nz/2+1);
-	Array<complx, 3> CV2(local_Nx, Ny, Nz/2+1);
-	Array<complx, 3> CV3(local_Nx, Ny, Nz/2+1);
-
-	Array<complx, 3> CW1(local_Nx, Ny, Nz/2+1);
-	Array<complx, 3> CW2(local_Nx, Ny, Nz/2+1);
-	Array<complx, 3> CW3(local_Nx, Ny, Nz/2+1);
-
-	Array<complx, 3> T(local_Nx, Ny, Nz/2+1);
-
-	if (field_meta[2].dimensions[2] == 2){
-		BasicIO::CV_Input_plane_HDF5(7, &CV1, &CV2, &CV3, &CW1, &CW2, &CW3, &T);
-		BasicIO::CV_Output_plane_HDF5(7, &CV1, &CV2, &CV3, &CW1, &CW2, &CW3, &T);
-	}
-	else{
-		BasicIO::CV_Input_HDF5(7, &CV1, &CV2, &CV3, &CW1, &CW2, &CW3, &T);
-		BasicIO::CV_Output_HDF5(7, &CV1, &CV2, &CV3, &CW1, &CW2, &CW3, &T);
-	}
-
 	return 0;
 }

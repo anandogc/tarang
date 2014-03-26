@@ -138,6 +138,9 @@ int main(int argc, char** argv)
 	else if (global.program.kind == "RBC")
  		Iscalar_main();
 	
+	else if (global.program.kind == "STRATIFIED")
+		Iscalar_main();
+
 	else if (global.program.kind == "MRBC")
  		MRBC_main();
 

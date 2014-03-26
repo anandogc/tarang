@@ -121,16 +121,15 @@ void Correlation::Initialize()
  */
 DP Correlation::Get_Nusselt_no(FluidVF& U, FluidSF& T)
 {
-    
     if (!(basis_type.find("Ch") != string::npos)) {
         // Actually Nu = 1 for Pr=0.  Here we just report the product W*theta.
         if (global.PHYSICS.Pr_option == "PRZERO")
-            return ( 2* universal->Get_total_energy(U.cvf.V1, T.csf.F) );
+            return ( 2*universal->Get_total_energy(U.cvf.V1, T.csf.F) );
         
         
         else if (global.PHYSICS.Pr_option == "PRLARGE") {
             if (global.PHYSICS.Uscaling == "USMALL")
-                return ( 1 + 2* universal->Get_total_energy(U.cvf.V1, T.csf.F) );
+                return ( 1 + 2*universal->Get_total_energy(U.cvf.V1, T.csf.F) );
             
             else if (global.PHYSICS.Uscaling == "ULARGE")
                 return ( 1 + 2*sqrt(global.PHYSICS.Rayleigh*global.PHYSICS.Prandtl)
@@ -161,12 +160,12 @@ DP Correlation::Get_Nusselt_no(FluidVF& U, FluidSF& T)
     else {
 		// Actually Nu = 1 for Pr=0.  Here we just report the product W*theta.
         if (global.PHYSICS.Pr_option == "PRZERO")
-            return ( 2* universal->Get_total_energy_real_space(U.rvf.V1r, T.rsf.Fr) );
+            return ( 4* universal->Get_total_energy_real_space(U.rvf.V1r, T.rsf.Fr) );
         
         
         else if (global.PHYSICS.Pr_option == "PRLARGE") {
             if (global.PHYSICS.Uscaling == "USMALL")
-                return ( 1 + 2* universal->Get_total_energy_real_space(U.rvf.V1r, T.rsf.Fr) );
+                return ( 1 + 4* universal->Get_total_energy_real_space(U.rvf.V1r, T.rsf.Fr) );
             
             else if (global.PHYSICS.Uscaling == "ULARGE")
                 return ( 1 + 2*sqrt(global.PHYSICS.Rayleigh*global.PHYSICS.Prandtl)

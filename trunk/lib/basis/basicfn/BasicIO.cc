@@ -54,7 +54,6 @@ string BasicIO::data_out_folder="out";
 
 
 	//private:
-herr_t  BasicIO::err=0;
 
 map<string, string> BasicIO::transition_table;
 
@@ -62,13 +61,8 @@ hid_t BasicIO::acc_template=0;
 
 // define an info object to store MPI-IO information 
 MPI_Info BasicIO::FILE_INFO_TEMPLATE;
-hid_t BasicIO::dataset;
-hid_t BasicIO::file_identifier;
 
 DP *BasicIO::dataArray;
-
-string BasicIO::folder_name="";
-string BasicIO::file_name="";
 
 bool BasicIO::frequent=false;
 
@@ -86,20 +80,20 @@ void BasicIO::Initialize()
 	// create an MPI_INFO object -- on some platforms it is useful to
 	// pass some information onto the underlying MPI_File_open call
 
-	err = MPI_Info_create(&FILE_INFO_TEMPLATE);
-	err = H5Pset_sieve_buf_size(acc_template, SIEVE_BUF_SIZE);
-	err = H5Pset_alignment(acc_template, 524288, 262144);
+	MPI_Info_create(&FILE_INFO_TEMPLATE);
+	H5Pset_sieve_buf_size(acc_template, SIEVE_BUF_SIZE);
+	H5Pset_alignment(acc_template, 524288, 262144);
 
 	//
 	// visit http://www.mpi-forum.org/docs/mpi21-report/node267.htm for information on access_style, ..
 
-	err = MPI_Info_set(FILE_INFO_TEMPLATE, (char*)"access_style", (char*)"write_once");
-	err = MPI_Info_set(FILE_INFO_TEMPLATE, (char*)"collective_buffering", (char*)"true");
-	err = MPI_Info_set(FILE_INFO_TEMPLATE, (char*)"cb_block_size",  (char*)"1048576");
-	err = MPI_Info_set(FILE_INFO_TEMPLATE, (char*)"cb_buffer_size", (char*)"4194304");
+	MPI_Info_set(FILE_INFO_TEMPLATE, (char*)"access_style", (char*)"write_once");
+	MPI_Info_set(FILE_INFO_TEMPLATE, (char*)"collective_buffering", (char*)"true");
+	MPI_Info_set(FILE_INFO_TEMPLATE, (char*)"cb_block_size",  (char*)"1048576");
+	MPI_Info_set(FILE_INFO_TEMPLATE, (char*)"cb_buffer_size", (char*)"4194304");
 
 	// tell the HDF5 library that we want to use MPI-IO to do the writing 
-	err = H5Pset_fapl_mpio(acc_template, MPI_COMM_WORLD, FILE_INFO_TEMPLATE);
+	H5Pset_fapl_mpio(acc_template, MPI_COMM_WORLD, FILE_INFO_TEMPLATE);
 	
 	//If data_out_folder does not exist then create it
 	string out_path = global.io.data_dir + "/" + data_out_folder;
@@ -124,33 +118,51 @@ void BasicIO::Initialize()
 
 void BasicIO::Finalize()
 {
-	err = H5Pclose(acc_template);
-	err = MPI_Info_free(&FILE_INFO_TEMPLATE);
+	H5Pclose(acc_template);
+	MPI_Info_free(&FILE_INFO_TEMPLATE);
 	if (global.mpi.master) LOG_file.close();
-	
 }
 
 //*********************************************************************************************
 
-void BasicIO::Log(string message){
+void BasicIO::Log(string message) {
 	time ( &rawtime );
  	string t_now = ctime(&rawtime);
 	t_now = t_now.substr( 0, t_now.find_last_of('\n'));
 	if (global.mpi.master) LOG_file << "[ " << t_now << " ] " << message << endl;
 }
 
-void BasicIO::Begin_frequent(){
+void BasicIO::Begin_frequent() {
 	frequent=true;
 	Log("Field Frequent writing started.  Time = "+To_string(global.time.now));
 }
-void BasicIO::End_frequent(){
+void BasicIO::End_frequent() {
 	frequent=false;
 	Log("Field Frequent writing finisheded.");
 }
 
 //*********************************************************************************************
 
-vector<BasicIO::H5_dataset_meta> BasicIO::Get_meta(string filename){
+bool BasicIO::File_exists(const std::string& name)
+{
+    ifstream f(name.c_str());
+    if (f.good()) {
+        f.close();
+        return true;
+    } else {
+        f.close();
+        return false;
+    }   
+}
+
+vector<BasicIO::H5_dataset_meta> BasicIO::Get_meta(string filename, string path)
+{
+	if (!File_exists(filename)) {
+		if (master)
+			cerr << filename << " does not exists." << endl;
+		exit(1);
+	}
+
 	vector<H5_dataset_meta> file_meta_data;
 	H5_dataset_meta dataset_meta_data;
 	int max_rank=3;
@@ -168,10 +180,10 @@ vector<BasicIO::H5_dataset_meta> BasicIO::Get_meta(string filename){
 	/*
 	 *  Open a file, open the root and scan the root.
 	 */
-	file_identifier = H5Fopen(filename.c_str(), H5F_ACC_RDWR, H5P_DEFAULT);
+	hid_t file_identifier = H5Fopen(filename.c_str(), H5F_ACC_RDWR, H5P_DEFAULT);
 	
-	group_id = H5Gopen(file_identifier,"/", H5P_DEFAULT);
-	err = H5Gget_num_objs(group_id, &num_obj);
+	group_id = H5Gopen(file_identifier, path.c_str(), H5P_DEFAULT);
+	H5Gget_num_objs(group_id, &num_obj);
 	
 	for (int i = 0; i < num_obj; i++) {
 		H5Gget_objname_by_idx(group_id, (hsize_t)i, object_name, (size_t)(max_object_name_length+1));
@@ -212,25 +224,27 @@ vector<BasicIO::H5_dataset_meta> BasicIO::Get_meta(string filename){
 
 
 //******************************************************************************
-void BasicIO::Read(void *data, string dataset_name, H5_plan plan)
+void BasicIO::Read(void *data, H5_plan plan, string file_name, string dataset_name)
 {	
-	folder_name = global.io.data_dir + "/" + data_in_folder;
-	file_name=folder_name + "/" + dataset_name+".h5";
-	file_identifier = H5Fopen(file_name.c_str(), H5F_ACC_RDONLY, acc_template);
-    
+	string file_path=global.io.data_dir + "/" + data_in_folder + "/" + file_name + ".h5";
+	hid_t file_identifier = H5Fopen(file_path.c_str(), H5F_ACC_RDONLY, acc_template);
+
     if (file_identifier<0){
     	if (master) cerr << "BasicIO:: Unable to open " << file_name << " for reading." << endl;
     	return;
     }
-    
+
+    if (dataset_name.length()==0)
+    	dataset_name = file_name;
+
 	// now create the dataset -- if it is the first time through, otherwise
 	//     open the exisiting dataset 
-	dataset = H5Dopen2(file_identifier, dataset_name.c_str(), H5P_DEFAULT);
+	hid_t dataset = H5Dopen2(file_identifier, dataset_name.c_str(), H5P_DEFAULT);
 
     
 	// and finally read data from disk -- in this call, we need to
 	//     include both the memory space and the data space.
-	err = H5Dread(dataset, plan.datatype, plan.memspace, plan.dataspace, H5P_DEFAULT, data);
+	herr_t err = H5Dread(dataset, plan.datatype, plan.memspace, plan.dataspace, H5P_DEFAULT, data);
 	
 	H5Dclose(dataset);
 	H5Fclose(file_identifier);
@@ -238,37 +252,38 @@ void BasicIO::Read(void *data, string dataset_name, H5_plan plan)
 
 //*********************************************************************************************
 
-void BasicIO::Write(const void* data, string dataset_name, H5_plan plan, string folder_suffix)
+void BasicIO::Write(const void* data, H5_plan plan, string folder_name, string file_name, string dataset_name)
 {
-    
-    //Create the time.now folder in data_dir/out
-	folder_name = global.io.data_dir + "/" + data_out_folder; 
+   
+   	if (frequent)
+		folder_name = "frequent";
 
-	if (frequent)
-		folder_name += "/frequent";
-	else
-		folder_name += "/" + folder_suffix;
-	
-	mkdir(folder_name.c_str(), S_IRWXU | S_IRWXG);
+    //Create the time.now folder in data_dir/out
+	string folder_path = global.io.data_dir + "/" + data_out_folder + "/" + folder_name; 
+	mkdir(folder_path.c_str(), S_IRWXU | S_IRWXG);
     
 	//Open the file for writing
-	file_name= folder_name + "/" + dataset_name + ".h5";
-	file_identifier = H5Fcreate(file_name.c_str(), H5F_ACC_TRUNC, H5P_DEFAULT, acc_template);
+	string file_path = folder_path + "/" + file_name + ".h5";
+	hid_t file_identifier = H5Fcreate(file_path.c_str(), H5F_ACC_TRUNC, H5P_DEFAULT, acc_template);
 
     if (file_identifier<0){
     	cerr << "BasicIO:: Unable to open " << file_name << " for writing." << endl;
     	return;
     }
 
+
+    if (dataset_name.length()==0)
+    	dataset_name = file_name;
+
 	// now create the dataset -- if it is the first time through, otherwise
 	//     open the exisiting dataset
 
-	dataset = H5Dcreate2(file_identifier, dataset_name.c_str(), plan.datatype,
+	hid_t dataset = H5Dcreate2(file_identifier, dataset_name.c_str(), plan.datatype,
                          plan.dataspace, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
     
 	// and finally write the data to disk -- in this call, we need to
 	//     include both the memory space and the data space.
-	err = H5Dwrite(dataset, plan.datatype, plan.memspace, plan.dataspace, H5P_DEFAULT, data);
+	herr_t err = H5Dwrite(dataset, plan.datatype, plan.memspace, plan.dataspace, H5P_DEFAULT, data);
     
 	H5Dclose(dataset);
 	H5Fclose(file_identifier);

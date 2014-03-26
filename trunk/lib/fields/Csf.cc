@@ -209,32 +209,30 @@ void CSF::Dealias()
 // field_kind = T
 void CSF::Write_complex_field()
 {
-   	string folder_suffix="/time_" + To_string(global.time.now);
+   	string folder_name="time_" + To_string(global.time.now);
 	
-	BasicIO::Write(F.data(), field_name+".F", universal->H5_full, folder_suffix);
+	BasicIO::Write(F.data(), universal->H5_full, folder_name, field_name+".F");
 }
 
 void CSF::Write_reduced_complex_field()
 {
-   	string folder_suffix="/reduced_" + To_string(global.time.now);
-    BasicIO::Write(F.data(), field_name+".F", universal->H5_out_reduced, folder_suffix);
+   	string folder_name="reduced_" + To_string(global.time.now);
+    BasicIO::Write(F.data(), universal->H5_out_reduced, folder_name, field_name+".F");
 }
 
 
 void CSF::Read_complex_field()
 {
-	BasicIO::Read(F.data(), field_name+".F", universal->H5_full);
+	BasicIO::Read(F.data(), universal->H5_full, field_name+".F");
 }
 
 void CSF::Read_reduced_complex_field()
 {
     F = 0.0;
 
-	BasicIO::Read(F.data(), field_name+".F", universal->H5_in_reduced);
+	BasicIO::Read(F.data(), universal->H5_in_reduced, field_name+".F");
 }
 
 
 
 //******************************** End of CSF.cc **********************************************
-
-

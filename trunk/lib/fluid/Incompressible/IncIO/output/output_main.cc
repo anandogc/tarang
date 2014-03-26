@@ -214,7 +214,7 @@ void FluidIO_incompress::Output_all_inloop(FluidVF& U, FluidSF& T, Pressure& P)
 		global.io.time.global_save_next +=  global.io.time.global_save_interval; 
 	}
 		
-	if (global.time.now >= global.io.time.complex_field_save_next) {  
+	if (global.time.now >= global.io.time.complex_field_save_next) {
 		Output_complex_field(U, T);  
 		global.io.time.complex_field_save_next += global.io.time.complex_field_save_interval;
 	}	

@@ -117,25 +117,26 @@ void RVF::Inverse_transform(CVF cvf)
 // field_kind = Ur or Wr
 void RVF::Write_real_field()
 {
-   	string folder_suffix="/real_" + To_string(global.time.now);
+   	string folder_name="real_" + To_string(global.time.now);
 
-	BasicIO::Write(V1r.data(), field_name+".V1r", universal->H5_real, folder_suffix);
+	BasicIO::Write(V1r.data(), universal->H5_real, folder_name, field_name+".V1r");
 
     if (!global.program.two_dimension)
-		BasicIO::Write(V2r.data(), field_name+".V2r", universal->H5_real, folder_suffix);
+		BasicIO::Write(V2r.data(), universal->H5_real, folder_name, field_name+".V2r");
 	
-	BasicIO::Write(V3r.data(), field_name+".V3r", universal->H5_real, folder_suffix);
+	BasicIO::Write(V3r.data(), universal->H5_real, folder_name, field_name+".V3r");
 }
 
 
 void RVF::Read_real_field()
 {
-	BasicIO::Read(V1r.data(), field_name+".V1r", universal->H5_real);
+
+	BasicIO::Read(V1r.data(), universal->H5_real, field_name+".V1r");
 
     if (!global.program.two_dimension)
-		BasicIO::Read(V2r.data(), field_name+".V2r", universal->H5_real);
+		BasicIO::Read(V2r.data(), universal->H5_real, field_name+".V2r");
 	
-	BasicIO::Read(V3r.data(), field_name+".V3r", universal->H5_real);
+	BasicIO::Read(V3r.data(), universal->H5_real, field_name+".V3r");
 }
 
 //**************************  End of RVF class definitions ************************************

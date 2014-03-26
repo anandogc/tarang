@@ -318,14 +318,14 @@ Global::Global()
 	basis_table["SSS"]["C0S"]["VyVz"];
 	
 	
-	// no of components for reading io and force
+	// no of components for reading modes in initial condition and modes in force
 	//no_table[SOLVER_NAME] 
     no_components_table["FLUID_INCOMPRESS"]=2;
     no_components_table["FLUID_COMPRESS"]=3;
     
     no_components_table["RBC"]=3;
+    no_components_table["STRATIFIED"]=3;
 	no_components_table["MRBC"]=4;
-    //no_components_table["RBC"]=4;
     
     no_components_table["SCALAR_INCOMPRESS"]=3;
     no_components_table["SCALAR_COMPRESS"]=4;
@@ -345,6 +345,7 @@ Global::Global()
     //global_data_packet_size_table[SOLVER_NAME]
     global_data_packet_size_table["FLUID_INCOMPRESS"]=15;
     global_data_packet_size_table["RBC"]=21;
+    global_data_packet_size_table["STRATIFIED"]=21;
 	global_data_packet_size_table["MRBC"]=24;
     global_data_packet_size_table["SCALAR_INCOMPRESS"]=20;
     global_data_packet_size_table["MHD_INCOMPRESS"]=29;
@@ -365,6 +366,11 @@ Global::Global()
     spectral_probe_packet_size_table["RBC"]["SSF"]=14;
     spectral_probe_packet_size_table["RBC"]["SFF"]=14;
     spectral_probe_packet_size_table["RBC"]["FFF"]=14;
+    
+    spectral_probe_packet_size_table["STRATIFIED"]["SSS"]=10;
+    spectral_probe_packet_size_table["STRATIFIED"]["SSF"]=14;
+    spectral_probe_packet_size_table["STRATIFIED"]["SFF"]=14;
+    spectral_probe_packet_size_table["STRATIFIED"]["FFF"]=14;
     
     spectral_probe_packet_size_table["SCALAR_INCOMPRESS"]["SSS"]=10;
     spectral_probe_packet_size_table["SCALAR_INCOMPRESS"]["SSF"]=14;
@@ -390,6 +396,7 @@ Global::Global()
     //real_probe_packet_size_table[SOLVER_NAME]
     real_probe_packet_size_table["FLUID_INCOMPRESS"]=7;
     real_probe_packet_size_table["RBC"]=8;
+    real_probe_packet_size_table["STRATIFIED"]=8;
     real_probe_packet_size_table["SCALAR_INCOMPRESS"]=8;
 	real_probe_packet_size_table["MRBC"]=9;
     real_probe_packet_size_table["MHD_INCOMPRESS"]=10;

@@ -19,6 +19,7 @@
  */
 
 #include "main.h"
+#include <unistd.h>
 #include <sys/user.h>
 
 

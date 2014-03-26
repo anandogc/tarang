@@ -67,29 +67,29 @@
 	int Nx_plan[]={Nx};
 	
 	//Strided plans
-	c2c_x_forward_plan = fftw_plan_many_dft(1, Nx_plan, local_Ny*(Nz/2+1),
-		reinterpret_cast<fftw_complex *>(X_3d.data()), NULL,
+	c2c_x_forward_plan = FFTW_PLAN_MANY_DFT(1, Nx_plan, local_Ny*(Nz/2+1),
+		reinterpret_cast<FFTW_COMPLEX*>(X_3d.data()), NULL,
 		1, Nx,
-		reinterpret_cast<fftw_complex*>(X_3d.data()), NULL,
+		reinterpret_cast<FFTW_COMPLEX*>(X_3d.data()), NULL,
 		1, Nx,
 		FFTW_FORWARD, FFTW_MEASURE);
 
-	c2c_x_inverse_plan = fftw_plan_many_dft(1, Nx_plan, local_Ny*(Nz/2+1),
-		reinterpret_cast<fftw_complex *>(X_3d.data()), NULL,
+	c2c_x_inverse_plan = FFTW_PLAN_MANY_DFT(1, Nx_plan, local_Ny*(Nz/2+1),
+		reinterpret_cast<FFTW_COMPLEX*>(X_3d.data()), NULL,
 		1, Nx,
-		reinterpret_cast<fftw_complex*>(X_3d.data()), NULL,
+		reinterpret_cast<FFTW_COMPLEX*>(X_3d.data()), NULL,
 		1, Nx,
 		FFTW_BACKWARD, FFTW_MEASURE);
 
-	r2c_yz_plan = fftw_plan_many_dft_r2c(2, Nyz_plan, local_Nx,
+	r2c_yz_plan = FFTW_PLAN_MANY_DFT_R2C(2, Nyz_plan, local_Nx,
 		reinterpret_cast<DP*>(X_3d.data()), NULL,
 		local_Nx, 1,
-		reinterpret_cast<fftw_complex *>(X_3d.data()), NULL,
+		reinterpret_cast<FFTW_COMPLEX*>(X_3d.data()), NULL,
 		local_Nx, 1,
 		FFTW_MEASURE);
 
-	c2r_yz_plan = fftw_plan_many_dft_c2r(2, Nyz_plan, local_Nx,
-		reinterpret_cast<fftw_complex *>(X_3d.data()), NULL,
+	c2r_yz_plan = FFTW_PLAN_MANY_DFT_C2R(2, Nyz_plan, local_Nx,
+		reinterpret_cast<FFTW_COMPLEX*>(X_3d.data()), NULL,
 		local_Nx, 1,
 		reinterpret_cast<DP*>(X_3d.data()), NULL,
 		local_Nx, 1,

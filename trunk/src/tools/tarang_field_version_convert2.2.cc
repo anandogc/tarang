@@ -37,10 +37,7 @@
 #include "BasicIO.h"
 #include "BasicIO_SP.h"
 
-Universal *universal;
 Global global;
-
-// SpectralTransform spectralTransform;
 
 Uniform<DP> SPECrand;
 
@@ -54,27 +51,16 @@ struct H5_Planner{
     BasicIO::H5_plan H5_out_kz0_reduced;
 };
 
-inline bool file_exists(const std::string& name) {
-    ifstream f(name.c_str());
-    if (f.good()) {
-        f.close();
-        return true;
-    } else {
-        f.close();
-        return false;
-    }   
-}
-
 
 int main(int argc, char** argv)
 {
-	MPI_Init(&argc, &argv);
+	/*MPI_Init(&argc, &argv);
 
 
 	MPI_Comm_rank(MPI_COMM_WORLD, &global.mpi.my_id);
 	MPI_Comm_size(MPI_COMM_WORLD, &global.mpi.numprocs);
 
-	global.Parse(argc, argv);
+	global.Parse(argc, argv, false);
 
 	
     BasicIO::Initialize();
@@ -84,15 +70,14 @@ int main(int argc, char** argv)
 
     vector<BasicIO::H5_dataset_meta> meta;
 
-    meta = BasicIO::Get_meta(BasicIO::data_in_folder + "/U.V1.h5");
+    meta = BasicIO::Get_meta(global.io.data_dir + "/" + BasicIO::data_in_folder + "/U.V1.h5");
 
     global.field.N[1]=meta[0].dimensions[0];
     global.field.N[2]=meta[0].dimensions[1];
     global.field.N[3]=meta[0].dimensions[2]-2;
 
-	global.io.input_vx_vy_switch=file_exists(BasicIO::data_in_folder + "/U.V3kz0.h5");
+	global.io.input_vx_vy_switch=BasicIO::File_exists(global.io.data_dir + "/" + BasicIO::data_in_folder + "/U.V3kz0.h5");
 
-    global.io.data_dir=".";
     
     
 	global.io.output_vx_vy_switch=global.io.input_vx_vy_switch;
@@ -134,12 +119,6 @@ int main(int argc, char** argv)
 	array_properties.numprocs_complex_array = 1, numprocs, 1;
 	array_properties.numprocs_real_array = 1, numprocs, 1;
 
-	if (global.io.N_in_reduced.size() == 3)
-		array_properties.shape_N_in_reduced = global.io.N_in_reduced[1], global.io.N_in_reduced[2]/2+1, global.io.N_in_reduced[0];
-	
-	if (global.io.N_out_reduced.size() == 3)
-		array_properties.shape_N_out_reduced = global.io.N_out_reduced[1], global.io.N_out_reduced[2]/2+1, global.io.N_out_reduced[0];
-
 	array_properties.Fourier_directions = 1,1,1;
 	array_properties.Z = 2;
 
@@ -153,8 +132,6 @@ int main(int argc, char** argv)
 	//Configure tarang 2.3 output
 	H5_Planner tarang_2_3;
 
-	// BasicIO::Array_properties<3> array_properties;
-
 	array_properties.shape_full_complex_array = Ny, Nz/2+1, Nx;
 	array_properties.shape_full_real_array = Ny, Nz+2, Nx;
 
@@ -164,12 +141,6 @@ int main(int argc, char** argv)
 	array_properties.numprocs_complex_array = numprocs, 1, 1;
 	array_properties.numprocs_real_array = 1, 1, numprocs;
 
-	if (global.io.N_in_reduced.size() == 3)
-		array_properties.shape_N_in_reduced = global.io.N_in_reduced[1], global.io.N_in_reduced[2]/2+1, global.io.N_in_reduced[0];
-	
-	if (global.io.N_out_reduced.size() == 3)
-		array_properties.shape_N_out_reduced = global.io.N_out_reduced[1], global.io.N_out_reduced[2]/2+1, global.io.N_out_reduced[0];
-
 	array_properties.Fourier_directions = 1,1,1;
 	array_properties.Z = 1;
 
@@ -177,14 +148,10 @@ int main(int argc, char** argv)
 	array_properties.datatype_real_space = BasicIO::H5T_DP;
 
 	BasicIO::Set_H5_plans(array_properties, &tarang_2_3);
-
-
-	BasicIO::data_in_folder = "tarang2.2";
-	BasicIO::data_out_folder = "tarang2.3";
 	
 	//T.F
 	if (master) cout << "Processing T.F .." << flush;
-	BasicIO::Read(A_data, "T.F", tarang_2_2.H5_full);
+	BasicIO::Read(A_data, tarang_2_2.H5_full, "T.F");
 
 	for (int x=0; x<Nx; x++){
 		for (int y=0; y<local_Ny; y++){
@@ -194,13 +161,13 @@ int main(int argc, char** argv)
 		}
 	}
 
-	BasicIO::Write(B_data, "T.F", tarang_2_3.H5_full);
+	BasicIO::Write(B_data, tarang_2_3.H5_full, "", "T.F");
 	if (master) cout << "done" << endl;
 
 	
 	//U.V1
 	if (master) cout << "Processing U.V1 .." << flush;
-	BasicIO::Read(A_data, "U.V1", tarang_2_2.H5_full);
+	BasicIO::Read(A_data, tarang_2_2.H5_full, "U.V1");
 
 	for (int x=0; x<Nx; x++){
 		for (int y=0; y<local_Ny; y++){
@@ -210,12 +177,12 @@ int main(int argc, char** argv)
 		}
 	}
 
-	BasicIO::Write(B_data, "U.V1", tarang_2_3.H5_full);
+	BasicIO::Write(B_data, tarang_2_3.H5_full, "", "U.V1");
 	if (master) cout << "done" << endl;
 
 	//U.V2
 	if (master) cout << "Processing U.V2 .." << flush;
-	BasicIO::Read(A_data, "U.V2", tarang_2_2.H5_full);
+	BasicIO::Read(A_data, tarang_2_2.H5_full, "U.V2");
 
 	for (int x=0; x<Nx; x++){
 		for (int y=0; y<local_Ny; y++){
@@ -225,31 +192,51 @@ int main(int argc, char** argv)
 		}
 	}
 
-	BasicIO::Write(B_data, "U.V2", tarang_2_3.H5_full);
+	BasicIO::Write(B_data, tarang_2_3.H5_full, "", "U.V2");
 	if (master) cout << "done" << endl;
-	
-	//U.V3
-	if (global.io.input_vx_vy_switch){
-		if (master) cout << "Processing U.V3kz0 .." << flush;
-		A=0;
-		B=0;
-		BasicIO::Read(A_data, "U.V3kz0", tarang_2_2.H5_kz0_full);
 
-		for (int x=0; x<Nx; x++){
-			for (int y=0; y<local_Ny; y++){
-				for (int z=0; z<1; z++){
-					*(B_data+y*Nx*(Nz/2+1) + z*Nx + x) = *(A_data + x*(Nz/2+1)*local_Ny + y*(Nz/2+1) + z);
+	//To be checked after this
+
+		//U.V3
+		if (global.io.input_vx_vy_switch){
+			if (master) cout << "Processing U.V3kz0 .." << flush;
+			A=0;
+			B=0;
+			BasicIO::Read(A_data, "U.V3kz0", tarang_2_2.H5_kz0_full);
+
+			for (int x=0; x<Nx; x++){
+				for (int y=0; y<local_Ny; y++){
+					for (int z=0; z<1; z++){
+						*(B_data+y*Nx*(Nz/2+1) + z*Nx + x) = *(A_data + x*(Nz/2+1)*local_Ny + y*(Nz/2+1) + z);
+					}
 				}
 			}
-		}
 
-		BasicIO::Write(B_data, "U.V3kz0", tarang_2_3.H5_kz0_full);
-		if (master) cout << "done" << endl;
-	}
+			BasicIO::Write(B_data, "U.V3kz0", tarang_2_3.H5_kz0_full);
+			if (master) cout << "done" << endl;
+		}
 	
-	else {
-		if (master) cout << "Processing U.V3 .." << flush;
-		BasicIO::Read(A_data, "U.V3", tarang_2_2.H5_full);
+		else {
+			if (master) cout << "Processing U.V3 .." << flush;
+			BasicIO::Read(A_data, "U.V3", tarang_2_2.H5_full);
+
+			for (int x=0; x<Nx; x++){
+				for (int y=0; y<local_Ny; y++){
+					for (int z=0; z<Nz/2+1; z++){
+						*(B_data+y*Nx*(Nz/2+1) + z*Nx + x) = *(A_data + x*(Nz/2+1)*local_Ny + y*(Nz/2+1) + z);
+					}
+				}
+			}
+
+			BasicIO::Write(B_data, "U.V3", tarang_2_3.H5_full);
+			if (master) cout << "done" << endl;
+		}
+	}
+
+	if (file_exists(BasicIO::data_in_folder + "/B.V1.h5")) {
+		//B.V1
+		if (master) cout << "Processing B.V1 .." << flush;
+		BasicIO::Read(A_data, "B.V1", tarang_2_2.H5_full);
 
 		for (int x=0; x<Nx; x++){
 			for (int y=0; y<local_Ny; y++){
@@ -259,12 +246,62 @@ int main(int argc, char** argv)
 			}
 		}
 
-		BasicIO::Write(B_data, "U.V3", tarang_2_3.H5_full);
+		BasicIO::Write(B_data, "B.V1", tarang_2_3.H5_full);
 		if (master) cout << "done" << endl;
-	}
+
+		//B.V2
+		if (master) cout << "Processing B.V2 .." << flush;
+		BasicIO::Read(A_data, "B.V2", tarang_2_2.H5_full);
+
+		for (int x=0; x<Nx; x++){
+			for (int y=0; y<local_Ny; y++){
+				for (int z=0; z<Nz/2+1; z++){
+					*(B_data+y*Nx*(Nz/2+1) + z*Nx + x) = *(A_data + x*(Nz/2+1)*local_Ny + y*(Nz/2+1) + z);
+				}
+			}
+		}
+
+		BasicIO::Write(B_data, "B.V2", tarang_2_3.H5_full);
+		if (master) cout << "done" << endl;
 	
+		//B.V3
+		if (global.io.input_vx_vy_switch){
+			if (master) cout << "Processing B.V3kz0 .." << flush;
+			A=0;
+			B=0;
+			BasicIO::Read(A_data, "B.V3kz0", tarang_2_2.H5_kz0_full);
+
+			for (int x=0; x<Nx; x++){
+				for (int y=0; y<local_Ny; y++){
+					for (int z=0; z<1; z++){
+						*(B_data+y*Nx*(Nz/2+1) + z*Nx + x) = *(A_data + x*(Nz/2+1)*local_Ny + y*(Nz/2+1) + z);
+					}
+				}
+			}
+
+			BasicIO::Write(B_data, "B.V3kz0", tarang_2_3.H5_kz0_full);
+			if (master) cout << "done" << endl;
+		}
+	
+		else {
+			if (master) cout << "Processing B.V3 .." << flush;
+			BasicIO::Read(A_data, "B.V3", tarang_2_2.H5_full);
+
+			for (int x=0; x<Nx; x++){
+				for (int y=0; y<local_Ny; y++){
+					for (int z=0; z<Nz/2+1; z++){
+						*(B_data+y*Nx*(Nz/2+1) + z*Nx + x) = *(A_data + x*(Nz/2+1)*local_Ny + y*(Nz/2+1) + z);
+					}
+				}
+			}
+
+			BasicIO::Write(B_data, "B.V3", tarang_2_3.H5_full);
+			if (master) cout << "done" << endl;
+		}
+	}
+
 	BasicIO::Finalize();
-	MPI_Finalize();
+	MPI_Finalize();*/
 	
 	return 0;
 }

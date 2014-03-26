@@ -18,8 +18,8 @@ program:
 PHYSICS:
     Pr_option: PRLARGE
     Uscaling: USMALL
-    Rayleigh: 2000
-    Prandtl: 0.05
+    Rayleigh: 1800
+    Prandtl: 1
     temperature_grad: 1  
     
 field:
@@ -42,7 +42,7 @@ fft:
 
 time:
     init: 0
-    final: 10
+    final: 100
     dt_fixed: 0.01
     Courant_no: 0.2
     job_time:                       # 00:00:20
@@ -78,16 +78,16 @@ io:
     #if probes/init_cond not provided, comment "- coord" lines.
     init_cond_modes:
             - coord: [1,1,1]
-              mode: [ (.1,0), (0,0), (0,0.1) ]
+              mode: [ (0,0), (0,0), (0,1) ]
               
             - coord: [3,1,1]
-              mode: [ (.1,0), (0,0), (0,-0.1) ]
+              mode: [ (0,0), (0,0), (0,-0.1) ]
               
             - coord: [2,1,1]
-              mode: [ (.1,0), (0,0), (0.1,0) ]
+              mode: [ (0,0), (0,0), (0.1,0) ]
               
             - coord: [4,1,1]
-              mode: [ (.1,0), (0,0), (-0.1,0) ]
+              mode: [ (0,0), (0,0), (-0.1,0) ]
               
 #            - coord: [3,0,2]
 #              mode: [ (0.01,0.01), (0,0), (0,0) ]
@@ -164,7 +164,7 @@ io:
         Tk_shell_spectrum_save_interval:
         Tk_ring_spectrum_save_interval:
         Tk_cylindrical_ring_spectrum_save_interval:
-        cout_save_interval: 0.1
+        cout_save_interval: 0.01
         
         global_save_last: true
         complex_field_save_last: 

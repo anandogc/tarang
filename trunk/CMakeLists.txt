@@ -73,7 +73,7 @@ SET (OTHER_LIBS m blitz  hdf5 mpi yaml-cpp)
 #################################################
 
 #Set version
-SET (VERSION "2.3.0")
+SET (VERSION "2.3.1")
 
 #Set default value for DP
 IF (NOT DEFINED DP)
@@ -220,7 +220,7 @@ IF (NOT ALL_LIBRARIES_FOUND AND FIND_LIBRARIES)
                             ERROR_VARIABLE HDF5_VERSION_ERROR)
         ENDIF()
         DISPLAY_FOUND_LIBRARY(HDF5 HDF5 "${HDF5_INCLUDE_DIRS}" "Set HDF5_ROOT, e.g. /usr/local")
-        #IF (HDF5_FOUND) #Check whether HDF5 has parallen installation or not
+    #IF (HDF5_FOUND) #Check whether HDF5 has parallen installation or not
 	#		IF (HDF5_IS_PARALLEL)
 	#			MESSAGE(STATUS "HDF5 supports parallel IO: yes")
 	#		ELSE()
@@ -328,6 +328,8 @@ IF (NOT CMAKE_BUILD_TYPE_DISPLAYED)
     SET (CMAKE_BUILD_TYPE_DISPLAYED TRUE CACHE BOOL "CMAKE_BUILD_TYPE_DISPLAYED")
 ENDIF ()
 
+MESSAGE(STATUS "Source Folder: ${TARANG_SOURCE_DIR}")
+MESSAGE("")
 
 SET(CMAKE_CXX_FLAGS_DISTRIBUTION "-O3")
 #SET(CMAKE_C_FLAGS_DISTRIBUTION "-O3")
@@ -339,15 +341,4 @@ ADD_SUBDIRECTORY(lib)
 ADD_SUBDIRECTORY(src)
 
 
-##Change Version number in all source files if chnged
-#        EXECUTE_PROCESS(COMMAND grep -m1 Tarang ${CMAKE_SOURCE_DIR}/CMakeLists.txt
-#                        COMMAND cut -d- -f2
-#                        COMMAND cut -d\  -f1
-#                        OUTPUT_STRIP_TRAILING_WHITESPACE
-#                        OUTPUT_VARIABLE OLD_VERSION)
-#
-#IF (NOT ${OLD_VERSION} MATCHES ${VERSION})
-#    EXECUTE_PROCESS(COMMAND find ${CMAKE_SOURCE_DIR} -type f  \( -iname "*.h" -or -iname "*.cc" -or -iname "*.txt" \) -exec sed -i "" "s/Tarang-${OLD_VERSION}/Tarang-${VERSION}/" {} \;)#
-#    MESSAGE (STATUS "Tarang-${OLD_VERSION} changed to Tarang-${VERSION} in all .h, .cc and .txt files")
-#ENDIF()
 

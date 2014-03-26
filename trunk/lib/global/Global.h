@@ -99,9 +99,9 @@ public:
 	struct PHYSICS {
 		string	Pr_option;					// Prandtl number switch (PRLARGNE..) for RB
 		string	Uscaling;					// UBscaling (ULARGE... ) for RB
-		DP		Rayleigh;							// Rayleigh number
-		DP		Prandtl;							// Prandtl number
-		int		temperature_grad;			// +1 for convection; -x for stratification;
+		DP Rayleigh;							// Rayleigh number
+		DP Prandtl;							// Prandtl number	
+		int temperature_grad;			// +1 for convection; -x for stratification;
 		
 		DP Chandrasekhar; // Chandrashekhar number
 		DP Prandtl_mag; //Magnetic Prandlt number
@@ -542,7 +542,7 @@ public:
 
 	Global();
 
-	void Parse(int argc, char** argv, bool is_test_module=false);
+	void Parse(int argc, char** argv, bool parse_para=true);
 	void Read();
 	void Init_defaults();
 	void Process_basic_vars();

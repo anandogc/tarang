@@ -60,7 +60,7 @@ void Time_advance_incompress::Add_force(FluidVF& U, FluidSF& T)
 	if (global.program.kind == "INC_SCALAR")
 		Add_force_scalar(U, T);
 	
-	else if (global.program.kind == "RBC")
+	else if (global.program.kind == "RBC" || global.program.kind == "STRATIFIED")
 		Add_force_RBC(U, T);						
 }
 
@@ -208,7 +208,7 @@ void Time_advance_incompress::Compute_rhs(FluidVF& U, FluidSF& T, Pressure& P)
 	if (global.program.kind == "INC_SCALAR") 
 		Compute_rhs_scalar(U, T, P);
 	
-	else if (global.program.kind == "RBC") 
+	else if (global.program.kind == "RBC" || global.program.kind == "STRATIFIED")
 		Compute_rhs_RBC(U, T, P);
 	
 }
@@ -361,7 +361,7 @@ void Time_advance_incompress::Single_time_step(FluidVF& U, FluidSF& T, DP a, DP 
 	if (global.program.kind == "INC_SCALAR") 
 		Single_time_step_scalar(U, T, a, b, c);
 	
-	else if (global.program.kind == "RBC")
+	else if (global.program.kind == "RBC" || global.program.kind == "STRATIFIED")
 		Single_time_step_RBC(U, T, a, b, c);
 	
 }	
@@ -456,7 +456,7 @@ void Time_advance_incompress::Compute_force_TO_rhs(FluidVF& U, FluidSF& T, Press
 	if (global.program.kind == "INC_SCALAR") 
 		Compute_force_TO_rhs_scalar(U, T, P, Force);
 	
-	else if (global.program.kind == "RBC") 
+	else if (global.program.kind == "RBC" || global.program.kind == "STRATIFIED")
 		Compute_force_TO_rhs_RBC(U, T, P, Force);
 }
 
@@ -581,7 +581,7 @@ void Time_advance_incompress::Compute_RK4_parts(FluidVF& U, FluidSF& T, PlainCVF
 	if (global.program.kind == "INC_SCALAR") 
 		Compute_RK4_parts_scalar(U, T,tot_Vrhs, tot_Srhs, b, factor);
 	
-	else if (global.program.kind == "RBC") 
+	else if (global.program.kind == "RBC" || global.program.kind == "STRATIFIED")
 		Compute_RK4_parts_RBC(U, T,tot_Vrhs, tot_Srhs, b, factor);
 }
 

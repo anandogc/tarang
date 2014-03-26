@@ -1,3 +1,4 @@
+
 /* Tarang-2
  *
  * Copyright (C) 2008, 2009  Mahendra K. Verma
@@ -66,7 +67,7 @@ int main(int argc, char** argv)
 	MPI_Comm_size(MPI_COMM_WORLD, &global.mpi.numprocs);
 	global.mpi.master= (global.mpi.my_id == global.mpi.master_id);
 	
-	global.Parse(argc, argv);
+	global.Parse(argc, argv, false);
 
 	int result = 0;
 
@@ -81,23 +82,23 @@ int main(int argc, char** argv)
 	time_t          start;
     time_t          end;
 	
-	global.field.kfactor[1] = 1.0;
-	global.field.kfactor[2] = 1.0;
-	global.field.kfactor[3] = 1.0;
+	global.field.kfactor[1] = 3.14159;
+	global.field.kfactor[2] = 2.22144;
+	global.field.kfactor[3] = 2.22144;
 	
 	// for slab
 	global.field.N[0] = 0;
-	global.field.N[1] = 8;
-	global.field.N[2] = 8;
-	global.field.N[3] = 8;
+	global.field.N[1] = 32;
+	global.field.N[2] = 32;
+	global.field.N[3] = 32;
 	
 	cout << "Nx = " << global.field.N[1] << ", Ny = " << global.field.N[2] << " , Nz = " << global.field.N[3] << endl;
 	
 	
-    test_CFFF_slab();
+    // test_CFFF_slab();
     //test_FFFW_slab();
-    //test_FFF_slab();
-	//test_SFF_slab();
+    // test_FFF_slab();
+	test_SFF_slab();
 	//test_SSF_slab();
 	//test_SSS_slab();
 	//test_ChFF_slab();

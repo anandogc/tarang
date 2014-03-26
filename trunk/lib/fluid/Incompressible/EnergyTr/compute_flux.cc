@@ -75,7 +75,7 @@ void EnergyTr::Compute_flux(FluidVF& U, FluidSF& T)
 	if (global.program.kind == "INC_SCALAR")
 		Compute_flux_scalar(U, T);
 	
-	else if (global.program.kind == "RBC")
+	else if (global.program.kind == "RBC" || global.program.kind == "STRATIFIED")
 		Compute_flux_RBC(U, T);
 }
 

@@ -99,9 +99,10 @@ template <class T>
 		if (world_communicator){
 			switch (config_id){
 				case YZ_PLANE:
-					Z_length = 2*shape_horizontal_array_3d(1);
+					Z_length = 2*shape_horizontal_array_3d(1)/unit;
 					count = local_Nx*local_Ny*Z_length;
-					type = MPI_DP;
+					type = MPI_Vector_unit;
+
 
 					break;
 
@@ -275,3 +276,4 @@ template <class T>
 		}
 	}
  }
+ 

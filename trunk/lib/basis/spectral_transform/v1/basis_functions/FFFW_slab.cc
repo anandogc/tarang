@@ -67,15 +67,15 @@
     //Initialize plans
 		
     if (Ny > 1) {
-        c2r_xyz_plan = FFTW_MPI_PLAN_DFT_C2R_3D_DP(Nx, Ny, Nz,reinterpret_cast<FFTW_COMPLEX_DP*>(X_3d.data()), reinterpret_cast<DP*>(Xr_3d.data()), MPI_COMM_WORLD, FFTW_PLAN_FLAG);
+        c2r_xyz_plan = FFTW_MPI_PLAN_DFT_C2R_3D(Nx, Ny, Nz,reinterpret_cast<FFTW_COMPLEX*>(X_3d.data()), reinterpret_cast<DP*>(Xr_3d.data()), MPI_COMM_WORLD, FFTW_PLAN_FLAG);
 
-        r2c_xyz_plan = FFTW_MPI_PLAN_DFT_R2C_3D_DP(Nx, Ny, Nz,reinterpret_cast<DP*>(Xr_3d.data()), reinterpret_cast<FFTW_COMPLEX_DP*>(X_3d.data()),MPI_COMM_WORLD, FFTW_PLAN_FLAG);
+        r2c_xyz_plan = FFTW_MPI_PLAN_DFT_R2C_3D(Nx, Ny, Nz,reinterpret_cast<DP*>(Xr_3d.data()), reinterpret_cast<FFTW_COMPLEX*>(X_3d.data()),MPI_COMM_WORLD, FFTW_PLAN_FLAG);
     }
     
     else if (Ny == 1) {
-        c2r_xz_plan = FFTW_MPI_PLAN_DFT_C2R_2D_DP(Nx, Nz,reinterpret_cast<FFTW_COMPLEX_DP*>(X_2d.data()), reinterpret_cast<DP*>(Xr_2d.data()),MPI_COMM_WORLD, FFTW_PLAN_FLAG);
+        c2r_xz_plan = FFTW_MPI_PLAN_DFT_C2R_2D(Nx, Nz,reinterpret_cast<FFTW_COMPLEX*>(X_2d.data()), reinterpret_cast<DP*>(Xr_2d.data()),MPI_COMM_WORLD, FFTW_PLAN_FLAG);
         
-        r2c_xz_plan = FFTW_MPI_PLAN_DFT_R2C_2D_DP(Nx, Nz, reinterpret_cast<DP*>(Xr_2d.data()),reinterpret_cast<FFTW_COMPLEX_DP*>(X_2d.data()),MPI_COMM_WORLD, FFTW_PLAN_FLAG);
+        r2c_xz_plan = FFTW_MPI_PLAN_DFT_R2C_2D(Nx, Nz, reinterpret_cast<DP*>(Xr_2d.data()),reinterpret_cast<FFTW_COMPLEX*>(X_2d.data()),MPI_COMM_WORLD, FFTW_PLAN_FLAG);
     }
 }
 //*********************************************************************************************

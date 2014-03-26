@@ -133,7 +133,7 @@ void Global::Process_basic_vars()
 	
 		
 	// program
-	program.T_exists = ((program.kind == "SCALAR_INCOMPRESS") || (program.kind == "RBC") || (program.kind == "MRBC")) || (program.kind == "MHD_SCALAR_INCOMPRESS") || (program.kind == "MHD_SCALAR_INCOMPRESS_ALL") || (program.kind == "MHD_ASTRO_INCOMPRESS") || (program.kind == "MHD_ASTRO_INCOMPRESS_ALL");
+	program.T_exists = ((program.kind == "SCALAR_INCOMPRESS") || (program.kind == "RBC") || (program.kind == "STRATIFIED") || (program.kind == "MRBC")) || (program.kind == "MHD_SCALAR_INCOMPRESS") || (program.kind == "MHD_SCALAR_INCOMPRESS_ALL") || (program.kind == "MHD_ASTRO_INCOMPRESS") || (program.kind == "MHD_ASTRO_INCOMPRESS_ALL");
 	program.W_exists = ((program.kind == "MHD_INCOMPRESS") || (program.kind == "KEPLERIAN")) || (program.kind == "MHD_SCALAR_INCOMPRESS") || (program.kind == "MHD_SCALAR_INCOMPRESS_ALL") || (program.kind == "MHD_ASTRO_INCOMPRESS") || (program.kind == "MHD_ASTRO_INCOMPRESS_ALL");
 	
 	program.sincostr_switch_Vx = basis_table[program.basis_type][program.sincostr_switch]["Vx"];
@@ -182,7 +182,7 @@ void Global::Process_basic_vars()
 		no_diss_coeff = 1;
 	}
 	
-	else if ((program.kind == "SCALAR_INCOMPRESS") || (program.kind =="RBC")) {
+	else if ((program.kind == "SCALAR_INCOMPRESS") || (program.kind =="RBC") || (program.kind == "STRATIFIED")) {
 		field.howmany = 4;
 		no_diss_coeff = 2;
 	}

@@ -109,7 +109,7 @@ using namespace blitz ;
 
 const float MY_PI=3.141592653589793238f;
 
-const int MY_PRECISION = 6
+const int MY_PRECISION = 6;
 
 #elif defined(DOUBLE_DP)
 

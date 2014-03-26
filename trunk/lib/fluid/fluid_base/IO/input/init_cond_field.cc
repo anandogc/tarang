@@ -63,7 +63,7 @@ void  FluidIO::Init_cond_complex_field(FluidVF& U, FluidSF& T)
 	if (global.program.kind == "INC_SCALAR")
 		Init_cond_scalar_complex_field(U, T);
 
-	else if (global.program.kind == "RBC")
+	else if (global.program.kind == "RBC" || global.program.kind == "STRATIFIED")
 		Init_cond_RBC_complex_field(U, T);
 }
 
@@ -177,7 +177,7 @@ void  FluidIO::Init_cond_reduced_complex_field(FluidVF& U, FluidSF& T)
 	if (global.program.kind == "INC_SCALAR")
 		Init_cond_reduced_complex_field_scalar(U, T);
 
-	else if (global.program.kind == "RBC")
+	else if (global.program.kind == "RBC" || global.program.kind == "STRATIFIED")
 		Init_cond_reduced_complex_field_RBC(U, T);
 }
 
@@ -289,7 +289,7 @@ void  FluidIO::Init_cond_real_field(FluidVF& U, FluidSF& T)
 	if (global.program.kind == "INC_SCALAR")
 		Init_cond_real_field_scalar(U, T);
 	
-	else if (global.program.kind == "RBC")
+	else if (global.program.kind == "RBC" || global.program.kind == "STRATIFIED")
 		Init_cond_real_field_RBC(U, T);
 }
 

@@ -144,7 +144,7 @@ void test_FFF_slab(){
 void test_SFF_slab(){
 	global.program.basis_type = "SFF";
 	global.program.decomposition = "SLAB";
-	global.program.sincostr_switch = "CFF";
+	global.program.sincostr_switch = "SFF";
 	
 	global.Process_basic_vars();
 	universal=new SFF_SLAB;

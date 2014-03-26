@@ -90,65 +90,54 @@ using namespace blitz ;
 #if defined(FLOAT_DP)
 
 #define DP 								float
-#define FFTW_PLAN_DP					fftwf_plan
-#define FFTW_MPI_PLAN_DFT_C2C_3D_DP  	fftwf_mpi_plan_dft_3d
-#define FFTW_MPI_PLAN_DFT_R2C_3D_DP  	fftwf_mpi_plan_dft_r2c_3d
-#define FFTW_MPI_PLAN_DFT_C2R_3D_DP  	fftwf_mpi_plan_dft_c2r_3d
-#define FFTW_MPI_PLAN_DFT_R2C_2D_DP  	fftwf_mpi_plan_dft_r2c_2d
-#define FFTW_MPI_PLAN_DFT_C2R_2D_DP  	fftwf_mpi_plan_dft_c2r_2d
-#define FFTW_PLAN_DFT_R2C_2D_DP			fftwf_plan_dft_r2c_2d
-#define FFTW_PLAN_DFT_C2R_2D_DP			fftwf_plan_dft_c2r_2d
-#define FFTW_PLAN_DFT_1D_DP				fftwf_plan_dft_1d
-#define FFTW_PLAN_DFT_R2C_1D_DP			fftwf_plan_dft_r2c_1d
-#define FFTW_PLAN_DFT_C2R_1D_DP			fftwf_plan_dft_c2r_1d
-#define FFTW_PLAN_R2R_1D_DP				fftwf_plan_r2r_1d
-#define FFTW_EXECUTE_DFT_R2C_DP			fftwf_execute_dft_r2c
-#define FFTW_EXECUTE_DFT_C2R_DP			fftwf_execute_dft_c2r
-#define FFTW_EXECUTE_DFT_DP				fftwf_execute_dft
-#define FFTW_EXECUTE_R2R_DP				fftwf_execute_r2r
-//#define FFTW_MPI_INIT_DP				fftwf_mpi_init
-#define FFTW_COMPLEX_DP					fftwf_complex
-#define FFTW_DESTROY_PLAN_DP			fftwf_destroy_plan
 #define MPI_DP							MPI_FLOAT
-#define FFTW_MPI_LOCAL_SIZE_3D_TRANSPOSED_DP fftwf_mpi_local_size_3d_transposed
-#define FFTW_MPI_LOCAL_SIZE_2D_TRANSPOSED_DP fftwf_mpi_local_size_2d_transposed
+#define FFTW_COMPLEX					fftwf_complex
 
-#define FFTW_MPI_PLAN_DFT_3D_DP         fftwf_mpi_plan_dft_3d   // for GP
-#define FFTW_MPI_EXECUTE_DFT_DP         fftwf_mpi_execute_dft
+#define FFTW_PLAN						fftwf_plan
+#define FFTW_MPI_PLAN_DFT_3D			fftwf_mpi_plan_dft_3d   // for GP
+#define FFTW_MPI_PLAN_DFT_R2C_3D		fftwf_mpi_plan_dft_r2c_3d
+#define FFTW_MPI_PLAN_DFT_C2R_3D		fftwf_mpi_plan_dft_c2r_3d
+#define FFTW_MPI_PLAN_DFT_R2C_2D		fftwf_mpi_plan_dft_r2c_2d
+#define FFTW_MPI_PLAN_DFT_C2R_2D		fftwf_mpi_plan_dft_c2r_2d
+#define FFTW_PLAN_MANY_R2R				fftwf_plan_many_r2r
+#define FFTW_PLAN_MANY_DFT				fftwf_plan_many_dft
+#define FFTW_PLAN_MANY_DFT_R2C			fftwf_plan_many_dft_r2c
+#define FFTW_PLAN_MANY_DFT_C2R			fftwf_plan_many_dft_c2r
+
+#define FFTW_EXECUTE					fftwf_execute
+#define FFTW_EXECUTE_R2R				fftwf_execute_r2r
+#define FFTW_EXECUTE_DFT				fftwf_execute_dft
+#define FFTW_EXECUTE_DFT_R2C			fftwf_execute_dft_r2c
+#define FFTW_EXECUTE_DFT_C2R			fftwf_execute_dft_c2r
+#define FFTW_MPI_EXECUTE_DFT			fftwf_mpi_execute_dft
 
 // Defining DOUBLE_DP: switch for setting double
-
 #elif defined(DOUBLE_DP)
 
-#define DP 						double
-#define FFTW_PLAN_DP					fftw_plan
-#define FFTW_MPI_PLAN_DFT_C2C_3D_DP  	fftw_mpi_plan_dft_3d
-#define FFTW_MPI_PLAN_DFT_R2C_3D_DP  	fftw_mpi_plan_dft_r2c_3d
-#define FFTW_MPI_PLAN_DFT_C2R_3D_DP  	fftw_mpi_plan_dft_c2r_3d
-#define FFTW_MPI_PLAN_DFT_R2C_2D_DP  	fftw_mpi_plan_dft_r2c_2d
-#define FFTW_MPI_PLAN_DFT_C2R_2D_DP  	fftw_mpi_plan_dft_c2r_2d
-#define FFTW_PLAN_DFT_R2C_2D_DP			fftw_plan_dft_r2c_2d
-#define FFTW_PLAN_DFT_C2R_2D_DP			fftw_plan_dft_c2r_2d
-#define FFTW_PLAN_DFT_1D_DP				fftw_plan_dft_1d
-#define FFTW_PLAN_DFT_R2C_1D_DP			fftw_plan_dft_r2c_1d
-#define FFTW_PLAN_DFT_C2R_1D_DP			fftw_plan_dft_c2r_1d
-#define FFTW_PLAN_R2R_1D_DP				fftw_plan_r2r_1d
-#define FFTW_EXECUTE_DFT_R2C_DP			fftw_execute_dft_r2c
-#define FFTW_EXECUTE_DFT_C2R_DP			fftw_execute_dft_c2r
-#define FFTW_EXECUTE_DFT_DP				fftw_execute_dft
-#define FFTW_EXECUTE_R2R_DP				fftw_execute_r2r
-//#define FFTW_MPI_INIT_DP				fftw_mpi_init
-#define FFTW_COMPLEX_DP					fftw_complex
-#define FFTW_DESTROY_PLAN_DP			fftw_destroy_plan
+#define DP 								double
 #define MPI_DP							MPI_DOUBLE
-#define FFTW_MPI_LOCAL_SIZE_3D_TRANSPOSED_DP fftw_mpi_local_size_3d_transposed
-#define FFTW_MPI_LOCAL_SIZE_2D_TRANSPOSED_DP fftw_mpi_local_size_2d_transposed
+#define FFTW_COMPLEX					fftw_complex
 
-#define FFTW_MPI_PLAN_DFT_3D_DP         fftw_mpi_plan_dft_3d  // for GP
-#define FFTW_MPI_EXECUTE_DFT_DP         fftw_mpi_execute_dft
+#define FFTW_PLAN						fftw_plan
+#define FFTW_MPI_PLAN_DFT_3D			fftw_mpi_plan_dft_3d   // for GP
+#define FFTW_MPI_PLAN_DFT_R2C_3D		fftw_mpi_plan_dft_r2c_3d
+#define FFTW_MPI_PLAN_DFT_C2R_3D		fftw_mpi_plan_dft_c2r_3d
+#define FFTW_MPI_PLAN_DFT_R2C_2D		fftw_mpi_plan_dft_r2c_2d
+#define FFTW_MPI_PLAN_DFT_C2R_2D		fftw_mpi_plan_dft_c2r_2d
+#define FFTW_PLAN_MANY_R2R				fftw_plan_many_r2r
+#define FFTW_PLAN_MANY_DFT				fftw_plan_many_dft
+#define FFTW_PLAN_MANY_DFT_R2C			fftw_plan_many_dft_r2c
+#define FFTW_PLAN_MANY_DFT_C2R			fftw_plan_many_dft_c2r
 
+#define FFTW_EXECUTE					fftw_execute
+#define FFTW_EXECUTE_R2R				fftw_execute_r2r
+#define FFTW_EXECUTE_DFT				fftw_execute_dft
+#define FFTW_EXECUTE_DFT_R2C			fftw_execute_dft_r2c
+#define FFTW_EXECUTE_DFT_C2R			fftw_execute_dft_c2r
+#define FFTW_MPI_EXECUTE_DFT			fftw_mpi_execute_dft
 
 #endif
+
 
 #ifndef complx
 #define complx  complex<DP>

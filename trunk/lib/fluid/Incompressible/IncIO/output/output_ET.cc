@@ -407,7 +407,7 @@ void FluidIO_incompress::Output_ring_to_ring(FluidVF& U, FluidSF& T, Pressure& P
 	if (global.program.kind == "INC_SCALAR")
 		Output_ring_to_ring_scalar(U, T, P);
 	
-	else if (global.program.kind == "RBC") 
+	else if (global.program.kind == "RBC" || global.program.kind == "STRATIFIED")
 		Output_ring_to_ring_RBC(U, T, P);
 }	
 
@@ -605,7 +605,7 @@ void FluidIO_incompress::Output_cylindrical_ring_to_ring(FluidVF& U, FluidSF& T,
 	if (global.program.kind == "INC_SCALAR")
 		Output_cylindrical_ring_to_ring_scalar(U, T, P);
 	
-	else if (global.program.kind == "RBC")
+	else if (global.program.kind == "RBC" || global.program.kind == "STRATIFIED")
 		Output_cylindrical_ring_to_ring_RBC(U, T, P);
 }
 

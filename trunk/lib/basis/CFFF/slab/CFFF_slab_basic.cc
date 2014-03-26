@@ -335,11 +335,3 @@ void CFFF_SLAB::Compute_divergence(Array<complx,3> Ax, Array<complx,3> Ay, Array
 }
 
 //*****************************  End of four_basic.cc **************************
-
-
-
-
-
-
-
-

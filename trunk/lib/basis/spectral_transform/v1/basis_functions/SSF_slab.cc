@@ -65,9 +65,9 @@ void SpectralTransform::Init_SSF_SLAB()
 	int Nz_plan[]={Nz};
 	
 	//Along Z
-	r2c_z_plan = fftw_plan_many_dft_r2c(1, Nz_plan, local_Nx, reinterpret_cast<DP*>(X_3d.data()), NULL, local_Nx, 1, reinterpret_cast<fftw_complex *>(X_3d.data()), NULL, local_Nx, 1, FFTW_PLAN_FLAG);
+	r2c_z_plan = FFTW_PLAN_MANY_DFT_R2C(1, Nz_plan, local_Nx, reinterpret_cast<DP*>(X_3d.data()), NULL, local_Nx, 1, reinterpret_cast<FFTW_COMPLEX*>(X_3d.data()), NULL, local_Nx, 1, FFTW_PLAN_FLAG);
 
-	c2r_z_plan = fftw_plan_many_dft_c2r(1, Nz_plan, local_Nx, reinterpret_cast<fftw_complex *>(X_3d.data()), NULL, local_Nx, 1,
+	c2r_z_plan = FFTW_PLAN_MANY_DFT_C2R(1, Nz_plan, local_Nx, reinterpret_cast<FFTW_COMPLEX*>(X_3d.data()), NULL, local_Nx, 1,
 		reinterpret_cast<DP*>(X_3d.data()), NULL, local_Nx, 1, FFTW_PLAN_FLAG);
 	
 
@@ -75,30 +75,30 @@ void SpectralTransform::Init_SSF_SLAB()
 	
 	//Along X
 	kind[0]=FFTW_RODFT10;
-	sintr_x_plan = fftw_plan_many_r2r(1, Nx_plan, local_Ny*(Nz+2), reinterpret_cast<DP*>(X_3d.data()), NULL, 1, Nx, reinterpret_cast<DP*>(X_3d.data()), NULL, 1, Nx, kind, FFTW_PLAN_FLAG);
+	sintr_x_plan = FFTW_PLAN_MANY_R2R(1, Nx_plan, local_Ny*(Nz+2), reinterpret_cast<DP*>(X_3d.data()), NULL, 1, Nx, reinterpret_cast<DP*>(X_3d.data()), NULL, 1, Nx, kind, FFTW_PLAN_FLAG);
 	
 	kind[0]=FFTW_REDFT10;
-	costr_x_plan = fftw_plan_many_r2r(1, Nx_plan, local_Ny*(Nz+2), reinterpret_cast<DP*>(X_3d.data()), NULL, 1, Nx, reinterpret_cast<DP*>(X_3d.data()), NULL, 1, Nx, kind, FFTW_PLAN_FLAG);
+	costr_x_plan = FFTW_PLAN_MANY_R2R(1, Nx_plan, local_Ny*(Nz+2), reinterpret_cast<DP*>(X_3d.data()), NULL, 1, Nx, reinterpret_cast<DP*>(X_3d.data()), NULL, 1, Nx, kind, FFTW_PLAN_FLAG);
 	
 	kind[0]=FFTW_RODFT01;
-	isintr_x_plan = fftw_plan_many_r2r(1, Nx_plan, local_Ny*(Nz+2), reinterpret_cast<DP*>(X_3d.data()), NULL, 1, Nx, reinterpret_cast<DP*>(X_3d.data()), NULL, 1, Nx, kind, FFTW_PLAN_FLAG);
+	isintr_x_plan = FFTW_PLAN_MANY_R2R(1, Nx_plan, local_Ny*(Nz+2), reinterpret_cast<DP*>(X_3d.data()), NULL, 1, Nx, reinterpret_cast<DP*>(X_3d.data()), NULL, 1, Nx, kind, FFTW_PLAN_FLAG);
 	
 	kind[0]=FFTW_REDFT01;
-	icostr_x_plan = fftw_plan_many_r2r(1, Nx_plan, local_Ny*(Nz+2), reinterpret_cast<DP*>(X_3d.data()), NULL, 1, Nx, reinterpret_cast<DP*>(X_3d.data()), NULL, 1, Nx, kind, FFTW_PLAN_FLAG);
+	icostr_x_plan = FFTW_PLAN_MANY_R2R(1, Nx_plan, local_Ny*(Nz+2), reinterpret_cast<DP*>(X_3d.data()), NULL, 1, Nx, reinterpret_cast<DP*>(X_3d.data()), NULL, 1, Nx, kind, FFTW_PLAN_FLAG);
 
 
 	//Along Y
 	kind[0]=FFTW_RODFT10;
-	sintr_y_plan = fftw_plan_many_r2r(1, Ny_plan, local_Nx*(Nz+2), reinterpret_cast<DP*>(X_3d.data()), NULL, local_Nx*(Nz+2), 1, reinterpret_cast<DP*>(X_3d.data()), NULL, local_Nx*(Nz+2), 1, kind, FFTW_PLAN_FLAG);
+	sintr_y_plan = FFTW_PLAN_MANY_R2R(1, Ny_plan, local_Nx*(Nz+2), reinterpret_cast<DP*>(X_3d.data()), NULL, local_Nx*(Nz+2), 1, reinterpret_cast<DP*>(X_3d.data()), NULL, local_Nx*(Nz+2), 1, kind, FFTW_PLAN_FLAG);
 	
 	kind[0]=FFTW_REDFT10;
-	costr_y_plan = fftw_plan_many_r2r(1, Ny_plan, local_Nx*(Nz+2), reinterpret_cast<DP*>(X_3d.data()), NULL, local_Nx*(Nz+2), 1, reinterpret_cast<DP*>(X_3d.data()), NULL, local_Nx*(Nz+2), 1, kind, FFTW_PLAN_FLAG);
+	costr_y_plan = FFTW_PLAN_MANY_R2R(1, Ny_plan, local_Nx*(Nz+2), reinterpret_cast<DP*>(X_3d.data()), NULL, local_Nx*(Nz+2), 1, reinterpret_cast<DP*>(X_3d.data()), NULL, local_Nx*(Nz+2), 1, kind, FFTW_PLAN_FLAG);
 	
 	kind[0]=FFTW_RODFT01;
-	isintr_y_plan = fftw_plan_many_r2r(1, Ny_plan, local_Nx*(Nz+2), reinterpret_cast<DP*>(X_3d.data()), NULL, local_Nx*(Nz+2), 1, reinterpret_cast<DP*>(X_3d.data()), NULL, local_Nx*(Nz+2), 1, kind, FFTW_PLAN_FLAG);
+	isintr_y_plan = FFTW_PLAN_MANY_R2R(1, Ny_plan, local_Nx*(Nz+2), reinterpret_cast<DP*>(X_3d.data()), NULL, local_Nx*(Nz+2), 1, reinterpret_cast<DP*>(X_3d.data()), NULL, local_Nx*(Nz+2), 1, kind, FFTW_PLAN_FLAG);
 	
 	kind[0]=FFTW_REDFT01;
-	icostr_y_plan = fftw_plan_many_r2r(1, Ny_plan, local_Nx*(Nz+2), reinterpret_cast<DP*>(X_3d.data()), NULL, local_Nx*(Nz+2), 1, reinterpret_cast<DP*>(X_3d.data()), NULL, local_Nx*(Nz+2), 1, kind, FFTW_PLAN_FLAG);
+	icostr_y_plan = FFTW_PLAN_MANY_R2R(1, Ny_plan, local_Nx*(Nz+2), reinterpret_cast<DP*>(X_3d.data()), NULL, local_Nx*(Nz+2), 1, reinterpret_cast<DP*>(X_3d.data()), NULL, local_Nx*(Nz+2), 1, kind, FFTW_PLAN_FLAG);
 
 
 	//Configure Transpose

@@ -88,8 +88,8 @@ DP f(int rx, int ry, int rz)
 //	return 4*(2*cos(k0*x)*cos(k0*x)-1)*cos(k0*y)*cos(k0*z); // Cheb
 //	return 4*(cos(k0*x))*cos(k0*y)*cos(k0*z);  // Cheb
 //	return 2*(cos(k0*x))*cos(k0*z);  // Cheb (101)
-	return 8*sin(k0*x)*sin(k0*y)*sin(k0*z);
-	// return 4*sin(k0*x)*sin(k0*z);
+	// return 8*sin(k0*x)*sin(k0*y)*sin(k0*z);
+	return 4*sin(k0*x)*sin(k0*z);
 }
  
 //*********************************************************************************************
@@ -105,13 +105,13 @@ int test_transform()
 	A_old = A;
 	if (master)
 		cout << "Initial A: " << endl;
-	universal->Print_large_Fourier_elements(A);
+	// universal->Print_large_Fourier_elements(A);
     
 	universal->Inverse_transform(A, Ar);
 	
 	A=0;
 
-	ArrayOps::Print_array_all_procs(Ar);
+	// ArrayOps::Print_array_all_procs(Ar);
     
 	universal->Forward_transform(Ar, A);
 	
@@ -119,7 +119,7 @@ int test_transform()
 	
 	if (master)
 		cout << "A After spectral->real->spectral : " << endl;
-	universal->Print_large_Fourier_elements(A);
+	//universal->Print_large_Fourier_elements(A);
 	
 	MPI_Barrier(MPI_COMM_WORLD);
 	
@@ -129,7 +129,7 @@ int test_transform()
 		cout << "Energy of A-A_old = " << total_A_minusA_old << endl << endl << endl;
 	MPI_Barrier(MPI_COMM_WORLD);
 	
-	return 0;
+	// return 0;
 	// real->spectral->real
 	if (master)
 		cout << "Testing real->spectral->real : " << endl << endl;
@@ -140,13 +140,16 @@ int test_transform()
 			for (int rx=0; rx<Nx; rx++){
 				value = f(rx,ry,rz);
 				universal->Assign_real_field(rx, ry, rz, Ar, value);
-				//val = universal->Get_real_field(rx,ry,rz,Ar);
-                //cout << "my_id, rx, ry, rz, value, value = " << my_id << " " << rx << " " << ry << " " << rz << " " << value  << " " << val << endl;
+				// val = universal->Get_real_field(rx,ry,rz,Ar);
+                // cout << "my_id, rx, ry, rz, value, value = " << my_id << " " << rx << " " << ry << " " << rz << " " << value  << " " << val << endl;
 			}
 	
 	
-	ArrayOps::Print_array_all_procs(Ar);
+	// ArrayOps::Print_array_all_procs(Ar);
 
+	DP initial_energy = universal->Get_total_energy_real_space(Ar);
+	if (master)
+		cout << "Init energy: " << initial_energy << endl;
 
 	Ar_old = Ar;
 	
@@ -156,7 +159,7 @@ int test_transform()
 
     if (master)
        cout << "After forward transform; A = " << endl;
-    universal->Print_large_Fourier_elements(A);
+    // universal->Print_large_Fourier_elements(A);
 	
     Ar = 0; 
 	universal->Inverse_transform(A, Ar);
@@ -164,10 +167,15 @@ int test_transform()
 
 	 if (master)
        cout << "After inverse transform; A = " << endl;
-	ArrayOps::Print_array_all_procs(Ar);
+	// ArrayOps::Print_array_all_procs(Ar);
 	
 	
 	MPI_Barrier(MPI_COMM_WORLD);
+
+	DP final_energy = universal->Get_total_energy_real_space(Ar);
+	if (master)
+		cout << "Final energy: " << final_energy << endl;
+
 	Ar = Ar-Ar_old;
 	DP total_Ar_minusAr_old = universal->Get_total_energy_real_space(Ar);
 	if (master)

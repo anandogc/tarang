@@ -77,24 +77,21 @@ void SpectralTransform::Init_ChFF_SLAB()
 		X_2d.resize(shape_vertical_array_2d);		// temp array
 		A2d_interm.resize(shape_horizontal_array_2d*shape(2,1));  // real array
 	}
-	
-	cout << Nx << " " << Ny << " " << Nz << endl;
-	cout << local_Nx << " " << local_Ny << " " << local_Nz << endl;
 
 	if (Ny>1) {
 		int Nyz_plan[]={Ny,Nz};
 		int Nx_plan[]={Nx};
 		
-		r2c_yz_plan = fftw_plan_many_dft_r2c(2, Nyz_plan, local_Nx, reinterpret_cast<DP*>(A3d_interm.data()), NULL, local_Nx, 1, reinterpret_cast<fftw_complex *>(A3d_interm.data()), NULL, local_Nx, 1, FFTW_PLAN_FLAG);
+		r2c_yz_plan = FFTW_PLAN_MANY_DFT_R2C(2, Nyz_plan, local_Nx, reinterpret_cast<DP*>(A3d_interm.data()), NULL, local_Nx, 1, reinterpret_cast<FFTW_COMPLEX*>(A3d_interm.data()), NULL, local_Nx, 1, FFTW_PLAN_FLAG);
 
-		c2r_yz_plan = fftw_plan_many_dft_c2r(2, Nyz_plan, local_Nx, reinterpret_cast<fftw_complex *>(X_3d.data()), NULL, local_Nx, 1,
+		c2r_yz_plan = FFTW_PLAN_MANY_DFT_C2R(2, Nyz_plan, local_Nx, reinterpret_cast<FFTW_COMPLEX*>(X_3d.data()), NULL, local_Nx, 1,
 			reinterpret_cast<DP*>(X_3d.data()), NULL, local_Nx, 1, FFTW_PLAN_FLAG);
 		
 
 		fftw_r2r_kind kind[1];
 		
 		kind[0]=FFTW_REDFT00;
-		Chebyshevtr_x_plan = fftw_plan_many_r2r(1, Nx_plan, local_Ny*(Nz+2), reinterpret_cast<DP*>(X_3d.data()), NULL, 1, Nx, reinterpret_cast<DP*>(X_3d.data()), NULL, 1, Nx, kind, FFTW_PLAN_FLAG);
+		Chebyshevtr_x_plan = FFTW_PLAN_MANY_R2R(1, Nx_plan, local_Ny*(Nz+2), reinterpret_cast<DP*>(X_3d.data()), NULL, 1, Nx, reinterpret_cast<DP*>(X_3d.data()), NULL, 1, Nx, kind, FFTW_PLAN_FLAG);
 	}
     
     
@@ -102,17 +99,17 @@ void SpectralTransform::Init_ChFF_SLAB()
 		int Nz_plan[]={Nz};
 		int Nx_plan[]={Nx};
 		
-		r2c_z_plan = fftw_plan_many_dft_r2c(1, Nz_plan, local_Nx, reinterpret_cast<DP*>(X_2d.data()), NULL, local_Nx, 1, reinterpret_cast<fftw_complex *>(X_2d.data()), NULL, local_Nx, 1,
+		r2c_z_plan = FFTW_PLAN_MANY_DFT_R2C(1, Nz_plan, local_Nx, reinterpret_cast<DP*>(X_2d.data()), NULL, local_Nx, 1, reinterpret_cast<FFTW_COMPLEX*>(X_2d.data()), NULL, local_Nx, 1,
 			FFTW_PLAN_FLAG);
 
-		c2r_z_plan = fftw_plan_many_dft_c2r(1, Nz_plan, local_Nx, reinterpret_cast<fftw_complex *>(X_2d.data()), NULL, local_Nx, 1, reinterpret_cast<DP*>(X_2d.data()), NULL, local_Nx, 1,
+		c2r_z_plan = FFTW_PLAN_MANY_DFT_C2R(1, Nz_plan, local_Nx, reinterpret_cast<FFTW_COMPLEX*>(X_2d.data()), NULL, local_Nx, 1, reinterpret_cast<DP*>(X_2d.data()), NULL, local_Nx, 1,
 			FFTW_PLAN_FLAG);
 		
 
 		fftw_r2r_kind kind[1];
 		
 		kind[0]=FFTW_REDFT00;
-		Chebyshevtr_x_plan = fftw_plan_many_r2r(1, Nx_plan, 2*local_Nz, reinterpret_cast<DP*>(X_2d.data()), NULL, 1, Nx, reinterpret_cast<DP*>(X_2d.data()), NULL, 1, Nx, kind, FFTW_PLAN_FLAG);
+		Chebyshevtr_x_plan = FFTW_PLAN_MANY_R2R(1, Nx_plan, 2*local_Nz, reinterpret_cast<DP*>(X_2d.data()), NULL, 1, Nx, reinterpret_cast<DP*>(X_2d.data()), NULL, 1, Nx, kind, FFTW_PLAN_FLAG);
 	}
 
 

@@ -126,7 +126,7 @@ void FluidIO::Output_global(FluidVF& U, FluidSF& T)
 		Output_global_scalar(U, T);
 	
 	
-	else if (global.program.kind == "RBC")
+	else if (global.program.kind == "RBC" || global.program.kind == "STRATIFIED")
 		Output_global_RBC(U, T);
 }
 
@@ -846,7 +846,7 @@ void FluidIO::Output_shell_spectrum(FluidVF& U, FluidSF& T)
 	if (global.program.kind == "INC_SCALAR")
 		Output_shell_spectrum_scalar(U, T);
 	
-	else if (global.program.kind == "RBC")
+	else if (global.program.kind == "RBC" || global.program.kind == "STRATIFIED")
 		Output_shell_spectrum_RBC(U, T);
 }
 
@@ -1095,7 +1095,7 @@ void FluidIO::Output_ring_spectrum(FluidVF& U, FluidSF& T)
 	if (global.program.kind == "INC_SCALAR") 
 		Output_ring_spectrum_scalar(U, T);
 	
-	else if (global.program.kind == "RBC") 
+	else if (global.program.kind == "RBC" || global.program.kind == "STRATIFIED")
 		Output_ring_spectrum_RBC(U, T);
 }
   
@@ -1296,7 +1296,7 @@ void FluidIO::Output_cylindrical_ring_spectrum(FluidVF& U, FluidSF& T)
 	if (global.program.kind == "INC_SCALAR") 
 		Output_cylindrical_ring_spectrum_scalar(U, T);
 	
-	else if (global.program.kind == "RBC")
+	else if (global.program.kind == "RBC" || global.program.kind == "STRATIFIED")
 		Output_cylindrical_ring_spectrum_RBC(U, T);
 }
 

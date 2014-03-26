@@ -83,7 +83,7 @@ void EnergyTr::Compute_shell_tr(FluidVF& U, FluidSF& T)
 	if (global.program.kind == "INC_SCALAR")
 		Compute_shell_tr_scalar(U, T);
 	
-	else if (global.program.kind == "RBC")
+	else if (global.program.kind == "RBC" || global.program.kind == "STRATIFIED")
 		Compute_shell_tr_RBC(U, T);
 }
 
