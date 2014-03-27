@@ -86,24 +86,16 @@ int Universal::Get_number_modes_in_shell(DP inner_radius, DP outer_radius)
 
 void Universal::Print_large_Fourier_elements(Array<complx,3> A, string array_name)
 {
-	if (global.program.basis_type != "FFFW") {
-	    for (int ly=0; ly<A.extent(0); ly++) 
-	        for (int lz=0; lz<A.extent(1); lz++) 
-		       for (int lx=0; lx<A.extent(2); lx++) 
-					if (abs(A(ly, lz, lx)) > MYEPS2) {
-						cout << "my_id = " << my_id <<  " vect(k) = (" << Get_kx(lx) << "," << Get_ky(ly) << "," << Get_kz(lz) <<");  " << array_name << "(k) = " << A(ly, lz, lx) << '\n';
-					}
-	}
-	else {
-		for (int lx=0; lx<A.extent(0); lx++) 
-	        for (int ly=0; ly<A.extent(1); ly++) 
-		       for (int lz=0; lz<A.extent(2); lz++)
-					if (abs(A(lx, ly, lz)) > MYEPS2) {
-						cout << "my_id = " << my_id <<  " vect(k) = (" << Get_kx(lx) << "," << Get_ky(ly) << "," << Get_kz(lz) <<");  " << array_name << "(k) = " << A(lx, ly, lz) << '\n';
-					}	
-	}
+
+	for (int lx=0; lx<A.extent(0); lx++)
+		for (int ly=0; ly<A.extent(1); ly++)
+			for (int lz=0; lz<A.extent(2); lz++)
+				if (abs(A(lx, ly, lz)) > MYEPS) {
+					cout << "my_id = " << my_id <<  " vect(k) = (" << Get_kx(lx) << "," << Get_ky(ly) << "," << Get_kz(lz) <<");  " << array_name << "(k) = " << A(lx, ly, lz) << '\n';
+				}
 	
-    cout << endl;
+	 if (master)
+		 cout << endl;
 }
 
 /**********************************************************************************************
@@ -115,20 +107,20 @@ void Universal::Print_large_Fourier_elements(Array<complx,3> A, string array_nam
 
 void Universal::Array_mult_ksqr(Array<complx,3> A)
 {
-    DP Kysqr;    // Ky^2
-	DP Kyzsqr;
+    DP Kxsqr;    // Kx^2
+	DP Kxysqr;
     DP Ksqr;
 	
     #pragma omp parallel for private(Kysqr,Kyzsqr,Ksqr) 
-	for (int ly=0; ly<A.extent(0); ly++) {
-		Kysqr = my_pow(Get_ky(ly)*kfactor[2],2);	
+	for (int lx=0; lx<A.extent(0); lx++) {
+		Kxsqr = my_pow(Get_kx(lx)*kfactor[1],2);
 		
-        for (int lz=0; lz<A.extent(1); lz++) {
-            Kyzsqr = Kysqr + my_pow(Get_kz(lz)*kfactor[3],2);
-            for (int lx=0; lx<A.extent(2); lx++) {
-                Ksqr= Kyzsqr + my_pow(Get_kx(lx)*kfactor[1],2);
+        for (int ly=0; ly<A.extent(1); ly++) {
+            Kxysqr = Kxsqr + my_pow(Get_ky(ly)*kfactor[2],2);
+            for (int lz=0; lz<A.extent(2); lz++) {
+                Ksqr= Kxysqr + my_pow(Get_kz(lz)*kfactor[3],2);
 
-		      A(ly, lz, lx) *= Ksqr; 
+				A(lx, ly, lz) *= Ksqr;
           }
         }
     }
@@ -145,20 +137,20 @@ void Universal::Array_mult_ksqr(Array<complx,3> A)
 
 void Universal::Array_divide_ksqr(Array<complx,3> A)
 {
-    DP Kysqr;    // Ky^2
-    DP Kyzsqr;
+    DP Kxsqr;    // Kx^2
+    DP Kxysqr;
     DP Ksqr;
     
     #pragma omp parallel for private(Kysqr,Kyzsqr,Ksqr) 
-    for (int ly=0; ly<A.extent(0); ly++) {
-        Kysqr = my_pow(Get_ky(ly)*kfactor[2],2);    
+    for (int lx=0; lx<A.extent(0); lx++) {
+        Kxsqr = my_pow(Get_kx(lx)*kfactor[1],2);
         
-        for (int lz=0; lz<A.extent(1); lz++) {
-            Kyzsqr = Kysqr + my_pow(Get_kz(lz)*kfactor[3],2);
+        for (int ly=0; ly<A.extent(1); ly++) {
+            Kxysqr = Kxsqr + my_pow(Get_ky(ly)*kfactor[2],2);
             
-            for (int lx=0; lx<A.extent(2); lx++) {
-                Ksqr= Kyzsqr + my_pow(Get_kx(lx)*kfactor[1],2);
-                A(ly, lz, lx) /= Ksqr; 
+            for (int lz=0; lz<A.extent(2); lz++) {
+                Ksqr= Kxysqr + my_pow(Get_kz(lz)*kfactor[3],2);
+                A(lx, ly, lz) /= Ksqr; 
             }
         }
     }  
@@ -179,21 +171,21 @@ void Universal::Array_divide_ksqr(Array<complx,3> A)
 void Universal::Array_exp_ksqr(Array<complx,3> A, DP factor)
 {	
     
-	DP Kysqr;    // Ky^2
-	DP Kyzsqr;
+	DP Kxsqr;    // Kx^2
+	DP Kxysqr;
 	DP Ksqr;
 	
 	#pragma omp parallel for private(Kysqr,Kyzsqr,Ksqr) 
-	for (int ly=0; ly<A.extent(0); ly++) {
-		Kysqr = my_pow(Get_ky(ly)*kfactor[2],2);    
+	for (int lx=0; lx<A.extent(0); lx++) {
+		Kxsqr = my_pow(Get_kx(lx)*kfactor[1],2);
 		
-		for (int lz=0; lz<A.extent(1); lz++) {
-			Kyzsqr = Kysqr + my_pow(Get_kz(lz)*kfactor[3],2);
+		for (int ly=0; ly<A.extent(1); ly++) {
+			Kxysqr = Kxsqr + my_pow(Get_ky(ly)*kfactor[2],2);
 			
-			for (int lx=0; lx<A.extent(2); lx++) {
-				Ksqr= Kyzsqr + my_pow(Get_kx(lx)*kfactor[1],2);
+			for (int lz=0; lz<A.extent(2); lz++) {
+				Ksqr= Kxysqr + my_pow(Get_kz(lz)*kfactor[3],2);
 
-			  A(ly, lz, lx) *= exp(factor*Ksqr); 
+			  A(lx, ly, lz) *= exp(factor*Ksqr); 
 		  }
 		}
 	}  
@@ -210,26 +202,26 @@ void Universal::Array_exp_ksqr(Array<complx,3> A, DP factor)
 void Universal::Array_exp_ksqr(Array<complx,3> A, DP factor, DP hyper_factor, int hyper_exponent)
 {
 
-	DP Kysqr;    // Ky^2
-	DP Kyzsqr;
+	DP Kxsqr;    // Kx^2
+	DP Kxysqr;
 	DP Ksqr;
 	DP Kpownm2;	// K^{q-2} where q = hyper_exponent
 	
-	for (int ly=0; ly<A.extent(0); ly++) {
-		Kysqr = my_pow(Get_ky(ly)*kfactor[2],2);
+	for (int lx=0; lx<A.extent(0); lx++) {
+		Kxsqr = my_pow(Get_kx(lx)*kfactor[1],2);
 		
-		for (int lz=0; lz<A.extent(1); lz++) {
-			Kyzsqr = Kysqr + my_pow(Get_kz(lz)*kfactor[3],2);
+		for (int ly=0; ly<A.extent(1); ly++) {
+			Kxysqr = Kxsqr + my_pow(Get_ky(ly)*kfactor[2],2);
 			
-			for (int lx=0; lx<A.extent(2); lx++) {
-				Ksqr= Kyzsqr + my_pow(Get_kx(lx)*kfactor[1],2);
+			for (int lz=0; lz<A.extent(2); lz++) {
+				Ksqr= Kxysqr + my_pow(Get_kz(lz)*kfactor[3],2);
 				
 				if (hyper_exponent == 4)
 					Kpownm2 = Ksqr;
 				else
 					Kpownm2 = my_pow(Ksqr,(hyper_exponent-2)/2);
 				
-				A(ly, lz, lx) *= exp((factor+hyper_factor*Kpownm2)* Ksqr);
+				A(lx, ly, lz) *= exp((factor+hyper_factor*Kpownm2)* Ksqr);
 			}
 		}
 	}
@@ -246,27 +238,27 @@ void Universal::Array_exp_ksqr(Array<complx,3> A, DP factor, DP hyper_factor, in
 
 void Universal::Array_mult_V0_khat_sqr(Array<complx,3> A, TinyVector<DP,3> V0)
 {
-    DP Kx, Ky, Kz;
-    DP Kysqr;    // Ky^2
-    DP Kyzsqr;
+	DP Kx, Ky, Kz;
+    DP Kxsqr;    // Kx^2
+    DP Kxysqr;
     DP Ksqr;
   
 	DP V0x = V0(0);
 	DP V0y = V0(1);
 	DP V0z = V0(2);
     
-    for (int ly=0; ly<A.extent(0); ly++) {
-        Ky = Get_ky(ly)*kfactor[2];
-        Kysqr = my_pow(Ky,2);
+    for (int lx=0; lx<A.extent(0); lx++) {
+		Kx = Get_kx(lx)*kfactor[1];
+		Kxsqr = my_pow(Kx,2);
         
-        for (int lz=0; lz<A.extent(1); lz++) {
-            Kz = Get_kz(lz)*kfactor[3];
-            Kyzsqr = Kysqr + my_pow(Kz,2);
+        for (int ly=0; ly<A.extent(1); ly++) {
+			Ky = Get_ky(ly)*kfactor[2];
+			Kxysqr = Kxsqr + my_pow(Ky,2);
             
-            for (int lx=0; lx<A.extent(2); lx++) {
-                Kx = Get_kx(lx)*kfactor[1];
-                Ksqr = Kyzsqr + my_pow(Kx,2);
-                A(ly, lz, lx) *= my_pow(V0x*Kx+V0y*Ky+V0z*Kz, 2)/Ksqr;
+            for (int lz=0; lz<A.extent(2); lz++) {
+				Kz = Get_kz(lz)*kfactor[3];
+                Ksqr= Kxysqr + my_pow(Kz,2);
+                A(lx, ly, lz) *= my_pow(V0x*Kx+V0y*Ky+V0z*Kz, 2)/Ksqr;
             }
         }
     }
@@ -315,20 +307,16 @@ void Universal::Compute_divergence(Array<complx,3> Ax, Array<complx,3> Ay, Array
 void Universal::Fill_Vz(Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az)
 {
     if (global.io.input_vx_vy_switch && global.field.incompressible) {
-		int kx, ky, kz;
 		complx vz;
         
         #pragma omp parallel for
-		for (int ly=0; ly<Ax.extent(0); ly++)
-            for (int lz=1; lz<Ax.extent(1); lz++)
-        		for (int lx=0; lx<Ax.extent(2); lx++){
-					kx = Get_kx(lx);
-					ky = Get_ky(ly);
-					kz = Get_kz(lz);
+		for (int lx=0; lx<Ax.extent(0); lx++)
+            for (int ly=0; ly<Ax.extent(1); ly++)
+        		for (int lz=1; lz<Ax.extent(2); lz++){
                     
-					Last_component(kx, ky, kz, Ax(ly,lz,lx), Ay(ly,lz,lx), vz);
+					Last_component(Get_kx(lx), Get_ky(ly), Get_kz(lz), Ax(lx,ly,lz), Ay(lx,ly,lz), vz);
                     
-					Az(ly,lz,lx) = vz;
+					Az(lx,ly,lz) = vz;
 				}
 	}
 }

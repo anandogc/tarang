@@ -466,6 +466,9 @@ public:
 
 
 	struct temp_array {
+		Array<complx,3> X3d_transform;
+		Array<complx,2> X2d_transform;
+		
 		Array<complx,3> X;	
 
 		// Used in div calc & in MHD (Compute_nlin_offdiag(W))

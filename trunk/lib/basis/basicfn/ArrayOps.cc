@@ -104,20 +104,53 @@ void ArrayOps::Get_XY_plane(Array<complx,3> A, Array<complx,2> plane_xy, int kz)
 	
 	if (global.program.decomposition == "SLAB") {
 		if (numprocs == 1) { // for SLAB
-			plane_xy= A(Range::all(), kz, Range::all());
+			plane_xy= A(Range::all(),Range::all(),kz);
 			return;
 		}
 		
 		else {
+			int num_blocks;
+			int extent;
+			int stride;
+			int block_lengths[2];
+			
+			MPI_Aint displacements[2];
+			MPI_Datatype types[2];
+			
+			MPI_Datatype MPI_Vector_block;
+			MPI_Datatype MPI_Struct_block;
+			
+			
+			num_blocks = Nx;
+			extent = 2*local_Ny;
+			stride = 2*Ny;
+			
+			MPI_Type_vector(num_blocks,extent,stride,MPI_DP,&MPI_Vector_block);
+			MPI_Type_commit(&MPI_Vector_block);
+			
+			
+			block_lengths[0]=1;
+			block_lengths[1]=1;
+			
+			displacements[0]=0;
+			displacements[1]=local_Ny*sizeof(complx);
+			
+			types[0]=MPI_Vector_block;
+			types[1]=MPI_UB;
+			
+			MPI_Type_struct(2, block_lengths, displacements, types, &MPI_Struct_block);
+			MPI_Type_commit(&MPI_Struct_block);
+				
+			
 			lz = universal->Get_lz(kz);
 			
-			global.temp_array.plane_xy_inproc = A(Range::all(),lz,Range::all());
+			global.temp_array.plane_xy_inproc = A(Range::all(),Range::all(),lz);
 		
 			data_size = 2*local_Ny*Nx;
 			
 			full_data_size = 2*Nx*Ny;
 			
-			MPI_Gather(reinterpret_cast<DP*>(global.temp_array.plane_xy_inproc.data()), data_size, MPI_DP, reinterpret_cast<DP*>(plane_xy.data()), data_size, MPI_DP, 0, MPI_COMM_WORLD);
+			MPI_Gather(reinterpret_cast<DP*>(global.temp_array.plane_xy_inproc.data()), data_size, MPI_DP, reinterpret_cast<DP*>(plane_xy.data()), 1, MPI_Struct_block, 0, MPI_COMM_WORLD);
 			
 			MPI_Bcast(reinterpret_cast<DP*>(global.temp_array.plane_xy.data()), full_data_size, MPI_DP, 0, MPI_COMM_WORLD);
 		}

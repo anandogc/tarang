@@ -247,7 +247,7 @@ void FluidIO_incompress::Output_shell_to_shell(FluidVF& U, Pressure& P)
     }
 	
 	if (master)
-		flux_file.flush();
+		shell_to_shell_file.flush();
 }
  
 //*********************************************************************************************   
@@ -275,7 +275,7 @@ void FluidIO_incompress::Output_shell_to_shell(FluidVF& U, FluidSF& T, Pressure&
     }
 	
 	if (master)
-		flux_file.flush();
+		shell_to_shell_file.flush();
 } 
 
 
@@ -319,7 +319,7 @@ void FluidIO_incompress::Output_shell_to_shell(FluidVF& U, FluidVF& W, Pressure&
 	}
     
 	if (master)
-		flux_file.flush();
+		shell_to_shell_file.flush();
 				
 } 
 
@@ -359,7 +359,7 @@ void FluidIO_incompress::Output_shell_to_shell(FluidVF& U, FluidVF& W, FluidSF& 
     }
     
 	if (master)
-		flux_file.flush();
+		shell_to_shell_file.flush();
 } 
 
 

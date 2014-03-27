@@ -4,7 +4,7 @@ program:
     decomposition: SLAB              #PENCIL, SLAB
     iter_or_diag: ITERATION           #ITERATION, DIAGNOSTICS
     alias_option: DEALIAS
-    integration_scheme: RK4
+    integration_scheme: EULER
     LES_switch: false
     apply_strong_realitycond_alltime_switch: true
     apply_weak_realitycond_alltime_switch: false
@@ -18,12 +18,12 @@ program:
 PHYSICS:
     Pr_option: PRLARGE
     Uscaling: ULARGE
-    Rayleigh: 10000
+    Rayleigh: 1000
     Prandtl: 6.8
     temperature_grad: 1
     
 field:
-    N: [32, 32, 32]
+    N: [16, 16, 16]
     kfactor: #[1, 1, 1]
     L: [1, 1, 1]
     diss_coefficients: [0.0, 0.0]               
@@ -41,7 +41,7 @@ fft:
 
 time:
     init: 0
-    final: 1
+    final: 0.05
     dt_fixed: 0.01
     Courant_no: 0.5
     job_time:                       # 00:00:20
@@ -63,7 +63,7 @@ force:
 #          mode:
         
 io:
-    input_field_procedure: 5
+    input_field_procedure: 4
     #1:complex field, 2: complex_reduced field, 3: real field, 4: modes, 5: Ek,Hk; 6: TG, 7:ABC
     input_vx_vy_switch: true
     output_vx_vy_switch: true

@@ -31,23 +31,23 @@ ADD_LIBRARY(fluid_base
 	PlainFluidVF
 	MHD
 
-    IO/FluidIO
-    IO/input/ic_amp_phase.cc
-    IO/input/ic_model.cc
-    IO/input/init_cond_ABC.cc
-    IO/input/init_cond_dynamo_6mode.cc
-    IO/input/init_cond_dynamo_velocity_field.cc
-    IO/input/init_cond_energy.cc
-    IO/input/init_cond_field.cc
-    IO/input/init_cond_main.cc
-    IO/input/init_cond_modes.cc
-    IO/input/init_cond_RayleighTaylor.cc
-    IO/input/init_cond_TG.cc
-    IO/input/init_cond_channel.cc
-    IO/input/init_cond_vortex.cc
-    IO/output/output_energy.cc
-    IO/output/output_energy_real.cc
-    IO/output/output_field.cc
+    io/FluidIO.cc
+    io/input/ic_amp_phase.cc
+    io/input/ic_model.cc
+    io/input/init_cond_ABC.cc
+    io/input/init_cond_dynamo_6mode.cc
+    io/input/init_cond_dynamo_velocity_field.cc
+    io/input/init_cond_energy.cc
+    io/input/init_cond_field.cc
+    io/input/init_cond_main.cc
+    io/input/init_cond_modes.cc
+    io/input/init_cond_RayleighTaylor.cc
+    io/input/init_cond_TG.cc
+    io/input/init_cond_channel.cc
+    io/input/init_cond_vortex.cc
+    io/output/output_energy.cc
+    io/output/output_energy_real.cc
+    io/output/output_field.cc
     #IO/output_str_fn.cc
 
     force/compute_force_ABC.cc

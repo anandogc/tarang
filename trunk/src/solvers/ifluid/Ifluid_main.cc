@@ -58,10 +58,11 @@ int Ifluid_main()
 
 		Time_advance_incompress  time_advance_incompress;
 		
+		
 		fluidIO_incompress.Read_init_cond(U);
 		
         DP total_abs_div;
-        U.Compute_divergence_field(global.temp_array.X2, total_abs_div, true);
+		U.Compute_divergence_field(global.temp_array.X2, total_abs_div, true);
         
         // true mean print nonzero div modes
         if (total_abs_div > MYEPS2) {
@@ -76,7 +77,8 @@ int Ifluid_main()
 		int  iter=0;  // iterations 
 
 		global.time.now = global.time.init;
-        
+		
+		
         if (basis_type=="ChFF")
             time_advance_incompress.Compute_homgeneous_soln_influence_matrix(U,P);
         
@@ -92,6 +94,8 @@ int Ifluid_main()
 			iter++; 
 			
 			time_advance_incompress.Time_advance_step(U, P, Force);
+
+			
 			
 			DP total_abs_div;
         //    U.Compute_divergence_field(global.temp_array.X2, total_abs_div, true);

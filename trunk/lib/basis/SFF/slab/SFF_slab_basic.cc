@@ -104,7 +104,7 @@ void SFF_SLAB::Dealias(Array<complx,3> A)
 	int last_x = last(Ax_filter(Range(my_id*local_Nx,(my_id+1)*local_Nx-1)) == 1);
 	
 	if (Ny>1)
-		A(Range(Ny/3+1,2*Ny/3-1), Range(Nz/3+1,toEnd), Range(first_x,last_x)) = 0.0;
+		A(Range(first_x,last_x), Range(Ny/3+1,2*Ny/3-1), Range(Nz/3+1,toEnd)) = 0.0;
 	else
 		A(0,Range(Nz/3+1,toEnd),Range(first_x,last_x)) = 0.0;
 	
@@ -143,50 +143,49 @@ void SFF_SLAB::Satisfy_strong_reality_condition_in_Array(Array<complx,3> A)
 	
     // For a given (., minusky), locate (.,ky) and then subst.
     // A(minuskx, minusky,0) = conj(A(kx,ky,0))
-	for (int ly=Ny/2+1; ly<Ny; ly++)
-		for (int lx=0; lx<local_Nx; lx++) {
+	for (int lx=0; lx<local_Nx; lx++)
+		for (int ly=Ny/2+1; ly<Ny; ly++)  {
             array_index_minus_ky = -Get_ky(ly);        // minusky = Get_ky(ly)
             
-            A(ly,0,lx) = conj( A(array_index_minus_ky,0,lx) );
+            A(lx, ly,0) = conj( A(lx, array_index_minus_ky,0) );
         }
     
 	// for (ky=0; kz=0) line
-	imag(A(0,0,Range::all())) = 0.0;
+	imag(A(Range::all(),0,0)) = 0.0;
     
     // for kz=Nz/2
-	A(Range::all(),Nz/2,Range::all()) = 0.0;
+	A(Range::all(),Range::all(),Nz/2) = 0.0;
 }
 
 
 void SFF_SLAB::Satisfy_weak_reality_condition_in_Array(Array<complx,3> A)
 {
 
-	A(Range::all(),Nz/2,Range::all()) = 0.0;
+	A(Range::all(),Range::all(),Nz/2) = 0.0;
 }
 
 
 void SFF_SLAB::Test_reality_condition_in_Array(Array<complx,3> A)
 {
 	int array_index_ky;
-	
-	for (int ly=Ny/2+1; ly<Ny; ly++) {
-		for (int lx=0; lx<local_Nx; lx++) {
+
+	for (int lx=0; lx<local_Nx; lx++)
+		for (int ly=Ny/2+1; ly<Ny; ly++) {
             array_index_ky = -Get_ky(ly);        // minusky = Get_ky(ly)
             
-            if (abs(A(ly,0,lx)-conj(A(array_index_ky,0,lx))) > MYEPS2)
+            if (abs(A(lx,ly,0)-conj(A(lx,array_index_ky,0))) > MYEPS2)
                 cout << "Reality condition voilated for (kx,ky,kz)=(" << lx <<  "," << ly << "," << 0 << ")" << endl; 
 
         }
-    }
 	
 	// for (ky=0; kz=0) line
-	if (sum(abs(imag(A(0,0,Range::all())))) > MYEPS2)
+	if (sum(abs(imag(A(Range::all(),0,0)))) > MYEPS2)
 		cout << "Reality condition voilated for (kx,ky,kz)=(:" <<  "," << 0 << "," << 0 << ")" << endl;
     
     // for kz=Nz/2 plane
-	for (int ly=0; ly<Ny; ly++)
-		for (int lx=0; lx<local_Nx; lx++)
-            if (abs(A(ly,Nz/2,lx)) > MYEPS)
+	for (int lx=0; lx<local_Nx; lx++)
+		for (int ly=0; ly<Ny; ly++)
+            if (abs(A(lx,ly,Nz/2)) > MYEPS)
                 cout << "Reality condition voilated for (kx,ky,kz)=(" << Get_kx(lx) <<  "," << ly << "," << Nz/2 << ")" << endl;
 }
 
@@ -206,11 +205,11 @@ void SFF_SLAB::Zero_modes(Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3
     
 	if (master) {
         if (global.program.sincostr_switch == "SFF")
-            Ax(Range::all(),Range::all(),0) = 0.0;
+            Ax(0,Range::all(),Range::all()) = 0.0;
         
         else if (global.program.sincostr_switch == "CFF") {
-            Ay(Range::all(),Range::all(),0) = 0.0;
-            Az(Range::all(),Range::all(),0) = 0.0;
+            Ay(0,Range::all(),Range::all()) = 0.0;
+            Az(0,Range::all(),Range::all()) = 0.0;
         }
     } 
 }
@@ -225,7 +224,31 @@ void SFF_SLAB::Zero_modes(Array<complx,3> F)
     global.program.sincostr_switch = sincostr_switch_F;
     
     if ((master) && (global.program.sincostr_switch == "SFF"))
-        F(Range::all(),Range::all(),0) = 0.0;
+        F(0,Range::all(),Range::all()) = 0.0;
+}
+
+int SFF_SLAB::Read(Array<complx,3> A, BasicIO::H5_plan plan, string file_name, string dataset_name)
+{
+	return BasicIO::Read(A.data(), plan, file_name, dataset_name);
+}
+
+int SFF_SLAB::Read(Array<DP,3> Ar, BasicIO::H5_plan plan, string file_name, string dataset_name)
+{
+	int err = BasicIO::Read(global.temp_array.X.data(), plan, file_name, dataset_name);
+	spectralTransform.Transpose(global.temp_array.X, Ar);
+	return err;
+}
+
+
+int SFF_SLAB::Write(Array<complx,3> A, BasicIO::H5_plan plan, string folder_name, string file_name, string dataset_name)
+{
+	return BasicIO::Write(A.data(), plan, folder_name, file_name, dataset_name);
+}
+
+int SFF_SLAB::Write(Array<DP,3> Ar, BasicIO::H5_plan plan, string folder_name, string file_name, string dataset_name)
+{
+	spectralTransform.Transpose(Ar, global.temp_array.X);
+	return BasicIO::Write(global.temp_array.X.data(), plan, folder_name, file_name, dataset_name);  
 }
 
 //*********************************  End of scft_basic.cc *************************************

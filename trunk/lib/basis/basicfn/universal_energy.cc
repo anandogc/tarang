@@ -111,13 +111,13 @@ DP Universal::Get_local_Sn(Array<complx,3> A, DP n)
 	
 	int	Kmax = Min_radius_outside();
 	
-	for (int ly=0; ly<A.extent(0); ly++)
-        for (int lz=0; lz<A.extent(1); lz++)
-            for (int lx=0; lx<A.extent(2); lx++) {
+	for (int lx=0; lx<A.extent(0); lx++)
+        for (int ly=0; ly<A.extent(1); ly++)
+            for (int lz=0; lz<A.extent(2); lz++) {
 				Kmag = Kmagnitude(lx, ly, lz);
 				
 				if (Kmag <= Kmax)
-					Sn += Multiplicity_factor(lx,ly,lz) * my_pow(Kmag,n)* Vsqr(A(ly,lz,lx));
+					Sn += Multiplicity_factor(lx,ly,lz) * my_pow(Kmag,n)* Vsqr(A(lx,ly,lz));
 			}
 	
 	// The above sum adds for k=0 mode for n=0 since my_pow(0,0) = 1.
@@ -150,13 +150,13 @@ DP Universal::Get_local_Sn(Array<complx,3> A, Array<complx,3> B, DP n)
 	
 	int	Kmax = Min_radius_outside();
 	
-	for (int ly=0; ly<A.extent(0); ly++)
-        for (int lz=0; lz<A.extent(1); lz++)
-            for (int lx=0; lx<A.extent(2); lx++) {
+	for (int lx=0; lx<A.extent(0); lx++)
+        for (int ly=0; ly<A.extent(1); ly++)
+            for (int lz=0; lz<A.extent(2); lz++) {
 				Kmag = Kmagnitude(lx, ly, lz);
 				
 				if (Kmag <= Kmax)
-					Sn += Multiplicity_factor(lx,ly,lz) *my_pow(Kmag,n)* real_cprod(A(ly,lz,lx), B(ly,lz,lx));
+					Sn += Multiplicity_factor(lx,ly,lz) *my_pow(Kmag,n)* real_cprod(A(lx,ly,lz), B(lx,ly,lz));
 			}
 	
 	// The above sum adds for k=0 mode for n=0 since my_pow(0,0) = 1.
@@ -212,16 +212,16 @@ void Universal::Compute_local_shell_spectrum
 	
     int	Kmax = Min_radius_outside();
 	
-    for (int ly=0; ly<A.extent(0); ly++)
-        for (int lz=0; lz<A.extent(1); lz++)
-            for (int lx=0; lx<A.extent(2); lx++) {
+    for (int lx=0; lx<A.extent(0); lx++)
+        for (int ly=0; ly<A.extent(1); ly++)
+            for (int lz=0; lz<A.extent(2); lz++) {
                 Kmag = Kmagnitude(lx, ly, lz);
                 index = (int) ceil(Kmag);
                 
                 if (index <= Kmax) {
                     factor = Multiplicity_factor(lx,ly,lz);
 					
-                    local_Sk(index) += factor* my_pow(Kmag,n)* Vsqr(A(ly,lz,lx));
+                    local_Sk(index) += factor* my_pow(Kmag,n)* Vsqr(A(lx,ly,lz));
                     local_Sk_count(index) += 2*factor;
                     // Mult by 2 because factor is offset by 2 in Multiply_factor
                 }
@@ -287,16 +287,16 @@ void Universal::Compute_local_shell_spectrum
 	
 	int	Kmax = Min_radius_outside();
 	
-	for (int ly=0; ly<A.extent(0); ly++)
-        for (int lz=0; lz<A.extent(1); lz++)
-            for (int lx=0; lx<A.extent(2); lx++) {
+	for (int lx=0; lx<A.extent(0); lx++)
+        for (int ly=0; ly<A.extent(1); ly++)
+            for (int lz=0; lz<A.extent(2); lz++) {
 				Kmag = Kmagnitude(lx, ly, lz);
 				index = (int) ceil(Kmag);
 				
 				if (index <= Kmax) {
 					factor = Multiplicity_factor(lx, ly, lz);
 					
-					local_Sk(index) += factor* my_pow(Kmag,n)*real_cprod(A(ly,lz,lx),B(ly,lz,lx));
+					local_Sk(index) += factor* my_pow(Kmag,n)*real_cprod(A(lx,ly,lz),B(lx,ly,lz));
 					
 					local_Sk_count(index) += 2*factor;
 				}
@@ -362,11 +362,11 @@ DP Universal::Get_local_entropy(Array<complx,3> Ax, Array<complx,3> Ay, Array<co
 	
 	local_entropy = 0.0;
 	
-    for (int ly=0; ly<Ax.extent(0); ly++)
-        for (int lz=0; lz<Ax.extent(1); lz++)
-            for (int lx=0; lx<Ax.extent(2); lx++) {
+    for (int lx=0; lx<Ax.extent(0); lx++)
+        for (int ly=0; ly<Ax.extent(1); ly++)
+            for (int lz=0; lz<Ax.extent(2); lz++) {
                 
-				modal_energy = Multiplicity_factor(lx,ly,lz)* Vsqr(Ax(ly,lz,lx),Ay(ly,lz,lx),Az(ly,lz,lx));
+				modal_energy = Multiplicity_factor(lx,ly,lz)* Vsqr(Ax(lx,ly,lz),Ay(lx,ly,lz),Az(lx,ly,lz));
 				
 				prob = modal_energy/ total_energy;
 				
@@ -410,10 +410,10 @@ DP Universal::Get_local_entropy_scalar(Array<complx,3> A)
 	
 	MPI_Bcast( &total_energy, 1, MPI_DP, master_id, MPI_COMM_WORLD);
 	
-	for (int ly=0; ly<A.extent(0); ly++)
-        for (int lz=0; lz<A.extent(1); lz++)
-            for (int lx=0; lx<A.extent(2); lx++) {
-				modal_energy = Multiplicity_factor(lx,ly,lz)* Vsqr(A(ly,lz,lx));
+	for (int lx=0; lx<A.extent(0); lx++)
+        for (int ly=0; ly<A.extent(1); ly++)
+            for (int lz=0; lz<A.extent(2); lz++) {
+				modal_energy = Multiplicity_factor(lx,ly,lz)* Vsqr(A(lx,ly,lz));
 				
 				prob = modal_energy / total_energy;
 				
@@ -471,9 +471,9 @@ void Universal::Compute_local_ring_spectrum
 	
 	int	Kmax = Max_radius_inside();
 	
-	for (int ly=0; ly<Ax.extent(0); ly++)
-        for (int lz=0; lz<Ax.extent(1); lz++)
-            for (int lx=0; lx<Ax.extent(2); lx++) {
+	for (int lx=0; lx<Ax.extent(0); lx++)
+        for (int ly=0; ly<Ax.extent(1); ly++)
+            for (int lz=0; lz<Ax.extent(2); lz++) {
 				
 				Kmag = Kmagnitude(lx, ly, lz);
 				shell_index = (int) ceil(Kmag);
@@ -485,9 +485,9 @@ void Universal::Compute_local_ring_spectrum
 					sector_index = Get_sector_index(theta, global.spectrum.ring.sector_angles);
 					
 					factor = Multiplicity_factor(lx,ly,lz);
-					local_E1k(shell_index, sector_index) += factor*my_pow(Kmag,n)* Vsqr(Ax(ly,lz,lx));
-					local_E2k(shell_index, sector_index) += factor*my_pow(Kmag,n)* Vsqr(Ay(ly,lz,lx));
-					local_E3k(shell_index, sector_index) += factor*my_pow(Kmag,n)* Vsqr(Az(ly,lz,lx));
+					local_E1k(shell_index, sector_index) += factor*my_pow(Kmag,n)* Vsqr(Ax(lx,ly,lz));
+					local_E2k(shell_index, sector_index) += factor*my_pow(Kmag,n)* Vsqr(Ay(lx,ly,lz));
+					local_E3k(shell_index, sector_index) += factor*my_pow(Kmag,n)* Vsqr(Az(lx,ly,lz));
 				}
 			}
 	
@@ -546,9 +546,9 @@ void Universal::Compute_local_ring_spectrum
 	
 	int	Kmax = Max_radius_inside();
 	
-	for (int ly=0; ly<Ax.extent(0); ly++)
-        for (int lz=0; lz<Ax.extent(1); lz++)
-            for (int lx=0; lx<Ax.extent(2); lx++) {
+	for (int lx=0; lx<Ax.extent(0); lx++)
+        for (int ly=0; ly<Ax.extent(1); ly++)
+            for (int lz=0; lz<Ax.extent(2); lz++) {
 				
 				Kmag = Kmagnitude(lx, ly, lz);
 				shell_index = (int) ceil(Kmag);
@@ -559,9 +559,9 @@ void Universal::Compute_local_ring_spectrum
 					sector_index = Get_sector_index(theta, global.spectrum.ring.sector_angles);
 					
 					factor = Multiplicity_factor(lx, ly, lz);
-					local_E1k(shell_index, sector_index) += factor*my_pow(Kmag,n)* real_cprod(Ax(ly, lz, lx), Bx(ly, lz, lx));
-					local_E2k(shell_index, sector_index) += factor*my_pow(Kmag,n)* real_cprod(Ay(ly, lz, lx), By(ly, lz, lx));
-					local_E3k(shell_index, sector_index) += factor*my_pow(Kmag,n)* real_cprod(Az(ly, lz, lx), Bz(ly, lz, lx));
+					local_E1k(shell_index, sector_index) += factor*my_pow(Kmag,n)* real_cprod(Ax(lx,ly,lz), Bx(lx,ly,lz));
+					local_E2k(shell_index, sector_index) += factor*my_pow(Kmag,n)* real_cprod(Ay(lx,ly,lz), By(lx,ly,lz));
+					local_E3k(shell_index, sector_index) += factor*my_pow(Kmag,n)* real_cprod(Az(lx,ly,lz), Bz(lx,ly,lz));
 				}
 			}
 }
@@ -614,9 +614,9 @@ void Universal::Compute_local_ring_spectrum
 	
 	int	Kmax = Max_radius_inside();
 	
-	for (int ly=0; ly<F.extent(0); ly++)
-        for (int lz=0; lz<F.extent(1); lz++)
-            for (int lx=0; lx<F.extent(2); lx++) {
+	for (int lx=0; lx<F.extent(0); lx++)
+        for (int ly=0; ly<F.extent(1); ly++)
+            for (int lz=0; lz<F.extent(2); lz++) {
 				Kmag = Kmagnitude(lx, ly, lz);
 				shell_index = (int) ceil(Kmag);
 				
@@ -627,7 +627,7 @@ void Universal::Compute_local_ring_spectrum
 					
 					factor = Multiplicity_factor(lx, ly, lz);
 					
-					local_Sk(shell_index, sector_index) +=  factor*my_pow(Kmag,n)* Vsqr(F(ly,lz,lx));
+					local_Sk(shell_index, sector_index) +=  factor*my_pow(Kmag,n)* Vsqr(F(lx,ly,lz));
 				}
 			}
 }
@@ -674,9 +674,9 @@ void Universal::Compute_local_ring_spectrum
 	
 	int	Kmax = Max_radius_inside();
 	
-	for (int ly=0; ly<F.extent(0); ly++)
-        for (int lz=0; lz<F.extent(1); lz++)
-            for (int lx=0; lx<F.extent(2); lx++) {
+	for (int lx=0; lx<F.extent(0); lx++)
+        for (int ly=0; ly<F.extent(1); ly++)
+            for (int lz=0; lz<F.extent(2); lz++) {
 				Kmag = Kmagnitude(lx, ly, lz);
 				shell_index = (int) ceil(Kmag);
 				
@@ -687,7 +687,7 @@ void Universal::Compute_local_ring_spectrum
 					
 					factor = Multiplicity_factor(lx, ly, lz);
 					
-					local_Sk(shell_index, sector_index) +=  factor*my_pow(Kmag,n)*real_cprod(F(ly,lz,lx),G(ly,lz,lx));
+					local_Sk(shell_index, sector_index) +=  factor*my_pow(Kmag,n)*real_cprod(F(lx,ly,lz),G(lx,ly,lz));
 				}
 			}
 	
@@ -746,11 +746,11 @@ void Universal::Compute_local_cylindrical_ring_spectrum
 	
 	int	Kperp_max = Anis_max_Krho_radius_inside();
 	
-	for (int ly=0; ly<Ax.extent(0); ly++)
-        for (int lz=0; lz<Ax.extent(1); lz++)
-            for (int lx=0; lx<Ax.extent(2); lx++) {
+	for (int lx=0; lx<Ax.extent(0); lx++)
+        for (int ly=0; ly<Ax.extent(1); ly++)
+            for (int lz=0; lz<Ax.extent(2); lz++) {
 				
-				V = Ax(ly, lz, lx), Ay(ly, lz, lx), Az(ly, lz, lx);
+				V = Ax(lx,ly,lz), Ay(lx,ly,lz), Az(lx,ly,lz);
 				Kmag = Kmagnitude(lx, ly, lz);
 				
 				Kperp = AnisKperp(lx, ly, lz);
@@ -819,17 +819,17 @@ void Universal::Compute_local_cylindrical_ring_spectrum
 	
 	int	Kperp_max = Anis_max_Krho_radius_inside();
 	
-	for (int ly=0; ly<Ax.extent(0); ly++)
-        for (int lz=0; lz<Ax.extent(1); lz++)
-            for (int lx=0; lx<Ax.extent(2); lx++) {
+	for (int lx=0; lx<Ax.extent(0); lx++)
+        for (int ly=0; ly<Ax.extent(1); ly++)
+            for (int lz=0; lz<Ax.extent(2); lz++) {
 				
 				Kmag = Kmagnitude(lx, ly, lz);
 				Kperp = AnisKperp(lx, ly, lz);
 				shell_index = (int) ceil(Kperp);
 				
 				if (shell_index <= Kperp_max) {
-					V = Ax(ly, lz, lx), Ay(ly, lz, lx), Az(ly, lz, lx);
-					W = Bx(ly, lz, lx), By(ly, lz, lx), Bz(ly, lz, lx);
+					V = Ax(lx,ly,lz), Ay(lx,ly,lz), Az(lx,ly,lz);
+					W = Bx(lx,ly,lz), By(lx,ly,lz), Bz(lx,ly,lz);
 					
 					Kpll = AnisKpll(lx, ly, lz);
 					
@@ -915,12 +915,12 @@ void Universal::Compute_local_cylindrical_ring_spectrum
 	
 	int	Kperp_max = Anis_max_Krho_radius_inside();
 	
-	for (int ly=0; ly<Ax.extent(0); ly++)
-        for (int lz=0; lz<Ax.extent(1); lz++)
-            for (int lx=0; lx<Ax.extent(2); lx++) {
+	for (int lx=0; lx<Ax.extent(0); lx++)
+        for (int ly=0; ly<Ax.extent(1); ly++)
+            for (int lz=0; lz<Ax.extent(2); lz++) {
 				
-				V = Ax(ly, lz, lx), Ay(ly, lz, lx), Az(ly, lz, lx);
-				Fval = F(ly,lz,lx);
+				V = Ax(lx,ly,lz), Ay(lx,ly,lz), Az(lx,ly,lz);
+				Fval = F(lx,ly,lz);
 				Kmag = Kmagnitude(lx, ly, lz);
 				
 				Kperp = AnisKperp(lx, ly, lz);
@@ -993,9 +993,9 @@ void Universal::Compute_local_cylindrical_ring_spectrum
 	
 	int	Kperp_max = Anis_max_Krho_radius_inside();
 	
-	for (int ly=0; ly<F.extent(0); ly++)
-        for (int lz=0; lz<F.extent(1); lz++)
-            for (int lx=0; lx<F.extent(2); lx++) {
+	for (int lx=0; lx<F.extent(0); lx++)
+        for (int ly=0; ly<F.extent(1); ly++)
+            for (int lz=0; lz<F.extent(2); lz++) {
 				Kmag = Kmagnitude(lx, ly, lz);
 				
 				Kperp = AnisKperp(lx, ly, lz);
@@ -1008,7 +1008,7 @@ void Universal::Compute_local_cylindrical_ring_spectrum
 					
 					factor = Multiplicity_factor(lx, ly, lz);
 					
-					local_Sk(shell_index, slab_index) += factor*my_pow(Kmag,n)* Vsqr(F(ly,lz,lx));
+					local_Sk(shell_index, slab_index) += factor*my_pow(Kmag,n)* Vsqr(F(lx,ly,lz));
 				}
 			}
 	
@@ -1054,9 +1054,9 @@ void Universal::Compute_local_cylindrical_ring_spectrum
 	
 	int	Kperp_max = Anis_max_Krho_radius_inside();
 	
-	for (int ly=0; ly<F.extent(0); ly++)
-        for (int lz=0; lz<F.extent(1); lz++)
-            for (int lx=0; lx<F.extent(2); lx++) {
+	for (int lx=0; lx<F.extent(0); lx++)
+        for (int ly=0; ly<F.extent(1); ly++)
+            for (int lz=0; lz<F.extent(2); lz++) {
 				Kmag = Kmagnitude(lx, ly, lz);
 				
 				Kperp = AnisKperp(lx, ly, lz);
@@ -1069,7 +1069,7 @@ void Universal::Compute_local_cylindrical_ring_spectrum
 					
 					factor = Multiplicity_factor(lx, ly, lz);
 					
-					local_Sk(shell_index, slab_index) += factor*my_pow(Kmag,n)*real_cprod(F(ly,lz,lx),G(ly,lz,lx));
+					local_Sk(shell_index, slab_index) += factor*my_pow(Kmag,n)*real_cprod(F(lx,ly,lz),G(lx,ly,lz));
 				}
 			}
 	
@@ -1120,17 +1120,17 @@ void Universal::Compute_local_imag_shell_spectrum_B0
 	
 	int	Kmax = Min_radius_outside();
 	
-	for (int ly=0; ly<Ax.extent(0); ly++)
-        for (int lz=0; lz<Ax.extent(1); lz++)
-            for (int lx=0; lx<Ax.extent(2); lx++) {
+	for (int lx=0; lx<Ax.extent(0); lx++)
+        for (int ly=0; ly<Ax.extent(1); ly++)
+            for (int lz=0; lz<Ax.extent(2); lz++) {
 				Kmag = Kmagnitude(lx, ly, lz);
 				
 				shell_index = (int) ceil(Kmag);
 				
 				if (shell_index <= Kmax) {
 					Wavenumber(lx, ly, lz, K);
-					V = Ax(ly, lz, lx), Ay(ly, lz, lx), Az(ly, lz, lx);
-					W = Bx(ly, lz, lx), By(ly, lz, lx), Bz(ly, lz, lx);
+					V = Ax(lx,ly,lz), Ay(lx,ly,lz), Az(lx,ly,lz);
+					W = Bx(lx,ly,lz), By(lx,ly,lz), Bz(lx,ly,lz);
 					
 					local_Sk(shell_index) += 2* Multiplicity_factor(lx,ly,lz)* dot(B0,K)* mydot_imag(V,W);
 					
@@ -1183,9 +1183,9 @@ void Universal::Compute_local_imag_ring_spectrum_B0
 	
 	int	Kmax = Max_radius_inside();
 	
-	for (int ly=0; ly<Ax.extent(0); ly++)
-        for (int lz=0; lz<Ax.extent(1); lz++)
-            for (int lx=0; lx<Ax.extent(2); lx++) {
+	for (int lx=0; lx<Ax.extent(0); lx++)
+        for (int ly=0; ly<Ax.extent(1); ly++)
+            for (int lz=0; lz<Ax.extent(2); lz++) {
 				Kmag = Kmagnitude(lx, ly, lz);
 				shell_index = (int) ceil(Kmag);
 				
@@ -1195,8 +1195,8 @@ void Universal::Compute_local_imag_ring_spectrum_B0
 					sector_index = Get_sector_index(theta, global.spectrum.ring.sector_angles);
 					
 					Wavenumber(lx, ly, lz, K);
-					V = Ax(ly, lz, lx), Ay(ly, lz, lx), Az(ly, lz, lx);
-					W = Bx(ly, lz, lx), By(ly, lz, lx), Bz(ly, lz, lx);
+					V = Ax(lx,ly,lz), Ay(lx,ly,lz), Az(lx,ly,lz);
+					W = Bx(lx,ly,lz), By(lx,ly,lz), Bz(lx,ly,lz);
 					
 					local_Sk(shell_index, sector_index) += 2* Multiplicity_factor(lx,ly,lz)* dot(B0,K)* mydot_imag(V,W);
 				}
@@ -1249,9 +1249,9 @@ void Universal::Compute_local_imag_cylindrical_ring_spectrum_B0
 	
 	int	Kperp_max = Anis_max_Krho_radius_inside();
 	
-	for (int ly=0; ly<Ax.extent(0); ly++)
-        for (int lz=0; lz<Ax.extent(1); lz++)
-            for (int lx=0; lx<Ax.extent(2); lx++) {
+	for (int lx=0; lx<Ax.extent(0); lx++)
+        for (int ly=0; ly<Ax.extent(1); ly++)
+            for (int lz=0; lz<Ax.extent(2); lz++) {
 				Kpll = AnisKpll(lx, ly, lz);
 				
 				Kperp = AnisKperp(lx, ly, lz);
@@ -1262,8 +1262,8 @@ void Universal::Compute_local_imag_cylindrical_ring_spectrum_B0
 					slab_index = Get_slab_index(Kpll, Kperp, global.spectrum.cylindrical_ring.kpll_array);
 					
 					Wavenumber(lx, ly, lz, K);
-					V = Ax(ly, lz, lx), Ay(ly, lz, lx), Az(ly, lz, lx);
-					W = Bx(ly, lz, lx), By(ly, lz, lx), Bz(ly, lz, lx);
+					V = Ax(lx,ly,lz), Ay(lx,ly,lz), Az(lx,ly,lz);
+					W = Bx(lx,ly,lz), By(lx,ly,lz), Bz(lx,ly,lz);
 					
 					local_Sk(shell_index, slab_index) +=  2* Multiplicity_factor(lx, ly, lz)* dot(B0,K)* mydot_imag(V,W);
 					

@@ -103,13 +103,13 @@ void RSF::Write_real_field()
 {
   string folder_name="real_" + To_string(global.time.now);
 
-  BasicIO::Write(Fr.data(), universal->H5_real, folder_name, field_name+".Fr");
+  universal->Write(Fr, universal->H5_real, folder_name, field_name+".Fr");
 }
 
 
 void RSF::Read_real_field()
 {
-  BasicIO::Read(Fr.data(), universal->H5_real, field_name+".Fr");
+  universal->Read(Fr, universal->H5_real, field_name+".Fr");
 }
 
 

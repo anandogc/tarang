@@ -57,13 +57,13 @@ DP Universal::Local_shell_mult_single
 	DP Kmag;
 	DP local_result = 0.0;
 	
-	for (int ly=0; ly<A.extent(0); ly++)
-        for (int lz=0; lz<A.extent(1); lz++)
-            for (int lx=0; lx<A.extent(2); lx++) {
+	for (int lx=0; lx<A.extent(0); lx++)
+        for (int ly=0; ly<A.extent(1); ly++)
+            for (int lz=0; lz<A.extent(2); lz++) {
 				Kmag = Kmagnitude(lx, ly, lz);
 				
 				if ( (Kmag > inner_radius) && (Kmag <= outer_radius) ) 
-					local_result += 2 * Multiplicity_factor(lx, ly, lz)*real( A(ly,lz,lx)*conj(B(ly,lz,lx)) );   
+					local_result += 2 * Multiplicity_factor(lx, ly, lz)*real( A(lx,ly,lz)*conj(B(lx,ly,lz)) );   
 			}
 		
 	return local_result;
@@ -105,15 +105,15 @@ void Universal::Local_shell_mult_all
 	 
 	 int	Kmax_inside = Max_radius_inside();
 	
-	for (int ly=0; ly<A.extent(0); ly++)
-        for (int lz=0; lz<A.extent(1); lz++)
-            for (int lx=0; lx<A.extent(2); lx++) {
+	for (int lx=0; lx<A.extent(0); lx++)
+        for (int ly=0; ly<A.extent(1); ly++)
+            for (int lz=0; lz<A.extent(2); lz++) {
 				Kmag = Kmagnitude(lx, ly, lz);
 				
 				if (Kmag <= Kmax_inside) {
 						shell_index = Get_shell_index(Kmag, shell_radius_array);
 					
-						local_result(shell_index) += 2*Multiplicity_factor(lx,ly,lz)* real_cprod(A(ly,lz,lx),B(ly,lz,lx));
+						local_result(shell_index) += 2*Multiplicity_factor(lx,ly,lz)* real_cprod(A(lx,ly,lz),B(lx,ly,lz));
 				}									   
 			}
 				
@@ -158,15 +158,15 @@ void Universal::Local_shell_mult_all
 	
 	int	Kmax_inside = Max_radius_inside();
 	
-	for (int ly=0; ly<Ax.extent(0); ly++)
-        for (int lz=0; lz<Ax.extent(1); lz++)
-            for (int lx=0; lx<Ax.extent(2); lx++) {
+	for (int lx=0; lx<Ax.extent(0); lx++)
+        for (int ly=0; ly<Ax.extent(1); ly++)
+            for (int lz=0; lz<Ax.extent(2); lz++) {
 				Kmag = Kmagnitude(lx, ly, lz);
 				
 				if (Kmag <= Kmax_inside) {
                     shell_index = Get_shell_index(Kmag, shell_radius_array);
 					
-                    AdotB = mydot(Ax(ly,lz,lx),Ay(ly,lz,lx),Az(ly,lz,lx),Bx(ly,lz,lx),By(ly,lz,lx),Bz(ly,lz,lx));
+                    AdotB = mydot(Ax(lx,ly,lz),Ay(lx,ly,lz),Az(lx,ly,lz),Bx(lx,ly,lz),By(lx,ly,lz),Bz(lx,ly,lz));
 					
                     local_result(shell_index) += 2*Multiplicity_factor(lx,ly,lz)* AdotB;
 				}										
@@ -215,9 +215,9 @@ void Universal::Local_ring_mult_all
 	
 	int	Kmax_inside = Max_radius_inside();
 	
-	for (int ly=0; ly<A.extent(0); ly++)
-        for (int lz=0; lz<A.extent(1); lz++)
-            for (int lx=0; lx<A.extent(2); lx++) {
+	for (int lx=0; lx<A.extent(0); lx++)
+        for (int ly=0; ly<A.extent(1); ly++)
+            for (int lz=0; lz<A.extent(2); lz++) {
 				Kmag = Kmagnitude(lx, ly, lz);
 				
 				if ((Kmag <= Kmax_inside) && (Kmag > MYEPS)) {
@@ -225,7 +225,7 @@ void Universal::Local_ring_mult_all
 					
 					Compute_ring_index(Kmag, theta, global.energy_transfer.ring_to_ring.radii, global.energy_transfer.ring_to_ring.sector_angles, shell_index, sector_index);
 					
-					local_result(shell_index, sector_index) += 2 *Multiplicity_factor(lx,ly,lz)* real_cprod(A(ly,lz,lx),B(ly,lz,lx));
+					local_result(shell_index, sector_index) += 2 *Multiplicity_factor(lx,ly,lz)* real_cprod(A(lx,ly,lz),B(lx,ly,lz));
 				}									   
 			}
 
@@ -268,9 +268,9 @@ void Universal::Local_ring_mult_all
 	
 	int	Kmax_inside = Max_radius_inside();
 	
-	for (int ly=0; ly<Ax.extent(0); ly++)
-        for (int lz=0; lz<Ax.extent(1); lz++)
-            for (int lx=0; lx<Ax.extent(2); lx++) {
+	for (int lx=0; lx<Ax.extent(0); lx++)
+        for (int ly=0; ly<Ax.extent(1); ly++)
+            for (int lz=0; lz<Ax.extent(2); lz++) {
 				Kmag = Kmagnitude(lx, ly, lz);
 				
 				if ((Kmag <= Kmax_inside) && (Kmag > MYEPS)) {
@@ -278,7 +278,7 @@ void Universal::Local_ring_mult_all
 					
 					Compute_ring_index(Kmag, theta, global.energy_transfer.ring_to_ring.radii, global.energy_transfer.ring_to_ring.sector_angles, shell_index, sector_index);
 					
-					AdotB = mydot(Ax(ly,lz,lx),Ay(ly,lz,lx),Az(ly,lz,lx),Bx(ly,lz,lx),By(ly,lz,lx),Bz(ly,lz,lx));
+					AdotB = mydot(Ax(lx,ly,lz),Ay(lx,ly,lz),Az(lx,ly,lz),Bx(lx,ly,lz),By(lx,ly,lz),Bz(lx,ly,lz));
 					
 					local_result(shell_index, sector_index) +=  2* Multiplicity_factor(lx, ly, lz)* AdotB;  
 				}											
@@ -328,9 +328,9 @@ void Universal::Local_cyl_ring_mult_all
 		
 	int	 Kperp_max = Anis_max_Krho_radius_inside();
 	
-	for (int ly=0; ly<A.extent(0); ly++)
-        for (int lz=0; lz<A.extent(1); lz++)
-            for (int lx=0; lx<A.extent(2); lx++) {
+	for (int lx=0; lx<A.extent(0); lx++)
+        for (int ly=0; ly<A.extent(1); ly++)
+            for (int lz=0; lz<A.extent(2); lz++) {
 				 Kpll = AnisKpll(lx, ly, lz);
 				
 				 Kperp = AnisKperp(lx, ly, lz);
@@ -338,7 +338,7 @@ void Universal::Local_cyl_ring_mult_all
 				if ( Kperp <=  Kperp_max) {
 					Compute_cylindrical_ring_index(Kpll,  Kperp, global.energy_transfer.cylindrical_ring_to_ring.radii, global.energy_transfer.cylindrical_ring_to_ring.kpll_array, shell_index, slab_index);
 					
-					local_result(shell_index, slab_index) +=  2* Multiplicity_factor(lx,ly,lz)* real_cprod(A(ly,lz,lx),B(ly,lz,lx));
+					local_result(shell_index, slab_index) +=  2* Multiplicity_factor(lx,ly,lz)* real_cprod(A(lx,ly,lz),B(lx,ly,lz));
 				}										
 			}
 		
@@ -381,9 +381,9 @@ void Universal::Local_cyl_ring_mult_all
 	
 	int	 Kperp_max = Anis_max_Krho_radius_inside();
 	
-	for (int ly=0; ly<Ax.extent(0); ly++)
-        for (int lz=0; lz<Ax.extent(1); lz++)
-            for (int lx=0; lx<Ax.extent(2); lx++) {
+	for (int lx=0; lx<Ax.extent(0); lx++)
+        for (int ly=0; ly<Ax.extent(1); ly++)
+            for (int lz=0; lz<Ax.extent(2); lz++) {
 				 Kpll = AnisKpll(lx, ly, lz);
 				
 				 Kperp = AnisKperp(lx, ly, lz);
@@ -391,7 +391,7 @@ void Universal::Local_cyl_ring_mult_all
 				if ( Kperp <=  Kperp_max) {
 					Compute_cylindrical_ring_index( Kpll,  Kperp, global.energy_transfer.cylindrical_ring_to_ring.radii, global.energy_transfer.cylindrical_ring_to_ring.kpll_array, shell_index, slab_index);
 					
-					AdotB = mydot(Ax(ly,lz,lx),Ay(ly,lz,lx),Az(ly,lz,lx),Bx(ly,lz,lx),By(ly,lz,lx),Bz(ly,lz,lx));
+					AdotB = mydot(Ax(lx,ly,lz),Ay(lx,ly,lz),Az(lx,ly,lz),Bx(lx,ly,lz),By(lx,ly,lz),Bz(lx,ly,lz));
 					
 					local_result(shell_index, slab_index) +=  2 *Multiplicity_factor(lx,ly,lz)* AdotB;
 				}									
@@ -440,9 +440,9 @@ void Universal::Local_shell_mult_all_imagVW_B0
 	
 	int	Kmax_inside = Max_radius_inside();
 	
-	for (int ly=0; ly<Ax.extent(0); ly++)
-        for (int lz=0; lz<Ax.extent(1); lz++)
-            for (int lx=0; lx<Ax.extent(2); lx++) {
+	for (int lx=0; lx<Ax.extent(0); lx++)
+        for (int ly=0; ly<Ax.extent(1); ly++)
+            for (int lz=0; lz<Ax.extent(2); lz++) {
 				Kmag = Kmagnitude(lx, ly, lz);
 				
 				if (Kmag <= Kmax_inside) {
@@ -450,7 +450,7 @@ void Universal::Local_shell_mult_all_imagVW_B0
 					
 					Wavenumber(lx, ly, lz, K);	
 					
-					AdotB = mydot_imag(Ax(ly,lz,lx),Ay(ly,lz,lx),Az(ly,lz,lx),Bx(ly,lz,lx),By(ly,lz,lx),Bz(ly,lz,lx));
+					AdotB = mydot_imag(Ax(lx,ly,lz),Ay(lx,ly,lz),Az(lx,ly,lz),Bx(lx,ly,lz),By(lx,ly,lz),Bz(lx,ly,lz));
 					
 					local_result(shell_index) += 2* Multiplicity_factor(lx,ly,lz)*  dot(B0,K)* AdotB;
 				}									
@@ -497,9 +497,9 @@ void Universal::Local_ring_mult_all_imagVW_B0
 		
 	int	Kmax_inside = Max_radius_inside();
 	
-	for (int ly=0; ly<Ax.extent(0); ly++)
-        for (int lz=0; lz<Ax.extent(1); lz++)
-            for (int lx=0; lx<Ax.extent(2); lx++) {
+	for (int lx=0; lx<Ax.extent(0); lx++)
+        for (int ly=0; ly<Ax.extent(1); ly++)
+            for (int lz=0; lz<Ax.extent(2); lz++) {
 				Kmag = Kmagnitude(lx, ly, lz);
 				
 				if ((Kmag <= Kmax_inside) && (Kmag > MYEPS)) {
@@ -508,7 +508,7 @@ void Universal::Local_ring_mult_all_imagVW_B0
 					Compute_ring_index(Kmag, theta, global.energy_transfer.ring_to_ring.radii, global.energy_transfer.ring_to_ring.sector_angles, shell_index, sector_index);
 					
 					Wavenumber(lx, ly, lz, K);
-					AdotB = mydot_imag(Ax(ly,lz,lx),Ay(ly,lz,lx),Az(ly,lz,lx),Bx(ly,lz,lx),By(ly,lz,lx),Bz(ly,lz,lx));
+					AdotB = mydot_imag(Ax(lx,ly,lz),Ay(lx,ly,lz),Az(lx,ly,lz),Bx(lx,ly,lz),By(lx,ly,lz),Bz(lx,ly,lz));
 					
 					local_result(shell_index, sector_index)  +=	 2* Multiplicity_factor(lx,ly,lz)* dot(B0,K)* AdotB;
 				}									
@@ -557,9 +557,9 @@ void Universal::Local_cyl_ring_mult_all_imagVW_B0
 	
 	int	 Kperp_max = Anis_max_Krho_radius_inside();
 	
-	for (int ly=0; ly<Ax.extent(0); ly++)
-        for (int lz=0; lz<Ax.extent(1); lz++)
-            for (int lx=0; lx<Ax.extent(2); lx++) {
+	for (int lx=0; lx<Ax.extent(0); lx++)
+        for (int ly=0; ly<Ax.extent(1); ly++)
+            for (int lz=0; lz<Ax.extent(2); lz++) {
 				 Kpll = AnisKpll(lx, ly, lz);
 				
 				 Kperp = AnisKperp(lx, ly, lz);
@@ -568,7 +568,7 @@ void Universal::Local_cyl_ring_mult_all_imagVW_B0
 					Compute_cylindrical_ring_index( Kpll,  Kperp, global.energy_transfer.cylindrical_ring_to_ring.radii, global.energy_transfer.cylindrical_ring_to_ring.kpll_array, shell_index, slab_index);
 
 					Wavenumber(lx, ly, lz, K);
-					AdotB = mydot_imag(Ax(ly,lz,lx),Ay(ly,lz,lx),Az(ly,lz,lx),Bx(ly,lz,lx),By(ly,lz,lx),Bz(ly,lz,lx));
+					AdotB = mydot_imag(Ax(lx,ly,lz),Ay(lx,ly,lz),Az(lx,ly,lz),Bx(lx,ly,lz),By(lx,ly,lz),Bz(lx,ly,lz));
 
 					local_result(shell_index, slab_index) += 2* Multiplicity_factor(lx,ly,lz)* dot(B0,K)* AdotB;
 				}									
@@ -617,16 +617,16 @@ DP Universal::Local_shell_mult_vorticity
 	DP Kmag, AdotB;
 	DP result = 0.0;
 	
-	for (int ly=0; ly<Ax.extent(0); ly++)
-        for (int lz=0; lz<Ax.extent(1); lz++)
-            for (int lx=0; lx<Ax.extent(2); lx++) {
+	for (int lx=0; lx<Ax.extent(0); lx++)
+        for (int ly=0; ly<Ax.extent(1); ly++)
+            for (int lz=0; lz<Ax.extent(2); lz++) {
 				Kmag = Kmagnitude(lx, ly, lz);
 				
 				if ((Kmag > inner_radius) && (Kmag <= outer_radius)) {
 					if (Ny > 1) {	
 						Compute_Modal_vorticity(lx, ly, lz, Bx, By, Bz, vorticity);
 						
-						AdotB = mydot(Ax(ly,lz,lx),Ay(ly,lz,lx),Az(ly,lz,lx), vorticity(0),vorticity(1),vorticity(2));
+						AdotB = mydot(Ax(lx,ly,lz),Ay(lx,ly,lz),Az(lx,ly,lz), vorticity(0),vorticity(1),vorticity(2));
 						
 						// factor 2 below to account for the absent complex conj modes. 
 						result += 2* Multiplicity_factor(lx,ly,lz)* AdotB;
@@ -638,7 +638,7 @@ DP Universal::Local_shell_mult_vorticity
 						
 						// nlin2 contains U.grad omega
 						// factor 2 to account for the absent complex conj modes.
-						result += 2* Multiplicity_factor(lx,0,lz)*real_cprod(Ay(ly,lz,lx), vort_y);
+						result += 2* Multiplicity_factor(lx,0,lz)*real_cprod(Ay(lx,ly,lz), vort_y);
 					}	
 				}	
 			}
@@ -687,16 +687,16 @@ DP Universal::Local_shell_mult_vector_potential
 	DP Kmag;
 	DP result = 0.0;
 	
-	for (int ly=0; ly<Ax.extent(0); ly++)
-        for (int lz=0; lz<Ax.extent(1); lz++)
-            for (int lx=0; lx<Ax.extent(2); lx++) {
+	for (int lx=0; lx<Ax.extent(0); lx++)
+        for (int ly=0; ly<Ax.extent(1); ly++)
+            for (int lz=0; lz<Ax.extent(2); lz++) {
 				Kmag = Kmagnitude(lx, ly, lz);
 				
 				if ( (Kmag > inner_radius) && (Kmag <= outer_radius) )  {
 					if (Ny > 1) {	
 						Compute_Modal_vorticity(lx, ly, lz, Bx, By, Bz, vorticity);
 						
-						AdotB = mydot(Ax(ly,lz,lx),Ay(ly,lz,lx),Az(ly,lz,lx), vorticity(0),vorticity(1),vorticity(2));
+						AdotB = mydot(Ax(lx,ly,lz),Ay(lx,ly,lz),Az(lx,ly,lz), vorticity(0),vorticity(1),vorticity(2));
 						
 						result += 2* Multiplicity_factor(lx,ly,lz)/pow2(Kmag)* AdotB;
 							// factor 2 to account for the absent complex conj modes. 
@@ -705,7 +705,7 @@ DP Universal::Local_shell_mult_vector_potential
 					else if (Ny ==1)	{
 						Compute_Modal_vorticity_y_component(lx, 0, lz, Bx, By, Bz, vort_y);
 						
-						result += 2 * Multiplicity_factor(lx,0,lz)*real_cprod(Ay(ly,lz,lx), vort_y)/pow2(Kmag);
+						result += 2 * Multiplicity_factor(lx,0,lz)*real_cprod(Ay(lx,ly,lz), vort_y)/pow2(Kmag);
 							// nlin2 contains U.grad a; a(k) = curl(b)/k^2
 							// factor 2 to account for the absent complex conj modes. 
 					}	
@@ -760,9 +760,9 @@ void Universal::Local_shell_mult_vorticity_all
 	
 	int	Kmax_inside = Max_radius_inside();
 	
-	for (int ly=0; ly<Ax.extent(0); ly++)
-        for (int lz=0; lz<Ax.extent(1); lz++)
-            for (int lx=0; lx<Ax.extent(2); lx++) {
+	for (int lx=0; lx<Ax.extent(0); lx++)
+        for (int ly=0; ly<Ax.extent(1); ly++)
+            for (int lz=0; lz<Ax.extent(2); lz++) {
 				Kmag = Kmagnitude(lx, ly, lz);
 				
 				if (Kmag <= Kmax_inside) {
@@ -771,7 +771,7 @@ void Universal::Local_shell_mult_vorticity_all
 					if (Ny > 1) {	
 						Compute_Modal_vorticity(lx, ly, lz, Bx, By, Bz, vorticity);
 						
-						AdotB = mydot(Ax(ly,lz,lx),Ay(ly,lz,lx),Az(ly,lz,lx), vorticity(0),vorticity(1),vorticity(2));
+						AdotB = mydot(Ax(lx,ly,lz),Ay(lx,ly,lz),Az(lx,ly,lz), vorticity(0),vorticity(1),vorticity(2));
 						
 						// factor 2 to account for the absent complex conj modes.
 						result(shell_index) += 2* Multiplicity_factor(lx,ly,lz)* AdotB;
@@ -783,7 +783,7 @@ void Universal::Local_shell_mult_vorticity_all
 						
 						// nlin2 contains U.grad omega
 						// factor 2 to account for the absent complex conj modes. 
-						result(shell_index) += 2* Multiplicity_factor(lx,0,lz)*real_cprod(Ay(ly,lz,lx), vort_y);
+						result(shell_index) += 2* Multiplicity_factor(lx,0,lz)*real_cprod(Ay(lx,ly,lz), vort_y);
 					}
 				}							
 			}
@@ -828,9 +828,9 @@ void Universal::Local_shell_mult_vector_potential_all
 	
 	int	Kmax_inside = Max_radius_inside();
 	
-	for (int ly=0; ly<Ax.extent(0); ly++)
-        for (int lz=0; lz<Ax.extent(1); lz++)
-            for (int lx=0; lx<Ax.extent(2); lx++) {
+	for (int lx=0; lx<Ax.extent(0); lx++)
+        for (int ly=0; ly<Ax.extent(1); ly++)
+            for (int lz=0; lz<Ax.extent(2); lz++) {
 				Kmag = Kmagnitude(lx, ly, lz);
 				
 				if (Kmag <= Kmax_inside) {
@@ -839,7 +839,7 @@ void Universal::Local_shell_mult_vector_potential_all
 					if (Ny > 1) {	
 						Compute_Modal_vorticity(lx, ly, lz, Bx, By, Bz, vorticity);
 						
-						AdotB = mydot(Ax(ly,lz,lx),Ay(ly,lz,lx),Az(ly,lz,lx), vorticity(0),vorticity(1),vorticity(2));
+						AdotB = mydot(Ax(lx,ly,lz),Ay(lx,ly,lz),Az(lx,ly,lz), vorticity(0),vorticity(1),vorticity(2));
 						
 						// factor 2 to account for the absent complex conj modes.
 						result(shell_index) += 2* Multiplicity_factor(lx,ly,lz)* AdotB/pow2(Kmag);
@@ -848,7 +848,7 @@ void Universal::Local_shell_mult_vector_potential_all
 					else if (Ny ==1)	{
 						Compute_Modal_vorticity_y_component(lx, 0, lz, Bx, By, Bz, vort_y);
 						
-						result(shell_index) += 2* Multiplicity_factor(lx,0,lz)* real_cprod(Ay(ly,lz,lx),vort_y)/ pow2(Kmag);
+						result(shell_index) += 2* Multiplicity_factor(lx,0,lz)* real_cprod(Ay(lx,ly,lz),vort_y)/ pow2(Kmag);
 						
 					}
 				}							
@@ -884,13 +884,13 @@ void Universal::Fill_array_shell(Array<complx,3> A, Array<complx,3> B, DP inner_
 	
 	B = 0.0;
 	
-	for (int ly=0; ly<A.extent(0); ly++)
-        for (int lz=0; lz<A.extent(1); lz++)
-            for (int lx=0; lx<A.extent(2); lx++) {
+	for (int lx=0; lx<A.extent(0); lx++)
+        for (int ly=0; ly<A.extent(1); ly++)
+            for (int lz=0; lz<A.extent(2); lz++) {
 				Kmag = Kmagnitude(lx, ly, lz);
 				
 				if ( (Kmag > inner_radius) && (Kmag <= outer_radius) ) 
-					B(ly,lz,lx) = A(ly,lz,lx); 
+					B(lx,ly,lz) = A(lx,ly,lz); 
 				}
 }
 
@@ -901,15 +901,15 @@ void Universal::Fill_array_ring(Array<complx,3> A, Array<complx,3> B, DP inner_r
 	
 	B = 0.0;
 	
-	for (int ly=0; ly<A.extent(0); ly++)
-        for (int lz=0; lz<A.extent(1); lz++)
-            for (int lx=0; lx<A.extent(2); lx++) {
+	for (int lx=0; lx<A.extent(0); lx++)
+        for (int ly=0; ly<A.extent(1); ly++)
+            for (int lz=0; lz<A.extent(2); lz++) {
 				Kmag = Kmagnitude(lx, ly, lz);
 				theta = AnisKvect_polar_angle(lx, ly, lz);
 				
 				if ((Kmag > inner_radius) && (Kmag <= outer_radius)) 
 					if ( ((theta > left_angle) && (theta <= right_angle)) || ((abs(theta) < MYEPS) && (left_angle < MYEPS)) )
-						B(ly,lz,lx) = A(ly,lz,lx); 
+						B(lx,ly,lz) = A(lx,ly,lz); 
 			}
 }
 
@@ -921,15 +921,15 @@ void Universal::Fill_array_cylindrical_ring(Array<complx,3> A, Array<complx,3> B
 	
 	B = 0.0;
 	
-	for (int ly=0; ly<A.extent(0); ly++)
-        for (int lz=0; lz<A.extent(1); lz++)
-            for (int lx=0; lx<A.extent(2); lx++) {
+	for (int lx=0; lx<A.extent(0); lx++)
+        for (int ly=0; ly<A.extent(1); ly++)
+            for (int lz=0; lz<A.extent(2); lz++) {
 				Kmag = Kmagnitude(lx, ly, lz);
 				Kpll = AnisKpll(lx, ly, lz);
 				
 				if ((Kmag > inner_radius) && (Kmag <= outer_radius)) 
 					if ( ((Kpll > h_lower) && (Kpll <= h_upper)) || ((abs(Kpll) < MYEPS) && (h_lower < MYEPS)) )
-						B(ly,lz,lx) = A(ly,lz,lx); 
+						B(lx,ly,lz) = A(lx,ly,lz); 
 			}
 }
 

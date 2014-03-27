@@ -34,19 +34,19 @@ SET(EXECUTABLE_NAME "tarang${POSTFIX}")
 ADD_EXECUTABLE(${EXECUTABLE_NAME}
 	main.cc
 	GP/GP_main
-	IFluid/Ifluid_main
-	IMHD/IMHD_main
-	IMHDastro/IMHDastro_main
-	IMHDscalar/IMHDscalar_main
-	Iscalar/Iscalar_main
-	MRBC/MRBC_main
+	ifluid/Ifluid_main
+	imhd/IMHD_main
+	imhdastro/IMHDastro_main
+	imhdscalar/IMHDscalar_main
+	iscalar/Iscalar_main
+	mrbc/MRBC_main
 	mem_usage
 	)
 
-TARGET_LINK_LIBRARIES(${EXECUTABLE_NAME} fluid_incompressible fluid_base fields fff_pencil fff_slab  sff_pencil sff_slab ssf_pencil ssf_slab sss_pencil sss_slab chff_slab basis_basicfn global spectral_transform ${SYSTEM_LIBRARIES})
+#TARGET_LINK_LIBRARIES(${EXECUTABLE_NAME} fluid_incompressible fluid_base fields fff_pencil fff_slab  sff_pencil sff_slab ssf_pencil ssf_slab sss_pencil sss_slab chff_slab basis_basicfn global spectral_transform ${SYSTEM_LIBRARIES})
 
 # To do fffw_slab cfff_slab
-#TARGET_LINK_LIBRARIES(${EXECUTABLE_NAME} fluid_incompressible fluid_base fields fff_slab sff_slab chff_slab basis_basicfn global spectral_transform ${SYSTEM_LIBRARIES})
+TARGET_LINK_LIBRARIES(${EXECUTABLE_NAME} fluid_incompressible fluid_base fields sff_slab fff_slab basis_basicfn global spectral_transform ${SYSTEM_LIBRARIES})
 
 ADD_CUSTOM_COMMAND(TARGET ${EXECUTABLE_NAME}
                    POST_BUILD

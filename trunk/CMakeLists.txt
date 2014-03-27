@@ -62,6 +62,8 @@ SET (LIBRARY_DIRS
        #/path/to/lib2
     )
 
+SET (SPECTRAL_TRANSFORM_VERSION v2)
+
 #Required libraries, One of FFTW_FLOAT_LIBS or FFTW_DOUBLE_LIBS is selected depending on DP
 SET (FFTW_FLOAT_LIBS fftw3f_mpi fftw3f)
 SET (FFTW_DOUBLE_LIBS fftw3_mpi fftw3)
@@ -73,7 +75,7 @@ SET (OTHER_LIBS m blitz  hdf5 mpi yaml-cpp)
 #################################################
 
 #Set version
-SET (VERSION "2.3.1")
+SET (VERSION "2.4.0")
 
 #Set default value for DP
 IF (NOT DEFINED DP)
@@ -265,18 +267,18 @@ ENDIF()
 INCLUDE_DIRECTORIES(
 ${CMAKE_SOURCE_DIR}/lib/global
 ${CMAKE_SOURCE_DIR}/lib/basis
-${CMAKE_SOURCE_DIR}/lib/basis/spectral_transform/v1
+${CMAKE_SOURCE_DIR}/lib/basis/spectral_transform/${SPECTRAL_TRANSFORM_VERSION}
 ${CMAKE_SOURCE_DIR}/lib/basis/basicfn
 ${CMAKE_SOURCE_DIR}/lib/fields
 ${CMAKE_SOURCE_DIR}/lib/fluid
 ${CMAKE_SOURCE_DIR}/lib/fluid/fluid_base
 ${CMAKE_SOURCE_DIR}/lib/fluid/fluid_base/force
-${CMAKE_SOURCE_DIR}/lib/fluid/fluid_base/IO
-${CMAKE_SOURCE_DIR}/lib/fluid/Incompressible
-${CMAKE_SOURCE_DIR}/lib/fluid/Incompressible/EnergyTr
-${CMAKE_SOURCE_DIR}/lib/fluid/Incompressible/IncIO
-${CMAKE_SOURCE_DIR}/lib/fluid/Incompressible/nlin
-${CMAKE_SOURCE_DIR}/lib/fluid/Incompressible/time_advance
+${CMAKE_SOURCE_DIR}/lib/fluid/fluid_base/io
+${CMAKE_SOURCE_DIR}/lib/fluid/incompressible
+${CMAKE_SOURCE_DIR}/lib/fluid/incompressible/energytr
+${CMAKE_SOURCE_DIR}/lib/fluid/incompressible/incio
+${CMAKE_SOURCE_DIR}/lib/fluid/incompressible/nlin
+${CMAKE_SOURCE_DIR}/lib/fluid/incompressible/time_advance
 ${YAML_CPP_INCLUDE_DIRS}
 ${BLITZ_INCLUDE_DIRS}
 ${FFTW3F_INCLUDE_DIRS}

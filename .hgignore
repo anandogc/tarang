@@ -2,7 +2,6 @@ syntax: glob
 
 .DS_Store
 .dropbox
-
 *.swp
 *~.nib
 *~

@@ -69,22 +69,22 @@ int main(int argc, char** argv)
 
 	global.Process_basic_vars();
 	
-    BasicIO::Initialize(); 
+    BasicIO::Initialize(global.io.data_dir); 
 
     if (global.program.basis_type == "FFF"){
 		if (global.program.decomposition == "SLAB")
 			universal=new FFF_SLAB;
-		else if (global.program.decomposition == "PENCIL")
-			universal=new FFF_PENCIL;
+	//	else if (global.program.decomposition == "PENCIL")
+	//		universal=new FFF_PENCIL;
     }
 	
     else if (global.program.basis_type == "SFF"){
 		if (global.program.decomposition == "SLAB")
 			universal=new SFF_SLAB;
-		else if (global.program.decomposition == "PENCIL")
-			universal=new SFF_PENCIL;
+	//	else if (global.program.decomposition == "PENCIL")
+	//		universal=new SFF_PENCIL;
 	}
-    else if (global.program.basis_type == "SSF"){
+ /*   else if (global.program.basis_type == "SSF"){
 		if (global.program.decomposition == "SLAB")
 			universal=new SSF_SLAB;
 		else if (global.program.decomposition == "PENCIL")
@@ -99,7 +99,7 @@ int main(int argc, char** argv)
     else if (global.program.basis_type == "ChFF"){
 		if (global.program.decomposition == "SLAB")
 			universal=new ChFF_SLAB;
-    }
+    } */
 /*    else if (global.program.basis_type == "CFFF"){
 //		if (global.program.decomposition == "SLAB")
 //			universal=new CFFF_SLAB;
@@ -114,10 +114,10 @@ int main(int argc, char** argv)
     
     Correlation::Initialize();
 	
-	if (global.program.decomposition=="PENCIL"){
+/*	if (global.program.decomposition=="PENCIL"){
 		global.mpi.MPI_COMM_HOR_SEGMENT = spectralTransform.MPI_COMM_HOR_SEGMENT;
 		global.mpi.MPI_COMM_VERT_SEGMENT = spectralTransform.MPI_COMM_VERT_SEGMENT;
-	}
+	} */
 		
 
 

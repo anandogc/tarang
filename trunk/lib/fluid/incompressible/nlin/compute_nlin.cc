@@ -65,7 +65,7 @@ void Nlin_incompress::Compute_nlin(FluidVF& U)
 	U.Inverse_transform();  // Vir = Inv_transform(Vi)
 	
     global.io.real_space_field_available = true;
-    
+  
     if (!global.time.dt_computation_done) {
 		global.time.dt = U.Get_dt();
 		global.time.now = global.time.now + global.time.dt;
@@ -86,6 +86,7 @@ void Nlin_incompress::Compute_nlin(FluidVF& U)
 	
 	Compute_nlin_offdiag(U);
 	
+	
 	/*if (master) cout << "nlin1 " << sum(abs(U.nlin1)) << endl;
 	universal->Print_large_Fourier_elements(U.nlin1);
 	
@@ -104,7 +105,7 @@ void Nlin_incompress::Compute_nlin(FluidVF& U)
         fluidIO_incompress.Output_Tk_ring_spectrum(U);
         fluidIO_incompress.Output_Tk_cylindrical_ring_spectrum(U);
 		global.io.output_field_k_done = true;
-	} 
+	}
 }
 
 

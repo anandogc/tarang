@@ -54,7 +54,7 @@
 DP SFF_SLAB::Get_local_energy_real_space(Array<DP,3> Ar)
 {
 
-	return Array_sqr(Ar(Range::all(),Range(0,Nz-1),Range::all())) / (DP(Nx)*DP(Ny)*DP(Nz));
+	return Array_sqr(Ar(Range::all(),Range::all(),Range(0,Nz-1))) / (DP(Nx)*DP(Ny)*DP(Nz));
 }
 
 
@@ -66,14 +66,14 @@ DP SFF_SLAB::Get_local_energy(Array<complx,3> A)
 	DP total = 2*Array_sqr(A);
 	
 	// Subtract kz=0 plane
-	total -= Array_sqr(A(Range::all(), 0, Range::all()));
+	total -= Array_sqr(A(Range::all(),Range::all(),0));
 	
 	// kx=0
 	if (my_id == 0) {
-		total -= Array_sqr(A(Range::all(), Range::all(), 0));
+		total -= Array_sqr(A(0,Range::all(),Range::all()));
 		
 			// kz=0, kx=0 (ADD since it has been subtracted twice)
-		total += Array_sqr(A(Range::all(), 0, 0))/2;
+		total += Array_sqr(A(0,Range::all(),0))/2;
 	} 
     
     return total;
@@ -108,7 +108,7 @@ DP SFF_SLAB::Get_total_energy_residual(Array<complx,3> A)
 
 DP SFF_SLAB::Get_local_energy_real_space(Array<DP,3> Ar, Array<DP,3> Br)
 {
-	DP ans= mydot(Ar(Range::all(),Range(0,Nz-1),Range::all()), Br(Range::all(),Range(0,Nz-1),Range::all()));
+	DP ans= mydot(Ar(Range::all(),Range::all(),Range(0,Nz-1)), Br(Range::all(),Range::all(),Range(0,Nz-1)));
 	
 	return ans/ (DP(Nx)*DP(Ny)*DP(Nz));
 }
@@ -120,14 +120,14 @@ DP SFF_SLAB::Get_local_energy(Array<complx,3> A, Array<complx,3> B)
 	DP total = 2*mydot(A, B);
 	
 		// Subtract kz=0 plane
-	total -= mydot(A(Range::all(),0,Range::all()), B(Range::all(),0,Range::all()));
+	total -= mydot(A(Range::all(),Range::all(),0), B(Range::all(),Range::all(),0));
 	
 		// kx=0
 	if (my_id == 0) {
-		total -= mydot(A(Range::all(),Range::all(),0), B(Range::all(),Range::all(),0));
+		total -= mydot(A(0,Range::all(),Range::all()), B(0,Range::all(),Range::all()));
 		
 		// kz=0, kx=0 (ADD since it has been subtracted twice)
-		total += mydot(A(Range::all(),0,0), B(Range::all(),0,0))/2;
+		total += mydot(A(0,Range::all(),0), B(0,Range::all(),0))/2;
 	}
     return total;
 }
@@ -204,9 +204,9 @@ void SFF_SLAB::Compute_local_helicity
 	
 	int	Kmax = Min_radius_outside();
 	
-	for (int ly=0; ly<Ax.extent(0); ly++)
-        for (int lz=0; lz<Ax.extent(1); lz++)
-            for (int lx=0; lx<Ax.extent(2); lx++) {
+	for (int lx=0; lx<Ax.extent(0); lx++)
+        for (int ly=0; ly<Ax.extent(1); ly++)
+            for (int lz=0; lz<Ax.extent(2); lz++) {
 				Kmag = Kmagnitude(lx, ly, lz);
 				
 				if (Kmag <= Kmax) {
@@ -281,16 +281,16 @@ void SFF_SLAB::Compute_local_shell_spectrum_helicity
 	int	Kmax = Min_radius_outside();
 
 	
-	for (int ly=0; ly<Ax.extent(0); ly++)
-        for (int lz=0; lz<Ax.extent(1); lz++)
-            for (int lx=0; lx<Ax.extent(2); lx++) {
+	for (int lx=0; lx<Ax.extent(0); lx++)
+        for (int ly=0; ly<Ax.extent(1); ly++)
+            for (int lz=0; lz<Ax.extent(2); lz++) {
 				Kmag = Kmagnitude(lx, ly, lz);
 				index = (int) ceil(Kmag);
 				
 				if (index <= Kmax)  {
 					factor = 2*Multiplicity_factor(lx, ly, lz);
 					
-					V = Ax(ly, lz, lx), Ay(ly, lz, lx), Az(ly, lz, lx);
+					V = Ax(lx,ly,lz), Ay(lx,ly,lz), Az(lx,ly,lz);
 					Convert_to_Fourier_space(V, VFour);
 					
 					Vreal = real(VFour(0)), real(VFour(1)), real(VFour(2));
@@ -386,9 +386,9 @@ void SFF_SLAB::Compute_local_ring_spectrum_helicity
 	
 	int	Kmax = Max_radius_inside();
 	
-	for (int ly=0; ly<Ax.extent(0); ly++)
-        for (int lz=0; lz<Ax.extent(1); lz++)
-            for (int lx=0; lx<Ax.extent(2); lx++) {
+	for (int lx=0; lx<Ax.extent(0); lx++)
+        for (int ly=0; ly<Ax.extent(1); ly++)
+            for (int lz=0; lz<Ax.extent(2); lz++) {
 				Kmag = Kmagnitude(lx, ly, lz);
 				shell_index = (int) ceil(Kmag);
 				
@@ -399,8 +399,8 @@ void SFF_SLAB::Compute_local_ring_spectrum_helicity
 					
 					factor = 2*Multiplicity_factor(lx, ly, lz);
 					
-					Vreal = real(Ax(ly, lz, lx)), real(Ay(ly, lz, lx)), real(Az(ly, lz, lx));
-					Vimag = imag(Ax(ly, lz, lx)), imag(Ay(ly, lz, lx)), imag(Az(ly, lz, lx));
+					Vreal = real(Ax(lx,ly,lz)), real(Ay(lx,ly,lz)), real(Az(lx,ly,lz));
+					Vimag = imag(Ax(lx,ly,lz)), imag(Ay(lx,ly,lz)), imag(Az(lx,ly,lz));
 					
 					VrcrossVi = cross(Vreal, Vimag);
 					Wavenumber(lx, ly, lz, K);
@@ -460,9 +460,9 @@ void SFF_SLAB::Compute_local_cylindrical_ring_spectrum_helicity
 	
 	int	Kperp_max = Anis_max_Krho_radius_inside();
 	
-	for (int ly=0; ly<Ax.extent(0); ly++)
-        for (int lz=0; lz<Ax.extent(1); lz++)
-            for (int lx=0; lx<Ax.extent(2); lx++) {
+	for (int lx=0; lx<Ax.extent(0); lx++)
+        for (int ly=0; ly<Ax.extent(1); ly++)
+            for (int lz=0; lz<Ax.extent(2); lz++) {
 				Kmag = Kmagnitude(lx, ly, lz);
 				
 				Kperp = AnisKperp(lx, ly, lz);
@@ -476,8 +476,8 @@ void SFF_SLAB::Compute_local_cylindrical_ring_spectrum_helicity
 					
 					factor = 2*Multiplicity_factor(lx, ly, lz);
 					
-					Vreal = real(Ax(ly, lz, lx)), real(Ay(ly, lz, lx)), real(Az(ly, lz, lx));
-					Vimag = imag(Ax(ly, lz, lx)), imag(Ay(ly, lz, lx)), imag(Az(ly, lz, lx));
+					Vreal = real(Ax(lx,ly,lz)), real(Ay(lx,ly,lz)), real(Az(lx,ly,lz));
+					Vimag = imag(Ax(lx,ly,lz)), imag(Ay(lx,ly,lz)), imag(Az(lx,ly,lz));
 					
 					VrcrossVi = cross(Vreal, Vimag);
 					Wavenumber(lx, ly, lz, K);

@@ -90,7 +90,7 @@ void FluidIO::Read_init_cond(FluidVF& U)
         
         if ((basis_type == "SFF") || (basis_type == "SSF") || (basis_type == "SSS")) 
             universal->Zero_modes(U.cvf.V1, U.cvf.V2, U.cvf.V3);
-    } 
+    }
 }
 
 //

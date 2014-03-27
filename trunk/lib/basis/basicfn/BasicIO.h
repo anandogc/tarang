@@ -44,12 +44,10 @@
 #include <hdf5.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-
+#include <dirent.h>
+ 
 #include "def_vars.h"
 #include "Global_extern_vars.h"
-
-class Universal;
-
 
 class BasicIO
 {
@@ -98,37 +96,20 @@ class BasicIO
 	};
 
 	static string data_in_folder, data_out_folder;
+	static string LOG_filename;
 
 	private:
-		static string LOG_filename;
-		static ofstream LOG_file;
-		static time_t rawtime;
-
-		//Required for Tarant-1 to Tarang-2 convertor
-		static map<string, string> transition_table;
-	
-		static string prefix_prinfinity[1];
-		static string prefix_fluid[3];
-		static string prefix_fluid_T[4];
-		static string prefix_mhd[6];
-		static string prefix_mhd_T[7];
-		static map<int,string*> dataset_name_old;
-		//Convertor properties ends
-	
-		static hid_t acc_template;
-
 		// define an info object to store MPI-IO information 
 		static MPI_Info FILE_INFO_TEMPLATE;
+		static hid_t acc_template;
+		
+		static ofstream LOG_file;
 
-		static int dim1, dim2, dim3;
-		static DP *dataArray;
-
-		static string file_path;
 		static bool frequent;
 
 	public:
 
-		static void Initialize();
+		static void Initialize(string data_base_folder);
 		static void Finalize();
 		static void Log(string message);
 		static void Begin_frequent();
@@ -136,6 +117,9 @@ class BasicIO
 
 		static bool File_exists(const std::string& name);
 		static vector<H5_dataset_meta> Get_meta(string filename, string path="/");
+
+		static vector<string> Get_file_list(string path);
+		static int h5filter(const struct dirent *dir);
     
 		template<typename Planner, int rank>
     	static void Set_H5_plans(Array_properties<rank> array_properties, Planner* planner);
@@ -143,8 +127,8 @@ class BasicIO
     	static H5_plan Set_plan(int rank, int* my_id, int* numprocs, Array<int,1>* dataspace_filter, Array<int,1>* memspace_filter, hid_t datatype);
     
 
-        static void Read(void *data, H5_plan plan, string file_name, string dataset_name="");
-		static void Write(const void* data, H5_plan plan, string folder_name, string file_name, string dataset_name="");
+        static int Read(void *data, H5_plan plan, string file_name, string dataset_name="");
+		static int Write(const void* data, H5_plan plan, string folder_name, string file_name, string dataset_name="");
 
 };
 

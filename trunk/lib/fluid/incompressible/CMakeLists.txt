@@ -36,10 +36,10 @@
 
 ADD_LIBRARY(fluid_incompressible
 	Pressure
-	IncIO/IncIO
-	IncIO/output/output_pressure.cc
-	IncIO/output/output_main.cc
-	IncIO/output/output_ET.cc
+	incio/IncIO.cc
+	incio/output/output_pressure.cc
+	incio/output/output_main.cc
+	incio/output/output_ET.cc
 	nlin/compute_diag_offdiag.cc
 	nlin/compute_nlin_ET_VF.cc
 	nlin/compute_nlin_VF_MHD.cc
@@ -60,21 +60,21 @@ ADD_LIBRARY(fluid_incompressible
 	time_advance/Tadvance_functions.cc
 	time_advance/Time_advance.cc
 	time_advance/Time_advance.h
-        time_advance/Chebyshev/Adam_Bashforth.cc
-       time_advance/Chebyshev/Adam_Bashforth_SF.cc
-	time_advance/Chebyshev/BDF1.cc
-	time_advance/Chebyshev/BDF1_SF.cc
-        time_advance/Chebyshev/helmholtz.cc
-	time_advance/Chebyshev/influence_matrix.cc
-	EnergyTr/compute_cylin_ring_tr.cc
-       EnergyTr/compute_energy_tr_Vpll.cc
-	EnergyTr/compute_flux.cc
-	EnergyTr/compute_ring_tr.cc
-	EnergyTr/compute_shell_tr.cc
-	EnergyTr/energy_tr_B0.cc
-	EnergyTr/EnergyTr.cc
-	EnergyTr/EnergyTr.h
-	EnergyTr/fill_space.cc
-	EnergyTr/force_V.cc
-	EnergyTr/prod_nlinV.cc
+        time_advance/chebyshev/Adam_Bashforth.cc
+       time_advance/chebyshev/Adam_Bashforth_SF.cc
+	time_advance/chebyshev/BDF1.cc
+	time_advance/chebyshev/BDF1_SF.cc
+        time_advance/chebyshev/helmholtz.cc
+	time_advance/chebyshev/influence_matrix.cc
+	energytr/compute_cylin_ring_tr.cc
+    energytr/compute_energy_tr_Vpll.cc
+	energytr/compute_flux.cc
+	energytr/compute_ring_tr.cc
+	energytr/compute_shell_tr.cc
+	energytr/energy_tr_B0.cc
+	energytr/EnergyTr.cc
+	energytr/EnergyTr.h
+	energytr/fill_space.cc
+	energytr/force_V.cc
+	energytr/prod_nlinV.cc
 )

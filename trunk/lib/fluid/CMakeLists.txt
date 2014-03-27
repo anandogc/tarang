@@ -26,4 +26,4 @@
  
 
 ADD_SUBDIRECTORY(fluid_base)
-ADD_SUBDIRECTORY(Incompressible)
+ADD_SUBDIRECTORY(incompressible)

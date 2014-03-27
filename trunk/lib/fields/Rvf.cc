@@ -119,24 +119,24 @@ void RVF::Write_real_field()
 {
    	string folder_name="real_" + To_string(global.time.now);
 
-	BasicIO::Write(V1r.data(), universal->H5_real, folder_name, field_name+".V1r");
+	universal->Write(V1r, universal->H5_real, folder_name, field_name+".V1r");
 
     if (!global.program.two_dimension)
-		BasicIO::Write(V2r.data(), universal->H5_real, folder_name, field_name+".V2r");
+		universal->Write(V2r, universal->H5_real, folder_name, field_name+".V2r");
 	
-	BasicIO::Write(V3r.data(), universal->H5_real, folder_name, field_name+".V3r");
+	universal->Write(V3r, universal->H5_real, folder_name, field_name+".V3r");
 }
 
 
 void RVF::Read_real_field()
 {
 
-	BasicIO::Read(V1r.data(), universal->H5_real, field_name+".V1r");
+	universal->Read(V1r, universal->H5_real, field_name+".V1r");
 
     if (!global.program.two_dimension)
-		BasicIO::Read(V2r.data(), universal->H5_real, field_name+".V2r");
+		universal->Read(V2r, universal->H5_real, field_name+".V2r");
 	
-	BasicIO::Read(V3r.data(), universal->H5_real, field_name+".V3r");
+	universal->Read(V3r, universal->H5_real, field_name+".V3r");
 }
 
 //**************************  End of RVF class definitions ************************************

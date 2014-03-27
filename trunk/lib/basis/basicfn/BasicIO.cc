@@ -49,31 +49,29 @@ hid_t BasicIO::H5T_COMPLEX_FLOAT=-1;
 hid_t BasicIO::H5T_COMPLEX_DOUBLE=-1;
 
 //public:
-string BasicIO::data_in_folder="in";     
-string BasicIO::data_out_folder="out";
+string BasicIO::data_in_folder="";
+string BasicIO::data_out_folder="";
 
 
-	//private:
-
-map<string, string> BasicIO::transition_table;
+//private:
 
 hid_t BasicIO::acc_template=0;
 
 // define an info object to store MPI-IO information 
 MPI_Info BasicIO::FILE_INFO_TEMPLATE;
 
-DP *BasicIO::dataArray;
-
 bool BasicIO::frequent=false;
 
 string BasicIO::LOG_filename="README.log";
 ofstream BasicIO::LOG_file;
-time_t BasicIO::rawtime;
 
 //*********************************************************************************************
 
-void BasicIO::Initialize()
+void BasicIO::Initialize(string data_base_folder)
 {
+	data_in_folder = data_base_folder + "/in";
+	data_out_folder = data_base_folder + "/out";
+
 	// set the file access template for parallel IO access 
 	acc_template = H5Pcreate(H5P_FILE_ACCESS);
 
@@ -96,11 +94,11 @@ void BasicIO::Initialize()
 	H5Pset_fapl_mpio(acc_template, MPI_COMM_WORLD, FILE_INFO_TEMPLATE);
 	
 	//If data_out_folder does not exist then create it
-	string out_path = global.io.data_dir + "/" + data_out_folder;
-	mkdir(out_path.c_str(), S_IRWXU|S_IRWXG);
+	mkdir(data_out_folder.c_str(), S_IRWXU|S_IRWXG);
 
 	//Open the log file
-	if (global.mpi.master) LOG_file.open((global.io.data_dir + "/" + data_out_folder + "/" + LOG_filename).c_str());
+	if (master && LOG_filename.size()>0)
+		LOG_file.open((data_out_folder + "/" + LOG_filename).c_str());
 
 
 	H5T_FLOAT = H5Tcopy(H5T_NATIVE_FLOAT);
@@ -120,16 +118,17 @@ void BasicIO::Finalize()
 {
 	H5Pclose(acc_template);
 	MPI_Info_free(&FILE_INFO_TEMPLATE);
-	if (global.mpi.master) LOG_file.close();
+	if (master) LOG_file.close();
 }
 
 //*********************************************************************************************
 
 void BasicIO::Log(string message) {
+	time_t rawtime;
 	time ( &rawtime );
  	string t_now = ctime(&rawtime);
 	t_now = t_now.substr( 0, t_now.find_last_of('\n'));
-	if (global.mpi.master) LOG_file << "[ " << t_now << " ] " << message << endl;
+	if (master) LOG_file << "[ " << t_now << " ] " << message << endl;
 }
 
 void BasicIO::Begin_frequent() {
@@ -166,7 +165,7 @@ vector<BasicIO::H5_dataset_meta> BasicIO::Get_meta(string filename, string path)
 	vector<H5_dataset_meta> file_meta_data;
 	H5_dataset_meta dataset_meta_data;
 	int max_rank=3;
-	int max_object_name_length = 5;
+	int max_object_name_length = 100;
 	
 	herr_t   status;
 	hsize_t num_obj;
@@ -189,29 +188,20 @@ vector<BasicIO::H5_dataset_meta> BasicIO::Get_meta(string filename, string path)
 		H5Gget_objname_by_idx(group_id, (hsize_t)i, object_name, (size_t)(max_object_name_length+1));
 		object_type =  H5Gget_objtype_by_idx(group_id, (size_t)i );
 		
-		if (object_type == H5G_DATASET){  //Member is a dataset
-			dataset_meta_data.name = object_name;
+		dataset_meta_data.name = object_name;
 
-			dataset_id = H5Dopen(group_id, object_name, H5P_DEFAULT);
-			space = H5Dget_space(dataset_id);
-			
-			rank = H5Sget_simple_extent_dims (space, dims, NULL);
-			if (rank==3)
-				dataset_meta_data.dimensions.assign(dims, dims + 3);
-			else
-				cerr << "Not a tarang-1 output field file." << endl;
-			
-			type_id = H5Dget_type(dataset_id);
-			dataset_meta_data.datatype = H5Tget_class(type_id);
-			
-			file_meta_data.push_back(dataset_meta_data);
-			
-			H5Dclose(dataset_id);
-		}
-		else{
-			cerr << "Not a tarang-1 output field file." << endl;
-			break;
-		}
+		dataset_id = H5Dopen(group_id, object_name, H5P_DEFAULT);
+		space = H5Dget_space(dataset_id);
+		
+		rank = H5Sget_simple_extent_dims (space, dims, NULL);
+		dataset_meta_data.dimensions.assign(dims, dims + 3);
+		
+		type_id = H5Dget_type(dataset_id);
+		dataset_meta_data.datatype = H5Tget_class(type_id);
+		
+		file_meta_data.push_back(dataset_meta_data);
+		
+		H5Dclose(dataset_id);
 	}
 	
 	status = H5Fclose(file_identifier);
@@ -219,19 +209,50 @@ vector<BasicIO::H5_dataset_meta> BasicIO::Get_meta(string filename, string path)
 	return file_meta_data;
 }
 
+int BasicIO::h5filter(const struct dirent *dir)
+// post: returns 1/true if name of dir ends in .h5
+{
+	const char *s = dir->d_name;
+	int len = strlen(s) - 3;	// index of start of . in .h5
+	if ( (len >= 0) && (strncmp(s + len, ".h5", 3) == 0) )
+		return 1;
+	return 0;
+}
+
+vector<string> BasicIO::Get_file_list(string path){
+	vector<string> name_list;
+
+	struct dirent **namelist=NULL;
+	int n=-1;
+
+	n = scandir(path.c_str(), &namelist, h5filter, alphasort);
+	if (n < 0)
+	    cerr << "No such directory: " << path << endl;
+	else {
+	    for (int i = 0; i < n; i++) {
+	        name_list.push_back(namelist[i]->d_name);
+	        free(namelist[i]);
+	        }
+    }
+	free(namelist);
+
+	return name_list;
+}
+
 
 //******************************************************************************
 
 
 //******************************************************************************
-void BasicIO::Read(void *data, H5_plan plan, string file_name, string dataset_name)
+int BasicIO::Read(void *data, H5_plan plan, string file_name, string dataset_name)
 {	
-	string file_path=global.io.data_dir + "/" + data_in_folder + "/" + file_name + ".h5";
+	string file_path = data_in_folder+"/"+file_name+".h5";
+
 	hid_t file_identifier = H5Fopen(file_path.c_str(), H5F_ACC_RDONLY, acc_template);
 
     if (file_identifier<0){
     	if (master) cerr << "BasicIO:: Unable to open " << file_name << " for reading." << endl;
-    	return;
+    	return 1;
     }
 
     if (dataset_name.length()==0)
@@ -248,18 +269,26 @@ void BasicIO::Read(void *data, H5_plan plan, string file_name, string dataset_na
 	
 	H5Dclose(dataset);
 	H5Fclose(file_identifier);
+
+    if (err<0){
+    	if (master)
+    		cerr << "BasicIO:: Error in reading from file  '" << file_name << "'." << endl;
+    	return 1;
+    }
+
+	return 0;
 }
 
 //*********************************************************************************************
 
-void BasicIO::Write(const void* data, H5_plan plan, string folder_name, string file_name, string dataset_name)
+int BasicIO::Write(const void* data, H5_plan plan, string folder_name, string file_name, string dataset_name)
 {
    
    	if (frequent)
 		folder_name = "frequent";
 
     //Create the time.now folder in data_dir/out
-	string folder_path = global.io.data_dir + "/" + data_out_folder + "/" + folder_name; 
+	string folder_path = data_out_folder + "/" + folder_name; 
 	mkdir(folder_path.c_str(), S_IRWXU | S_IRWXG);
     
 	//Open the file for writing
@@ -268,7 +297,7 @@ void BasicIO::Write(const void* data, H5_plan plan, string folder_name, string f
 
     if (file_identifier<0){
     	cerr << "BasicIO:: Unable to open " << file_name << " for writing." << endl;
-    	return;
+    	return 1;
     }
 
 
@@ -287,6 +316,14 @@ void BasicIO::Write(const void* data, H5_plan plan, string folder_name, string f
     
 	H5Dclose(dataset);
 	H5Fclose(file_identifier);
+
+    if (err<0){
+    	if (master)
+    		cerr << "BasicIO:: Error in writing to file  '" << file_name << "'." << endl;
+    	return 1;
+    }
+
+	return 0;
 }
 
 
