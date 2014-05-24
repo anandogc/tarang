@@ -47,12 +47,11 @@
 
 void SFF_SLAB::Forward_transform(Array<DP,3> Ar, Array<complx,3> A)
 {
-	if (Ny > 1)
-        spectralTransform.Forward_transform(global.program.sincostr_switch, Ar, A);
-    
-    else if (Ny == 1)
-        spectralTransform.Forward_transform(global.program.sincostr_switch, Ar(0,Range::all(),Range::all()), A(0,Range::all(),Range::all()));
-	
+	if (Ny>1)
+	    spectralTransform.Forward_transform(global.program.sincostr_switch, Ar, A);
+	else if (Ny==1)
+	    spectralTransform.Forward_transform(global.program.sincostr_switch, Ar(Range::all(),0,Range::all()), A(Range::all(),0,Range::all()));
+
 }
 								
 
@@ -66,14 +65,13 @@ void SFF_SLAB::Forward_transform(Array<DP,3> Ar, Array<complx,3> A)
 
 void SFF_SLAB::Inverse_transform(Array<complx,3> A, Array<DP,3> Ar)
 {
-    if (Ny > 1) {
-		global.temp_array.X3d_transform = A;
-        spectralTransform.Inverse_transform(global.program.sincostr_switch, global.temp_array.X3d_transform, Ar);
-	}
-    
-    else if (Ny == 1) {
-		spectralTransform.Inverse_transform(global.program.sincostr_switch, A(0,Range::all(),Range::all()), Ar(0,Range::all(),Range::all()));
-	}
+	global.temp_array.X_transform = A;
+
+	if (Ny>1)
+	    spectralTransform.Inverse_transform(global.program.sincostr_switch, global.temp_array.X_transform, Ar);
+	else if (Ny==1)
+	    spectralTransform.Inverse_transform(global.program.sincostr_switch, global.temp_array.X_transform(Range::all(),0,Range::all()), Ar(Range::all(),0,Range::all()));
+
 }
 
 

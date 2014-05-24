@@ -3,7 +3,7 @@ program:
     basis_type: SFF 
     decomposition: SLAB              #PENCIL, SLAB
     iter_or_diag: ITERATION           #ITERATION, DIAGNOSTICS
-    alias_option: DEALIAS
+    alias_option: ALIAS
     integration_scheme: EULER
     LES_switch: false
     apply_strong_realitycond_alltime_switch: true
@@ -40,8 +40,8 @@ fft:
     sincostr_switch: SFF                    #SINX, COSX, SCC, CSC, CCS, SSC, CSS, SCS
 
 time:
-    init: 0
-    final: 0.05
+    init: 1
+    final: 5
     dt_fixed: 0.01
     Courant_no: 0.5
     job_time:                       # 00:00:20
@@ -76,8 +76,8 @@ io:
 
     #if probes/init_cond not provided, comment "- coord" lines.
     init_cond_modes:
-    #         - coord: [1,0,2]
-    #           mode: [ (1,0) ]
+            - coord: [1,0,2]
+              mode: [ (1,0) ]
 
             - coord: [1, 0, 1]
               mode: [ (0.001,0), (0,0), (0.001,0)  ]
@@ -85,8 +85,8 @@ io:
             - coord: [1, 1, 1]
               mode: [ (0,-0.01), (0,0), (0,-0.01)  ]
               
-        #    - coord: [-1, 0, 1]
-         #     mode: [ (0,1), (0,0), (0,1)  ]
+            - coord: [-1, 0, 1]
+              mode: [ (0,1), (0,0), (0,1)  ]
               
             - coord: [2,1,2]
               mode: [ (0.01,0.009) ,(0.008,0) ,(0.02,0.1)]
@@ -97,8 +97,8 @@ io:
             - coord: [5,2,2]
               mode: [ (0.001,0), (0,-0.015) , (0.015,0)]
               
-  #          - coord: [5,-2,2]
-  #            mode: [ (1,0), (0,1.5) , (1.5,0)]
+            - coord: [5,-2,2]
+              mode: [ (1,0), (0,1.5) , (1.5,0)]
               
             - coord: [2,0,0]
               mode: [ (0,0), (0,0), (-0.16,0)]
@@ -199,16 +199,16 @@ io:
         cout_save_first: 0.0
 
         global_save_interval: 0.01
-        complex_field_save_interval: 10.0
-        field_frequent_save_interval: 10.0
+        complex_field_save_interval: 1.0
+        field_frequent_save_interval: 1.0
         field_reduced_save_interval: 
-        real_field_save_interval: 50.0
+        real_field_save_interval: 5.0
         field_k_save_interval: 0.01
         field_r_save_interval: 0.01
         pressure_save_interval: 
-        spectrum_save_interval: 10.0
+        spectrum_save_interval: 1.0
         pressure_spectrum_save_interval: 
-        flux_save_interval: 10.0
+        flux_save_interval: 1.0
         shell_to_shell_save_interval: 10.0
         ring_spectrum_save_interval: 10.0
         ring_to_ring_save_interval: 10.0
@@ -247,8 +247,8 @@ spectrum:
         turnon: true
 
     ring:
-        turnon: false
-        no_sectors:
+        turnon: true
+        no_sectors: 20
         sector_option:               #EQUISPACED(default), EQUAL_NO_MODES, USER_DEFINED        
         sector_angles: 
 

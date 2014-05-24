@@ -46,10 +46,6 @@
  * @bug		No known bugs
  */
 
-using namespace blitz;
-
-
-
 //*********************************************************************************************
 
 /*! @brief	Get grid waveno kx given first local array index lx.
@@ -112,10 +108,10 @@ inline bool SSS_SLAB::Probe_in_me(int kx, int ky, int kz)
 inline complx SSS_SLAB::Get_spectral_field(int kx, int ky, int kz, Array<complx,3> A)
 {
 	if (Probe_in_me(kx, ky, kz)) {
-		Array<DP,3> B=Array<DP,3>(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
+		Array<DP,3> B=Array<DP,3>(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 		
 		int lx = Get_lx(kx);
-		return B(ky, kz, lx);
+		return B(lx, ky, kz);
 	}
 
 	return 0;
@@ -125,12 +121,12 @@ inline complx SSS_SLAB::Get_spectral_field(int kx, int ky, int kz, Array<complx,
 inline TinyVector<complx,3> SSS_SLAB::Get_spectral_field(int kx, int ky, int kz, Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az)
 {
     if (Probe_in_me(kx, ky, kz)) {
-		Array<DP,3> Bx=Array<DP,3>(reinterpret_cast<DP*>(Ax.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
-		Array<DP,3> By=Array<DP,3>(reinterpret_cast<DP*>(Ay.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
-		Array<DP,3> Bz=Array<DP,3>(reinterpret_cast<DP*>(Az.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
+		Array<DP,3> Bx=Array<DP,3>(reinterpret_cast<DP*>(Ax.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+		Array<DP,3> By=Array<DP,3>(reinterpret_cast<DP*>(Ay.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+		Array<DP,3> Bz=Array<DP,3>(reinterpret_cast<DP*>(Az.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 		
 		int lx = Get_lx(kx);
-		return TinyVector<complx,3>(Bx(ky,kz,lx), By(ky,kz,lx), Bz(ky,kz,lx));
+		return TinyVector<complx,3>(Bx(lx,ky,kz), By(lx,ky,kz), Bz(lx,ky,kz));
 	}
 
 	return TinyVector<complx,3>(0,0,0);	
@@ -141,25 +137,25 @@ inline TinyVector<complx,3> SSS_SLAB::Get_spectral_field(int kx, int ky, int kz,
 inline void SSS_SLAB::Assign_spectral_field(int kx, int ky, int kz, Array<complx,3> A, DP field)
 { 
     if (Probe_in_me(kx, ky, kz)) {
-		Array<DP,3> B=Array<DP,3>(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
+		Array<DP,3> B=Array<DP,3>(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 		
 		int lx = Get_lx(kx);
-		B(ky, kz, lx) = field;
+		B(lx, ky, kz) = field;
 	}
 }
 
 inline void SSS_SLAB::Assign_spectral_field(int kx, int ky, int kz, Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az, TinyVector<DP,3> V)
 {
 	if (Probe_in_me(kx, ky, kz)) {
-		Array<DP,3> Bx=Array<DP,3>(reinterpret_cast<DP*>(Ax.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
-		Array<DP,3> By=Array<DP,3>(reinterpret_cast<DP*>(Ay.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
-		Array<DP,3> Bz=Array<DP,3>(reinterpret_cast<DP*>(Az.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
+		Array<DP,3> Bx=Array<DP,3>(reinterpret_cast<DP*>(Ax.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+		Array<DP,3> By=Array<DP,3>(reinterpret_cast<DP*>(Ay.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+		Array<DP,3> Bz=Array<DP,3>(reinterpret_cast<DP*>(Az.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 		
 		int lx = Get_lx(kx);
 		
-		Bx(ky,kz,lx) = V(0);
-		By(ky,kz,lx) = V(1);
-		Bz(ky,kz,lx) = V(2);
+		Bx(lx,ky,kz) = V(0);
+		By(lx,ky,kz) = V(1);
+		Bz(lx,ky,kz) = V(2);
 	}
 }
 
@@ -177,25 +173,25 @@ inline void SSS_SLAB::Assign_spectral_field(int kx, int ky, int kz, Array<complx
 inline void SSS_SLAB::Add_spectral_field(int kx, int ky, int kz, Array<complx,3> A, DP field)
 { 
 	if (Probe_in_me(kx, ky, kz)) {
-		Array<DP,3> B=Array<DP,3>(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
+		Array<DP,3> B=Array<DP,3>(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 		
 		int lx = Get_lx(kx);
-		B(ky, kz, lx) += field;
+		B(lx, ky, kz) += field;
 	}
 }
 
 inline void SSS_SLAB::Add_spectral_field(int kx, int ky, int kz, Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az, TinyVector<DP,3> V)
 {	
 	if (Probe_in_me(kx, ky, kz)) {
-		Array<DP,3> Bx=Array<DP,3>(reinterpret_cast<DP*>(Ax.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
-		Array<DP,3> By=Array<DP,3>(reinterpret_cast<DP*>(Ay.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
-		Array<DP,3> Bz=Array<DP,3>(reinterpret_cast<DP*>(Az.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
+		Array<DP,3> Bx=Array<DP,3>(reinterpret_cast<DP*>(Ax.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+		Array<DP,3> By=Array<DP,3>(reinterpret_cast<DP*>(Ay.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+		Array<DP,3> Bz=Array<DP,3>(reinterpret_cast<DP*>(Az.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 		
 		int lx = Get_lx(kx);
 		
-		Bx(ky,kz,lx) += V(0);
-		By(ky,kz,lx) += V(1);
-		Bz(ky,kz,lx) += V(2);
+		Bx(lx,ky,kz) += V(0);
+		By(lx,ky,kz) += V(1);
+		Bz(lx,ky,kz) += V(2);
 	}
 }
 
@@ -215,41 +211,41 @@ inline void SSS_SLAB::Add_spectral_field(int kx, int ky, int kz, Array<complx,3>
 // Returns a complex no, whose real aprt is the required no
 inline complx SSS_SLAB::Get_local_spectral_field(int lx, int ly, int lz, Array<complx,3> A)
 {
-		Array<DP,3> B=Array<DP,3>(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
+		Array<DP,3> B=Array<DP,3>(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 		
-		return B(ly,lz,lx);
+		return B(lx,ly,lz);
 }
 
 // Returns a complex Tinyvector, whose real aprt is the required no
 inline TinyVector<complx,3>  SSS_SLAB::Get_local_spectral_field(int lx, int ly, int lz, Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az)
 {
 	
-	Array<DP,3> Bx=Array<DP,3>(reinterpret_cast<DP*>(Ax.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
-	Array<DP,3> By=Array<DP,3>(reinterpret_cast<DP*>(Ay.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
-	Array<DP,3> Bz=Array<DP,3>(reinterpret_cast<DP*>(Az.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
+	Array<DP,3> Bx=Array<DP,3>(reinterpret_cast<DP*>(Ax.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<DP,3> By=Array<DP,3>(reinterpret_cast<DP*>(Ay.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<DP,3> Bz=Array<DP,3>(reinterpret_cast<DP*>(Az.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 
-	return TinyVector<complx,3>(Bx(ly,lz,lx), By(ly,lz,lx), Bz(ly,lz,lx));
+	return TinyVector<complx,3>(Bx(lx,ly,lz), By(lx,ly,lz), Bz(lx,ly,lz));
 }
 
 
 inline void SSS_SLAB::Assign_local_spectral_field(int lx, int ly, int lz, Array<complx,3> A, DP field)
 { 	
 
-	Array<DP,3> B=Array<DP,3>(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
+	Array<DP,3> B=Array<DP,3>(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 	
-	B(ly, lz, lx) = field;
+	B(lx, ly, lz) = field;
 }
 
 inline void SSS_SLAB::Assign_local_spectral_field(int lx, int ly, int lz, Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az, TinyVector<DP,3> V)
 {
 
-	Array<DP,3> Bx=Array<DP,3>(reinterpret_cast<DP*>(Ax.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
-	Array<DP,3> By=Array<DP,3>(reinterpret_cast<DP*>(Ay.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
-	Array<DP,3> Bz=Array<DP,3>(reinterpret_cast<DP*>(Az.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
+	Array<DP,3> Bx=Array<DP,3>(reinterpret_cast<DP*>(Ax.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<DP,3> By=Array<DP,3>(reinterpret_cast<DP*>(Ay.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<DP,3> Bz=Array<DP,3>(reinterpret_cast<DP*>(Az.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 	
-	Bx(ly,lz,lx) = V(0);
-	By(ly,lz,lx) = V(1);
-	Bz(ly,lz,lx) = V(2);
+	Bx(lx,ly,lz) = V(0);
+	By(lx,ly,lz) = V(1);
+	Bz(lx,ly,lz) = V(2);
 }
 
 inline void SSS_SLAB::Assign_local_spectral_field(int lx, int ly, int lz, Array<complx,3> A,complx field)
@@ -266,21 +262,21 @@ inline void SSS_SLAB::Assign_local_spectral_field(int lx, int ly, int lz, Array<
 
 inline void SSS_SLAB::Add_local_spectral_field(int lx, int ly, int lz, Array<complx,3> A, DP field)
 {
-	Array<DP,3> B=Array<DP,3>(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
+	Array<DP,3> B=Array<DP,3>(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 	
-	B(ly, lz, lx) += field;
+	B(lx, ly, lz) += field;
 }
 
 inline void SSS_SLAB::Add_local_spectral_field(int lx, int ly, int lz, Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az, TinyVector<DP,3> V)
 {
 	
-	Array<DP,3> Bx=Array<DP,3>(reinterpret_cast<DP*>(Ax.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
-	Array<DP,3> By=Array<DP,3>(reinterpret_cast<DP*>(Ay.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
-	Array<DP,3> Bz=Array<DP,3>(reinterpret_cast<DP*>(Az.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
+	Array<DP,3> Bx=Array<DP,3>(reinterpret_cast<DP*>(Ax.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<DP,3> By=Array<DP,3>(reinterpret_cast<DP*>(Ay.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<DP,3> Bz=Array<DP,3>(reinterpret_cast<DP*>(Az.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 	
-	Bx(ly,lz,lx) += V(0);
-	By(ly,lz,lx) += V(1);
-	Bz(ly,lz,lx) += V(2);
+	Bx(lx,ly,lz) += V(0);
+	By(lx,ly,lz) += V(1);
+	Bz(lx,ly,lz) += V(2);
 }
 
 inline void SSS_SLAB::Add_local_spectral_field(int lx, int ly, int lz, Array<complx,3> A,complx field)
@@ -300,13 +296,7 @@ inline int SSS_SLAB::Get_lx_real_space(int rx) {return  rx;}
 
 inline int SSS_SLAB::Get_ly_real_space(int ry) {return  (ry-local_Ny_start);}
 
-inline int SSS_SLAB::Get_lz_real_space(int rz)
-{
-	if (Ny > 1)
-		return rz;
-	else
-		return (rz-2*local_Nz_start);
-}
+inline int SSS_SLAB::Get_lz_real_space(int rz) {return (rz-2*local_Nz_start);}
 
 
 inline int SSS_SLAB::Get_rx_real_space(int lx) {return  lx;}
@@ -314,13 +304,7 @@ inline int SSS_SLAB::Get_rx_real_space(int lx) {return  lx;}
 inline int SSS_SLAB::Get_ry_real_space(int ly) {return  (ly+local_Ny_start);}
 
 
-inline int SSS_SLAB::Get_rz_real_space(int lz)
-{
-	if (Ny > 1)
-		return lz;
-	else
-		return (lz+2*local_Nz_start);
-}
+inline int SSS_SLAB::Get_rz_real_space(int lz) {return (lz+2*local_Nz_start);}
 
 
 inline bool SSS_SLAB::Probe_in_me_real_space(int rx, int ry, int rz)
@@ -343,7 +327,7 @@ inline DP SSS_SLAB::Get_real_field(int rx, int ry, int rz, Array<DP,3> A)
 		int ly = Get_ly_real_space(ry);
 		int lz = Get_lz_real_space(rz);
 		
-		return A(ly, lz, rx);
+		return A(rx, ly, lz);
 	}
 
 	return 0;
@@ -355,7 +339,7 @@ inline TinyVector<DP,3> SSS_SLAB::Get_real_field(int rx, int ry, int rz, Array<D
 		int ly = Get_ly_real_space(ry);
 		int lz = Get_lz_real_space(rz);
 		
-		return TinyVector<DP,3>(Ax(ly, lz, rx), Ay(ly, lz, rx), Az(ly, lz, rx));
+		return TinyVector<DP,3>(Ax(rx, ly, lz), Ay(rx, ly, lz), Az(rx, ly, lz));
 	}
 	
 	return TinyVector<DP,3>(0,0,0);
@@ -368,7 +352,7 @@ inline void SSS_SLAB::Assign_real_field(int rx, int ry, int rz, Array<DP,3> A, D
 		int ly = Get_ly_real_space(ry);
 		int lz = Get_lz_real_space(rz);
 		
-		A(ly, lz, rx) = field;
+		A(rx, ly, lz) = field;
 	}
 }
 
@@ -378,9 +362,9 @@ inline void SSS_SLAB::Assign_real_field(int rx, int ry, int rz, Array<DP,3> Ax, 
 		int ly = Get_ly_real_space(ry);
 		int lz = Get_lz_real_space(rz);
 		
-		Ax(ly, lz, rx) = V(0);
-		Ay(ly, lz, rx) = V(1);
-		Az(ly, lz, rx) = V(2);
+		Ax(rx, ly, lz) = V(0);
+		Ay(rx, ly, lz) = V(1);
+		Az(rx, ly, lz) = V(2);
 	}
 	
 }
@@ -542,10 +526,10 @@ inline DP SSS_SLAB::Modal_energy(int lx, int ly, int lz, Array<complx,3> A)
     int iz=lz/2;
     
     if (lz%2 == 1)
-        return pow2(imag(A(ly, iz, lx)));
+        return pow2(imag(A(lx, ly, iz)));
     
     else
-        return pow2(real(A(ly, iz, lx)));
+        return pow2(real(A(lx, ly, iz)));
 }
 
 

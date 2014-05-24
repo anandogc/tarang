@@ -98,9 +98,9 @@ io:
     time:
         global_save_first:  0 
         complex_field_save_first: 0
-        field_frequent_save_first:
+        field_frequent_save_first: 0
         field_reduced_save_first:  
-        real_field_save_first: 
+        real_field_save_first: 0
         field_k_save_first: 
         field_r_save_first: 
         spectrum_save_first: 

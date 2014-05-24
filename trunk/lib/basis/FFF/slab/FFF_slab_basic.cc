@@ -222,7 +222,7 @@ void FFF_SLAB::Satisfy_strong_reality_condition_in_Array(Array<complx,3> A)
 	int array_index_minus_kx, array_index_minus_ky;
 	
 	// for kz=0
-	ArrayOps::Get_XY_plane(A, global.temp_array.plane_xy, 0);
+	Get_XY_plane(A, global.temp_array.plane_xy, 0);
 	
     // For a given (minusky, minuskx), locate (ky,ky) and then subst.
     // A(minuskx, 0, minusky) = conj(A(kx,0,ky))
@@ -261,7 +261,7 @@ void FFF_SLAB::Test_reality_condition_in_Array(Array<complx,3> A)
 	int array_index_minus_kx, array_index_minus_ky;
 	
 	// for kz=0
-	ArrayOps::Get_XY_plane(A, global.temp_array.plane_xy, 0);
+	Get_XY_plane(A, global.temp_array.plane_xy, 0);
 	
 	// For a given (minuskx, minusky), locate (kx,ky) and then subst.
     // A(minuskx, minusky, 0) = conj(A(kx, ky,0))
@@ -333,6 +333,71 @@ void FFF_SLAB::Compute_divergence(Array<complx,3> Ax, Array<complx,3> Ay, Array<
             Print_large_Fourier_elements(div);
         }
     }
+}
+
+void FFF_SLAB::Get_XY_plane(Array<complx,3> A, Array<complx,2> plane_xy, int kz)
+{
+	if (numprocs == 1) {
+		plane_xy= A(Range::all(),Range::all(),kz);
+		return;
+	}
+	
+	else {
+	    int lz;
+		int data_size, full_data_size;
+		int num_blocks;
+		int extent;
+		int stride;
+		int block_lengths[2];
+		
+		MPI_Aint displacements[2];
+		MPI_Datatype types[2];
+		
+		MPI_Datatype MPI_Vector_block_send;
+		MPI_Datatype MPI_Vector_block_recv;
+		MPI_Datatype MPI_Struct_block_recv;
+
+		//send
+		num_blocks = 1;
+		extent = 2*local_Ny*Nx;
+		stride = 2*local_Ny*Nx;
+		
+		MPI_Type_vector(num_blocks,extent,stride,MPI_DP,&MPI_Vector_block_send);
+		MPI_Type_commit(&MPI_Vector_block_send);
+		
+
+
+		//recv
+		num_blocks = Nx;
+		extent = 2*local_Ny;
+		stride = 2*Ny;
+		
+		MPI_Type_vector(num_blocks,extent,stride,MPI_DP,&MPI_Vector_block_recv);
+		MPI_Type_commit(&MPI_Vector_block_recv);
+		
+		
+		block_lengths[0]=1;
+		block_lengths[1]=1;
+		
+		displacements[0]=0;
+		displacements[1]=local_Ny*sizeof(complx);
+		
+		types[0]=MPI_Vector_block_recv;
+		types[1]=MPI_UB;
+		
+		MPI_Type_struct(2, block_lengths, displacements, types, &MPI_Struct_block_recv);
+		MPI_Type_commit(&MPI_Struct_block_recv);
+			
+		global.temp_array.plane_xy_inproc = A(Range::all(),Range::all(),kz);
+	
+		data_size = 2*local_Ny*Nx;
+		
+		full_data_size = 2*Nx*Ny;
+		
+		MPI_Gather(reinterpret_cast<DP*>(global.temp_array.plane_xy_inproc.data()), 1, MPI_Vector_block_send, reinterpret_cast<DP*>(plane_xy.data()), 1, MPI_Struct_block_recv, 0, MPI_COMM_WORLD);
+
+		MPI_Bcast(reinterpret_cast<DP*>(global.temp_array.plane_xy.data()), full_data_size, MPI_DP, 0, MPI_COMM_WORLD);
+	}
 }
 
 int FFF_SLAB::Read(Array<complx,3> A, BasicIO::H5_plan plan, string file_name, string dataset_name)

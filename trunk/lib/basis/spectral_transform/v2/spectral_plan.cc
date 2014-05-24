@@ -37,68 +37,26 @@
 
 #include "spectral_plan.h"
 
-SpectralPlan::SpectralPlan(int my_id, int numprocs, size_t Nx, size_t Ny, size_t Nz): 
-		my_id(my_id), numprocs(numprocs), Nx(Nx), Ny(Ny), Nz(Nz)
-{
-	local_Nx = Nx/numprocs;
-	local_Ny = Ny/numprocs;
-	local_Nz = (Nz/2+1);
+SpectralPlan::SpectralPlan(string basis, int my_id, int numprocs, int Nx, int Nz)
+   :basis(basis),
+    my_id(my_id), 
+	numprocs(numprocs),
+	Nx(Nx),
+	Ny(1),
+	Nz(Nz),
+	time_per_step(0)
+{}
 
-	local_Nx_start = my_id * local_Nx;
-	local_Ny_start = my_id * local_Ny;
-	local_Nz_start = 0;
+SpectralPlan::SpectralPlan(string basis, int my_id, int numprocs, int Nx, int Ny, int Nz)
+   :basis(basis),
+    my_id(my_id), 
+	numprocs(numprocs),
+	Nx(Nx),
+	Ny(Ny),
+	Nz(Nz),
+	time_per_step(0)
+{}
 
-	
-	request = new MPI_Request[max(Nx,Ny)];
-	status = new MPI_Status[max(Nx,Ny)];
-
-	//Vector types required during Isend-Recv
-	MPI_Type_vector(local_Nx,Nz+2,local_Ny*(Nz+2),MPI_DP,&MPI_Vector_z_strip_send);
-	MPI_Type_commit(&MPI_Vector_z_strip_send);
-
-	MPI_Type_vector(local_Nx,Nz+2,Ny*(Nz+2),MPI_DP,&MPI_Vector_z_strip_recv);
-	MPI_Type_commit(&MPI_Vector_z_strip_recv);
-
-
-	//Required for Alltoall transpose
-	int block_lengths[2];
-	
-	MPI_Aint displacements[2];
-	MPI_Datatype types[2];
-
-	block_lengths[0]=(Nz+2)*local_Ny;
-	block_lengths[1]=1;
-	
-	displacements[0]=0;
-	displacements[1]=(Nz+2)*local_Ny*local_Nx*sizeof(DP);
-
-	types[0]=MPI_DP;
-	types[1]=MPI_UB;
-
-	MPI_Type_struct(2, block_lengths, displacements, types, &MPI_Struct_yz_plane_block);
-	MPI_Type_commit(&MPI_Struct_yz_plane_block);
-
-}
-
-void SpectralPlan::Zero_pad_last_plane(Array<DP,3> Ar)
-{
-	Ar(Range::all(),Range::all(),Range(Nz,Nz+1)) = DP(0.0);
-}
-
-//After SinCos transform, shift right
-void SpectralPlan::ArrayShiftRight(Array<DP,3> Ar, int axis)
-{	
-	Ar(Range(Nx-1,1,-1),Range::all(),Range::all()) = Ar(Range(Nx-2,0,-1),Range::all(),Range::all());
-	Ar(0,Range::all(),Range::all()) = 0.0;
-}
-
-
-//Before inverse SinCos transform, shift left
-void SpectralPlan::ArrayShiftLeft(Array<DP,3> Ar, int axis)
-{	
-	Ar(Range(0,Nx-2),Range::all(),Range::all()) = Ar(Range(1,Nx-1),Range::all(),Range::all());
-	Ar(Nx-1,Range::all(),Range::all()) = 0.0;
-}
 
 //3D FFF
 void SpectralPlan::Forward_transform(Array<DP,3> Ar, Array<complx,3> A){}

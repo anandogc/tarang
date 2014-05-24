@@ -56,8 +56,8 @@ void FFF_SLAB::Forward_transform(Array<DP,3> Ar, Array<complx,3> A)
 void FFF_SLAB::Inverse_transform(Array<complx,3> A, Array<DP,3> Ar)
 {
     if (Ny > 1) {
-		global.temp_array.X3d_transform = A;
-        spectralTransform.Inverse_transform(global.temp_array.X3d_transform, Ar);
+		global.temp_array.X_transform = A;
+        spectralTransform.Inverse_transform(global.temp_array.X_transform, Ar);
 	}
     
     else if (Ny == 1)

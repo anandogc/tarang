@@ -49,9 +49,6 @@
 
 #include "SFF_slab.h"
 
-using namespace blitz;
-
-
 
 //*********************************************************************************************
 
@@ -96,14 +93,13 @@ inline int SFF_SLAB::Get_ky(int ly) { return  (ly <= Ny/2) ? ly : (ly-Ny); }
 inline int SFF_SLAB::Get_ly(int ky) { return  (ky >= 0) ? ky : (ky + Ny); } 
 
 inline int SFF_SLAB::Get_iy(int ky) { return  (ky >= 0) ? ky : (ky + Ny); }
-	
-// local_Nz_start = 0 	
-inline int SFF_SLAB::Get_kz(int lz)  { return lz; } 
 
 inline int SFF_SLAB::Get_lz(int kz)  { return kz; }
 
-	// array index
 inline int SFF_SLAB::Get_iz(int kz)  { return kz; }
+	
+// local_Nz_start = 0 	
+inline int SFF_SLAB::Get_kz(int lz)  { return lz; } 
 
 inline bool SFF_SLAB::Probe_in_me(int kx, int ky, int kz) 
 {
@@ -119,7 +115,7 @@ inline complx SFF_SLAB::Get_spectral_field(int kx, int ky, int kz, Array<complx,
 	if  ((lx >= 0) && (lx < local_Nx))
 		return A(lx, ly, kz);
 
-	return 0;
+	return complx(0,0);
 }
 
 inline TinyVector<complx,3> SFF_SLAB::Get_spectral_field(int kx, int ky, int kz, Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az)
@@ -163,7 +159,7 @@ inline void SFF_SLAB::Assign_spectral_field(int kx, int ky, int kz, Array<complx
 	
 	int lx = Get_lx(kx);
     int ly = Get_ly(ky);
-	
+
 	if ((lx >= 0) && (lx < local_Nx)) {
 		Ax(lx, ly, kz) = V(0);
 		Ay(lx, ly, kz) = V(1);
@@ -308,27 +304,14 @@ inline int SFF_SLAB::Get_lx_real_space(int rx) {return  rx;}
 
 inline int SFF_SLAB::Get_ly_real_space(int ry) {return  (ry-local_Ny_start);}
 
-inline int SFF_SLAB::Get_lz_real_space(int rz)
-{
-	if (Ny > 1)
-		return rz;
-	else
-		return (rz-2*local_Nz_start);
-}
+inline int SFF_SLAB::Get_lz_real_space(int rz) {return (rz-2*local_Nz_start);}
 
 
 inline int SFF_SLAB::Get_rx_real_space(int lx) {return  lx;}
 
 inline int SFF_SLAB::Get_ry_real_space(int ly) {return  (ly+local_Ny_start);}
 	
-
-inline int SFF_SLAB::Get_rz_real_space(int lz)
-{
-	if (Ny > 1)
-		return lz;
-	else
-		return (lz+2*local_Nz_start);
-}
+inline int SFF_SLAB::Get_rz_real_space(int lz) {return (lz+2*local_Nz_start);}
 
 
 inline bool SFF_SLAB::Probe_in_me_real_space(int rx, int ry, int rz) 

@@ -126,9 +126,9 @@ inline complx FFF_PENCIL::Get_spectral_field(int kx, int ky, int kz, Array<compl
     int lz = Get_lz(kz);
     
     if ( ((ly >= 0) && (ly < local_Ny)) && ((lz >= 0) && (lz < local_Nz)) )
-        return A(ly, lz, lx);
+        return A(lx, ly, lz);
 
-    return 0;
+    return complx(0,0);
 }
 
 inline TinyVector<complx,3> FFF_PENCIL::Get_spectral_field(int kx, int ky, int kz, Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az)
@@ -139,7 +139,7 @@ inline TinyVector<complx,3> FFF_PENCIL::Get_spectral_field(int kx, int ky, int k
     int lz = Get_lz(kz);
     
     if ( ((ly >= 0) && (ly < local_Ny)) && ((lz >= 0) && (lz < local_Nz)) )
-        return TinyVector<complx,3>(Ax(ly, lz, lx), Ay(ly, lz, lx), Az(ly, lz, lx));
+        return TinyVector<complx,3>(Ax(lx, ly, lz), Ay(lx, ly, lz), Az(lx, ly, lz));
 
 	return TinyVector<complx,3>(0,0,0);
 }
@@ -154,7 +154,7 @@ inline void FFF_PENCIL::Assign_spectral_field(int kx, int ky, int kz, Array<comp
     int lz = Get_lz(kz);
     
     if ( ((ly >= 0) && (ly < local_Ny)) && ((lz >= 0) && (lz < local_Nz)) )
-        A(ly, lz, lx) = field;
+        A(lx, ly, lz) = field;
 
 }
 
@@ -165,23 +165,24 @@ inline void FFF_PENCIL::Assign_spectral_field(int kx, int ky, int kz, Array<comp
     int ly = Get_ly(ky);
     int lz = Get_lz(kz);
     
-    if ( ((ly >= 0) && (ly < local_Ny)) && ((lz >= 0) && (lz < local_Nz)) ) {
-        Ax(ly, lz, lx) = V(0);
-        Ay(ly, lz, lx) = V(1);
-        Az(ly, lz, lx) = V(2);
-    }
+    cout << "FFF pencil inline " << kx << " " << ky << " " << kz << lx << " " << ly << " " << ly << " " << lz << " " << Ax(lx,ly,lz) << " " << Ay(lx,ly,lz) << " " << Az(lx,ly,lz) << local_Ny << " " << local_Nz << endl;
 
+    if ( ((ly >= 0) && (ly < local_Ny)) && ((lz >= 0) && (lz < local_Nz)) ) {
+        Ax(lx, ly, lz) = V(0);
+        Ay(lx, ly, lz) = V(1);
+        Az(lx, ly, lz) = V(2);
+    }
 }
 
 inline void FFF_PENCIL::Assign_spectral_field(int kx, int ky, int kz, Array<complx,3> A,DP field)
 { 
-	cout << "MYERROR: FFF_PENCIL::Assign_spectral_field(); Use complex data type " << endl; 
+	cerr << "FFF_PENCIL::Assign_spectral_field(); Use complex data type " << endl; 
 }
 
 inline void FFF_PENCIL::Assign_spectral_field(int kx, int ky, int kz, Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az, TinyVector<DP,3> V)
 {
 	
-	cout << "MYERROR: FFF_PENCIL::Assign_spectral_field(); Use complex data type " << endl;
+	cerr << "FFF_PENCIL::Assign_spectral_field(); Use complex data type " << endl;
 }
 
 inline void FFF_PENCIL::Add_spectral_field(int kx, int ky, int kz, Array<complx,3> A, complx field)
@@ -192,7 +193,7 @@ inline void FFF_PENCIL::Add_spectral_field(int kx, int ky, int kz, Array<complx,
     int lz = Get_lz(kz);
     
     if ( ((ly >= 0) && (ly < local_Ny)) && ((lz >= 0) && (lz < local_Nz)) )
-        A(ly, lz, lx) += field;
+        A(lx, ly, lz) += field;
 
 }
 
@@ -204,9 +205,9 @@ inline void FFF_PENCIL::Add_spectral_field(int kx, int ky, int kz, Array<complx,
     int lz = Get_lz(kz);
     
     if ( ((ly >= 0) && (ly < local_Ny)) && ((lz >= 0) && (lz < local_Nz)) ) {
-        Ax(ly, lz, lx) += V(0);
-        Ay(ly, lz, lx) += V(1);
-        Az(ly, lz, lx) += V(2);
+        Ax(lx, ly, lz) += V(0);
+        Ay(lx, ly, lz) += V(1);
+        Az(lx, ly, lz) += V(2);
     }
 
 }
@@ -229,13 +230,13 @@ inline void FFF_PENCIL::Add_spectral_field(int kx, int ky, int kz, Array<complx,
 
 inline complx FFF_PENCIL::Get_local_spectral_field(int lx, int ly, int lz, Array<complx,3> A)
 { 
-    return A(ly, lz, lx);
+    return A(lx, ly, lz);
 }
 
 inline TinyVector<complx,3> FFF_PENCIL::Get_local_spectral_field(int lx, int ly, int lz, Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az)
 {
 	
-	return TinyVector<complx,3>(Ax(ly, lz, lx), Ay(ly, lz, lx), Az(ly, lz, lx));
+	return TinyVector<complx,3>(Ax(lx, ly, lz), Ay(lx, ly, lz), Az(lx, ly, lz));
 }
 
 
@@ -243,15 +244,15 @@ inline TinyVector<complx,3> FFF_PENCIL::Get_local_spectral_field(int lx, int ly,
 inline void FFF_PENCIL::Assign_local_spectral_field(int lx, int ly, int lz, Array<complx,3> A, complx field)
 { 
     if ( ((ly >= 0) && (ly < local_Ny)) && ((lz >= 0) && (lz < local_Nz)) )
-        A(ly, lz, lx) = field;
+        A(lx, ly, lz) = field;
 }
 
 inline void FFF_PENCIL::Assign_local_spectral_field(int lx, int ly, int lz, Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az, TinyVector<complx,3> V)
 {
     if ( ((ly >= 0) && (ly < local_Ny)) && ((lz >= 0) && (lz < local_Nz)) ) {
-        Ax(ly, lz, lx) = V(0);
-        Ay(ly, lz, lx) = V(1);
-        Az(ly, lz, lx) = V(2);
+        Ax(lx, ly, lz) = V(0);
+        Ay(lx, ly, lz) = V(1);
+        Az(lx, ly, lz) = V(2);
     }
 }
 
@@ -271,15 +272,15 @@ inline void FFF_PENCIL::Assign_local_spectral_field(int lx, int ly, int lz, Arra
 inline void FFF_PENCIL::Add_local_spectral_field(int lx, int ly, int lz, Array<complx,3> A, complx field)
 { 
     if ( ((ly >= 0) && (ly < local_Ny)) && ((lz >= 0) && (lz < local_Nz)) )
-        A(ly, lz, lx) += field;
+        A(lx, ly, lz) += field;
 }
 
 inline void FFF_PENCIL::Add_local_spectral_field(int lx, int ly, int lz, Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az, TinyVector<complx,3> V)
 {
     if ( ((ly >= 0) && (ly < local_Ny)) && ((lz >= 0) && (lz < local_Nz)) ) {
-        Ax(ly, lz, lx) += V(0);
-        Ay(ly, lz, lx) += V(1);
-        Az(ly, lz, lx) += V(2);
+        Ax(lx, ly, lz) += V(0);
+        Ay(lx, ly, lz) += V(1);
+        Az(lx, ly, lz) += V(2);
     }
 }
 
@@ -328,7 +329,7 @@ inline DP FFF_PENCIL::Get_real_field(int rx, int ry, int rz, Array<DP,3> A)
     int lz = Get_lz_real_space(rz);
     
     if ( ((lx >= 0) && (lx < local_Nx_real)) && ((ly >= 0) && (ly < local_Ny_real)) )
-        return (A(ly, lz, lx));
+        return (A(lx, ly, lz));
 
     return 0;
 }
@@ -341,7 +342,7 @@ inline TinyVector<DP,3> FFF_PENCIL::Get_real_field(int rx, int ry, int rz, Array
 	int lz = Get_lz_real_space(rz);
     
     if ( ((lx >= 0) && (lx < local_Nx_real)) && ((ly >= 0) && (ly < local_Ny_real)) )
-		return TinyVector<DP,3>(Ax(ly, lz, lx), Ay(ly, lz, lx), Az(ly, lz, lx));
+		return TinyVector<DP,3>(Ax(lx, ly, lz), Ay(lx, ly, lz), Az(lx, ly, lz));
 	
 	return TinyVector<DP,3>(0,0,0);
 }
@@ -355,7 +356,7 @@ inline void FFF_PENCIL::Assign_real_field(int rx, int ry, int rz, Array<DP,3> A,
 	int lz = Get_lz_real_space(rz);
     
     if ( ((lx >= 0) && (lx < local_Nx_real)) && ((ly >= 0) && (ly < local_Ny_real)) )
-		A(ly, lz, lx) = field;
+		A(lx, ly, lz) = field;
 }
 
 inline void FFF_PENCIL::Assign_real_field(int rx, int ry, int rz, Array<DP,3> Ax, Array<DP,3> Ay, Array<DP,3> Az, TinyVector<DP,3> V)
@@ -366,9 +367,9 @@ inline void FFF_PENCIL::Assign_real_field(int rx, int ry, int rz, Array<DP,3> Ax
 	int lz = Get_lz_real_space(rz);
     
     if ( ((lx >= 0) && (lx < local_Nx_real)) && ((ly >= 0) && (ly < local_Ny_real)) ) {
-        Ax(ly, lz, lx) = V(0);
-		Ay(ly, lz, lx) = V(1);
-		Az(ly, lz, lx) = V(2);
+        Ax(lx, ly, lz) = V(0);
+		Ay(lx, ly, lz) = V(1);
+		Az(lx, ly, lz) = V(2);
     }    
 	
 }
@@ -526,7 +527,7 @@ inline DP FFF_PENCIL::Multiplicity_factor(int lx, int ly, int lz)
 /// Modal energy -- \f$ E(k) = |\vect{u}(\vect{k})|^2 /2 \f$
 inline DP FFF_PENCIL::Modal_energy(int lx, int ly, int lz, Array<complx,3> A)
 {
-	return pow2(abs(A(lz, ly, lx)))/2;	
+	return pow2(abs(A(lx, ly, lz)))/2;	
 }
 
 /**********************************************************************************************
@@ -544,8 +545,8 @@ inline DP FFF_PENCIL::Get_Modal_helicity
 
 	TinyVector<DP,3> Vreal, Vimag, VrcrossVi,  K;
 	
-	Vreal = real(Ax(ly, lz, lx)), real(Ay(ly, lz, lx)), real(Az(ly, lz, lx));
-	Vimag = imag(Ax(ly, lz, lx)), imag(Ay(ly, lz, lx)), imag(Az(ly, lz, lx));
+	Vreal = real(Ax(lx, ly, lz)), real(Ay(lx, ly, lz)), real(Az(lx, ly, lz));
+	Vimag = imag(Ax(lx, ly, lz)), imag(Ay(lx, ly, lz)), imag(Az(lx, ly, lz));
 		
 	VrcrossVi = cross(Vreal, Vimag);
 	Wavenumber(lx, ly, lz,  K);
@@ -574,7 +575,7 @@ inline void FFF_PENCIL::Compute_Modal_vorticity
 	TinyVector<DP,3>  K;
 	TinyVector<complx,3> Vi;
 	
-	Vi = Ax(ly, lz, lx), Ay(ly, lz, lx), Az(ly, lz, lx);
+	Vi = Ax(lx, ly, lz), Ay(lx, ly, lz), Az(lx, ly, lz);
 
 	Wavenumber(lx, ly, lz,  K);
 	
@@ -597,7 +598,7 @@ inline void FFF_PENCIL::Compute_Modal_vorticity_y_component
 	TinyVector<DP,3>  K;
 	TinyVector<complx,3> Vi;
 	
-	Vi = Ax(ly, lz, lx), 0, Az(ly, lz, lx);
+	Vi = Ax(lx, ly, lz), 0, Az(lx, ly, lz);
 	//Vi(1) set to zero to save time..
 	
 	Wavenumber(lx, ly, lz,  K);
@@ -624,8 +625,7 @@ inline DP FFF_PENCIL::AnisKpll(int lx, int ly, int lz)
 	else if (global.field.anisotropy_dirn == 3)
 		return (Get_kz(lz) * kfactor[3]);
 	
-	else
-		return 0;		// for -Wall
+	return 0;		// for -Wall
 		
 }
 
@@ -642,8 +642,7 @@ inline DP FFF_PENCIL::AnisKperp(int lx, int ly, int lz)
 	else if (global.field.anisotropy_dirn == 3)
 		return sqrt( pow2(Get_kx(lx) * kfactor[1]) 
 						+ pow2(Get_ky(ly) * kfactor[2]) );
-	else
-		return 0;		// for -Wall
+	return 0;		// for -Wall
 }
 
 /// Anisotropic axis along x1: for anisotropic energy spectrum and energy 
@@ -659,8 +658,7 @@ inline DP FFF_PENCIL::AnisKh1(int lx, int ly, int lz)
 	else if (global.field.anisotropy_dirn == 3)
 		return (Get_kx(lx) * kfactor[1]);
 	
-	else
-		return 0;		// for -Wall
+	return 0;		// for -Wall
 }
 
 /// Anisotropic axis along x1: for anisotropic energy spectrum and energy 
@@ -676,8 +674,7 @@ inline DP FFF_PENCIL::AnisKh2(int lx, int ly, int lz)
 	else if (global.field.anisotropy_dirn == 3)
 		return (Get_ky(ly) * kfactor[2]); 
 	
-	else
-		return 0;		// for -Wall
+	return 0;		// for -Wall
 }
 			
 			

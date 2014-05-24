@@ -60,6 +60,8 @@ public:
 	void Array_exp_ksqr(Array<complx,3> A, DP factor, DP hyper_factor, int hyper_exponent);
 	
 	void Compute_divergence(Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az, Array<complx,3> div, string field_or_nlin, DP &total_abs_div, bool print_switch);
+
+	void Get_XY_plane(Array<complx,3> A, Array<complx,2> plane_xy, int kz);
 };
 
 #endif

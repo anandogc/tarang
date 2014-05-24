@@ -122,17 +122,17 @@ void Nlin_incompress::Compute_nlin_VxT(FluidVF& U, FluidSF& T)
     
     if (!global.program.two_dimension) {  // for 3d and 2.5d
         global.program.sincostr_switch = global.program.sincostr_switch_FVy;
-        ArrayOps::Real_space_multiply(U.rvf.V2r, T.rsf.Fr, global.temp_array.Xr);			
+        ArrayOps::Real_space_multiply(U.rvf.V2r, T.rsf.Fr, global.temp_array.Xr);           
         universal->Forward_transform(global.temp_array.Xr, global.temp_array.X);
-		
-		universal->Add_Yderiv(global.temp_array.X, T.nlin);
+        
+        universal->Add_Yderiv(global.temp_array.X, T.nlin);
     }
     
     global.program.sincostr_switch = global.program.sincostr_switch_FVz;
     ArrayOps::Real_space_multiply(U.rvf.V3r, T.rsf.Fr, global.temp_array.Xr);
     universal->Forward_transform(global.temp_array.Xr, global.temp_array.X);
-	
-	universal->Add_Zderiv(global.temp_array.X, T.nlin);
+    
+    universal->Add_Zderiv(global.temp_array.X, T.nlin);
 }
 
 

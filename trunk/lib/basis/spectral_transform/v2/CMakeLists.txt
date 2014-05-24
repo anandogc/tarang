@@ -28,12 +28,33 @@ ADD_LIBRARY(spectral_transform
 spectral_transform.cc
 spectral_plan.cc
 
+spectral_plan_slab_2d.cc
+spectral_plan_slab_3d.cc
 
-plans/FFF_slab/fff_slab_isend_recv_overlap_isend_forward_3d.cc
-plans/FFF_slab/fff_slab_isend_recv_overlap_isend_both_3d.cc
-plans/FFF_slab/fff_slab_alltoall_3d.cc
+####
+plans/FFFW_slab/2d/fffw_slab_transposed_order_2d.cc
+plans/FFFW_slab/3d/fffw_slab_transposed_order_3d.cc
 
-plans/SFF_slab/sff_slab_isend_recv_3d.cc
-plans/SFF_slab/sff_slab_alltoall_3d.cc
+
+####
+plans/FFF_slab/2d/fff_slab_alltoall_2d.cc
+
+plans/FFF_slab/3d/fff_slab_isend_recv_overlap_isend_forward_3d.cc
+plans/FFF_slab/3d/fff_slab_isend_recv_overlap_isend_both_3d.cc
+plans/FFF_slab/3d/fff_slab_alltoall_3d.cc
+
+
+####
+plans/SFF_slab/2d/sf_slab_alltoall_2d.cc
+
+plans/SFF_slab/3d/sff_slab_isend_recv_3d.cc
+plans/SFF_slab/3d/sff_slab_alltoall_3d.cc
+
+
+####
+plans/SSF_slab/3d/ssf_slab_alltoall_3d.cc
+
+plans/SSS_slab/2d/ss_slab_alltoall_2d.cc
+plans/SSS_slab/3d/sss_slab_alltoall_3d.cc
 
 )

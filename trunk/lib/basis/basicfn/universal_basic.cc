@@ -57,7 +57,7 @@ int Universal::Get_number_modes_in_shell(DP inner_radius, DP outer_radius)
 	if (Ny > 1)
 		ky_max = (int) ceil(outer_radius/kfactor[2]);
 	else
-		ky_max = 0.0;
+		ky_max = 0;
     
     kz_max = (int) ceil(outer_radius/kfactor[3]);
 	

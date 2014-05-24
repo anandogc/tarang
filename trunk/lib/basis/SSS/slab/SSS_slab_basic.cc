@@ -49,16 +49,16 @@
 
 void SSS_SLAB::Print_large_Fourier_elements(Array<complx,3> A, string array_name)
 {
-	Array<DP,3> B=Array<DP,3>(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
+	Array<DP,3> B=Array<DP,3>(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 	
-    for (int ly=0; ly<B.extent(0); ly++)
-        for (int lz=0; lz<B.extent(1); lz++) // 0:Nz-1
-			for (int lx=0; lx<B.extent(2); lx++) {
-				if (abs(B(ly,lz,lx)) > MYEPS2)
-					cout << "my_id = " << my_id <<  " vect(k) = (" << Get_kx(lx) << "," << ly  << "," << lz <<");  "<< array_name << "(k) = " <<  B(ly, lz, lx) << '\n';
+	for (int lx=0; lx<B.extent(0); lx++)
+		for (int ly=0; ly<B.extent(1); ly++)
+			for (int lz=0; lz<B.extent(2); lz++) {
+				if (abs(B(lx,ly,lz)) > MYEPS2)
+					cout << "my_id = " << my_id <<  " vect(k) = (" << Get_kx(lx) << "," << ly  << "," << lz <<");  "<< array_name << "(k) = " <<  B(lx, ly, lz) << '\n';
 			}
 
-    cout << endl;
+	cout << endl;
 }
 
 //**************************************************************************************
@@ -75,27 +75,27 @@ void SSS_SLAB::Last_component(int kx, int ky, int kz, DP &Vx, DP &Vy, DP &Vz)
 	DP dvxdx, dvydy;
 	int kysign, kzsign;
 	
-    global.program.sincostr_switch = sincostr_switch_Vx;
+	global.program.sincostr_switch = sincostr_switch_Vx;
 	if (global.program.sincostr_switch[0] == 'S')
 		dvxdx = Kx*Vx;
 	else if (global.program.sincostr_switch[0] == 'C')
 		dvxdx = -Kx*Vx;
 	
-    global.program.sincostr_switch = sincostr_switch_Vy;
+	global.program.sincostr_switch = sincostr_switch_Vy;
 	if (global.program.sincostr_switch[1] == 'S') 
 		dvydy = Ky*Vy;
 	else if (global.program.sincostr_switch[1] == 'C')
 		dvydy = -Ky*Vy;
 	else if (global.program.sincostr_switch[1] == '0')
 		dvydy = 0;
-    
-    if (global.program.sincostr_switch[1] == 'S')
+	
+	if (global.program.sincostr_switch[1] == 'S')
 		kysign = 1;
 	else if (global.program.sincostr_switch[1] == 'C')
 		kysign = -1;
-    
 	
-    global.program.sincostr_switch = sincostr_switch_Vz;
+	
+	global.program.sincostr_switch = sincostr_switch_Vz;
 	if (global.program.sincostr_switch[2] == 'S')
 		kzsign = 1;
 	else if (global.program.sincostr_switch[2] == 'C')
@@ -141,7 +141,7 @@ void SSS_SLAB::Dealias(Array<complx,3> A)
 	int first_x = first(Ax_filter(Range(my_id*local_Nx,(my_id+1)*local_Nx-1)) == 1);
 	int last_x = last(Ax_filter(Range(my_id*local_Nx,(my_id+1)*local_Nx-1)) == 1);
 	
-	A(Range(2*Ny/3+1,toEnd), Range(Nz/3,toEnd), Range(first_x,last_x)) = 0.0;
+	A(Range(first_x,last_x), Range(2*Ny/3+1,toEnd), Range(Nz/3,toEnd)) = 0.0;
 }
 
 // Data resides till outer_radius in k-space
@@ -167,17 +167,17 @@ bool SSS_SLAB::Is_dealiasing_necessary(Array<complx,3> A, DP outer_radius)
 
 void SSS_SLAB::Satisfy_strong_reality_condition_in_Array(Array<complx,3> A)
 {
-    return; // Do nothing
+	return; // Do nothing
 }
 
 void SSS_SLAB::Satisfy_weak_reality_condition_in_Array(Array<complx,3> A)
 {
-    return; // Do nothing
+	return; // Do nothing
 }
 
 void SSS_SLAB::Test_reality_condition_in_Array(Array<complx,3> A)
 {
-    return; // Do nothing
+	return; // Do nothing
 }
 
 
@@ -190,161 +190,199 @@ void SSS_SLAB::Test_reality_condition_in_Array(Array<complx,3> A)
 
 void SSS_SLAB::Zero_modes(Array<complx,3> Bx, Array<complx,3> By, Array<complx,3> Bz)
 {
-	Array<DP,3> Ax(reinterpret_cast<DP*>(Bx.data()), Bx.shape()*shape(1,2,1), neverDeleteData);
-	Array<DP,3> Ay(reinterpret_cast<DP*>(By.data()), By.shape()*shape(1,2,1), neverDeleteData);
-	Array<DP,3> Az(reinterpret_cast<DP*>(Bz.data()), Bz.shape()*shape(1,2,1), neverDeleteData);
+	Array<DP,3> Ax(reinterpret_cast<DP*>(Bx.data()), Bx.shape()*shape(1,1,2), neverDeleteData);
+	Array<DP,3> Ay(reinterpret_cast<DP*>(By.data()), By.shape()*shape(1,1,2), neverDeleteData);
+	Array<DP,3> Az(reinterpret_cast<DP*>(Bz.data()), Bz.shape()*shape(1,1,2), neverDeleteData);
 
-    // lx = 0 reside in master node
-    global.program.sincostr_switch = sincostr_switch_Vx;
-    
-    if (global.program.sincostr_switch == "SCC") {
-        if (master)
-            Ax(Range::all(),Range::all(),0) = 0.0;
+	// lx = 0 reside in master node
+	global.program.sincostr_switch = sincostr_switch_Vx;
+	
+	if (global.program.sincostr_switch == "SCC") {
+		if (master)
+			Ax(0,Range::all(),Range::all()) = 0.0;
 
-        Ay(0,Range::all(),Range::all()) = 0.0;
+		if (Ny>1)
+			Ay(Range::all(),0,Range::all()) = 0.0;
 
-        Az(Range::all(),0,Range::all()) = 0.0;
-    }
-    
-    else if (global.program.sincostr_switch == "CSS") {
-        Ax(0,0,Range::all()) = 0.0;
-        
-        if (master)
-            Ay(Range::all(),0,0) = 0.0;
-        
-        if (master)
-            Az(0,Range::all(),0) = 0.0;
-    }
-    
-    else if (global.program.sincostr_switch == "CCS") {
-        Ax(Range::all(),0,Range::all())  = 0.0;
-        
-        if (master)
-            Ay(0,0,0) = 0.0;
-       
-        if (master)
-            Az(Range::all(),Range::all(),0) = 0.0;
-    }
-    
-    else if (global.program.sincostr_switch == "SSC") {
-        if (master)
-            Ax(0,Range::all(),0) = 0.0;
-        
-        if (master)
-            Az(0,0,Range::all()) = 0.0;
-    }
-    
-    else if (global.program.sincostr_switch == "CSC") {
-        Ax(0,Range::all(),Range::all())  = 0.0;
-        
-        if (master)
-            Ay(Range::all(),Range::all(),0) = 0.0;
-        
-        if (master)
-            Az(0,0,0) = 0.0;
-    }
-    
-    else if (global.program.sincostr_switch == "SCS") {
-        if (master)
-            Ax(Range::all(),0,0) = 0.0;
-        
-        Ay(0,0,Range::all()) = 0.0;
-    }
-    
-    else if (global.program.sincostr_switch == "CCC") {
-        if (master)
-            Ay(0,Range::all(),0) = 0.0;
-        
-        if (master)
-            Az(Range::all(),0,0) = 0.0;
-    }
-    
-    else if (global.program.sincostr_switch == "SSS") {
-        if (master)
-            Ax(0,0,0) = 0.0;
-        
-        if (master)
-            Ay(Range::all(),0,Range::all()) = 0.0;
-        
-        if (master)
-            Az(0,Range::all(),Range::all()) = 0.0;
-    }
+		Az(Range::all(),Range::all(),0) = 0.0;
+	}
+	
+	else if (global.program.sincostr_switch == "CSS") {
+		if (Ny>1)
+			Ax(Range::all(),0,Range::all()) = 0.0;
+
+		Ax(Range::all(),Range::all(),0) = 0.0;
+		
+		if (master)
+			Ay(0,Range::all(),Range::all()) = 0.0;
+		Ay(Range::all(),Range::all(),0) = 0.0;
+		
+		if (master)
+			Az(0,Range::all(),Range::all()) = 0.0;
+		
+		if (Ny>1)
+			Az(Range::all(),0,Range::all()) = 0.0;
+	}
+	
+	else if (global.program.sincostr_switch == "CCS") {
+		Ax(Range::all(),Range::all(),0)  = 0.0;
+		
+		if (master)
+			Ay(0,Range::all(),Range::all()) = 0.0;
+		if (Ny>1)
+			Ay(Range::all(),0,Range::all()) = 0.0;
+		Ay(Range::all(),Range::all(),0) = 0.0;
+	   
+		if (master)
+			Az(0,Range::all(),Range::all()) = 0.0;
+	}
+	
+	else if (global.program.sincostr_switch == "SSC") {
+		if (master)
+			Ax(0,Range::all(),Range::all()) = 0.0;
+		if (Ny>1)
+			Ax(Range::all(),0,Range::all()) = 0.0;
+		
+		if (Ny>1)
+			Az(Range::all(),0,Range::all()) = 0.0;
+		Az(Range::all(),Range::all(),0) = 0.0;
+	}
+	
+	else if (global.program.sincostr_switch == "CSC") {
+		if (Ny>1)
+			Ax(Range::all(),0,Range::all())  = 0.0;
+		
+		if (master)
+			Ay(0,Range::all(),Range::all()) = 0.0;
+		
+		if (master)
+			Az(0,Range::all(),Range::all()) = 0.0;
+		if (Ny>1)
+			Az(Range::all(),0,Range::all()) = 0.0;
+		Az(Range::all(),Range::all(),0) = 0.0;
+	}
+	
+	else if (global.program.sincostr_switch == "SCS") {
+		if (master)
+			Ax(0,Range::all(),Range::all()) = 0.0;
+		Ax(Range::all(),Range::all(),0) = 0.0;
+		
+		if (Ny>1)
+			Ay(Range::all(),0,Range::all()) = 0.0;
+		Ay(Range::all(),Range::all(),0) = 0.0;
+	}
+	
+	else if (global.program.sincostr_switch == "CCC") {
+		if (master)
+			Ay(0,Range::all(),Range::all()) = 0.0;
+		if (Ny>1)
+			Ay(Range::all(),0,Range::all()) = 0.0;
+		
+		if (master)
+			Az(0,Range::all(),Range::all()) = 0.0;
+		Az(Range::all(),Range::all(),0) = 0.0;
+	}
+	
+	else if (global.program.sincostr_switch == "SSS") {
+		if (master)
+			Ax(0,Range::all(),Range::all()) = 0.0;
+		if (Ny>1)
+			Ax(Range::all(),0,Range::all()) = 0.0;
+		Ax(Range::all(),Range::all(),0) = 0.0;
+		
+		if (master)
+			Ay(Range::all(),Range::all(),0) = 0.0;
+		
+		if (Ny>1)
+			Az(Range::all(),0,Range::all()) = 0.0;
+	}
 }
-    
+	
 /** @brief Set the modes to zero for T.F(0,ky,kz) in 3D.
  *
  * Temperature same as V_1; (see the above function).
  */    
 void SSS_SLAB::Zero_modes(Array<complx,3> F)
 {
-	Array<DP,3> Fr(reinterpret_cast<DP*>(F.data()), F.shape()*shape(1,2,1), neverDeleteData);
+	Array<DP,3> Fr(reinterpret_cast<DP*>(F.data()), F.shape()*shape(1,1,2), neverDeleteData);
 
-    // lx = 0 reside in master node
-    
-    global.program.sincostr_switch = sincostr_switch_F;
-    
-    if (global.program.sincostr_switch == "SCC") {
-        if (master)
-            Fr(Range::all(),Range::all(),0) = 0.0;
-    }
-    
-    else if (global.program.sincostr_switch == "CSS")
-        Fr(0,0,Range::all()) = 0.0;
-    
-    else if (global.program.sincostr_switch == "CCS")
-        F(Range::all(),0,Range::all())  = 0.0;
-        
-    else if (global.program.sincostr_switch == "SSC") {
-        if (master)
-            Fr(0,Range::all(),0) = 0.0;
-    }
-    
-    else if (global.program.sincostr_switch == "CSC")
-        Fr(0,Range::all(),Range::all())  = 0.0;
-          
-    else if (global.program.sincostr_switch == "SCS") {
-        if (master)
-            Fr(Range::all(),0,0) = 0.0;
-    }
-    
-    else if (global.program.sincostr_switch == "CCC")
-        ;
-    
-    else if (global.program.sincostr_switch == "SSS") {
-        if (master)
-            Fr(0,0,0) = 0.0;
-    } 
+	// lx = 0 reside in master node
+	
+	global.program.sincostr_switch = sincostr_switch_F;
+	
+	if (global.program.sincostr_switch == "SCC") {
+		if (master)
+			Fr(0,Range::all(),Range::all()) = 0.0;
+	}
+	
+	else if (global.program.sincostr_switch == "CSS"){
+		if (Ny>1)
+			Fr(Range::all(),0,Range::all()) = 0.0;
+		Fr(Range::all(),Range::all(),0) = 0.0;
+	}
+	
+	else if (global.program.sincostr_switch == "CCS")
+		F(Range::all(),Range::all(),0)  = 0.0;
+		
+	else if (global.program.sincostr_switch == "SSC") {
+		if (master)
+			Fr(0,Range::all(),Range::all()) = 0.0;
+		if (Ny>1)
+			Fr(Range::all(),0,Range::all()) = 0.0;
+	}
+	
+	else if (global.program.sincostr_switch == "CSC") {
+		if (Ny>1)
+			Fr(Range::all(),0,Range::all())  = 0.0;
+	}
+			  
+	else if (global.program.sincostr_switch == "SCS") {
+		if (master)
+			Fr(0,Range::all(),Range::all()) = 0.0;
+		Fr(Range::all(),Range::all(),0) = 0.0;
+	}
+	
+	else if (global.program.sincostr_switch == "CCC")
+		;
+	
+	else if (global.program.sincostr_switch == "SSS") {
+		if (master)
+			Fr(0,Range::all(),Range::all()) = 0.0;
+		if (Ny>1)
+			Fr(Range::all(),0,Range::all()) = 0.0;
+		Fr(Range::all(),Range::all(),0) = 0.0;
+	} 
 
 }
 
 
 /**********************************************************************************************
 
-       		Replaces A(k) by A(k)*K^2.
+			Replaces A(k) by A(k)*K^2.
 
 ***********************************************************************************************/
 
 
 void SSS_SLAB::Array_mult_ksqr(Array<complx,3> A)
 {
-	Array<DP,3> Ar=Array<DP,3>(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
+	Array<DP,3> Ar=Array<DP,3>(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 	
-    DP Kysqr;    // Ky^2
-	DP Kyzsqr;
-    DP Ksqr;
+	DP Kxsqr;
+	DP Kxysqr;
+	DP Ksqr;
 	
-    #pragma omp parallel for private(Kysqr,Kyzsqr,Ksqr) 
-	for (int ly=0; ly<Ar.extent(0); ly++) {
-		Kysqr = my_pow(Get_ky(ly)*kfactor[2],2);	
+	#pragma omp parallel for private(Kysqr,Kyzsqr,Ksqr) 
+	for (int lx=0; lx<Ar.extent(0); lx++) {
+		Kxsqr = my_pow(Get_kx(lx)*kfactor[1],2);
 		
-        for (int lz=0; lz<Ar.extent(1); lz++) {
-            Kyzsqr = Kysqr + my_pow(Get_kz(lz)*kfactor[3],2);
-			
-            for (int lx=0; lx<Ar.extent(2); lx++) {
-                Ksqr= Kyzsqr + my_pow(Get_kx(lx)*kfactor[1],2);
+        for (int ly=0; ly<Ar.extent(1); ly++) {
+            Kxysqr = Kxsqr + my_pow(Get_ky(ly)*kfactor[2],2);
 
-		      Ar(ly, lz, lx) *= Ksqr;
-          }
+            for (int lz=0; lz<Ar.extent(2); lz++) {
+                Ksqr= Kxysqr + my_pow(Get_kz(lz)*kfactor[3],2);
+
+				Ar(lx, ly, lz) *= Ksqr;
+        	}
         }
     }
 }
@@ -361,25 +399,26 @@ void SSS_SLAB::Array_mult_ksqr(Array<complx,3> A)
 void SSS_SLAB::Array_divide_ksqr(Array<complx,3> A)
 {
 	
-	Array<DP,3> Ar=Array<DP,3>(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
+	Array<DP,3> Ar=Array<DP,3>(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 	
-    DP Kysqr;    // Ky^2
-    DP Kyzsqr;
-    DP Ksqr;
-    
-    #pragma omp parallel for private(Kysqr,Kyzsqr,Ksqr) 
-    for (int ly=0; ly<Ar.extent(0); ly++) {
-        Kysqr = my_pow(Get_ky(ly)*kfactor[2],2);    
-        
-        for (int lz=0; lz<Ar.extent(1); lz++) {
-            Kyzsqr = Kysqr + my_pow(Get_kz(lz)*kfactor[3],2);
-            
-            for (int lx=0; lx<Ar.extent(2); lx++) {
-                Ksqr= Kyzsqr + my_pow(Get_kx(lx)*kfactor[1],2);
-                Ar(ly, lz, lx) /= Ksqr;
-            }
+	DP Kxsqr;
+	DP Kxysqr;
+	DP Ksqr;
+	
+	#pragma omp parallel for private(Kysqr,Kyzsqr,Ksqr) 
+	for (int lx=0; lx<Ar.extent(0); lx++) {
+		Kxsqr = my_pow(Get_kx(lx)*kfactor[1],2);
+		
+        for (int ly=0; ly<Ar.extent(1); ly++) {
+            Kxysqr = Kxsqr + my_pow(Get_ky(ly)*kfactor[2],2);
+
+            for (int lz=0; lz<Ar.extent(2); lz++) {
+                Ksqr= Kxysqr + my_pow(Get_kz(lz)*kfactor[3],2);
+
+				Ar(lx, ly, lz) /= Ksqr;
+        	}
         }
-    }  
+    } 
 	   
 	// To avoid division by zero
 	if (master)
@@ -397,26 +436,26 @@ void SSS_SLAB::Array_divide_ksqr(Array<complx,3> A)
 void SSS_SLAB::Array_exp_ksqr(Array<complx,3> A, DP factor)
 {
 	
-    Array<DP,3> Ar=Array<DP,3>(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
-	
-	DP Kysqr;    // Ky^2
-	DP Kyzsqr;
+	Array<DP,3> Ar=Array<DP,3>(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+
+	DP Kxsqr;
+	DP Kxysqr;
 	DP Ksqr;
 	
 	#pragma omp parallel for private(Kysqr,Kyzsqr,Ksqr) 
-	for (int ly=0; ly<Ar.extent(0); ly++) {
-		Kysqr = my_pow(Get_ky(ly)*kfactor[2],2);    
+	for (int lx=0; lx<Ar.extent(0); lx++) {
+		Kxsqr = my_pow(Get_kx(lx)*kfactor[1],2);
 		
-		for (int lz=0; lz<Ar.extent(1); lz++) {
-			Kyzsqr = Kysqr + my_pow(Get_kz(lz)*kfactor[3],2);
-			
-			for (int lx=0; lx<Ar.extent(2); lx++) {
-				Ksqr= Kyzsqr + my_pow(Get_kx(lx)*kfactor[1],2);
+        for (int ly=0; ly<Ar.extent(1); ly++) {
+            Kxysqr = Kxsqr + my_pow(Get_ky(ly)*kfactor[2],2);
 
-			  Ar(ly, lz, lx) *= exp(factor*Ksqr);
-		  }
-		}
-	}
+            for (int lz=0; lz<Ar.extent(2); lz++) {
+                Ksqr= Kxysqr + my_pow(Get_kz(lz)*kfactor[3],2);
+
+				Ar(lx, ly, lz) *= exp(factor*Ksqr);
+        	}
+        }
+    }
 }
 
 
@@ -430,31 +469,32 @@ void SSS_SLAB::Array_exp_ksqr(Array<complx,3> A, DP factor)
 void SSS_SLAB::Array_exp_ksqr(Array<complx,3> A, DP factor, DP hyper_factor, int hyper_exponent)
 {
 	
-	Array<DP,3> Ar=Array<DP,3>(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
+	Array<DP,3> Ar=Array<DP,3>(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 
-	DP Kysqr;    // Ky^2
-	DP Kyzsqr;
+	DP Kxsqr;
+	DP Kxysqr;
 	DP Ksqr;
 	DP Kpownm2;	// K^{q-2} where q = hyper_exponent
 	
-	for (int ly=0; ly<Ar.extent(0); ly++) {
-		Kysqr = my_pow(Get_ky(ly)*kfactor[2],2);
+	#pragma omp parallel for private(Kysqr,Kyzsqr,Ksqr) 
+	for (int lx=0; lx<Ar.extent(0); lx++) {
+		Kxsqr = my_pow(Get_kx(lx)*kfactor[1],2);
 		
-		for (int lz=0; lz<Ar.extent(1); lz++) {
-			Kyzsqr = Kysqr + my_pow(Get_kz(lz)*kfactor[3],2);
-			
-			for (int lx=0; lx<Ar.extent(2); lx++) {
-				Ksqr= Kyzsqr + my_pow(Get_kx(lx)*kfactor[1],2);
-				
+        for (int ly=0; ly<Ar.extent(1); ly++) {
+            Kxysqr = Kxsqr + my_pow(Get_ky(ly)*kfactor[2],2);
+
+            for (int lz=0; lz<Ar.extent(2); lz++) {
+                Ksqr = Kxysqr + my_pow(Get_kz(lz)*kfactor[3],2);
+
 				if (hyper_exponent == 4)
 					Kpownm2 = Ksqr;
 				else
 					Kpownm2 = my_pow(Ksqr,(hyper_exponent-2)/2);
 				
-				Ar(ly, lz, lx) *= exp((factor+hyper_factor*Kpownm2)* Ksqr);
-			}
-		}
-	}
+				Ar(lx, ly, lz) *= exp((factor+hyper_factor*Kpownm2)* Ksqr);
+        	}
+        }
+    }
 }
  
 
@@ -468,34 +508,35 @@ void SSS_SLAB::Array_exp_ksqr(Array<complx,3> A, DP factor, DP hyper_factor, int
 
 void SSS_SLAB::Array_mult_V0_khat_sqr(Array<complx,3> A, TinyVector<DP,3> V0)
 {
-	Array<DP,3> Ar=Array<DP,3>(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
+	Array<DP,3> Ar=Array<DP,3>(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 	
-    DP Kx, Ky, Kz;
-    DP Kysqr;    // Ky^2
-    DP Kyzsqr;
-    DP Ksqr;
+	DP Kx, Ky, Kz;
+	DP Kxsqr;    // Ky^2
+	DP Kxysqr;
+	DP Ksqr;
   
 	DP V0x = V0(0);
 	DP V0y = V0(1);
 	DP V0z = V0(2);
-    
-    for (int ly=0; ly<Ar.extent(0); ly++) {
-        Ky = Get_ky(ly)*kfactor[2];
-        Kysqr = my_pow(Ky,2);
-        
-        for (int lz=0; lz<Ar.extent(1); lz++) {
-            Kz = Get_kz(lz)*kfactor[3];
-            Kyzsqr = Kysqr + my_pow(Kz,2);
-            
-            for (int lx=0; lx<Ar.extent(2); lx++) {
-                Kx = Get_kx(lx)*kfactor[1];
-                Ksqr = Kyzsqr + my_pow(Kx,2);
-                Ar(ly, lz, lx) *= my_pow(V0x*Kx+V0y*Ky+V0z*Kz, 2)/Ksqr;
-            }
-        }
-    }
+
+	for (int lx=0; lx<Ar.extent(0); lx++) {
+		Kx = Get_kx(lx)*kfactor[1];
+		Kxsqr = my_pow(Kx,2);
+		
+		for (int ly=0; ly<Ar.extent(1); ly++) {
+			Ky = Get_ky(ly)*kfactor[2];
+			Kxysqr = Kxsqr + my_pow(Ky,2);
+			
+			for (int lz=0; lz<Ar.extent(2); lz++) {
+				Kz = Get_kz(lz)*kfactor[3];
+				Ksqr = Kxysqr + my_pow(Kz,2);
+
+				Ar(lx, ly, lz) *= my_pow(V0x*Kx+V0y*Ky+V0z*Kz, 2)/Ksqr;
+			}
+		}
+	}
 	
-    // To avoid division by zero
+	// To avoid division by zero
 	if (my_id == master_id)
 		Ar(0,0,0) = 0.0;
 }
@@ -507,30 +548,62 @@ void SSS_SLAB::Array_mult_V0_khat_sqr(Array<complx,3> A, TinyVector<DP,3> V0)
 
 void SSS_SLAB::Fill_Vz(Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az)
 {
-    if (global.io.input_vx_vy_switch && global.field.incompressible) {
+	if (global.io.input_vx_vy_switch && global.field.incompressible) {
 		
-		Array<DP,3> Axr=Array<DP,3>(reinterpret_cast<DP*>(Ax.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
-		Array<DP,3> Ayr=Array<DP,3>(reinterpret_cast<DP*>(Ay.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
-		Array<DP,3> Azr=Array<DP,3>(reinterpret_cast<DP*>(Az.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
+		Array<DP,3> Axr=Array<DP,3>(reinterpret_cast<DP*>(Ax.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+		Array<DP,3> Ayr=Array<DP,3>(reinterpret_cast<DP*>(Ay.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+		Array<DP,3> Azr=Array<DP,3>(reinterpret_cast<DP*>(Az.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 		
 		int kx, ky, kz;
 		DP vz;
-        
+		
 		#pragma omp parallel for
-		for (int ly=0; ly<Axr.extent(0); ly++)
-            for (int lz=1; lz<Axr.extent(1); lz++)
-        		for (int lx=0; lx<Axr.extent(2); lx++){
+		for (int lx=0; lx<Axr.extent(0); lx++)
+			for (int ly=0; ly<Axr.extent(1); ly++)
+				for (int lz=1; lz<Axr.extent(2); lz++) {
 					kx = Get_kx(lx);
 					ky = Get_ky(ly);
 					kz = Get_kz(lz);
-                    
-					Last_component(kx, ky, kz, Axr(ly,lz,lx), Ayr(ly,lz,lx), vz);
-                    
+					
+					Last_component(kx, ky, kz, Axr(lx,ly,lz), Ayr(lx,ly,lz), vz);
+					
 					Assign_spectral_field(kx, ky, kz, Az, vz);
 				}
 	}
 }
 
+int SSS_SLAB::Read(Array<complx,3> A, BasicIO::H5_plan plan, string file_name, string dataset_name)
+{
+	return BasicIO::Read(A.data(), plan, file_name, dataset_name);
+}
+
+int SSS_SLAB::Read(Array<DP,3> Ar, BasicIO::H5_plan plan, string file_name, string dataset_name)
+{
+	int err = BasicIO::Read(global.temp_array.X.data(), plan, file_name, dataset_name);
+	if (Ny>1)
+		spectralTransform.Transpose(global.temp_array.X, Ar);
+	else
+		spectralTransform.Transpose(global.temp_array.X(Range::all(),0,Range::all()), Ar(Range::all(),0,Range::all()));
+
+	return err;
+}
+
+
+int SSS_SLAB::Write(Array<complx,3> A, BasicIO::H5_plan plan, string folder_name, string file_name, string dataset_name)
+{
+	return BasicIO::Write(A.data(), plan, folder_name, file_name, dataset_name);
+}
+
+int SSS_SLAB::Write(Array<DP,3> Ar, BasicIO::H5_plan plan, string folder_name, string file_name, string dataset_name)
+{
+	cout << Ar << endl;
+	if (Ny>1)
+		spectralTransform.Transpose(Ar, global.temp_array.X);
+	else
+		spectralTransform.Transpose(Ar(Range::all(),0,Range::all()), global.temp_array.X(Range::all(),0,Range::all()));
+
+	return BasicIO::Write(global.temp_array.X.data(), plan, folder_name, file_name, dataset_name);  
+}
 
 //*********************************  End of scft_basic.cc *************************************
 

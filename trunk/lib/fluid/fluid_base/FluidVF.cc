@@ -398,7 +398,7 @@ void FluidVF::Assign_field_and_comp_conj(int kx, int ky, int kz, complx Vx, comp
 {	
     
     TinyVector<complx,3> localV(Vx, Vy, Vz);
-	
+
 	universal->Assign_spectral_field(kx, ky, kz, cvf.V1, cvf.V2, cvf.V3, localV);	// in appropriate proc.
 	
 	Add_complex_conj(kx, ky, kz, Vx, Vy, Vz);	

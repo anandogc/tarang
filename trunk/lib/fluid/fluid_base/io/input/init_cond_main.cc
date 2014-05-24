@@ -37,10 +37,6 @@
 
 #include "../FluidIO.h"
 
-extern Uniform<DP> SPECrand;
-
-// const int IC_MAX_NO_WAVENO = 40;
-
 
 /**********************************************************************************************
 
@@ -51,7 +47,6 @@ extern Uniform<DP> SPECrand;
 
 void FluidIO::Read_init_cond(FluidVF& U)
 {
-    
     switch (global.io.input_field_procedure)	{
 		
 		case (1) : Init_cond_complex_field(U);	break;					
@@ -79,14 +74,14 @@ void FluidIO::Read_init_cond(FluidVF& U)
             
 	}
 	
-	if (my_id==master_id)
+	if (master)
 		cout  << "Reading of field configurations ended successfully" << endl;
     
     // preprocess the data
     int input_proc = global.io.input_field_procedure;
     
     if ((input_proc==1) || (input_proc==2) || (input_proc==3) || (input_proc==4) || (input_proc==5)) {
-        U.Satisfy_strong_reality_condition_field();
+      U.Satisfy_strong_reality_condition_field();
         
         if ((basis_type == "SFF") || (basis_type == "SSF") || (basis_type == "SSS")) 
             universal->Zero_modes(U.cvf.V1, U.cvf.V2, U.cvf.V3);
@@ -127,7 +122,7 @@ void FluidIO::Read_init_cond(FluidVF& U, FluidSF& T)
         case (400): Init_cond_vortex(U, T); break;
 	}
 	
-	if (global.mpi.master)
+	if (master)
 		cout  << "Reading of field configurations ended successfully" << endl;
     
     // preprocess the data

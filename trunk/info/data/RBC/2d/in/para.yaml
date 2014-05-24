@@ -23,7 +23,7 @@ RBC:
     temperature_grad: +1
     
 field:
-    N: [16, 1, 62]
+    N: [32, 1, 32]
     kfactor: [1, 0, 1]
     L: 
     diss_coefficients: [0.0, 0.0]               

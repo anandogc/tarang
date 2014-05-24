@@ -1,0 +1,225 @@
+program:
+    kind: FLUID_INCOMPRESS
+    basis_type: SSS 
+    decomposition: SLAB        #PENCIL, SLAB
+    iter_or_diag: ITERATION           #ITERATION, DIAGNOSTICS
+    alias_option: DEALIAS
+    integration_scheme: RK4
+    LES_switch: false
+    apply_strong_realitycond_alltime_switch: true
+    apply_weak_realitycond_alltime_switch: false
+    low_dimensional_switch: false
+    two_and_half_dimension: false
+    two_dimension: true       
+    dt_option: 0               # 0=fixed; 1=dx/umax
+    helicity_switch: false
+    sincostr_switch: SSS
+    
+field:
+    N: [8, 1, 8]
+    kfactor: [1, 1, 1]
+    L: 
+    diss_coefficients: [0]               
+    hyper_diss_coefficients: 
+    hyper_diss_exponents: 
+           
+    incompressible: true                #for now it can only be true
+    waveno_switch: true
+    anisotropy_dirn: 3                  #1,2,3
+
+fft:
+    fftw3D_switch: true
+    fftw_switch: true              #for fftw_original
+    transpose: false               #Should be always "true" for PENCIL
+    sincostr_switch: FFF                    #SINX, COSX, SCC, CSC, CCS, SSC, CSS, SCS
+
+time:
+    init: 0
+    final: 0.001
+    dt_fixed: 0.0001
+    Courant_no: 0.1
+    job_time:                       # 00:00:20
+
+force: 
+    U_switch: true
+    W_switch: false
+    T_switch: false
+    # 0:decay, 1:ek_hk_suppy, 2:const_ek_hk, 3: modes, 4:TG, 5:ABC,  
+    field_procedure: 0  
+    int_para: 
+    #if ... provide ()
+    #para: [inner_rad,outer_rad, amp, exponent, 0, q, omega, x0]
+    double_para: [5,6, 0.1, 0, 0] #[3,4,0.1,0,0]
+    string_para: 
+    
+    modes:
+#        - coord:
+#          mode:
+        
+io:
+    input_field_procedure: 4
+    #1:complex field, 2: complex_reduced field, 3: real field, 4: modes, 5: Ek,Hk; 6: TG, 7:ABC
+    input_vx_vy_switch: true
+    output_vx_vy_switch: true
+    diagnostic_procedures: 
+    N_in_reduced: [16, 8, 6]
+    N_out_reduced: [16, 8, 6]
+    int_para: 
+    double_para: [0.1, 0]
+    string_para:
+
+    #if probes/init_cond not provided, comment "- coord" lines.
+    init_cond_modes:
+            - coord: [1,0,1]
+              mode: [1]
+              
+    #        - coord: [1,-1,1]
+    #          mode: [ (0.1,0), (0,0.1) ]
+ #
+ #   #        - coord: [2,0,2]
+ #   #          mode: [ (0.1,0), (0,0.1) ]
+ #   #           
+ #   #        - coord: [2,1,1]
+ #   #          mode: [ (0.1,0), (0,-0.1) ]
+ #   #           
+ #   #        - coord: [2,-1,1]
+ #   #          mode: [ (0.1,0), (0,0.1) ]
+ #   #           
+ #   #        - coord: [3,2,2]
+ #   #          mode: [ (0.1,0), (0,-0.1) ]
+ #   #           
+ #   #        - coord: [3,-2,2]
+    #          mode: [ (0.1,0), (0,0.1) ]
+
+              
+    probes:
+        spectral_space:
+            - coord: [1, 1, 1]
+            - coord: [-1, 1, 1]
+        real_space:
+            - coord: [1, 1, 1]
+              
+    time:
+        global_save_first: 0
+        complex_field_save_first: 0
+        field_frequent_save_first: 0
+        field_reduced_save_first: 
+        real_field_save_first: 0
+        field_k_save_first: 
+        field_r_save_first:
+        spectrum_save_first: 
+        pressure_save_first: 
+        pressure_spectrum_save_first:
+        flux_save_first: 
+        shell_to_shell_save_first: 
+        ring_spectrum_save_first: 
+        ring_to_ring_save_first:
+        cylindrical_ring_spectrum_save_first: 
+        cylindrical_ring_to_ring_save_first:
+        structure_fn_save_first:
+        Tk_shell_spectrum_save_first:
+        Tk_ring_spectrum_save_first:
+        Tk_cylindrical_ring_spectrum_save_first:
+        cout_save_first: 0.0
+
+        global_save_interval: 0.0001
+        complex_field_save_interval:
+        field_frequent_save_interval:
+        field_reduced_save_interval: 
+        real_field_save_interval: 
+        field_k_save_interval: 
+        field_r_save_interval: 
+        pressure_save_interval: 
+        spectrum_save_interval: 0.1
+        pressure_spectrum_save_interval: 
+        flux_save_interval: 0.1
+        shell_to_shell_save_interval: 
+        ring_spectrum_save_interval:
+        ring_to_ring_save_interval:
+        cylindrical_ring_spectrum_save_interval: 
+        cylindrical_ring_to_ring_save_interval: 
+        structure_fn_save_interval: 
+        Tk_shell_spectrum_save_interval:
+        Tk_ring_spectrum_save_interval:
+        Tk_cylindrical_ring_spectrum_save_interval:
+        cout_save_interval: 0.0001
+        
+        global_save_last:
+        complex_field_save_last: 
+        field_frequent_save_last:
+        field_reduced_save_last: 
+        real_field_save_last: 
+        field_k_save_last: 
+        field_r_save_last: 
+        pressure_save_last: 
+        spectrum_save_last: 
+        pressure_spectrum_save_last: 
+        flux_save_last: 
+        shell_to_shell_save_last: 
+        ring_spectrum_save_last: 
+        ring_to_ring_save_last: 
+        cylindrical_ring_spectrum_save_last: 
+        cylindrical_ring_to_ring_save_last: 
+        structure_fn_save_last:
+        Tk_shell_spectrum_save_last:
+        Tk_ring_spectrum_save_last:
+        Tk_cylindrical_ring_spectrum_save_last:
+        cout_save_last:
+
+spectrum:
+    shell:
+        turnon: true
+
+    ring:
+        turnon: true
+        no_sectors: 8
+        sector_option:               #EQUISPACED(default), EQUAL_NO_MODES, USER_DEFINED        
+        sector_angles: 
+
+    cylindrical_ring:
+        turnon: false
+        no_slabs:
+        kpll_option:                #EQUISPACED(default), USER_DEFINED
+        kpll_array: 
+
+energy_transfer:
+    turnon: true
+    helicity_flux_switch: false
+    helicity_shell_to_shell_switch: false
+    Elsasser: true
+    Vpll_switch: false
+
+    flux:
+        turnon: true
+        no_spheres: 8
+        radii: [1,2,3,4,5,6,7,8]
+
+    shell_to_shell:
+        turnon: true
+        no_shells: 8
+        radii: [1,2,3,4,5,6,7,8]
+
+    ring_to_ring:
+        turnon: false
+        no_shells: 8
+        no_sectors: 3
+        radii: [1,2,3,4,5,6,7,8]
+        sector_option: #USER_DEFINED                #EQUISPACED(default), EQUAL_NO_MODES, USER_DEFINED
+        sector_angles: #[1,1.2,1.3,1.5] 
+
+    cylindrical_ring_to_ring:
+        turnon: false
+        no_shells: 8
+        no_slabs: 5
+        radii: [1,2,3,4,5,6,7,8]
+        kpll_option:  USER_DEFINED                            #EQUISPACED(default), USER_DEFINED
+        kpll_array: [1,2,3,3.4,3.7,3.8]
+
+structure_fn:
+        turnon: false
+        box_switch: 
+        planar_switch: 
+        approx_switch: 
+        qmin: 
+        qmax: 
+

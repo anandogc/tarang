@@ -54,6 +54,8 @@
 #include <cmath>
 #include <string>
 #include <iostream>
+#include <vector>
+#include <algorithm>
 #include <iomanip>
 #include <stdlib.h>
 #include <time.h>
@@ -73,10 +75,10 @@ using namespace blitz;
 
 #define FFTW_PLAN						fftwf_plan
 #define FFTW_MPI_PLAN_DFT_3D			fftwf_mpi_plan_dft_3d   // for GP
-#define FFTW_MPI_PLAN_DFT_R2C_3D		fftwf_mpi_plan_dft_r2c_3d
-#define FFTW_MPI_PLAN_DFT_C2R_3D		fftwf_mpi_plan_dft_c2r_3d
 #define FFTW_MPI_PLAN_DFT_R2C_2D		fftwf_mpi_plan_dft_r2c_2d
 #define FFTW_MPI_PLAN_DFT_C2R_2D		fftwf_mpi_plan_dft_c2r_2d
+#define FFTW_MPI_PLAN_DFT_R2C_3D		fftwf_mpi_plan_dft_r2c_3d
+#define FFTW_MPI_PLAN_DFT_C2R_3D		fftwf_mpi_plan_dft_c2r_3d
 #define FFTW_PLAN_MANY_R2R				fftwf_plan_many_r2r
 #define FFTW_PLAN_MANY_DFT				fftwf_plan_many_dft
 #define FFTW_PLAN_MANY_DFT_R2C			fftwf_plan_many_dft_r2c
@@ -88,6 +90,8 @@ using namespace blitz;
 #define FFTW_EXECUTE_DFT_R2C			fftwf_execute_dft_r2c
 #define FFTW_EXECUTE_DFT_C2R			fftwf_execute_dft_c2r
 #define FFTW_MPI_EXECUTE_DFT			fftwf_mpi_execute_dft
+#define FFTW_MPI_EXECUTE_DFT_R2C        fftwf_mpi_execute_dft_r2c        
+#define FFTW_MPI_EXECUTE_DFT_C2R        fftwf_mpi_execute_dft_c2r        
 
 
 // Defining DOUBLE_DP: switch for setting double
@@ -99,10 +103,10 @@ using namespace blitz;
 
 #define FFTW_PLAN						fftw_plan
 #define FFTW_MPI_PLAN_DFT_3D			fftw_mpi_plan_dft_3d   // for GP
-#define FFTW_MPI_PLAN_DFT_R2C_3D		fftw_mpi_plan_dft_r2c_3d
-#define FFTW_MPI_PLAN_DFT_C2R_3D		fftw_mpi_plan_dft_c2r_3d
 #define FFTW_MPI_PLAN_DFT_R2C_2D		fftw_mpi_plan_dft_r2c_2d
 #define FFTW_MPI_PLAN_DFT_C2R_2D		fftw_mpi_plan_dft_c2r_2d
+#define FFTW_MPI_PLAN_DFT_R2C_3D		fftw_mpi_plan_dft_r2c_3d
+#define FFTW_MPI_PLAN_DFT_C2R_3D		fftw_mpi_plan_dft_c2r_3d
 #define FFTW_PLAN_MANY_R2R				fftw_plan_many_r2r
 #define FFTW_PLAN_MANY_DFT				fftw_plan_many_dft
 #define FFTW_PLAN_MANY_DFT_R2C			fftw_plan_many_dft_r2c
@@ -114,6 +118,8 @@ using namespace blitz;
 #define FFTW_EXECUTE_DFT_R2C			fftw_execute_dft_r2c
 #define FFTW_EXECUTE_DFT_C2R			fftw_execute_dft_c2r
 #define FFTW_MPI_EXECUTE_DFT			fftw_mpi_execute_dft
+#define FFTW_MPI_EXECUTE_DFT_R2C        fftw_mpi_execute_dft_r2c        
+#define FFTW_MPI_EXECUTE_DFT_C2R        fftw_mpi_execute_dft_c2r  
 
 #endif
 

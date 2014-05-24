@@ -36,10 +36,8 @@
 
 #include "spectral_transform.h"
 
-
 //*********************************************************************************************
-
-void SpectralTransform::Init(string basis, string decomposition, int plan_id, int Nx, int Ny, int Nz, int num_p_hor)
+void SpectralTransform::Init(string basis, int Nx, int Nz)
 {
 
 	int my_id, numprocs;	
@@ -47,44 +45,153 @@ void SpectralTransform::Init(string basis, string decomposition, int plan_id, in
 	MPI_Comm_rank(MPI_COMM_WORLD, &my_id);
 	MPI_Comm_size(MPI_COMM_WORLD, &numprocs);
 
+	double num_iter=1;
 
-	if (basis=="FFF") {
-		switch (plan_id) {
-			case 1:
-				plan = new FFF_slab_Isend_Recv_overlap_Isend_forward_3D(my_id, numprocs, Nx, Ny, Nz);
-				break;
+	plan=NULL;
 
-			case 2:
-				plan = new FFF_slab_Isend_Recv_overlap_Isend_both_3D(my_id, numprocs, Nx, Ny, Nz);
-			
-			case 3:
-				plan = new FFF_slab_Alltoall_3D(my_id, numprocs, Nx, Ny, Nz);
-				break;
-		}
-	}		
-	else if (basis=="SFF") { 
-		switch (plan_id) {
-			case 1:
-				plan = new SFF_slab_Isend_Recv_3D(my_id, numprocs, Nx, Ny, Nz);
-				break;
-			
-			case 2:
-				plan = new SFF_slab_Alltoall_3D(my_id, numprocs, Nx, Ny, Nz);
-				break;
+	vector<SpectralPlan*> test_plan;
+
+
+	if (basis=="FFW") {
+		test_plan.resize(1);
+		test_plan[0] = new FFFW_slab_transposed_order_2D(my_id, numprocs, num_iter, Nx, Nz);
+	}
+	else if (basis=="FF") {
+		test_plan.resize(1);
+		test_plan[0] = new FFF_slab_Alltoall_2D(my_id, numprocs, num_iter, Nx, Nz);
+	}
+	else if (basis=="SF") {
+		test_plan.resize(1);
+		test_plan[0] = new SF_slab_Alltoall_2D(my_id, numprocs, num_iter, Nx, Nz);
+	}
+	else if (basis=="SS") {
+		test_plan.resize(1);
+		test_plan[0] = new SS_slab_Alltoall_2D(my_id, numprocs, num_iter, Nx, Nz);
+	}
+
+	int min_time_plan_index = -1;
+	double min_time = numeric_limits<double>::max();
+
+	for (int i=0; i<test_plan.size(); i++)
+		if (test_plan[i]->time_per_step < min_time)
+			min_time_plan_index=i;
+
+	for (int i=0; i<test_plan.size(); i++)
+	{
+		if (my_id==0) cout << "Algo " << i << " time = " << test_plan[i]->time_per_step << '\n';
+		if (i!=min_time_plan_index)
+		{
+			// if (my_id==0) cout << "deleting plan " << i << endl;
+			delete test_plan[i];
 		}
 	}
-	
-	Nx=plan->Nx;
-	Ny=plan->Ny;
-	Nz=plan->Nz;
-	
-	local_Nx=plan->local_Nx;
-	local_Ny=plan->local_Ny;
-	local_Nz=plan->local_Nz;
-	
-	local_Nx_start=plan->local_Nx_start;
-	local_Ny_start=plan->local_Ny_start;
-	local_Nz_start=plan->local_Nz_start;
+
+	// if (my_id==0) cout << "Selected plan: " << basis << ", algo " << min_time_plan_index << endl;
+
+
+	if (test_plan.size()>0) // A plan has been selected
+	{
+		plan=test_plan[min_time_plan_index];
+
+		Nx=plan->Nx;
+		Ny=1;
+		Nz=plan->Nz;
+		
+		local_Nx=plan->local_Nx;
+		local_Ny=1;
+		local_Nz=plan->local_Nz;
+		
+		local_Nx_start=plan->local_Nx_start;
+		local_Ny_start=0;
+		local_Nz_start=plan->local_Nz_start;
+	}
+	else 
+	{
+		if (my_id==0)
+			cerr << "Invalid parameters. No plan Initialized. " << endl;
+		exit(1);
+	}
+}
+
+void SpectralTransform::Init(string basis, int Nx, int Ny, int Nz)
+{
+
+	int my_id, numprocs;	
+
+	MPI_Comm_rank(MPI_COMM_WORLD, &my_id);
+	MPI_Comm_size(MPI_COMM_WORLD, &numprocs);
+
+	int num_iter=1;
+
+	// if (my_id==0) cout << "num_iter = " << num_iter << '\n';
+
+	vector<SpectralPlan*> test_plan;
+
+
+	if (basis=="FFFW") {
+		test_plan.resize(1);
+		test_plan[0] = new FFFW_slab_transposed_order_3D(my_id, numprocs, num_iter, Nx, Ny, Nz);
+	}
+	else if (basis=="FFF") {
+		test_plan.resize(3);
+		test_plan[0] = new FFF_slab_Isend_Recv_overlap_Isend_forward_3D(my_id, numprocs, num_iter, Nx, Ny, Nz);
+		test_plan[1] = new FFF_slab_Isend_Recv_overlap_Isend_both_3D(my_id, numprocs, num_iter, Nx, Ny, Nz);
+		test_plan[2] = new FFF_slab_Alltoall_3D(my_id, numprocs, num_iter, Nx, Ny, Nz);
+	}
+	else if (basis=="SFF") {
+		test_plan.resize(2);
+		test_plan[0] = new SFF_slab_Isend_Recv_3D(my_id, numprocs, num_iter, Nx, Ny, Nz);
+		test_plan[1] = new SFF_slab_Alltoall_3D(my_id, numprocs, num_iter, Nx, Ny, Nz);
+	}
+	else if (basis=="SSF") {
+		test_plan.resize(1);
+		test_plan[0] = new SSF_slab_Alltoall_3D(my_id, numprocs, num_iter, Nx, Ny, Nz);
+	}
+	else if (basis=="SSS") {
+		test_plan.resize(1);
+		test_plan[0] = new SSS_slab_Alltoall_3D(my_id, numprocs, num_iter, Nx, Ny, Nz);
+	}
+	int min_time_plan_index = -1;
+	double min_time = numeric_limits<double>::max();
+
+	for (int i=0; i<test_plan.size(); i++)
+		if (test_plan[i]->time_per_step < min_time)
+			min_time_plan_index=i;
+
+	for (int i=0; i<test_plan.size(); i++)
+	{
+		// if (my_id==0) cout << "Algo " << i << " time = " << test_plan[i]->time_per_step << '\n';
+		if (i!=min_time_plan_index)
+		{
+			// if (my_id==0) cout << "deleting plan " << i << endl;
+			delete test_plan[i];
+		}
+	}
+
+	// if (my_id==0) cout << "Selected plan: " << basis << ", algo " << min_time_plan_index << endl;
+
+
+	if (test_plan.size()>0) // A plan has been selected
+	{
+		plan=test_plan[min_time_plan_index];
+
+		Nx=plan->Nx;
+		Ny=plan->Ny;
+		Nz=plan->Nz;
+		
+		local_Nx=plan->local_Nx;
+		local_Ny=plan->local_Ny;
+		local_Nz=plan->local_Nz;
+		
+		local_Nx_start=plan->local_Nx_start;
+		local_Ny_start=plan->local_Ny_start;
+		local_Nz_start=plan->local_Nz_start;
+	}
+	else {
+		if (my_id==0)
+			cerr << "Invalid parameters. No plan Initialized. " << endl;
+		exit(1);
+	}
 }
 
 //********************************	End of four_tr.cc *****************************************

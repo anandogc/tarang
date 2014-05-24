@@ -76,7 +76,7 @@ void FFFW_SLAB::Array_exp_ksqr(Array<complx,3> A, DP factor)
                 for (int lz=0; lz<=N[3]/2; lz++) {
                     Ksqr = Kxsqr + Kysqr + pow2(lz*kfactor[3]);
                     mu_sqr = Ksqr+pow2(q_omega_t*Ky)+2*q_omega_t*Kx*Ky;
-                    A(ly, lz, lx) *= exp(factor*Ksqr);
+                    A(lx, ly, lz) *= exp(factor*Ksqr);
                 }
             }
         }
@@ -124,7 +124,7 @@ void FFFW_SLAB::Array_exp_ksqr(Array<complx,3> A, DP factor, DP hyper_factor, in
      else
      Kpownm2 = my_pow(mu_sqr,(hyper_exponent-2)/2);
      
-     A(ly, lz, lx) *= exp((factor+hyper_factor*Kpownm2)* mu_sqr);
+     A(lx, ly, lz) *= exp((factor+hyper_factor*Kpownm2)* mu_sqr);
      }
      }
      }
@@ -176,16 +176,19 @@ Dealias
 void FFFW_SLAB::Dealias(Array<complx,3> A)
 {   
 
-    Array<int,1> Ay_filter(Ny);
+    Array<int,1> Ax_filter(Nx);
     
-    Ay_filter = 0;
+    Ax_filter = 0;
     
-    Ay_filter(Range(Ny/3+1,2*Ny/3-1)) = 1;
+    Ax_filter(Range(Nx/3+1,2*Nx/3-1)) = 1;
     
-    int first_y = first(Ay_filter(Range(my_id*local_Ny,(my_id+1)*local_Ny-1)) == 1);
-    int last_y = last(Ay_filter(Range(my_id*local_Ny,(my_id+1)*local_Ny-1)) == 1);
+    int first_x = first(Ax_filter(Range(my_id*local_Nx,(my_id+1)*local_Nx-1)) == 1);
+    int last_x = last(Ax_filter(Range(my_id*local_Nx,(my_id+1)*local_Nx-1)) == 1);
     
-    A(Range(first_y,last_y), Range(Nz/3+1,toEnd), Range(Nx/3+1,2*Nx/3-1)) = 0.0;
+    if (Ny>1)
+        A(Range(first_x,last_x), Range(Ny/3+1,2*Ny/3-1), Range(Nz/3+1,toEnd)) = 0.0;
+    else
+        A(Range(first_x,last_x), 0, Range(Nz/3+1,toEnd)) = 0.0;
 }
 
 
@@ -222,33 +225,33 @@ void FFFW_SLAB::Satisfy_strong_reality_condition_in_Array(Array<complx,3> A)
     int array_index_minus_kx, array_index_minus_ky;
     
     // for kz=0
-    ArrayOps::Get_XY_plane(A, global.temp_array.plane_xy, 0);
+    Get_XY_plane(A, global.temp_array.plane_xy, 0);
     
     // For a given (minusky, minuskx), locate (ky,ky) and then subst.
     // A(minusky, 0, minuskx) = conj(A(ky,0,kx))
-    for (int ly=0; ly<local_Ny; ly++) {
-        if (Get_ky(ly) != Ny/2) {  // Do not apply for ky=Ny/2
-            array_index_minus_ky =  Get_iy(-Get_ky(ly));  // minusky = -Get_ky(ly);
+    for (int lx=0; lx<local_Nx; lx++) {
+        if (Get_kx(lx) != Ny/2) {  // Do not apply for ky=Ny/2
+            array_index_minus_kx =  Get_ix(-Get_kx(lx));  // minusky = -Get_ky(ly);
             
-            for (int lx=Nx/2+1; lx<Nx; lx++) {
-                array_index_minus_kx = -Get_kx(lx);        // kx<0; minuskx = -Get_kx(lx) > 0
-                A(ly, 0, lx) = conj(global.temp_array.plane_xy(array_index_minus_ky,array_index_minus_kx));
+            for (int ly=Ny/2+1; ly<Ny; ly++) {
+                array_index_minus_ky = -Get_kx(lx);        // kx<0; minuskx = -Get_kx(lx) > 0
+                A(lx, ly, 0) = conj(global.temp_array.plane_xy(array_index_minus_kx,array_index_minus_ky));
             }
             // for (ky=0,kz=0) line, change only the A(-kx,0,0)
-            if (Get_ky(ly) < 0)
-                A(ly,0,0) = conj(global.temp_array.plane_xy(array_index_minus_ky,0));
+            if (Get_kx(lx) < 0)
+                A(lx,0,0) = conj(global.temp_array.plane_xy(array_index_minus_kx,0));
         }
     }
         
     // for kz=Nz/2; 
-    A(Range::all(),Nz/2,Range::all()) = 0.0;
+    A(Range::all(),Range::all(),Nz/2) = 0.0;
 }
 
 void FFFW_SLAB::Satisfy_weak_reality_condition_in_Array(Array<complx,3> A)
 {
 
     // for kz=Nz/2
-    A(Range::all(),Nz/2,Range::all()) = 0.0;
+    A(Range::all(),Range::all(),Nz/2) = 0.0;
 }
 
 
@@ -260,32 +263,32 @@ void FFFW_SLAB::Test_reality_condition_in_Array(Array<complx,3> A)
     int array_index_minus_kx, array_index_minus_ky;
     
     // for kz=0
-    ArrayOps::Get_XY_plane(A, global.temp_array.plane_xy, 0);
+    Get_XY_plane(A, global.temp_array.plane_xy, 0);
     
     // For a given (minusky, minuskx), locate (ky,ky) and then subst.
     // A(minusky, 0, minuskx) = conj(A(ky,0,kx))
-    for (int ly=0; ly<local_Ny; ly++) {
-        if (Get_ky(ly) != Ny/2) {  // Do not apply for ky=Ny/2
-            array_index_minus_ky =  Get_iy(-Get_ky(ly));  // minusky = -Get_ky(ly);
+    for (int lx=0; lx<local_Nx; lx++) {
+        if (Get_kx(lx) != Nx/2) {  // Do not apply for ky=Ny/2
+            array_index_minus_kx =  Get_ix(-Get_kx(lx));  // minusky = -Get_ky(ly);
             
-            for (int lx=Nx/2+1; lx<Nx; lx++) {
-                array_index_minus_kx = -Get_kx(lx);        // kx<0; minuskx = -Get_kx(lx) > 0
+            for (int ly=Ny/2+1; ly<Ny; ly++) {
+                array_index_minus_ky = -Get_ky(ly);        // kx<0; minuskx = -Get_kx(lx) > 0
                 
-                if (abs(A(ly,0,lx)-conj(global.temp_array.plane_xy(array_index_minus_ky,array_index_minus_kx))) > MYEPS2)
-                    cout << "Reality condition voilated for (kx,ky,kz)=(" <<array_index_minus_kx <<  "," << Get_ky(ly) << "," << 0 << ")" << endl;
+                if (abs(A(lx,ly,0)-conj(global.temp_array.plane_xy(array_index_minus_kx,array_index_minus_ky))) > MYEPS2)
+                    cout << "Reality condition voilated for (kx,ky,kz)=(" <<array_index_minus_kx <<  "," << Get_kx(lx) << "," << 0 << ")" << endl;
             }
             // for (ky=0,kz=0) line, change only the A(-kx,0,0)
-            if (Get_ky(ly) < 0) {
-                if (abs(A(ly,0,0)-conj(global.temp_array.plane_xy(array_index_minus_ky,array_index_minus_kx))) > MYEPS2)
-                    cout << "Reality condition voilated for (kx,ky,kz)=(" << 0 <<  "," << Get_ky(ly) << "," << 0 << ")" << endl;
+            if (Get_kx(lx) < 0) {
+                if (abs(A(lx,0,0)-conj(global.temp_array.plane_xy(array_index_minus_kx,array_index_minus_ky))) > MYEPS2)
+                    cout << "Reality condition voilated for (kx,ky,kz)=(" << 0 <<  "," << Get_kx(lx) << "," << 0 << ")" << endl;
             }
         }
     }
     
     // for kz=Nz/2 plane
-    for (int ly=0; ly<local_Ny; ly++)
-        for (int lx=0; lx<Nx; lx++)
-            if (abs(A(ly,Nz/2,lx)) > MYEPS)
+    for (int lx=0; lx<local_Nx; lx++)
+        for (int ly=0; ly<Ny; ly++)
+            if (abs(A(lx,ly,Nz/2)) > MYEPS)
                 cout << "Reality condition voilated for (kx,ky,kz)=(" << Get_kx(lx) <<  "," << Get_ky(ly) << "," << Nz/2 << ")" << endl;
 }
 
@@ -303,11 +306,9 @@ void FFFW_SLAB::Compute_divergence(Array<complx,3> Ax, Array<complx,3> Ay, Array
 {
     Xderiv(Ax, div);            
 
-    Yderiv(Ay, global.temp_array.X);
-    div = div + global.temp_array.X;
+    Add_Yderiv(Ay, div);
     
-    Zderiv(Az, global.temp_array.X);
-    div = div + global.temp_array.X;
+    Add_Zderiv(Az, div);
     
     
     if (global.program.kind == "KEPLERIAN") {
@@ -334,6 +335,52 @@ void FFFW_SLAB::Compute_divergence(Array<complx,3> Ax, Array<complx,3> Ay, Array
     }
 }
 
+void FFFW_SLAB::Get_XY_plane(Array<complx,3> A, Array<complx,2> plane_xy, int kz)
+{
+    if (numprocs == 1) {
+        plane_xy= A(Range::all(), Range::all(), kz);
+        return;
+    }
+    
+    else {
+        int data_size, full_data_size;
+
+        global.temp_array.plane_xy_inproc = A(Range::all(),Range::all(),kz);
+    
+        data_size = 2*local_Nx*Ny;
+        
+        full_data_size = 2*Nx*Ny;
+        
+        MPI_Gather(reinterpret_cast<DP*>(global.temp_array.plane_xy_inproc.data()), data_size, MPI_DP, reinterpret_cast<DP*>(plane_xy.data()), data_size, MPI_DP, 0, MPI_COMM_WORLD);
+        
+        MPI_Bcast(reinterpret_cast<DP*>(global.temp_array.plane_xy.data()), full_data_size, MPI_DP, 0, MPI_COMM_WORLD);
+    } 
+}
+
+
+int FFFW_SLAB::Read(Array<complx,3> A, BasicIO::H5_plan plan, string file_name, string dataset_name)
+{
+    int err = BasicIO::Read(global.temp_array.Xr.data(), plan, file_name, dataset_name);
+    spectralTransform.Transpose(global.temp_array.Xr, A);
+    return err;
+}
+
+int FFFW_SLAB::Read(Array<DP,3> Ar, BasicIO::H5_plan plan, string file_name, string dataset_name)
+{
+    return BasicIO::Read(Ar.data(), plan, file_name, dataset_name);
+}
+
+
+int FFFW_SLAB::Write(Array<complx,3> A, BasicIO::H5_plan plan, string folder_name, string file_name, string dataset_name)
+{
+    spectralTransform.Transpose(A, global.temp_array.Xr);
+    return BasicIO::Write(global.temp_array.Xr.data(), plan, folder_name, file_name, dataset_name);
+}
+
+int FFFW_SLAB::Write(Array<DP,3> Ar, BasicIO::H5_plan plan, string folder_name, string file_name, string dataset_name)
+{
+    return BasicIO::Write(Ar.data(), plan, folder_name, file_name, dataset_name);  
+}
 //*****************************  End of four_basic.cc **************************
 
 

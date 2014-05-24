@@ -439,13 +439,13 @@ void Time_advance_incompress::Single_time_step(FluidVF& U, FluidVF& W, FluidSF& 
  */
 void Time_advance_incompress::Compute_force_TO_rhs(FluidVF& U, Pressure& P, FORCE& Force)
 {
-	
+
 	Force.Compute_force(U);
 	
 	Nlin_incompress::Compute_nlin(U);					// Compute nlin using V(t+dt/2)
-	
+
 	Add_force(U);											// nlin = nlin - f
-	
+
 	P.Compute_pressure(U);									// Compute pressure using V(t+dt/2)
 	
 	Compute_rhs(U, P);

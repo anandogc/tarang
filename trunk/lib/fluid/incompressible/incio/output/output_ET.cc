@@ -148,7 +148,7 @@ void FluidIO_incompress::Output_flux(FluidVF& U, FluidVF& W, Pressure& P)
 	Print_array(flux_file, "sum(Fv.v)", energyTr->sphere_force_x_field);
 	
 	energyTr->Power_supply_within_sphere(W);
-	Print_array(flux_file, "sum(Fv.v)", energyTr->sphere_force_x_field);
+	Print_array(flux_file, "sum(Fw.w)", energyTr->sphere_force_x_field);
 	
 /*	if (global.energy_transfer.helicity_flux_switch) {
 		if (Ny > 1) {// 3D
@@ -207,7 +207,7 @@ void FluidIO_incompress::Output_flux(FluidVF& U, FluidVF& W, FluidSF& T, Pressur
 	Print_array(flux_file, "sum(Fv.v)", energyTr->sphere_force_x_field);
 	
 	energyTr->Power_supply_within_sphere(W);
-	Print_array(flux_file, "sum(Fv.v)", energyTr->sphere_force_x_field);
+	Print_array(flux_file, "sum(Fw.w)", energyTr->sphere_force_x_field);
 	
 	energyTr->Power_supply_within_sphere(T);
 	Print_array(flux_file, "sum(FT.T)", energyTr->sphere_force_x_field);

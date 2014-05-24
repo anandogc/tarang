@@ -466,8 +466,7 @@ public:
 
 
 	struct temp_array {
-		Array<complx,3> X3d_transform;
-		Array<complx,2> X2d_transform;
+		Array<complx,3> X_transform;
 		
 		Array<complx,3> X;	
 

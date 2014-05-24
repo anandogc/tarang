@@ -77,9 +77,9 @@ FFF_PENCIL::FFF_PENCIL()
 	
 	bool Nxproperdiv, Nyproperdiv, Nzproperdiv; 
 	
-	Nxproperdiv = ((global.field.Nx%global.mpi.num_p_hor == 0) && (global.field.Nx%global.mpi.num_p_vert == 0));
-	Nyproperdiv = (global.field.Ny%global.mpi.num_p_hor == 0);
-	Nzproperdiv = ((global.field.Nz/2+1)%global.mpi.num_p_vert == 0);
+	Nxproperdiv = true;//((global.field.Nx%global.mpi.num_p_hor == 0) && (global.field.Nx%global.mpi.num_p_vert == 0));
+	Nyproperdiv = true;//(global.field.Ny%global.mpi.num_p_hor == 0);
+	Nzproperdiv = true;//((global.field.Nz/2+1)%global.mpi.num_p_vert == 0);
 	
 	if (!(Nxproperdiv && Nyproperdiv && Nzproperdiv)) {
 		if (global.mpi.master) cerr << "ERROR: Array not being divided equally.  Check dimensions" << endl;
@@ -87,38 +87,51 @@ FFF_PENCIL::FFF_PENCIL()
 	}
 	
 	//global.mpi.num_p_hor is assigned in global via mpirun argument
-	spectralTransform.Init("FFF", "PENCIL", Nx, Ny, Nz, global.mpi.num_p_hor);
-	
-	global.mpi.num_p_vert = spectralTransform.num_p_vert;
-	global.mpi.my_hor_pcoord = spectralTransform.my_hor_pcoord;
-	global.mpi.my_vert_pcoord = spectralTransform.my_vert_pcoord;
+	if (Ny>1) {
+		//spectralTransform.Init("FFF", "PENCIL", Nx, Ny, Nz, global.mpi.num_p_hor);
+		//global.field.shape_complex_array = spectralTransform.local_Ny,spectralTransform.local_Nz_vert,Nx;
+		//global.field.shape_real_array = spectralTransform.local_Ny_hor, Nz+2, spectralTransform.local_Nx_vert;
+	}
+	else {
+		cout << "FFF pencil: 2D FF " << endl;
+		spectralTransform.Init("FF", Nx, Nz);
+		global.field.shape_complex_array = Nx,1,Nz/2+1;
+		global.field.shape_real_array = spectralTransform.local_Nx, 1, 2*spectralTransform.local_Nz*numprocs;
+		
+		cout << "FFF constructor:\n";
+		cout << "global.field.shape_complex_array " << global.field.shape_complex_array.shape() << endl;
+		cout << "global.field.shape_real_array " << global.field.shape_real_array.shape() << endl;
+	}
 
-	global.field.shape_complex_array = spectralTransform.local_Ny_vert,spectralTransform.local_Nz_hor,Nx;
-	global.field.shape_real_array = spectralTransform.local_Ny_hor, Nz+2, spectralTransform.local_Nx_vert;
+	
+	// global.mpi.num_p_vert = spectralTransform.num_p_vert;
+	// global.mpi.my_hor_pcoord = spectralTransform.my_hor_pcoord;
+	// global.mpi.my_vert_pcoord = spectralTransform.my_vert_pcoord;
+
 
 	//********
 	
 	global.mpi.num_x_procs = 1;
-	global.mpi.num_y_procs = global.mpi.num_p_vert;
-	global.mpi.num_z_procs = global.mpi.num_p_hor;
+	global.mpi.num_y_procs = global.mpi.num_p_hor;
+	global.mpi.num_z_procs = global.mpi.num_p_vert;
 	
 	global.mpi.my_x_pcoord = 0;
-	global.mpi.my_y_pcoord = global.mpi.my_vert_pcoord;
-	global.mpi.my_z_pcoord = global.mpi.my_hor_pcoord;
+	global.mpi.my_y_pcoord = global.mpi.my_hor_pcoord;
+	global.mpi.my_z_pcoord = global.mpi.my_vert_pcoord;
 	
-	global.mpi.num_x_procs_real = global.mpi.num_p_vert;
-	global.mpi.num_y_procs_real = global.mpi.num_p_hor;
+	global.mpi.num_x_procs_real = global.mpi.num_p_hor;
+	global.mpi.num_y_procs_real = global.mpi.num_p_vert;
 	global.mpi.num_z_procs_real = 1;
 	
-	global.mpi.my_x_pcoord_real = global.mpi.my_vert_pcoord;
-	global.mpi.my_y_pcoord_real = global.mpi.my_hor_pcoord;
+	global.mpi.my_x_pcoord_real = global.mpi.my_hor_pcoord;
+	global.mpi.my_y_pcoord_real = global.mpi.my_vert_pcoord;
 	global.mpi.my_z_pcoord_real = 0;
 	
 	
 	
 	global.field.maxlx = Nx-1;
-	global.field.maxly = spectralTransform.local_Ny_vert-1;
-	global.field.maxlz = spectralTransform.local_Nz_hor-1;
+	global.field.maxly = spectralTransform.local_Ny-1;
+	global.field.maxlz = spectralTransform.local_Nz-1;
 
     // alias..
 	kfactor.resize(4);
@@ -127,17 +140,17 @@ FFF_PENCIL::FFF_PENCIL()
 	kfactor[2]= global.field.kfactor[2];
 	kfactor[3]= global.field.kfactor[3];
 	
-	local_Nx_vert=spectralTransform.local_Nx_vert;
-	local_Ny_vert=spectralTransform.local_Ny_vert;
-	local_Nz_vert=spectralTransform.local_Nz_vert;
+	local_Nx=Nx;
+	local_Ny=spectralTransform.local_Ny;
+	local_Nz=spectralTransform.local_Nz;
 	
-	local_Nx_hor=spectralTransform.local_Nx_hor;
-	local_Ny_hor=spectralTransform.local_Ny_hor;
-	local_Nz_hor=spectralTransform.local_Nz_hor;
-	
-	local_Nx_start=spectralTransform.local_Nx_start;
+	local_Nx_start=0;
 	local_Ny_start=spectralTransform.local_Ny_start;
 	local_Nz_start=spectralTransform.local_Nz_start;
+
+	local_Nx_real=spectralTransform.local_Nx;
+	local_Ny_real=spectralTransform.local_Ny;
+	local_Nz_real=spectralTransform.local_Nz*numprocs;
 	
 	shape_complex_array = global.field.shape_complex_array;
     shape_real_array = global.field.shape_real_array;
@@ -161,14 +174,7 @@ FFF_PENCIL::FFF_PENCIL()
 	my_z_pcoord_real = global.mpi.my_z_pcoord_real;
 
 
-	local_Nx=Nx;
-	local_Ny=local_Ny_vert;
-	local_Nz=local_Nz_hor;
-
-	local_Nx_real=local_Nx_vert;
-	local_Ny_real=local_Ny_hor;
-	local_Nz_real=Nz+2;
-
+	global.temp_array.X_transform.resize(shape_complex_array);
 
 	global.temp_array.X.resize(shape_complex_array);
     global.temp_array.X2.resize(shape_complex_array);
@@ -178,12 +184,12 @@ FFF_PENCIL::FFF_PENCIL()
 	
     // temp arrays
     // Being used in void ArrayOps::Get_XY_plane(Array<complx,3> A, Array<complx,2> plane_xy, int kz, string configuration)
-	global.temp_array.plane_xy.resize(Ny, Nx);
+	global.temp_array.plane_xy.resize(Nx, Ny);
 	
-    global.temp_array.plane_xy_inproc.resize(spectralTransform.local_Ny_vert, Nx);
+    global.temp_array.plane_xy_inproc.resize(Nx, spectralTransform.local_Ny);
 	
 	
-	BasicIO::Array_properties<3> array_properties;
+	/*BasicIO::Array_properties<3> array_properties;
 	array_properties.shape_full_complex_array = Ny, Nz/2+1, Nx;
 	array_properties.shape_full_real_array = Ny, Nz+2, Nx;
 
@@ -206,7 +212,7 @@ FFF_PENCIL::FFF_PENCIL()
 	array_properties.datatype_real_space = BasicIO::H5T_DP;
 
 
-	BasicIO::Set_H5_plans(array_properties, this);
+	BasicIO::Set_H5_plans(array_properties, this);*/	
 }
 
 

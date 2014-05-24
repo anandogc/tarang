@@ -170,6 +170,7 @@ vector<BasicIO::H5_dataset_meta> BasicIO::Get_meta(string filename, string path)
 	herr_t   status;
 	hsize_t num_obj;
 	int object_type;
+	
 	hid_t group_id, type_id, dataset_id;
 	char object_name[max_object_name_length+1];	// +1 for null character
 	hid_t           space;    /* Handles */
@@ -242,17 +243,35 @@ vector<string> BasicIO::Get_file_list(string path){
 
 //******************************************************************************
 
+herr_t Hdf5_reader_error_handler(int index,void *file_path)
+{
+	if (master){
+		cerr << "Error reading '" << (char*)file_path << "'" << endl;
+		H5Eprint(H5E_DEFAULT, stderr);
+	}
+	MPI_Barrier(MPI_COMM_WORLD);
+	exit (1);
+}
 
 //******************************************************************************
 int BasicIO::Read(void *data, H5_plan plan, string file_name, string dataset_name)
 {	
 	string file_path = data_in_folder+"/"+file_name+".h5";
 
+	if (!File_exists(file_path)){
+		if (master)
+			cerr << "File does not exist: '" << file_path << "'" << endl;
+		MPI_Barrier(MPI_COMM_WORLD);
+		exit(1);
+	}
+
+	H5Eset_auto(H5E_DEFAULT, Hdf5_reader_error_handler, (void*)file_path.c_str());
 	hid_t file_identifier = H5Fopen(file_path.c_str(), H5F_ACC_RDONLY, acc_template);
 
     if (file_identifier<0){
     	if (master) cerr << "BasicIO:: Unable to open " << file_name << " for reading." << endl;
-    	return 1;
+		MPI_Barrier(MPI_COMM_WORLD);
+		exit(1);
     }
 
     if (dataset_name.length()==0)
@@ -281,9 +300,20 @@ int BasicIO::Read(void *data, H5_plan plan, string file_name, string dataset_nam
 
 //*********************************************************************************************
 
+herr_t Hdf5_writer_error_handler(int index,void *file_path)
+{
+	if (master){
+		cerr << "Error writing '" << (char*)file_path << "'" << endl;
+		H5Eprint(H5E_DEFAULT, stderr);
+	}
+	MPI_Barrier(MPI_COMM_WORLD);
+	exit (1);
+}
+
 int BasicIO::Write(const void* data, H5_plan plan, string folder_name, string file_name, string dataset_name)
 {
    
+
    	if (frequent)
 		folder_name = "frequent";
 
@@ -291,8 +321,11 @@ int BasicIO::Write(const void* data, H5_plan plan, string folder_name, string fi
 	string folder_path = data_out_folder + "/" + folder_name; 
 	mkdir(folder_path.c_str(), S_IRWXU | S_IRWXG);
     
+	
 	//Open the file for writing
 	string file_path = folder_path + "/" + file_name + ".h5";
+
+	H5Eset_auto(H5E_DEFAULT, Hdf5_writer_error_handler, (void*)file_path.c_str());
 	hid_t file_identifier = H5Fcreate(file_path.c_str(), H5F_ACC_TRUNC, H5P_DEFAULT, acc_template);
 
     if (file_identifier<0){

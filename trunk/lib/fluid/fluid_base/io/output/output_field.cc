@@ -81,6 +81,10 @@ void FluidIO::Output_complex_field(FluidVF& U, FluidSF& T)
 void FluidIO::Output_complex_field_scalar(FluidVF& U, FluidSF& T)
 {
 	// Set Output directory
+	cout << "FluidIO::Output_complex_field_scalar:"
+	     << "U.cvf.V1 = " << U.cvf.V1
+	     << "U.cvf.V3 = " << U.cvf.V3
+	     << endl;
 	U.cvf.Write_complex_field();
 	T.csf.Write_complex_field();
 }

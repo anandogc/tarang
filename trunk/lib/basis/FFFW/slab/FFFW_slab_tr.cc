@@ -43,10 +43,10 @@
 void FFFW_SLAB::Forward_transform(Array<DP,3> Ar, Array<complx,3> A)
 {
     if (Ny > 1) 
-        spectralTransform.Forward_transform_FFFW_SLAB(Ar,A);
+        spectralTransform.Forward_transform(Ar,A);
     
     else if (Ny == 1){
-     //   spectralTransform.Forward_transform_FFFW_SLAB(Ar(Range::all(),0,Range::all()),A(Range::all(),0,Range::all()));
+       spectralTransform.Forward_transform(Ar(Range::all(),0,Range::all()),A(Range::all(),0,Range::all()));
     }
 }
 
@@ -56,11 +56,13 @@ void FFFW_SLAB::Forward_transform(Array<DP,3> Ar, Array<complx,3> A)
 
 void FFFW_SLAB::Inverse_transform(Array<complx,3> A, Array<DP,3> Ar)
 {
+	global.temp_array.X_transform = A;
+
     if (Ny > 1)
-        spectralTransform.Inverse_transform_FFFW_SLAB(A, Ar);
+        spectralTransform.Inverse_transform(global.temp_array.X_transform, Ar);
     
     else if (Ny == 1){
-    //   spectralTransform.Inverse_transform_FFFW_SLAB(Ar(Range::all(),0,Range::all()),A(Range::all(),0,Range::all()));
+    	spectralTransform.Inverse_transform(global.temp_array.X_transform(Range::all(),0,Range::all()),Ar(Range::all(),0,Range::all()));
    }
 }
 
@@ -72,9 +74,9 @@ void FFFW_SLAB::Xderiv(Array<complx,3> A, Array<complx,3> B)
 {
 	DP Kx;
 	
-	for (int lx = 0; lx < Nx; lx++) {
+	for (int lx = 0; lx < local_Nx; lx++) {
 		Kx = Get_kx(lx)*kfactor[1];
-		B(Range::all(),Range::all(),lx) = complx(0, Kx)* (A(Range::all(),Range::all(),lx)); 	
+		B(lx,Range::all(),Range::all()) = complx(0, Kx)* (A(lx,Range::all(),Range::all())); 	
 	}
 }
 
@@ -82,9 +84,9 @@ void FFFW_SLAB::Add_Xderiv(Array<complx,3> A, Array<complx,3> B)
 {
 	DP Kx;
 	
-	for (int lx = 0; lx < Nx; lx++) {
+	for (int lx = 0; lx < local_Nx; lx++) {
 		Kx = Get_kx(lx)*kfactor[1];
-		B(Range::all(),Range::all(),lx) += complx(0, Kx)* (A(Range::all(),Range::all(),lx));
+		B(lx,Range::all(),Range::all()) += complx(0, Kx)* (A(lx,Range::all(),Range::all()));
 	}
 }
 
@@ -104,9 +106,9 @@ void FFFW_SLAB::Yderiv(Array<complx,3> A, Array<complx,3> B)
 	DP Ky;
 	
 	if (Ny > 1)
-		for (int ly=0; ly<local_Ny; ly++) {
+		for (int ly=0; ly<Ny; ly++) {
 			Ky = Get_ky(ly)*kfactor[2];
-			B(ly,Range::all(),Range::all()) = complx(0, Ky)* (A(ly,Range::all(),Range::all())); 
+			B(Range::all(),ly,Range::all()) = complx(0, Ky)* (A(Range::all(),ly,Range::all())); 
 		}
 	
 	else 
@@ -120,9 +122,9 @@ void FFFW_SLAB::Add_Yderiv(Array<complx,3> A, Array<complx,3> B)
 	DP Ky;
 	
 	if (Ny > 1)
-		for (int ly=0; ly<local_Ny; ly++) {
+		for (int ly=0; ly<Ny; ly++) {
 			Ky = Get_ky(ly)*kfactor[2];
-			B(ly,Range::all(),Range::all()) += complx(0, Ky)* (A(ly,Range::all(),Range::all()));
+			B(Range::all(),ly,Range::all()) += complx(0, Ky)* (A(Range::all(),ly,Range::all()));
 		}
 }
 
@@ -135,7 +137,7 @@ void FFFW_SLAB::Zderiv(Array<complx,3> A, Array<complx,3> B)
     
     for (int lz=0; lz<=Nz/2; lz++) {
 		Kz = lz*kfactor[3];
-		B(Range::all(),lz,Range::all()) = complx(0, Kz)*(A(Range::all(),lz,Range::all())); 	
+		B(Range::all(),Range::all(),lz) = complx(0, Kz)*(A(Range::all(),Range::all(),lz)); 	
 	}
 }
 
@@ -146,7 +148,7 @@ void FFFW_SLAB::Add_Zderiv(Array<complx,3> A, Array<complx,3> B)
     
     for (int lz=0; lz<=Nz/2; lz++) {
 		Kz = lz*kfactor[3];
-		B(Range::all(),lz,Range::all()) += complx(0, Kz)*(A(Range::all(),lz,Range::all()));
+		B(Range::all(),Range::all(),lz) += complx(0, Kz)*(A(Range::all(),Range::all(),lz));
 	}
 }
 
@@ -161,16 +163,16 @@ void FFFW_SLAB::Laplacian(DP factor, Array<complx,3> A, Array<complx,3> B)
 	
 	DP Ksqr;
 	
-	for (int ly=0; ly<A.extent(0); ly++) {
-		Ksqr = my_pow(Get_ky(ly)*kfactor[2],2);
-		
-        for (int lz=0; lz<A.extent(1); lz++) {
-			Ksqr += my_pow(Get_lz(lz)*kfactor[3],2);
+	for (int lx=0; lx<A.extent(0); lx++) {
+		Ksqr =  my_pow(Get_kx(lx)*kfactor[1],2);
+
+		for (int ly=0; ly<A.extent(1); ly++) {
+			Ksqr += my_pow(Get_ky(ly)*kfactor[2],2);
 			
-            for (int lx=0; lx<A.extent(2); lx++) {
-				Ksqr +=  my_pow(Get_kx(lx)*kfactor[1],2);
+	        for (int lz=0; lz<A.extent(2); lz++) {
+				Ksqr += my_pow(Get_lz(lz)*kfactor[3],2);
 				
-				B(ly,lz,lx) = (-factor*Ksqr)*A(ly,lz,lx);
+				B(lx,ly,lz) = (-factor*Ksqr)*A(lx,ly,lz);
 			}
 		}
 	}
@@ -187,16 +189,16 @@ void FFFW_SLAB::Subtract_Laplacian(DP factor, Array<complx,3> A, Array<complx,3>
 	
 	DP Ksqr, Ksqr_factor;
 	
-	for (int ly=0; ly<A.extent(0); ly++) {
-		Ksqr = my_pow(Get_ky(ly)*kfactor[2],2);
-		
-        for (int lz=0; lz<A.extent(1); lz++) {
-			Ksqr += my_pow(Get_lz(lz)*kfactor[3],2);
+    for (int lx=0; lx<A.extent(0); lx++) {
+		Ksqr = my_pow(Get_lx(lx)*kfactor[1],2);
+
+		for (int ly=0; ly<A.extent(1); ly++) {
+			Ksqr += my_pow(Get_ky(ly)*kfactor[2],2);
 			
-            for (int lx=0; lx<A.extent(2); lx++) {
-				Ksqr_factor = factor * (Ksqr+my_pow(Get_kx(lx)*kfactor[1],2));
+	        for (int lz=0; lz<A.extent(2); lz++) {
+				Ksqr_factor = factor * (Ksqr+my_pow(Get_kz(lz)*kfactor[3],2));
 				
-				B(ly,lz,lx) += Ksqr_factor*A(ly,lz,lx);
+				B(lx,ly,lz) += Ksqr_factor*A(lx,ly,lz);
 			}
 		}
 	}

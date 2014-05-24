@@ -45,7 +45,7 @@ void FluidIO::Open_base_files()
 {
 	string filename;
 	
-	if (my_id == master_id) {
+	if (master) {
         
 		filename = "/in/field_in.d";
 		filename = global.io.data_dir+ filename;	field_in_file.open(filename.c_str());
@@ -113,7 +113,6 @@ void FluidIO::Open_base_files()
 		pressure_file.setf(ios::scientific);
 		pressure_file.precision(global.io.output_precision); 
 		
-		//	cout.setf(ios::scientific);
 		cout.setf(ios::fixed);
 		cout.precision(global.io.output_precision); 
 	}

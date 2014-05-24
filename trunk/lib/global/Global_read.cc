@@ -263,7 +263,7 @@ void Global::Parse(int argc, char** argv, bool parse_para)
 	if (stop){
 		MPI_Finalize();
 		exit(0);
-	}	
+	}   
 	
 	//Parse the parameter file
 	if (optind<argc){
@@ -344,8 +344,8 @@ void Global::Read()
 		Assign_if_input_provided<DP>(para["PHYSICS"], "Peclet", PHYSICS.Peclet, 1.0);
 		Assign_if_input_provided<DP>(para["PHYSICS"], "Peclet_c", PHYSICS.Peclet_c, 1.0);
 		
-	//	if ( (PHYSICS.temperature_grad != 1) && (PHYSICS.temperature_grad != -1) )
-	//		Show_error("PHYSICS.temperature_grad can be either +1 or -1");
+	//  if ( (PHYSICS.temperature_grad != 1) && (PHYSICS.temperature_grad != -1) )
+	//      Show_error("PHYSICS.temperature_grad can be either +1 or -1");
 	}
 	if (program.kind == "MRBC"){
 		para["MRBC"]["Pr_option"] >> MRBC.Pr_option;
@@ -570,6 +570,29 @@ void Global::Read()
 	Assign_if_input_provided(para["io"]["time"], "Tk_cylindrical_ring_spectrum_save_first"  , io.time.Tk_cylindrical_ring_spectrum_save_next  , myconstant.INF_TIME);
 	Assign_if_input_provided(para["io"]["time"], "cout_save_first"          , io.time.cout_save_next          , myconstant.INF_TIME);
 
+	//save_first are relative to time.init
+	io.time.global_save_next                        +=time.init;
+	io.time.complex_field_save_next                 +=time.init;
+	io.time.field_frequent_save_next                +=time.init;
+	io.time.field_reduced_save_next                 +=time.init;
+	io.time.real_field_save_next                    +=time.init;
+	io.time.field_k_save_next                       +=time.init;
+	io.time.field_r_save_next                       +=time.init;
+	io.time.spectrum_save_next                      +=time.init;
+	io.time.pressure_save_next                      +=time.init;
+	io.time.pressure_spectrum_save_next             +=time.init;
+	io.time.flux_save_next                          +=time.init;
+	io.time.shell_to_shell_save_next                +=time.init;
+	io.time.ring_spectrum_save_next                 +=time.init;
+	io.time.ring_to_ring_save_next                  +=time.init;
+	io.time.cylindrical_ring_spectrum_save_next     +=time.init;
+	io.time.cylindrical_ring_to_ring_save_next      +=time.init;
+	io.time.structure_fn_save_next                  +=time.init;
+	io.time.Tk_shell_spectrum_save_next             +=time.init;
+	io.time.Tk_ring_spectrum_save_next              +=time.init;
+	io.time.Tk_cylindrical_ring_spectrum_save_next  +=time.init;
+	io.time.cout_save_next                          +=time.init;
+
 	
 	Assign_if_input_provided(para["io"]["time"], "global_save_interval"        , io.time.global_save_interval        , myconstant.INF_TIME);
 	Assign_if_input_provided(para["io"]["time"], "complex_field_save_interval" , io.time.complex_field_save_interval , myconstant.INF_TIME);
@@ -732,7 +755,7 @@ void Global::Read()
 				if (para["energy_transfer"]["ring_to_ring"]["sector_angles"].size() == (energy_transfer.ring_to_ring.no_sectors+1)) {
 					para["energy_transfer"]["ring_to_ring"]["sector_angles"] >> energy_transfer.ring_to_ring.sector_angles;
 					// provide the boundaries (no+1)
-				}			
+				}           
 				else {
 					if (mpi.master) 
 						cout << "WARNING: size(energy_transfer.ring_to_ring.sector_angles) != number supplied.  Computer proceeds to make EQUISPACED sector_angles " << endl;
@@ -751,7 +774,7 @@ void Global::Read()
 			if (Input_provided(para["energy_transfer"]["cylindrical_ring_to_ring"],"radii") ) {
 				if (para["energy_transfer"]["cylindrical_ring_to_ring"]["radii"].size() == energy_transfer.cylindrical_ring_to_ring.no_shells) {
 					para["energy_transfer"]["cylindrical_ring_to_ring"]["radii"] >> energy_transfer.cylindrical_ring_to_ring.radii;
-				}			
+				}           
 				else {
 					if (mpi.master) 
 						cout << "WARNING: size(energy_transfer.cylindrical_ring_to_ring.radii) != number supplied.  Computer builds the array " << endl;

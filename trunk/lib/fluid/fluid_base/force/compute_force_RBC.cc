@@ -101,9 +101,6 @@ void FORCE::Compute_force_RBC_basic_assign(FluidVF& U, FluidSF& T)
 			
 			else if (global.PHYSICS.Pr_option == "PRINFTY")
                 T.Force =   (U.cvf.V1)/TWO;
-			
-			if (global.PHYSICS.temperature_grad != 1)  // for stratififed flows
-				T.Force = (DP (global.PHYSICS.temperature_grad))*T.Force;
 		}
     }
     
@@ -351,25 +348,6 @@ void FORCE::Compute_force_stratified_random(FluidVF& U, FluidSF& T)
     Compute_force_using_random_energy_helicity_spectrum_basic_add(U, inner_radius, outer_radius, force_spectrum_amplitude, force_spectrum_exponent, hk_by_kek);
     
     Compute_force_using_random_energy_spectrum_basic_add(T, inner_radius, outer_radius, Tforce_spectrum_amplitude, Tforce_spectrum_exponent);
-    
-    
-    DP total_dissipation1 = 0; //-TWO * universal->Get_total_energy(U.cvf.V1, U.Force1);
-    
-    U.cvf.Compute_total_k2energy();
-
-    DP total_dissipation = total_dissipation1 + U.dissipation_coefficient*U.cvf.total_k2energy;
-    
-    DP epsilon = 0.9* total_dissipation;
-
-   // cout << "In Compute_force_stratified_random: " << total_dissipation1 << " " << total_dissipation << " " << U.dissipation_coefficient << endl;
-    
- 
- /*   bool add_flag = true;
-    DP epsilon_factor = global.force.double_para(2);
-    DP epsh_by_k_epse = 0;
-    Force_energy_helicity_supply_or_level_basic(U, "ENERGY_SUPPLY", inner_radius, outer_radius, epsilon, epsh_by_k_epse, true); */
-  
-
 }
 
 //************************ End of compute_force_RB.cc *****************************************

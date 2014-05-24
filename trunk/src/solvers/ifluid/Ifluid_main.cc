@@ -46,12 +46,12 @@ int Ifluid_main()
 		
 	// ITERATION...
 	if (global.program.iter_or_diag == "ITERATION") {
-        
-        fluidIO_incompress.Open_files();
-        fluidIO_incompress.Init_energy_transfer();
-        
-        FluidVF  U(global.field.diss_coefficients[0], global.field.hyper_diss_coefficients[0], global.field.hyper_diss_exponents[0], global.force.U_switch, "U");
-        
+		
+		fluidIO_incompress.Open_files();
+		fluidIO_incompress.Init_energy_transfer();
+		
+		FluidVF  U(global.field.diss_coefficients[0], global.field.hyper_diss_coefficients[0], global.field.hyper_diss_exponents[0], global.force.U_switch, "U");
+		
 		Pressure P;
 
 		FORCE  Force;
@@ -60,18 +60,29 @@ int Ifluid_main()
 		
 		
 		fluidIO_incompress.Read_init_cond(U);
+
+
+		// fluidIO_incompress.Output_cout(U);  // for initial cond
+		// exit(1);
+		// U.Inverse_transform();
+		// U.Forward_transform();
+		// //cout << U.rvf.V1r << endl;
+		// universal->Print_large_Fourier_elements(U.cvf.V1, "U.cvf.V1");
+		// universal->Print_large_Fourier_elements(U.cvf.V2, "U.cvf.V2");
+		// universal->Print_large_Fourier_elements(U.cvf.V3, "U.cvf.V3");
+		// exit(1);
 		
-        DP total_abs_div;
+		DP total_abs_div;
 		U.Compute_divergence_field(global.temp_array.X2, total_abs_div, true);
-        
-        // true mean print nonzero div modes
-        if (total_abs_div > MYEPS2) {
-            cout << "abs(sum(Divergence)) of the initial field U = " << total_abs_div << "is large. " << '\n' << "Therefore exiting the program." << endl;
-            //return (1);
-        }
-        
-        fluidIO_incompress.Output_all_inloop(U, P);  // for initial cond
-               
+		
+		// true mean print nonzero div modes
+		if (total_abs_div > MYEPS2) {
+			cout << "abs(sum(Divergence)) of the initial field U = " << total_abs_div << "is large. " << '\n' << "Therefore exiting the program." << endl;
+			return (1);
+		}
+		
+		fluidIO_incompress.Output_all_inloop(U, P);  // for initial cond
+			   
 		if (my_id == master_id)  
 			cout << endl << "STARTING THE SIMULATION NOW" << endl;
 		int  iter=0;  // iterations 
@@ -79,10 +90,10 @@ int Ifluid_main()
 		global.time.now = global.time.init;
 		
 		
-        if (basis_type=="ChFF")
-            time_advance_incompress.Compute_homgeneous_soln_influence_matrix(U,P);
-        
-        //        cout << "influence matrix = " << global.temp_array.influence_matrix << endl;
+		if (basis_type=="ChFF")
+			time_advance_incompress.Compute_homgeneous_soln_influence_matrix(U,P);
+		
+		//        cout << "influence matrix = " << global.temp_array.influence_matrix << endl;
 #ifndef GPU
 		do 	{
 			global.time.dt_computation_done = false;
@@ -98,25 +109,25 @@ int Ifluid_main()
 			
 			
 			DP total_abs_div;
-        //    U.Compute_divergence_field(global.temp_array.X2, total_abs_div, true);
-            // true mean print nonzero div modes
-            if (total_abs_div > MYEPS2) {
-                cout << "abs(sum(Divergence)) of U = " << total_abs_div << "is large. " << '\n' << "Therefore exiting the program." << endl;
-                return (1);
-            }
+			U.Compute_divergence_field(global.temp_array.X2, total_abs_div, true);
+			// true mean print nonzero div modes
+			if (total_abs_div > MYEPS2) {
+				cout << "abs(sum(Divergence)) of U = " << total_abs_div << "is large. " << '\n' << "Therefore exiting the program." << endl;
+				return (1);
+			}
 	
 			fluidIO_incompress.Output_all_inloop(U, P);
 			
-            if ( (my_id == 0) && isnan(U.cvf.total_energy) )  { 
-                cout << "ERROR: Numerical Overflow " << endl;  break; 
-            }
+			if ( (my_id == 0) && isnan(U.cvf.total_energy) )  { 
+				cout << "ERROR: Numerical Overflow " << endl;  break; 
+			}
 		}
 		while ( (global.time.now < global.time.final) && (clock() < global.time.job_time_final) );
 #else
 		Time_iterate_fluid_gpu();
 #endif
-        
-        fluidIO_incompress.Output_last(U, P);
+		
+		fluidIO_incompress.Output_last(U, P);
 		
 		fluidIO_incompress.Close_files();
 	}
@@ -124,128 +135,128 @@ int Ifluid_main()
 	//*******************
 	// DIAGNOSTICS
 	else if (global.program.iter_or_diag == "DIAGNOSTICS") {
-        string filename;
-        
-        FluidVF  U(global.field.diss_coefficients[0], global.field.hyper_diss_coefficients[0], global.field.hyper_diss_exponents[0], global.force.U_switch, "U");
-        
-        Pressure P;
-        
-        fluidIO_incompress.Init_energy_transfer();
-        fluidIO_incompress.Read_init_cond(U);
-        
+		string filename;
+		
+		FluidVF  U(global.field.diss_coefficients[0], global.field.hyper_diss_coefficients[0], global.field.hyper_diss_exponents[0], global.force.U_switch, "U");
+		
+		Pressure P;
+		
+		fluidIO_incompress.Init_energy_transfer();
+		fluidIO_incompress.Read_init_cond(U);
+		
 		
 		int i=0;
 		while (i <= global.io.diagnostic_procedures.size()) {
 			switch (global.io.diagnostic_procedures[i])  {		
 				case (0) : { 
-                    filename = "/out/glob.d";
-                    filename = global.io.data_dir+ filename;   
-                    fluidIO_incompress.global_file.open(filename.c_str());
-                    if (!fluidIO_incompress.global_file.is_open()) 
-                        cout << "UNABLE TO OPEN FILE global_file (glob.d) " << endl;
-                    fluidIO_incompress.Output_global(U);
-                    fluidIO_incompress.Close_files();
-                    break;	
-                }
-                    
+					filename = "/out/glob.d";
+					filename = global.io.data_dir+ filename;   
+					fluidIO_incompress.global_file.open(filename.c_str());
+					if (!fluidIO_incompress.global_file.is_open()) 
+						cout << "UNABLE TO OPEN FILE global_file (glob.d) " << endl;
+					fluidIO_incompress.Output_global(U);
+					fluidIO_incompress.Close_files();
+					break;	
+				}
+					
 				case (1) : {
-                    filename = "/out/spectrum.d";
-                    filename = global.io.data_dir+ filename;   
-                    fluidIO_incompress.spectrum_file.open(filename.c_str());
-                    fluidIO_incompress.Output_shell_spectrum(U);
-                    fluidIO_incompress.Close_files();
-                    break;	
-                }
-                    
+					filename = "/out/spectrum.d";
+					filename = global.io.data_dir+ filename;   
+					fluidIO_incompress.spectrum_file.open(filename.c_str());
+					fluidIO_incompress.Output_shell_spectrum(U);
+					fluidIO_incompress.Close_files();
+					break;	
+				}
+					
 				case (2) : {
-                    filename = "/out/ring_spectrum.d";
-                    filename = global.io.data_dir+ filename;   
-                    fluidIO_incompress.ring_spectrum_file.open(filename.c_str());
-                    fluidIO_incompress.Output_ring_spectrum(U);
-                    fluidIO_incompress.Close_files();
-                    break;
-                }
-                    
-                    
+					filename = "/out/ring_spectrum.d";
+					filename = global.io.data_dir+ filename;   
+					fluidIO_incompress.ring_spectrum_file.open(filename.c_str());
+					fluidIO_incompress.Output_ring_spectrum(U);
+					fluidIO_incompress.Close_files();
+					break;
+				}
+					
+					
 				case (3) : {
-                    filename = "/out/cyl_ring_spectrum.d";
-                    filename = global.io.data_dir+ filename;  
-                    fluidIO_incompress.cylindrical_ring_spectrum_file.open(filename.c_str());
-                    fluidIO_incompress.Output_cylindrical_ring_spectrum(U);
-                    fluidIO_incompress.Close_files();
-                    break;
-                }
-                    
+					filename = "/out/cyl_ring_spectrum.d";
+					filename = global.io.data_dir+ filename;  
+					fluidIO_incompress.cylindrical_ring_spectrum_file.open(filename.c_str());
+					fluidIO_incompress.Output_cylindrical_ring_spectrum(U);
+					fluidIO_incompress.Close_files();
+					break;
+				}
+					
 				case (4) : {
-                    filename = "/out/flux.d";
-                    filename = global.io.data_dir+ filename;   
-                    fluidIO_incompress.flux_file.open(filename.c_str());
-                    fluidIO_incompress.Output_flux(U, P);
-                    fluidIO_incompress.Close_files();
-                    break;  
-                }
-                    
+					filename = "/out/flux.d";
+					filename = global.io.data_dir+ filename;   
+					fluidIO_incompress.flux_file.open(filename.c_str());
+					fluidIO_incompress.Output_flux(U, P);
+					fluidIO_incompress.Close_files();
+					break;  
+				}
+					
 						// force reqd for force-feed calculations
 				case (5) : {
-                    filename = "/out/shell_to_shell.d";
-                    filename = global.io.data_dir+ filename;   
-                    fluidIO_incompress.shell_to_shell_file.open(filename.c_str());
-                    fluidIO_incompress.Output_shell_to_shell(U, P);
-                    fluidIO_incompress.Close_files();
-                    break;
-                }
-                    
-                case (6) : {
-                    filename = "/out/ring_to_ring.d";
-                    filename = global.io.data_dir+ filename;   
-                    fluidIO_incompress.ring_to_ring_file.open(filename.c_str());
-                    fluidIO_incompress.Output_ring_to_ring(U, P);
-                    fluidIO_incompress.Close_files();
-                    break;	
-                }
-                    
-                    
+					filename = "/out/shell_to_shell.d";
+					filename = global.io.data_dir+ filename;   
+					fluidIO_incompress.shell_to_shell_file.open(filename.c_str());
+					fluidIO_incompress.Output_shell_to_shell(U, P);
+					fluidIO_incompress.Close_files();
+					break;
+				}
+					
+				case (6) : {
+					filename = "/out/ring_to_ring.d";
+					filename = global.io.data_dir+ filename;   
+					fluidIO_incompress.ring_to_ring_file.open(filename.c_str());
+					fluidIO_incompress.Output_ring_to_ring(U, P);
+					fluidIO_incompress.Close_files();
+					break;	
+				}
+					
+					
 				case (7) : {
-                    filename = "/out/cylindrical_ring_to_ring.d";
-                    filename = global.io.data_dir+ filename;  
-                    fluidIO_incompress.cylindrical_ring_to_ring_file.open(filename.c_str());
-                    fluidIO_incompress.Output_cylindrical_ring_to_ring(U, P);
-                    fluidIO_incompress.Close_files();
-                    break;	
-                }	
+					filename = "/out/cylindrical_ring_to_ring.d";
+					filename = global.io.data_dir+ filename;  
+					fluidIO_incompress.cylindrical_ring_to_ring_file.open(filename.c_str());
+					fluidIO_incompress.Output_cylindrical_ring_to_ring(U, P);
+					fluidIO_incompress.Close_files();
+					break;	
+				}	
 						//		case (7) : fluidIO_incompress.Output_structure_fn(U);  break;
 						//		case (8) : fluidIO_incompress.Output_planar_structure_fn(U);  break;
 				case (10) : {
-                    filename = "/out/field_k_out_"+To_string(my_id)+".d";
-                    filename = global.io.data_dir+ filename;	  
-                    fluidIO_incompress.field_k_out_file.open(filename.c_str());
-                    fluidIO_incompress.Output_field_k(U);
-                    fluidIO_incompress.Close_files();
-                    break;
-                }
-                    
+					filename = "/out/field_k_out_"+To_string(my_id)+".d";
+					filename = global.io.data_dir+ filename;	  
+					fluidIO_incompress.field_k_out_file.open(filename.c_str());
+					fluidIO_incompress.Output_field_k(U);
+					fluidIO_incompress.Close_files();
+					break;
+				}
+					
 				case (11) : {
-                    filename = "/out/field_r_out_"+To_string(my_id)+".d";
-                    filename = global.io.data_dir+ filename;	  
-                    fluidIO_incompress.field_r_out_file.open(filename.c_str());
-                    fluidIO_incompress.Output_field_r(U);
-                    fluidIO_incompress.Close_files();
-                    break;
-                }
-                    
+					filename = "/out/field_r_out_"+To_string(my_id)+".d";
+					filename = global.io.data_dir+ filename;	  
+					fluidIO_incompress.field_r_out_file.open(filename.c_str());
+					fluidIO_incompress.Output_field_r(U);
+					fluidIO_incompress.Close_files();
+					break;
+				}
+					
 				case (13) : {
-                    U.Inverse_transform();
-                    fluidIO_incompress.Output_real_field(U); 
-                    break;
-                }
+					U.Inverse_transform();
+					fluidIO_incompress.Output_real_field(U); 
+					break;
+				}
 				case (14) : {
-                    filename = "/out/field_out_reduced.d";
-                    filename = global.io.data_dir+ filename;
-                    fluidIO_incompress.field_out_reduced_file.open(filename.c_str());
-                    fluidIO_incompress.Output_reduced_complex_field(U);
-                    fluidIO_incompress.Close_files();
-                    break;
-                }
+					filename = "/out/field_out_reduced.d";
+					filename = global.io.data_dir+ filename;
+					fluidIO_incompress.field_out_reduced_file.open(filename.c_str());
+					fluidIO_incompress.Output_reduced_complex_field(U);
+					fluidIO_incompress.Close_files();
+					break;
+				}
 			}
 			
 			i++;

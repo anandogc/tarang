@@ -1,7 +1,9 @@
 ## v2.4.0
-- Integrated with Sectral Transform v2 (mkv,anandogc)
+- Integrated with Sectral Transform v2 (mkv, anandogc)
 
 ### Bug fixes
+- Resolved(#2): In para.yaml, io.time.*save_first are now relative to time.init (siddhesh, anandogc)
+- Resolved(#1): HDF5 IO now gives error and the program is terminated on any IO error (biplab_dutta, anandogc)
 - output_ET.cc: shell_to_shell_file flushed properly. (ksreddy)
 
 

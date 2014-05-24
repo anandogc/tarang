@@ -103,8 +103,8 @@ FFF_SLAB::FFF_SLAB()
 		if (global.mpi.master) cerr << "ERROR in FFF_slab.cc: Array not being divided equally.  Check dimensions" << endl;
 		exit(1);
 	}
-	
-	spectralTransform.Init("FFF", "SLAB", 1, Nx, Ny, Nz);
+
+	spectralTransform.Init("FFF", Nx, Ny, Nz);
 	
 	global.field.maxlx = global.field.Nx-1;
 	global.field.maxly = spectralTransform.local_Ny-1;
@@ -166,13 +166,9 @@ FFF_SLAB::FFF_SLAB()
 	shape_complex_array = global.field.shape_complex_array;
 	shape_real_array = global.field.shape_real_array;
 	
-	if (Ny>1)
-		global.temp_array.X3d_transform.resize(shape_complex_array);
-	else
-		global.temp_array.X2d_transform.resize(shape(shape_complex_array(0), shape_complex_array(2)));
-	
 	global.temp_array.X.resize(shape_complex_array);
 	global.temp_array.X2.resize(shape_complex_array);
+	global.temp_array.X_transform.resize(shape_complex_array);
 	
 	global.temp_array.Xr.resize(shape_real_array);
 	global.temp_array.Xr2.resize(shape_real_array);

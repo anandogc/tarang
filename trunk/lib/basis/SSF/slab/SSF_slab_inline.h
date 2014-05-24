@@ -49,9 +49,6 @@
 
 #include "SSF_slab.h"
 
-using namespace blitz;
-
-
 
 //*********************************************************************************************
 
@@ -95,7 +92,7 @@ inline int SSF_SLAB::Get_ky(int ly) { return ly; }
  */
 inline int SSF_SLAB::Get_ly(int ky) { return  ky; }
 
-inline int SSF_SLAB::Get_iy(int ky) { return  ky; } //This is not implemented for this basis
+inline int SSF_SLAB::Get_iy(int ky) { return  ky; } 
 
 inline int SSF_SLAB::Get_kz(int lz)  { return lz; } 
 
@@ -117,7 +114,7 @@ inline complx SSF_SLAB::Get_spectral_field(int kx, int ky, int kz, Array<complx,
     int ly = Get_ly(ky);
 	
 	if  ((lx >= 0) && (lx < local_Nx))
-		return A(ly, kz, lx);
+		return A(lx, ly, kz);
 
 	return 0;
 }
@@ -129,7 +126,7 @@ inline TinyVector<complx,3> SSF_SLAB::Get_spectral_field(int kx, int ky, int kz,
     int ly = Get_ly(ky);
 	
 	if  ((lx >= 0) && (lx < local_Nx))
-		return TinyVector<complx,3>(Ax(ly, kz, lx), Ay(ly, kz, lx), Az(ly, kz, lx));
+		return TinyVector<complx,3>(Ax(lx, ly, kz), Ay(lx, ly, kz), Az(lx, ly, kz));
 	
 	return TinyVector<complx,3>(0,0,0);
 }
@@ -154,7 +151,7 @@ inline void SSF_SLAB::Assign_spectral_field(int kx, int ky, int kz, Array<complx
     int ly = Get_ly(ky);
 	
 	if ((lx >= 0) && (lx < local_Nx))
-		A(ly, kz, lx) = field;
+		A(lx, ly, kz) = field;
 }
 
 inline void SSF_SLAB::Assign_spectral_field(int kx, int ky, int kz, Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az, TinyVector<complx,3> V)
@@ -163,9 +160,9 @@ inline void SSF_SLAB::Assign_spectral_field(int kx, int ky, int kz, Array<complx
     int ly = Get_ly(ky);
 	
 	if ((lx >= 0) && (lx < local_Nx)) {
-		Ax(ly, kz, lx) = V(0);
-		Ay(ly, kz, lx) = V(1);
-		Az(ly, kz, lx) = V(2);
+		Ax(lx, ly, kz) = V(0);
+		Ay(lx, ly, kz) = V(1);
+		Az(lx, ly, kz) = V(2);
 	}
 }
 
@@ -186,7 +183,7 @@ inline void SSF_SLAB::Add_spectral_field(int kx, int ky, int kz, Array<complx,3>
     int ly = Get_ly(ky);
 	
 	if ((lx >= 0) && (lx < local_Nx))
-		A(ly, kz, lx) += field;
+		A(lx, ly, kz) += field;
 }
 
 inline void SSF_SLAB::Add_spectral_field(int kx, int ky, int kz, Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az, TinyVector<complx,3> V)
@@ -195,9 +192,9 @@ inline void SSF_SLAB::Add_spectral_field(int kx, int ky, int kz, Array<complx,3>
     int ly = Get_ly(ky);
 	
 	if ((lx >= 0) && (lx < local_Nx)) {
-		Ax(ly, kz, lx) += V(0);
-		Ay(ly, kz, lx) += V(1);
-		Az(ly, kz, lx) += V(2);
+		Ax(lx, ly, kz) += V(0);
+		Ay(lx, ly, kz) += V(1);
+		Az(lx, ly, kz) += V(2);
 	}
 }
 
@@ -217,13 +214,13 @@ inline void SSF_SLAB::Add_spectral_field(int kx, int ky, int kz, Array<complx,3>
 
 inline complx SSF_SLAB::Get_local_spectral_field(int lx, int ly, int lz, Array<complx,3> A)
 { 
-	return A(ly, lz, lx);
+	return A(lx, ly, lz);
 }
 
 inline TinyVector<complx,3> SSF_SLAB::Get_local_spectral_field(int lx, int ly, int lz, Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az)
 {
 	
-	return TinyVector<complx,3>(Ax(ly, lz, lx), Ay(ly, lz, lx), Az(ly, lz, lx));
+	return TinyVector<complx,3>(Ax(lx, ly, lz), Ay(lx, ly, lz), Az(lx, ly, lz));
 }
 
 /*
@@ -243,15 +240,15 @@ inline void SSF_SLAB::Get_local_spectral_field(int lx, int ly, int lz, Array<com
 inline void SSF_SLAB::Assign_local_spectral_field(int lx, int ly, int lz, Array<complx,3> A, complx field)
 { 
 	if ((lx >= 0) && (lx < local_Nx))
-		A(ly, lz, lx) = field;
+		A(lx, ly, lz) = field;
 }
 
 inline void SSF_SLAB::Assign_local_spectral_field(int lx, int ly, int lz, Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az, TinyVector<complx,3> V)
 {	
 	if ((lx >= 0) && (lx < local_Nx)) {
-		Ax(ly, lz, lx) = V(0);
-		Ay(ly, lz, lx) = V(1);
-		Az(ly, lz, lx) = V(2);
+		Ax(lx, ly, lz) = V(0);
+		Ay(lx, ly, lz) = V(1);
+		Az(lx, ly, lz) = V(2);
 	}
 }
 
@@ -270,15 +267,15 @@ inline void SSF_SLAB::Assign_local_spectral_field(int lx, int ly, int lz, Array<
 inline void SSF_SLAB::Add_local_spectral_field(int lx, int ly, int lz, Array<complx,3> A, complx field)
 { 
 	if ((lx >= 0) && (lx < local_Nx))
-		A(ly, lz, lx) += field;
+		A(lx, ly, lz) += field;
 }
 
 inline void SSF_SLAB::Add_local_spectral_field(int lx, int ly, int lz, Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az, TinyVector<complx,3> V)
 {	
 	if ((lx >= 0) && (lx < local_Nx)) {
-		Ax(ly, lz, lx) += V(0);
-		Ay(ly, lz, lx) += V(1);
-		Az(ly, lz, lx) += V(2);
+		Ax(lx, ly, lz) += V(0);
+		Ay(lx, ly, lz) += V(1);
+		Az(lx, ly, lz) += V(2);
 	}
 }
 
@@ -317,10 +314,9 @@ inline DP SSF_SLAB::Get_real_field(int rx, int ry, int rz, Array<DP,3> A)
 {	
 
     int ly = Get_ly_real_space(ry);
-	int lz = Get_lz_real_space(rz);
 	
 	if ((ly >= 0) && (ly < local_Ny))
-		return A(ly, lz, rx);
+		return A(rx, ly, rz);
 
 	return 0;
 }
@@ -329,10 +325,9 @@ inline TinyVector<DP,3> SSF_SLAB::Get_real_field(int rx, int ry, int rz, Array<D
 {
 
     int ly = Get_ly_real_space(ry);
-    int lz = Get_lz_real_space(rz);
 	
 	if ((ly >= 0) && (ly < local_Ny))
-		TinyVector<DP,3>(Ax(ly, lz, rx), Ay(ly, lz, rx), Az(ly, lz, rx));
+		TinyVector<DP,3>(Ax(rx, ly, rz), Ay(rx, ly, rz), Az(rx, ly, rz));
 	
 	return TinyVector<DP,3>(0,0,0);
 }
@@ -343,22 +338,20 @@ inline void SSF_SLAB::Assign_real_field(int rx, int ry, int rz, Array<DP,3> A, D
 {	
 
 	int ly = Get_ly_real_space(ry);
-	int lz = Get_lz_real_space(rz);
 	
 	if ((ly >= 0) && (ly < local_Ny))
-		A(ly, lz, rx) = field;
+		A(rx, ly, rz) = field;
 }
 
 inline void SSF_SLAB::Assign_real_field(int rx, int ry, int rz, Array<DP,3> Ax, Array<DP,3> Ay, Array<DP,3> Az, TinyVector<DP,3> V)
 {
 
     int ly = Get_ly_real_space(ry);
-    int lz = Get_lz_real_space(rz);
 	
 	if ((ly >= 0) && (ly < local_Ny))  {
-		Ax(ly, lz, rx) = V(0);
-		Ay(ly, lz, rx) = V(1);
-		Az(ly, lz, rx) = V(2);
+		Ax(rx, ly, rz) = V(0);
+		Ay(rx, ly, rz) = V(1);
+		Az(rx, ly, rz) = V(2);
 	}
 }
 
@@ -531,9 +524,9 @@ inline DP SSF_SLAB::Get_Modal_helicity
 
 	TinyVector<DP,3> Vreal, Vimag, VrcrossVi, K;
 	
-	complx Vx = Ax(ly, lz, lx);
-	complx Vy = Ay(ly, lz, lx);
-	complx Vz = Az(ly, lz, lx);
+	complx Vx = Ax(lx, ly, lz);
+	complx Vy = Ay(lx, ly, lz);
+	complx Vz = Az(lx, ly, lz);
 	
 	// -I to convert sin to Fourier basis along x axis
 	if (global.program.sincostr_switch == "SCF") {	
@@ -583,16 +576,16 @@ inline void SSF_SLAB::Compute_Modal_vorticity
 	
 	// -I to convert sin to Fourier basis along x axis
 	if (global.program.sincostr_switch == "SCF")
-		Vi = (-I)*Ax(ly, lz, lx), Ay(ly, lz, lx), Az(ly, lz, lx);
+		Vi = (-I)*Ax(lx, ly, lz), Ay(lx, ly, lz), Az(lx, ly, lz);
 	
 	if (global.program.sincostr_switch == "CSF")
-		Vi = (-I)*Ax(ly, lz, lx), Ay(ly, lz, lx), -Az(ly, lz, lx);
+		Vi = (-I)*Ax(lx, ly, lz), Ay(lx, ly, lz), -Az(lx, ly, lz);
 	
 	else if (global.program.sincostr_switch == "SSF")
-		Vi = -Ax(ly, lz, lx), Ay(ly, lz, lx), (-I)*Az(ly, lz, lx);
+		Vi = -Ax(lx, ly, lz), Ay(lx, ly, lz), (-I)*Az(lx, ly, lz);
 	
 	else if (global.program.sincostr_switch == "CCF")
-		Vi = Ax(ly, lz, lx), -Ay(ly, lz, lx), (-I)*Az(ly, lz, lx);
+		Vi = Ax(lx, ly, lz), -Ay(lx, ly, lz), (-I)*Az(lx, ly, lz);
 	
 	
 	Wavenumber(lx, ly, lz, K);
@@ -618,16 +611,16 @@ inline void SSF_SLAB::Compute_Modal_vorticity_y_component
 	// -I to convert sin to Fourier basis along x axis
 	// We have set Vi(1) = 0 to save time.
 	if (global.program.sincostr_switch == "SCF")
-		Vi = (-I)*Ax(ly, lz, lx), 0, Az(ly, lz, lx);
+		Vi = (-I)*Ax(lx, ly, lz), 0, Az(lx, ly, lz);
 	
 	if (global.program.sincostr_switch == "CSF")
-		Vi = (-I)*Ax(ly, lz, lx), 0, -Az(ly, lz, lx);
+		Vi = (-I)*Ax(lx, ly, lz), 0, -Az(lx, ly, lz);
 	
 	else if (global.program.sincostr_switch == "SSF")
-		Vi = -Ax(ly, lz, lx), 0, (-I)*Az(ly, lz, lx);
+		Vi = -Ax(lx, ly, lz), 0, (-I)*Az(lx, ly, lz);
 	
 	else if (global.program.sincostr_switch == "CCF")
-		Vi = Ax(ly, lz, lx), 0, (-I)*Az(ly, lz, lx);
+		Vi = Ax(lx, ly, lz), 0, (-I)*Az(lx, ly, lz);
 	
 	Wavenumber(lx, ly, lz, K);
 	
@@ -769,8 +762,8 @@ inline DP SSF_SLAB::AnisKvect_polar_angle(int lx, int ly, int lz)
 {
 	DP kkpll, kkperp;
 	
-	kkpll = AnisKpll(ly, lz, lx);
-	kkperp = AnisKperp(ly, lz, lx);
+	kkpll = AnisKpll(lx, ly, lz);
+	kkperp = AnisKperp(lx, ly, lz);
 	
 	return Get_polar_angle(kkperp, kkpll);
 }
@@ -787,8 +780,8 @@ inline DP SSF_SLAB::AnisKvect_polar_angle(int lx, int ly, int lz)
 inline DP SSF_SLAB::AnisKvect_azimuthal_angle(int lx, int ly, int lz)
 {
 	
-	DP kkh1 = AnisKh1(ly, lz, lx);
-	DP kkh2 = AnisKh2(ly, lz, lx);
+	DP kkh1 = AnisKh1(lx, ly, lz);
+	DP kkh2 = AnisKh2(lx, ly, lz);
 	
 	return Get_azimuthal_angle(kkh1, kkh2);
 }			

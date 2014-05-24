@@ -69,7 +69,6 @@ void FFF_PENCIL::Last_component(int kx, int ky, int kz, complx &Vx, complx &Vy, 
 			Vx = complx(0,0);
 		}
 	}
-	
 }
 
 /**********************************************************************************************
@@ -86,7 +85,7 @@ Dealias
 
 void FFF_PENCIL::Dealias(Array<complx,3> A)
 {
-	Assign_sub_array(Range(Ny/3+1,2*Ny/3-1), Range(Nz/3+1,Nz/2), Range(Nx/3+1,2*Nx/3-1), A, complx(0,0));
+	Assign_sub_array(Range(Nx/3+1,2*Nx/3-1), Range(Ny/3+1,2*Ny/3-1), Range(Nz/3+1,Nz/2), A, complx(0,0));
 }
 
 
@@ -99,8 +98,8 @@ bool FFF_PENCIL::Is_dealiasing_necessary(Array<complx,3> A, DP outer_radius)
 	
 	if ((kx_max > Nx/3) || (ky_max > Ny/3) || (kz_max > Nz/3))
 		return true;
-	else
-		return false;
+	
+	return false;
 }
 
 /**********************************************************************************************
@@ -118,7 +117,7 @@ bool FFF_PENCIL::Is_dealiasing_necessary(Array<complx,3> A, DP outer_radius)
 void FFF_PENCIL::Satisfy_strong_reality_condition_in_Array(Array<complx,3> A)
 {
 	
-    int array_index_minus_kx, array_index_minus_ky;
+/*    int array_index_minus_kx, array_index_minus_ky;
 	
     // For a given (minuskx, minusky), locate (kx,ky) and then subst.
     // A(minuskx, minusky, 0) = conj(A(kx,ky,0))
@@ -133,25 +132,26 @@ void FFF_PENCIL::Satisfy_strong_reality_condition_in_Array(Array<complx,3> A)
 				for (int lx=Nx/2+1; lx<Nx; lx++)  {
 					array_index_minus_kx = -Get_kx(lx);         // kx<0; minuskx = -Get_kx(lx) > 0
 
-					A(ly, 0, lx) = conj(global.temp_array.plane_xy(array_index_minus_ky,array_index_minus_kx));
+					A(lx, ly, 0) = conj(global.temp_array.plane_xy(array_index_minus_ky,array_index_minus_kx));
 				}
 				// for (ky=0,kz=0) line
 				if (Get_ky(ly) < 0)
-					A(ly,0,0) = conj(global.temp_array.plane_xy(array_index_minus_ky,0));
+					A(0, ly, 0) = conj(global.temp_array.plane_xy(array_index_minus_ky,0));
 			}
 		}
 	}
 
 	// for kz=Nz/2
     if (my_z_pcoord == num_z_procs-1)
-    	    A(Range::all(),local_Nz-1,Range::all()) = 0.0;
+    	    A(Range::all(),Range::all(),local_Nz-1) = 0.0;
+*/	
 }
 
 void FFF_PENCIL::Satisfy_weak_reality_condition_in_Array(Array<complx,3> A)
 {
     // for kz=Nz/2
     if (my_z_pcoord == num_z_procs-1)
-         A(Range::all(),local_Nz-1,Range::all()) = 0.0;
+         A(Range::all(),Range::all(),local_Nz-1) = 0.0;
 }
 
 void FFF_PENCIL::Test_reality_condition_in_Array(Array<complx,3> A)
@@ -172,12 +172,12 @@ void FFF_PENCIL::Test_reality_condition_in_Array(Array<complx,3> A)
 				for (int lx=Nx/2+1; lx<Nx; lx++)  {
 					array_index_minus_kx = -Get_kx(lx);         // kx<0; minuskx = -Get_kx(lx) > 0
 					
-					if (abs(A(ly,0,lx)-conj(global.temp_array.plane_xy(array_index_minus_ky,array_index_minus_kx))) > MYEPS2)
+					if (abs(A(lx,ly,0)-conj(global.temp_array.plane_xy(array_index_minus_ky,array_index_minus_kx))) > MYEPS2)
 						cout << "Reality condition voilated for (kx,ky,kz)=(" <<array_index_minus_kx <<  "," << Get_ky(ly) << "," << 0 << ")" << endl;
 				}
 				// for (ky=0,kz=0) line
 				if (Get_ky(ly) < 0)
-					if (abs(A(ly,0,0)-conj(global.temp_array.plane_xy(array_index_minus_ky,array_index_minus_kx))) > MYEPS2)
+					if (abs(A(0,ly,0)-conj(global.temp_array.plane_xy(array_index_minus_ky,array_index_minus_kx))) > MYEPS2)
 						cout << "Reality condition voilated for (kx,ky,kz)=(" << 0 <<  "," << Get_ky(ly) << "," << 0 << ")" << endl;
 			}
 		}
@@ -186,15 +186,15 @@ void FFF_PENCIL::Test_reality_condition_in_Array(Array<complx,3> A)
 	// for kz=Nz/2
     //int last_index=local_Nz-1;
 	if (my_z_pcoord == num_z_procs-1) {
-		for (int ly=0; ly<local_Ny; ly++)
-			for (int lx=0; lx<Nx; lx++)
+		for (int lx=0; lx<Nx; lx++)
+			for (int ly=0; ly<local_Ny; ly++)
 				if (abs(A(ly,Nz/2,lx)) > MYEPS)
 					cout << "Reality condition voilated for (kx,ky,kz)=(" << Get_kx(lx) <<  "," << Get_ky(ly) << "," << Nz/2 << ")" << endl;
 	}
 }
 
 
-void FFF_PENCIL::Assign_sub_array(Range y_range, Range z_range, Range x_range, Array<complx,3> A, complx value)
+void FFF_PENCIL::Assign_sub_array(Range x_range, Range y_range, Range z_range, Array<complx,3> A, complx value)
 {
 	static Array<int,1> y_filter(Ny);
 	static Array<int,1> z_filter(Nz/2+1);
@@ -217,8 +217,33 @@ void FFF_PENCIL::Assign_sub_array(Range y_range, Range z_range, Range x_range, A
 	
 	
 	if ( (y_apply(0)>=0) && (z_apply(0)>=0))
-		A(y_apply, z_apply, x_range) = value;
+		A(x_range, y_apply, z_apply) = value;
 }
+
+int FFF_PENCIL::Read(Array<complx,3> A, BasicIO::H5_plan plan, string file_name, string dataset_name)
+{
+	int err = BasicIO::Read(global.temp_array.Xr.data(), plan, file_name, dataset_name);
+	spectralTransform.Transpose(global.temp_array.Xr, A);
+	return err;
+}
+
+int FFF_PENCIL::Read(Array<DP,3> Ar, BasicIO::H5_plan plan, string file_name, string dataset_name)
+{
+	return BasicIO::Read(Ar.data(), plan, file_name, dataset_name);
+}
+
+
+int FFF_PENCIL::Write(Array<complx,3> A, BasicIO::H5_plan plan, string folder_name, string file_name, string dataset_name)
+{
+	spectralTransform.Transpose(A, global.temp_array.Xr);
+	return BasicIO::Write(global.temp_array.Xr.data(), plan, folder_name, file_name, dataset_name);
+}
+
+int FFF_PENCIL::Write(Array<DP,3> Ar, BasicIO::H5_plan plan, string folder_name, string file_name, string dataset_name)
+{
+	return BasicIO::Write(Ar.data(), plan, folder_name, file_name, dataset_name);  
+}
+
 
 //*****************************  End of four_basic.cc *****************************************	
 

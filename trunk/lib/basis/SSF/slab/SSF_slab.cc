@@ -40,7 +40,11 @@
 
 SSF_SLAB::SSF_SLAB()
 {
-		
+	if (Ny==1) {
+		if (master)
+			cerr << "ERROR: 2D Not implemented for SSF basis, Please use SSS basis " << endl;
+		exit(1);
+	}		
 	
 		// kfactor, xfactor,  L, Delta_x
 	if (global.field.kfactor.size() == 4) {
@@ -105,38 +109,39 @@ SSF_SLAB::SSF_SLAB()
 	
 	if (!(Nxproperdiv && Nyproperdiv && Nzproperdiv)) {
 		cout << "N div " << global.field.Nx << " "<< global.field.Ny << " " << global.field.Nz << " " << Nxproperdiv << " " << Nyproperdiv << "  " << Nzproperdiv << endl;
-		if (global.mpi.master) cerr << "ERROR in SSF_slab.cc: Array not being divided equally.  Check dimensions" << endl;
+		if (master) cerr << "ERROR in SSF_slab.cc: Array not being divided equally.  Check dimensions" << endl;
 		exit(1);
 	}
 	
-	spectralTransform.Init("SSF", "SLAB", Nx, Ny, Nz);
+	spectralTransform.Init("SSF", Nx, Ny, Nz);
+
     
 	global.field.maxlx = spectralTransform.local_Nx-1;
 	global.field.maxly = global.field.Ny-1;
 	global.field.maxlz = global.field.Nz/2;
     
 	if (Ny > 1) {
-		global.field.shape_complex_array = global.field.Ny, global.field.Nz/2+1, spectralTransform.local_Nx;
-        global.field.shape_real_array = spectralTransform.local_Ny, global.field.Nz+2, global.field.Nx;
+		global.field.shape_complex_array = spectralTransform.local_Nx, global.field.Ny, global.field.Nz/2+1;
+        global.field.shape_real_array = global.field.Nx, spectralTransform.local_Ny, global.field.Nz+2;
 		
     	BasicIO::Array_properties<3> array_properties;
-		array_properties.shape_full_complex_array = Ny, Nz/2+1, Nx;
-		array_properties.shape_full_real_array = Ny, Nz+2, Nx;
+		array_properties.shape_full_complex_array = Nx, Ny, Nz/2+1;
+		array_properties.shape_full_real_array = Nx, Ny, Nz+2; ;
 
-		array_properties.id_complex_array = 0, 0, my_id;
+		array_properties.id_complex_array = my_id, 0, 0;
 		array_properties.id_real_array = my_id, 0, 0;
 
-		array_properties.numprocs_complex_array = 1, 1, numprocs;
+		array_properties.numprocs_complex_array = numprocs, 1, 1;
 		array_properties.numprocs_real_array = numprocs, 1, 1;
 
 		if (global.io.N_in_reduced.size() == 3)
-			array_properties.shape_N_in_reduced = global.io.N_in_reduced[1], global.io.N_in_reduced[2]/2+1, global.io.N_in_reduced[0];
+			array_properties.shape_N_in_reduced = global.io.N_in_reduced[0], global.io.N_in_reduced[1], global.io.N_in_reduced[2]/2+1;
 		
 		if (global.io.N_out_reduced.size() == 3)
-			array_properties.shape_N_out_reduced = global.io.N_out_reduced[1], global.io.N_out_reduced[2]/2+1, global.io.N_out_reduced[0];
+			array_properties.shape_N_out_reduced = global.io.N_out_reduced[0], global.io.N_out_reduced[1], global.io.N_out_reduced[2]/2+1;
 
-		array_properties.Fourier_directions = 0,1,0;
-		array_properties.Z = 1;
+		array_properties.Fourier_directions = 0,0,1;
+		array_properties.Z = 2;
 
 		array_properties.datatype_complex_space = BasicIO::H5T_COMPLX;
 		array_properties.datatype_real_space = BasicIO::H5T_DP;
@@ -144,11 +149,6 @@ SSF_SLAB::SSF_SLAB()
 		BasicIO::Set_H5_plans(array_properties, this);
 	}
 	
-	else if (Ny == 1) {
-		if (master)
-			cerr << "ERROR: 2D Not implemented for SSF basis, Please use SSS basis " << endl;
-		exit(1);
-	}
     
     // alias
 	
@@ -171,9 +171,11 @@ SSF_SLAB::SSF_SLAB()
 	
 	global.temp_array.X.resize(shape_complex_array);
     global.temp_array.X2.resize(shape_complex_array);
+    global.temp_array.X_transform.resize(shape_complex_array);
 	
 	global.temp_array.Xr.resize(shape_real_array);
     global.temp_array.Xr2.resize(shape_real_array);
+
 	
 }
 

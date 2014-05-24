@@ -42,7 +42,8 @@
 // Ar: yxz, A: xyz
 void FFF_PENCIL::Forward_transform(Array<DP,3> Ar, Array<complx,3> A)
 {
-	spectralTransform.Forward_transform_FFF_PENCIL(Ar,A);
+	if (Ny==1)
+		spectralTransform.Forward_transform(Ar(Range::all(),0,Range::all()), A(Range::all(),0,Range::all()));
 }
 
 
@@ -51,8 +52,13 @@ void FFF_PENCIL::Forward_transform(Array<DP,3> Ar, Array<complx,3> A)
 
 void FFF_PENCIL::Inverse_transform(Array<complx,3> A, Array<DP,3> Ar)
 {
-
-    spectralTransform.Inverse_transform_FFF_PENCIL(A, Ar);
+	if (Ny==1) {
+		global.temp_array.X_transform = A;
+		cout << global.temp_array.X_transform.shape() << endl;
+		cout << A.shape() << endl;
+		cout << Ar.shape() << endl;
+   		spectralTransform.Inverse_transform(global.temp_array.X_transform(Range::all(),0,Range::all()), Ar(Range::all(),0,Range::all()));
+   	}
     
 }
 

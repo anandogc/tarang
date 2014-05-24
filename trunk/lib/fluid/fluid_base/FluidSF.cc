@@ -288,7 +288,7 @@ void FluidSF::Assign_random_real_scalar(int kx, int ky, int kz, DP rand_range)
 {
 	DP localG = 2*rand_range*(SPECrand.random()-0.5);
 	
-	//Assign_field(kx, ky, kz, localG);
+	Assign_field(kx, ky, kz, localG);
 }	
 
 /// 3D:  Return Tk = Real(-nlin(k). conj(csf.F(k)) for scalar T

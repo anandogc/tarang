@@ -41,12 +41,31 @@
 
 #include "spectral_def_vars.h"
 #include "spectral_plan.h"
-#include "plans/FFF_slab/fff_slab_isend_recv_overlap_isend_forward_3d.h"
-#include "plans/FFF_slab/fff_slab_isend_recv_overlap_isend_both_3d.h"
-#include "plans/FFF_slab/fff_slab_alltoall_3d.h"
 
-#include "plans/SFF_slab/sff_slab_isend_recv_3d.h"
-#include "plans/SFF_slab/sff_slab_alltoall_3d.h"
+//FFFW
+#include "plans/FFFW_slab/2d/fffw_slab_transposed_order_2d.h"
+#include "plans/FFFW_slab/3d/fffw_slab_transposed_order_3d.h"
+
+
+//FFF
+#include "plans/FFF_slab/2d/fff_slab_alltoall_2d.h"
+
+#include "plans/FFF_slab/3d/fff_slab_isend_recv_overlap_isend_forward_3d.h"
+#include "plans/FFF_slab/3d/fff_slab_isend_recv_overlap_isend_both_3d.h"
+#include "plans/FFF_slab/3d/fff_slab_alltoall_3d.h"
+
+//SFF
+#include "plans/SFF_slab/2d/sf_slab_alltoall_2d.h"
+
+#include "plans/SFF_slab/3d/sff_slab_isend_recv_3d.h"
+#include "plans/SFF_slab/3d/sff_slab_alltoall_3d.h"
+
+//SSF
+#include "plans/SSF_slab/3d/ssf_slab_alltoall_3d.h"
+
+//SSS
+#include "plans/SSS_slab/2d/ss_slab_alltoall_2d.h"
+#include "plans/SSS_slab/3d/sss_slab_alltoall_3d.h"
 
 
 //*********************************************************************************************	
@@ -57,19 +76,20 @@ class SpectralTransform
 	
 public:
 	
-	size_t Nx;
-	size_t Ny;
-	size_t Nz;
+	int Nx;
+	int Ny;
+	int Nz;
 	
-	size_t local_Nx;
-	size_t local_Ny;
-	size_t local_Nz;
+	int local_Nx;
+	int local_Ny;
+	int local_Nz;
 	
-	size_t local_Nx_start;
-	size_t local_Ny_start;
-	size_t local_Nz_start;
+	int local_Nx_start;
+	int local_Ny_start;
+	int local_Nz_start;
 
-	void Init(string basis, string docomposition, int plan_id, int N0, int N1, int N2, int num_p_hor=1);
+	void Init(string basis, int Nx, int Nz);
+	void Init(string basis, int Nx, int Ny, int Nz);
 
 	void Forward_transform(Array<DP,3> Ar, Array<complx,3> A);
 	void Inverse_transform(Array<complx,3> A, Array<DP,3> Ar);

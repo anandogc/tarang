@@ -47,10 +47,10 @@ FT along perp dirn and SIN transform along x dirn of A
 void SSS_SLAB::Forward_transform(Array<DP,3> Ar, Array<complx,3> A)
 {
 	if (Ny > 1)
-        spectralTransform.Forward_transform_SSS_SLAB(global.program.sincostr_switch, Ar, A);
+        spectralTransform.Forward_transform(global.program.sincostr_switch, Ar, A);
     
     else if (Ny == 1)
-        spectralTransform.Forward_transform_SSS_SLAB(global.program.sincostr_switch, Ar(0,Range::all(),Range::all()), A(0,Range::all(),Range::all()));
+        spectralTransform.Forward_transform(global.program.sincostr_switch, Ar(Range::all(),0,Range::all()), A(Range::all(),0,Range::all()));
 	
 }
 
@@ -65,11 +65,12 @@ void SSS_SLAB::Forward_transform(Array<DP,3> Ar, Array<complx,3> A)
 
 void SSS_SLAB::Inverse_transform(Array<complx,3> A, Array<DP,3> Ar)
 {
+	global.temp_array.X_transform = A;
     if (Ny > 1)
-        spectralTransform.Inverse_transform_SSS_SLAB(global.program.sincostr_switch, A, Ar);
+        spectralTransform.Inverse_transform(global.program.sincostr_switch, global.temp_array.X_transform, Ar);
     
     else if (Ny == 1)
-		spectralTransform.Inverse_transform_SSS_SLAB(global.program.sincostr_switch, A(0,Range::all(),Range::all()), Ar(0,Range::all(),Range::all()));
+		spectralTransform.Inverse_transform(global.program.sincostr_switch, global.temp_array.X_transform(Range::all(),0,Range::all()), Ar(Range::all(),0,Range::all()));
 }
 
 
@@ -81,8 +82,8 @@ void SSS_SLAB::Inverse_transform(Array<complx,3> A, Array<DP,3> Ar)
 
 void  SSS_SLAB::Xderiv(Array<complx,3> A, Array<complx,3> B)
 {
-	Array<DP,3> Ar=Array<DP,3>(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
-	Array<DP,3> Br=Array<DP,3>(reinterpret_cast<DP*>(B.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
+	Array<DP,3> Ar=Array<DP,3>(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<DP,3> Br=Array<DP,3>(reinterpret_cast<DP*>(B.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 	
 	DP Kx;
 	
@@ -90,18 +91,18 @@ void  SSS_SLAB::Xderiv(Array<complx,3> A, Array<complx,3> B)
 		Kx = Get_kx(lx)*kfactor[1];
 		
         if (global.program.sincostr_switch[0] == 'S')
-            Br(Range::all(),Range::all(),lx) = Kx*Ar(Range::all(),Range::all(),lx);
+            Br(lx,Range::all(),Range::all()) = Kx*Ar(lx,Range::all(),Range::all());
             
         else if (global.program.sincostr_switch[0] == 'C')
-            Br(Range::all(),Range::all(),lx) = (-Kx)*Ar(Range::all(),Range::all(),lx);
+            Br(lx,Range::all(),Range::all()) = (-Kx)*Ar(lx,Range::all(),Range::all());
         
 	}
 }
 
 void  SSS_SLAB::Add_Xderiv(Array<complx,3> A, Array<complx,3> B)
 {
-	Array<DP,3> Ar=Array<DP,3>(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
-	Array<DP,3> Br=Array<DP,3>(reinterpret_cast<DP*>(B.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
+	Array<DP,3> Ar=Array<DP,3>(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<DP,3> Br=Array<DP,3>(reinterpret_cast<DP*>(B.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 	
 	DP Kx;
 	
@@ -109,10 +110,10 @@ void  SSS_SLAB::Add_Xderiv(Array<complx,3> A, Array<complx,3> B)
 		Kx = Get_kx(lx)*kfactor[1];
 		
         if (global.program.sincostr_switch[0] == 'S')
-            Br(Range::all(),Range::all(),lx) += Kx*Ar(Range::all(),Range::all(),lx);
+            Br(lx,Range::all(),Range::all()) += Kx*Ar(lx,Range::all(),Range::all());
 		
         else if (global.program.sincostr_switch[0] == 'C')
-            Br(Range::all(),Range::all(),lx) += (-Kx)*Ar(Range::all(),Range::all(),lx);
+            Br(lx,Range::all(),Range::all()) += (-Kx)*Ar(lx,Range::all(),Range::all());
         
 	}
 }
@@ -133,8 +134,8 @@ void  SSS_SLAB::Xderiv(Array<DP,3> A, Array<DP,3> B)
 // In the second half- i2=0:Ny/-1; fftw-index=(Ny/2 +1+i2); FT-index=fftw-index-N=(i2+1-Ny/2)
 void SSS_SLAB::Yderiv(Array<complx,3> A, Array<complx,3> B)
 {
-	Array<DP,3> Ar=Array<DP,3>(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
-	Array<DP,3> Br=Array<DP,3>(reinterpret_cast<DP*>(B.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
+	Array<DP,3> Ar=Array<DP,3>(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<DP,3> Br=Array<DP,3>(reinterpret_cast<DP*>(B.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 	
     DP Ky;
 
@@ -143,13 +144,13 @@ void SSS_SLAB::Yderiv(Array<complx,3> A, Array<complx,3> B)
 			Ky = Get_ky(ly)*kfactor[2];
 			
 			if (global.program.sincostr_switch[1] == 'S')
-				Br(ly,Range::all(),Range::all()) = Ky * Ar(ly,Range::all(),Range::all());
+				Br(Range::all(),ly,Range::all()) = Ky * Ar(Range::all(),ly,Range::all());
 			
 			else if(global.program.sincostr_switch[1] == 'C')
-				Br(ly,Range::all(),Range::all()) = (-Ky) * Ar(ly,Range::all(),Range::all());
+				Br(Range::all(),ly,Range::all()) = (-Ky) * Ar(Range::all(),ly,Range::all());
 			
 			else if (global.program.sincostr_switch[1] == '0') 
-				Br(ly,Range::all(),Range::all()) = 0;
+				Br(Range::all(),ly,Range::all()) = 0;
 		}
 	
 	else 
@@ -159,8 +160,8 @@ void SSS_SLAB::Yderiv(Array<complx,3> A, Array<complx,3> B)
 
 void SSS_SLAB::Add_Yderiv(Array<complx,3> A, Array<complx,3> B)
 {
-	Array<DP,3> Ar=Array<DP,3>(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
-	Array<DP,3> Br=Array<DP,3>(reinterpret_cast<DP*>(B.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
+	Array<DP,3> Ar=Array<DP,3>(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<DP,3> Br=Array<DP,3>(reinterpret_cast<DP*>(B.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 	
     DP Ky;
 	
@@ -169,10 +170,10 @@ void SSS_SLAB::Add_Yderiv(Array<complx,3> A, Array<complx,3> B)
 			Ky = Get_ky(ly)*kfactor[2];
 			
 			if (global.program.sincostr_switch[1] == 'S')
-				Br(ly,Range::all(),Range::all()) += Ky * Ar(ly,Range::all(),Range::all());
+				Br(Range::all(),ly,Range::all()) += Ky * Ar(Range::all(),ly,Range::all());
 			
 			else if(global.program.sincostr_switch[1] == 'C')
-				Br(ly,Range::all(),Range::all()) += (-Ky) * Ar(ly,Range::all(),Range::all());
+				Br(Range::all(),ly,Range::all()) += (-Ky) * Ar(Range::all(),ly,Range::all());
 		}
 }
 
@@ -188,17 +189,17 @@ void SSS_SLAB::Zderiv(Array<complx,3> A, Array<complx,3> B)
 {
     DP Kz;
 	
-	Array<DP,3> Ar(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
-	Array<DP,3> Br(reinterpret_cast<DP*>(B.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
+	Array<DP,3> Ar(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<DP,3> Br(reinterpret_cast<DP*>(B.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 	
 	for (int lz=0; lz<Nz; lz++) {
 		Kz = lz*kfactor[3];
 		
 		if (global.program.sincostr_switch[2] == 'S')
-			Br(Range::all(),lz,Range::all()) = Kz*Ar(Range::all(),lz,Range::all());
+			Br(Range::all(),Range::all(),lz) = Kz*Ar(Range::all(),Range::all(),lz);
 		
 		else if (global.program.sincostr_switch[2] == 'C')
-			Br(Range::all(),lz,Range::all()) = -Kz*Ar(Range::all(),lz,Range::all());
+			Br(Range::all(),Range::all(),lz) = -Kz*Ar(Range::all(),Range::all(),lz);
 		
 	}
 }
@@ -208,17 +209,17 @@ void SSS_SLAB::Add_Zderiv(Array<complx,3> A, Array<complx,3> B)
 {
     DP Kz;
 	
-	Array<DP,3> Ar(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
-	Array<DP,3> Br(reinterpret_cast<DP*>(B.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
+	Array<DP,3> Ar(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<DP,3> Br(reinterpret_cast<DP*>(B.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 	
 	for (int lz=0; lz<Nz; lz++) {
 		Kz = lz*kfactor[3];
 		
 		if (global.program.sincostr_switch[2] == 'S')
-			Br(Range::all(),lz,Range::all()) += Kz*Ar(Range::all(),lz,Range::all());
+			Br(Range::all(),Range::all(),lz) += Kz*Ar(Range::all(),Range::all(),lz);
 		
 		else if (global.program.sincostr_switch[2] == 'C')
-			Br(Range::all(),lz,Range::all()) += -Kz*Ar(Range::all(),lz,Range::all());
+			Br(Range::all(),Range::all(),lz) += -Kz*Ar(Range::all(),Range::all(),lz);
 		
 	}
 }
@@ -232,20 +233,21 @@ void SSS_SLAB::Add_Zderiv(Array<complx,3> A, Array<complx,3> B)
 void SSS_SLAB::Laplacian(DP factor, Array<complx,3> A, Array<complx,3> B)
 {
 	
-	Array<DP,3> Ar(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
-	Array<DP,3> Br(reinterpret_cast<DP*>(B.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
+	Array<DP,3> Ar(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<DP,3> Br(reinterpret_cast<DP*>(B.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 	
 	DP Ksqr;
 	
-	for (int ly=0; ly<Ar.extent(0); ly++) {
-		Ksqr = my_pow(Get_ky(ly)*kfactor[2],2);
+	for (int lx=0; lx<Ar.extent(0); lx++) {
+		Ksqr = my_pow(Get_kx(lx)*kfactor[1],2);
 		
-        for (int lz=0; lz<Nz; lz++) {
-			Ksqr += my_pow(lz*kfactor[3],2);
+		for (int ly=0; ly<Ar.extent(1); ly++) {
+			Ksqr += my_pow(Get_ky(ly)*kfactor[2],2);
 			
-			for (int lx=0; lx<Ar.extent(2); lx++) {
-				Ksqr += my_pow(Get_kx(lx)*kfactor[1],2);
-				Br(ly,lz,lx) = (-factor*Ksqr)*Ar(ly,lz,lx);
+	        for (int lz=0; lz<Ar.extent(2); lz++) {
+				Ksqr += my_pow(lz*kfactor[3],2);
+
+				Br(lx,ly,lz) = (-factor*Ksqr)*Ar(lx,ly,lz);
 			}
 		}
 	}
@@ -260,20 +262,20 @@ void SSS_SLAB::Laplacian(DP factor, Array<complx,3> A, Array<complx,3> B)
 void SSS_SLAB::Subtract_Laplacian(DP factor, Array<complx,3> A, Array<complx,3> B)
 {
 	
-	Array<DP,3> Ar(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
-	Array<DP,3> Br(reinterpret_cast<DP*>(B.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
+	Array<DP,3> Ar(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<DP,3> Br(reinterpret_cast<DP*>(B.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 	
 	DP Ksqr, Ksqr_factor;
 	
-	for (int ly=0; ly<Ar.extent(0); ly++) {
-		Ksqr = my_pow(Get_ky(ly)*kfactor[2],2);
-		
-        for (int lz=0; lz<Nz; lz++) {
-			Ksqr += my_pow(lz*kfactor[3],2);
+	for (int lx=0; lx<Ar.extent(0); lx++) {
+		Ksqr = my_pow(Get_kx(lx)*kfactor[1],2);
+
+		for (int ly=0; ly<Ar.extent(1); ly++) {
+			Ksqr += my_pow(Get_ky(ly)*kfactor[2],2);
 			
-			for (int lx=0; lx<Ar.extent(2); lx++) {
-				Ksqr_factor = factor*(Ksqr+my_pow(Get_kx(lx)*kfactor[1],2));
-				Br(ly,lz,lx) += Ksqr_factor*Ar(ly,lz,lx);
+	        for (int lz=0; lz<Ar.extent(2); lz++) {
+				Ksqr_factor = factor*(Ksqr+my_pow(Get_kz(lz)*kfactor[3],2));
+				Br(lx,ly,lz) += Ksqr_factor*Ar(lx,ly,lz);
 			}
 		}
 	}

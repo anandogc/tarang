@@ -67,7 +67,7 @@ SET (SPECTRAL_TRANSFORM_VERSION v2)
 #Required libraries, One of FFTW_FLOAT_LIBS or FFTW_DOUBLE_LIBS is selected depending on DP
 SET (FFTW_FLOAT_LIBS fftw3f_mpi fftw3f)
 SET (FFTW_DOUBLE_LIBS fftw3_mpi fftw3)
-SET (OTHER_LIBS m blitz  hdf5 mpi yaml-cpp)
+SET (OTHER_LIBS blitz m hdf5 yaml-cpp dl z)
 
 
 #################################################
@@ -336,8 +336,8 @@ MESSAGE("")
 SET(CMAKE_CXX_FLAGS_DISTRIBUTION "-O3")
 #SET(CMAKE_C_FLAGS_DISTRIBUTION "-O3")
 
-SET(CMAKE_CXX_FLAGS_DEBUG "-O0 -g")
-#SET(CMAKE_C_FLAGS_DEBUG "-O0 -g")
+SET(CMAKE_CXX_FLAGS_DEBUG "-g")
+#SET(CMAKE_C_FLAGS_DEBUG "-g")
 
 ADD_SUBDIRECTORY(lib)
 ADD_SUBDIRECTORY(src)

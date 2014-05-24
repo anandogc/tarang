@@ -104,34 +104,38 @@ SSS_SLAB::SSS_SLAB()
 	}
 	
 	
-	spectralTransform.Init("SSS", "SLAB", Nx, Ny, Nz);
+	if (Ny>1)
+		spectralTransform.Init("SSS", Nx, Ny, Nz);
+	else if (Ny==1)
+		spectralTransform.Init("SS", Nx, Nz);
+
     
 	global.field.maxlx = spectralTransform.local_Nx-1;
 	global.field.maxly = global.field.Ny-1;
 	global.field.maxlz = global.field.Nz/2-1;
     
 	if (Ny > 1) {
-		global.field.shape_complex_array = global.field.Ny, global.field.Nz/2, spectralTransform.local_Nx;
-        global.field.shape_real_array = spectralTransform.local_Ny, global.field.Nz, global.field.Nx;
+		global.field.shape_complex_array = spectralTransform.local_Nx, global.field.Ny, global.field.Nz/2;
+        global.field.shape_real_array = global.field.Nx, spectralTransform.local_Ny, global.field.Nz;
 
     	BasicIO::Array_properties<3> array_properties;
-		array_properties.shape_full_complex_array = Ny, Nz, Nx;
-		array_properties.shape_full_real_array = Ny, Nz, Nx;
+		array_properties.shape_full_complex_array = Nx, Ny, Nz;
+		array_properties.shape_full_real_array = Nx, Ny, Nz;
 
-		array_properties.id_complex_array = 0, 0, my_id;
-		array_properties.id_real_array = my_id, 0, 0;
+		array_properties.id_complex_array = my_id, 0, 0;
+		array_properties.id_real_array = 0, my_id, 0;
 
-		array_properties.numprocs_complex_array = 1, 1, numprocs;
-		array_properties.numprocs_real_array = numprocs, 1, 1;
+		array_properties.numprocs_complex_array = numprocs, 1, 1;
+		array_properties.numprocs_real_array = 1, numprocs, 1;
 
 		if (global.io.N_in_reduced.size() == 3)
-			array_properties.shape_N_in_reduced = global.io.N_in_reduced[1], global.io.N_in_reduced[2]/2, global.io.N_in_reduced[0];
+			array_properties.shape_N_in_reduced = global.io.N_in_reduced[0], global.io.N_in_reduced[1], global.io.N_in_reduced[2]/2;
 		
 		if (global.io.N_out_reduced.size() == 3)
-			array_properties.shape_N_out_reduced = global.io.N_out_reduced[1], global.io.N_out_reduced[2]/2, global.io.N_out_reduced[0];
+			array_properties.shape_N_out_reduced = global.io.N_out_reduced[0], global.io.N_out_reduced[1], global.io.N_out_reduced[2]/2;
 
 		array_properties.Fourier_directions = 0,0,0;
-		array_properties.Z = 1;
+		array_properties.Z = 2;
 		
 		array_properties.datatype_complex_space = BasicIO::H5T_DP;
 		array_properties.datatype_real_space = BasicIO::H5T_DP;
@@ -140,27 +144,27 @@ SSS_SLAB::SSS_SLAB()
 	}
 	
 	else if (Ny == 1) {
-		global.field.shape_complex_array = 1,global.field.Nz/2,spectralTransform.local_Nx;
-        global.field.shape_real_array = 1,2*spectralTransform.local_Nz,global.field.Nx;
+		global.field.shape_complex_array = spectralTransform.local_Nx, 1, global.field.Nz/2;
+        global.field.shape_real_array = global.field.Nx, 1, 2*spectralTransform.local_Nz;
 
     	BasicIO::Array_properties<2> array_properties;
-		array_properties.shape_full_complex_array = Nz, Nx;
-		array_properties.shape_full_real_array = Nz, Nx;
+		array_properties.shape_full_complex_array = Nx, Nz;
+		array_properties.shape_full_real_array = Nx, Nz;
 
-		array_properties.id_complex_array = 0, my_id;
+		array_properties.id_complex_array = my_id, 0;
 		array_properties.id_real_array = my_id, 0;
 
-		array_properties.numprocs_complex_array = 1, numprocs;
+		array_properties.numprocs_complex_array = numprocs, 1;
 		array_properties.numprocs_real_array = numprocs, 1;
 
 		if (global.io.N_in_reduced.size() == 3)
-			array_properties.shape_N_in_reduced = global.io.N_in_reduced[2], global.io.N_in_reduced[0];
+			array_properties.shape_N_in_reduced = global.io.N_in_reduced[0], global.io.N_in_reduced[2];
 		
 		if (global.io.N_out_reduced.size() == 3)
-			array_properties.shape_N_out_reduced = global.io.N_out_reduced[2], global.io.N_out_reduced[0];
+			array_properties.shape_N_out_reduced = global.io.N_out_reduced[0], global.io.N_out_reduced[2];
 
 		array_properties.Fourier_directions = 0,0;
-		array_properties.Z = 0;
+		array_properties.Z = 1;
 	
 		array_properties.datatype_complex_space = BasicIO::H5T_DP;
 		array_properties.datatype_real_space = BasicIO::H5T_DP;
@@ -191,6 +195,7 @@ SSS_SLAB::SSS_SLAB()
 	
 	global.temp_array.X.resize(shape_complex_array);
 	global.temp_array.X2.resize(shape_complex_array);
+	global.temp_array.X_transform.resize(shape_complex_array);
 	
 	global.temp_array.Xr.resize(shape_real_array);
     global.temp_array.Xr2.resize(shape_real_array);

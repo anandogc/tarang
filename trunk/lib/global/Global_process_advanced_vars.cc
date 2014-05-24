@@ -124,7 +124,7 @@ void Global::Process_advanced_vars()
 				spectrum.cylindrical_ring.kpll_array(i) = Kpll_min + i*dKpll;
 		}
 	}
-	
+
 	// EnergyTransfers
 	
 	// if the radii.size() = 0, then USER_DEFINED is off.

@@ -88,7 +88,7 @@ SFF_SLAB::SFF_SLAB()
 		// Proper allocation or not?
 	
 	bool Nxproperdiv, Nyproperdiv, Nzproperdiv; 
-	
+	/*
 	if (global.field.Ny > 1) {
 		Nxproperdiv = (global.field.Nx%global.mpi.numprocs == 0);
 		Nyproperdiv = (global.field.Ny%global.mpi.numprocs == 0);
@@ -105,9 +105,15 @@ SFF_SLAB::SFF_SLAB()
 		cout << "N div " << global.mpi.numprocs << " " << global.field.Nx << " "<< global.field.Ny << " " << global.field.Nz << " " << Nxproperdiv << " " << Nyproperdiv << "  " << Nzproperdiv << endl;
 		if (global.mpi.master) cerr << "ERROR in SFF_slab.cc: Array not being divided equally.  Check dimensions" << endl;
 		exit(1);
-	}
+	}*/
 	
-	spectralTransform.Init("SFF", "SLAB", 1, Nx, Ny, Nz);
+	if (Ny>1)
+		spectralTransform.Init("SFF", Nx, Ny, Nz);
+	else if (Ny==1)
+		spectralTransform.Init("SF", Nx, Nz);
+
+
+
 	
 	global.field.maxlx = spectralTransform.local_Nx-1;
 	global.field.maxly = global.field.Ny-1;
@@ -122,7 +128,7 @@ SFF_SLAB::SFF_SLAB()
 		array_properties.shape_full_complex_array = Nx, Ny, Nz/2+1;
 		array_properties.shape_full_real_array = Nx, Ny, Nz+2;
 
-		//For HDF5 this is always the case, because it is more efficient to divide the data along the slowest direction.
+		//For HDF5 this is always the case, because IO is more efficient when the data is devided along the slowest direction.
 		array_properties.id_complex_array = my_id, 0, 0;
 		array_properties.id_real_array = my_id, 0, 0;
 
@@ -145,27 +151,28 @@ SFF_SLAB::SFF_SLAB()
 	}
 	
 	else if (Ny == 1) {
-		global.field.shape_complex_array = 1,global.field.Nz/2+1,spectralTransform.local_Nx;
-        global.field.shape_real_array = 1,2*spectralTransform.local_Nz,global.field.Nx;
+		global.field.shape_complex_array = spectralTransform.local_Nx, 1, global.field.Nz/2+1;
+        global.field.shape_real_array = global.field.Nx,1,2*spectralTransform.local_Nz;
 
+		//For HDF5 this is always the case, because IO is more efficient when the data is devided along the slowest direction.
     	BasicIO::Array_properties<2> array_properties;
-		array_properties.shape_full_complex_array = Nz/2+1, Nx;
-		array_properties.shape_full_real_array = Nz+2, Nx;
+		array_properties.shape_full_complex_array = Nx, Nz/2+1;
+		array_properties.shape_full_real_array = Nx, Nz+2;
 
-		array_properties.id_complex_array = 0, my_id;
+		array_properties.id_complex_array = my_id, 0;
 		array_properties.id_real_array = my_id, 0;
 
-		array_properties.numprocs_complex_array = 1, numprocs;
+		array_properties.numprocs_complex_array = numprocs, 1;
 		array_properties.numprocs_real_array = numprocs, 1;
 
 		if (global.io.N_in_reduced.size() == 3)
-			array_properties.shape_N_in_reduced = global.io.N_in_reduced[2]/2+1, global.io.N_in_reduced[0];
+			array_properties.shape_N_in_reduced = global.io.N_in_reduced[0], global.io.N_in_reduced[2]/2+1;
 		
 		if (global.io.N_out_reduced.size() == 3)
-			array_properties.shape_N_out_reduced = global.io.N_out_reduced[2]/2+1, global.io.N_out_reduced[0];
+			array_properties.shape_N_out_reduced = global.io.N_out_reduced[0], global.io.N_out_reduced[2]/2+1;
 
-		array_properties.Fourier_directions = 1,0;
-		array_properties.Z = 0;
+		array_properties.Fourier_directions = 0,1;
+		array_properties.Z = 1;
 	
 		array_properties.datatype_complex_space = BasicIO::H5T_COMPLX;
 		array_properties.datatype_real_space = BasicIO::H5T_DP;
@@ -192,13 +199,9 @@ SFF_SLAB::SFF_SLAB()
     shape_complex_array = global.field.shape_complex_array;
     shape_real_array = global.field.shape_real_array;
 		
-	if (Ny>1)
-		global.temp_array.X3d_transform.resize(shape_complex_array);
-	else
-		global.temp_array.X2d_transform.resize(shape(shape_complex_array(0), shape_complex_array(2)));
-	
 	global.temp_array.X.resize(shape_complex_array);
 	global.temp_array.X2.resize(shape_complex_array);
+	global.temp_array.X_transform.resize(shape_complex_array);
 	
 	global.temp_array.Xr.resize(shape_real_array);
     global.temp_array.Xr2.resize(shape_real_array);

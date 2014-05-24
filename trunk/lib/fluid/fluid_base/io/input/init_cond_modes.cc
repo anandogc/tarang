@@ -64,9 +64,9 @@ void  FluidIO::Init_cond_modes(FluidVF &U)
 	complx Vx_complex, Vy_complex, Vz_complex;
 	DP Vx_real, Vy_real, Vz_real;
 	
-	(U.cvf.V1) = 0.0; 
-	(U.cvf.V2) = 0.0; 
-	(U.cvf.V3) = 0.0;
+	U.cvf.V1 = 0.0; 
+	U.cvf.V2 = 0.0; 
+	U.cvf.V3 = 0.0;
 	
 	for (int mode = 0; mode < global.io.init_cond_modes.number; mode++) {
 		kx = global.io.init_cond_modes.coords(mode,1); 
@@ -82,7 +82,7 @@ void  FluidIO::Init_cond_modes(FluidVF &U)
 			
 			else
 				Vz_real = global.io.init_cond_modes.field_array_real(mode,2); 
-			
+
 			U.Assign_field(kx, ky, kz, Vx_real, Vy_real, Vz_real);
 			
 			if (my_id == master_id) 
@@ -100,11 +100,13 @@ void  FluidIO::Init_cond_modes(FluidVF &U)
 				Vz_complex = global.io.init_cond_modes.field_array_complex(mode,2); 
 			
 			U.Assign_field_and_comp_conj(kx, ky, kz, Vx_complex, Vy_complex, Vz_complex);				
-			
+
+
 			if (my_id == master_id) 
 				cout << "k, V : (" << kx << " " << ky  << " " <<kz << ") " <<	Vx_complex	<<	" "	<< Vy_complex	<<	" "	<<	Vz_complex	<<  endl; 
 		}
 	}
+
 
 }
 
@@ -202,6 +204,8 @@ void  FluidIO::Init_cond_modes_scalar(FluidVF&U, FluidSF& T)
 			U.Assign_field_and_comp_conj(kx, ky, kz, Vx_complex, Vy_complex, Vz_complex);
 			T.Assign_field_and_comp_conj(kx, ky, kz, G_complex);
 			
+
+
 			if (my_id == master_id)
 				cout << "k, V, G : (" << kx << " " << ky  << " " <<kz << ") " << Vx_complex  << " "  << Vy_complex << " " << Vz_complex << " " << G_complex <<  endl;
 		}

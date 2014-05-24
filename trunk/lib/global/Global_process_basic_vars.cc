@@ -165,12 +165,7 @@ void Global::Process_basic_vars()
 	sincostr_switch_FVz=program.sincostr_switch_FVz;
 	sincostr_switch_divergence=program.sincostr_switch_divergence;
 		// ALIAS END..
-	/*
-	if ( (!fft.transpose) && (program.decomposition=="PENCIL") )
-		Show_error("fft.transpose must be on for pencil.");
-	if ( (fft.transpose) && fft.fftw_switch )
-		Show_error("fft.transpose must be off when fft.fftw3D_switch is on .");
-	*/
+
 	if ((field.N[2] != 1) && (program.two_dimension || program.two_and_half_dimension)) {
 		cerr << "N[2]=1 for 2D flows" << endl;
 		exit(1);

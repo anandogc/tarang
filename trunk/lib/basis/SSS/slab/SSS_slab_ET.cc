@@ -53,19 +53,19 @@ DP SSS_SLAB::Local_shell_mult_single
 	DP inner_radius, DP outer_radius
 )
 {
-	Array<DP,3> Ar=Array<DP,3>(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
-    Array<DP,3> Br=Array<DP,3>(reinterpret_cast<DP*>(B.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
+	Array<DP,3> Ar=Array<DP,3>(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+    Array<DP,3> Br=Array<DP,3>(reinterpret_cast<DP*>(B.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 	
 	DP Kmag;
 	DP local_result = 0.0;
 	
-	for (int ly=0; ly<Ar.extent(0); ly++)
-        for (int lz=0; lz<Ar.extent(1); lz++)
-            for (int lx=0; lx<Ar.extent(2); lx++) {
+    for (int lx=0; lx<Ar.extent(0); lx++)
+		for (int ly=0; ly<Ar.extent(1); ly++)
+	        for (int lz=0; lz<Ar.extent(2); lz++) {
 				Kmag = Kmagnitude(lx, ly, lz);
 				
 				if ( (Kmag > inner_radius) && (Kmag <= outer_radius) ) 
-					local_result += 2 * Multiplicity_factor(lx, ly, lz)* Ar(ly,lz,lx)*Br(ly,lz,lx);
+					local_result += 2 * Multiplicity_factor(lx, ly, lz)* Ar(lx,ly,lz)*Br(lx,ly,lz);
 			}
 		
 	return local_result;
@@ -83,8 +83,8 @@ void SSS_SLAB::Local_shell_mult_all
 	Array<DP,1> local_result
 )
 {
-	Array<DP,3> Ar=Array<DP,3>(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
-    Array<DP,3> Br=Array<DP,3>(reinterpret_cast<DP*>(B.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
+	Array<DP,3> Ar=Array<DP,3>(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+    Array<DP,3> Br=Array<DP,3>(reinterpret_cast<DP*>(B.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 	
 	DP Kmag;
 	int shell_index;
@@ -93,15 +93,15 @@ void SSS_SLAB::Local_shell_mult_all
 	 
 	 int	Kmax_inside = Max_radius_inside();
 	
-	for (int ly=0; ly<Ar.extent(0); ly++)
-        for (int lz=0; lz<Ar.extent(1); lz++)
-            for (int lx=0; lx<Ar.extent(2); lx++) {
+    for (int lx=0; lx<Ar.extent(0); lx++)
+		for (int ly=0; ly<Ar.extent(1); ly++)
+	        for (int lz=0; lz<Ar.extent(2); lz++) {
 				Kmag = Kmagnitude(lx, ly, lz);
 				
 				if (Kmag <= Kmax_inside) {
 						shell_index = Get_shell_index(Kmag, shell_radius_array);
 					
-						local_result(shell_index) += 2*Multiplicity_factor(lx,ly,lz)* Ar(ly,lz,lx)*Br(ly,lz,lx);
+						local_result(shell_index) += 2*Multiplicity_factor(lx,ly,lz)* Ar(lx,ly,lz)*Br(lx,ly,lz);
 				}									   
 			}
 				
@@ -119,13 +119,13 @@ void SSS_SLAB::Local_shell_mult_all
 	Array<DP,1> local_result
 )
 {
-	Array<DP,3> Axr=Array<DP,3>(reinterpret_cast<DP*>(Ax.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
-    Array<DP,3> Ayr=Array<DP,3>(reinterpret_cast<DP*>(Ay.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
-	Array<DP,3> Azr=Array<DP,3>(reinterpret_cast<DP*>(Az.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
+	Array<DP,3> Axr=Array<DP,3>(reinterpret_cast<DP*>(Ax.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+    Array<DP,3> Ayr=Array<DP,3>(reinterpret_cast<DP*>(Ay.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<DP,3> Azr=Array<DP,3>(reinterpret_cast<DP*>(Az.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 	
-	Array<DP,3> Bxr=Array<DP,3>(reinterpret_cast<DP*>(Bx.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
-    Array<DP,3> Byr=Array<DP,3>(reinterpret_cast<DP*>(By.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
-	Array<DP,3> Bzr=Array<DP,3>(reinterpret_cast<DP*>(Bz.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
+	Array<DP,3> Bxr=Array<DP,3>(reinterpret_cast<DP*>(Bx.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+    Array<DP,3> Byr=Array<DP,3>(reinterpret_cast<DP*>(By.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<DP,3> Bzr=Array<DP,3>(reinterpret_cast<DP*>(Bz.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 	
 	DP Kmag;
 	int shell_index;
@@ -135,15 +135,15 @@ void SSS_SLAB::Local_shell_mult_all
 	
 	int	Kmax_inside = Max_radius_inside();
 	
-	for (int ly=0; ly<Axr.extent(0); ly++)
-        for (int lz=0; lz<Axr.extent(1); lz++)
-            for (int lx=0; lx<Axr.extent(2); lx++) {
+    for (int lx=0; lx<Axr.extent(0); lx++)
+		for (int ly=0; ly<Axr.extent(1); ly++)
+	        for (int lz=0; lz<Axr.extent(2); lz++) {
 				Kmag = Kmagnitude(lx, ly, lz);
 				
 				if (Kmag <= Kmax_inside) {
                     shell_index = Get_shell_index(Kmag, shell_radius_array);
 					
-                    AdotB = Axr(ly,lz,lx)*Bxr(ly,lz,lx) + Ayr(ly,lz,lx)*Byr(ly,lz,lx)  + Azr(ly,lz,lx)*Bzr(ly,lz,lx);
+                    AdotB = Axr(lx,ly,lz)*Bxr(lx,ly,lz) + Ayr(lx,ly,lz)*Byr(lx,ly,lz)  + Azr(lx,ly,lz)*Bzr(lx,ly,lz);
 					
                     local_result(shell_index) += 2*Multiplicity_factor(lx,ly,lz)* AdotB;  
 				}										
@@ -166,8 +166,8 @@ void SSS_SLAB::Local_ring_mult_all
 	Array<DP,2> local_result
 )
 {
-	Array<DP,3> Ar=Array<DP,3>(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
-    Array<DP,3> Br=Array<DP,3>(reinterpret_cast<DP*>(B.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
+	Array<DP,3> Ar=Array<DP,3>(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+    Array<DP,3> Br=Array<DP,3>(reinterpret_cast<DP*>(B.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 	
 	DP Kmag, theta;
 	int shell_index, sector_index;
@@ -176,9 +176,9 @@ void SSS_SLAB::Local_ring_mult_all
 	
 	int	Kmax_inside = Max_radius_inside();
 	
-	for (int ly=0; ly<Ar.extent(0); ly++)
-        for (int lz=0; lz<Ar.extent(1); lz++)
-            for (int lx=0; lx<Ar.extent(2); lx++) {
+    for (int lx=0; lx<Ar.extent(0); lx++)
+		for (int ly=0; ly<Ar.extent(1); ly++)
+	        for (int lz=0; lz<Ar.extent(2); lz++) {
 				Kmag = Kmagnitude(lx, ly, lz);
 				
 				if ((Kmag <= Kmax_inside) && (Kmag > MYEPS)) {
@@ -186,7 +186,7 @@ void SSS_SLAB::Local_ring_mult_all
 					
 					Compute_ring_index(Kmag, theta, global.energy_transfer.ring_to_ring.radii, global.energy_transfer.ring_to_ring.sector_angles, shell_index, sector_index);
 					
-					local_result(shell_index, sector_index) += 2 *Multiplicity_factor(lx,ly,lz)* Ar(ly,lz,lx)*Br(ly,lz,lx);
+					local_result(shell_index, sector_index) += 2 *Multiplicity_factor(lx,ly,lz)* Ar(lx,ly,lz)*Br(lx,ly,lz);
 				}									   
 			}
 
@@ -203,13 +203,13 @@ void SSS_SLAB::Local_ring_mult_all
 	Array<DP,2> local_result
 )
 {
-	Array<DP,3> Axr=Array<DP,3>(reinterpret_cast<DP*>(Ax.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
-    Array<DP,3> Ayr=Array<DP,3>(reinterpret_cast<DP*>(Ay.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
-	Array<DP,3> Azr=Array<DP,3>(reinterpret_cast<DP*>(Az.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
+	Array<DP,3> Axr=Array<DP,3>(reinterpret_cast<DP*>(Ax.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+    Array<DP,3> Ayr=Array<DP,3>(reinterpret_cast<DP*>(Ay.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<DP,3> Azr=Array<DP,3>(reinterpret_cast<DP*>(Az.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 	
-	Array<DP,3> Bxr=Array<DP,3>(reinterpret_cast<DP*>(Bx.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
-    Array<DP,3> Byr=Array<DP,3>(reinterpret_cast<DP*>(By.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
-	Array<DP,3> Bzr=Array<DP,3>(reinterpret_cast<DP*>(Bz.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
+	Array<DP,3> Bxr=Array<DP,3>(reinterpret_cast<DP*>(Bx.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+    Array<DP,3> Byr=Array<DP,3>(reinterpret_cast<DP*>(By.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<DP,3> Bzr=Array<DP,3>(reinterpret_cast<DP*>(Bz.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 	
 	DP Kmag, theta;
 	int shell_index, sector_index;
@@ -219,9 +219,9 @@ void SSS_SLAB::Local_ring_mult_all
 	
 	int	Kmax_inside = Max_radius_inside();
 	
-	for (int ly=0; ly<Axr.extent(0); ly++)
-        for (int lz=0; lz<Axr.extent(1); lz++)
-            for (int lx=0; lx<Axr.extent(2); lx++) {
+    for (int lx=0; lx<Axr.extent(0); lx++)
+		for (int ly=0; ly<Axr.extent(1); ly++)
+	        for (int lz=0; lz<Axr.extent(2); lz++) {
 				Kmag = Kmagnitude(lx, ly, lz);
 				
 				if ((Kmag <= Kmax_inside) && (Kmag > MYEPS)) {
@@ -229,7 +229,7 @@ void SSS_SLAB::Local_ring_mult_all
 					
 					Compute_ring_index(Kmag, theta, global.energy_transfer.ring_to_ring.radii, global.energy_transfer.ring_to_ring.sector_angles, shell_index, sector_index);
 					
-					AdotB = Axr(ly,lz,lx)*Bxr(ly,lz,lx) + Ayr(ly,lz,lx)*Byr(ly,lz,lx)  + Azr(ly,lz,lx)*Bzr(ly,lz,lx);
+					AdotB = Axr(lx,ly,lz)*Bxr(lx,ly,lz) + Ayr(lx,ly,lz)*Byr(lx,ly,lz)  + Azr(lx,ly,lz)*Bzr(lx,ly,lz);
 					
 					local_result(shell_index, sector_index) +=  2* Multiplicity_factor(lx, ly, lz)* AdotB;  
 				}											
@@ -254,8 +254,8 @@ void SSS_SLAB::Local_cyl_ring_mult_all
 )
 {
 
-	Array<DP,3> Ar=Array<DP,3>(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
-    Array<DP,3> Br=Array<DP,3>(reinterpret_cast<DP*>(B.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
+	Array<DP,3> Ar=Array<DP,3>(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+    Array<DP,3> Br=Array<DP,3>(reinterpret_cast<DP*>(B.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 	
 	DP  Kpll,  Kperp;
 	int shell_index, slab_index;
@@ -264,9 +264,9 @@ void SSS_SLAB::Local_cyl_ring_mult_all
 		
 	int	 Kperp_max = Anis_max_Krho_radius_inside();
 	
-	for (int ly=0; ly<Ar.extent(0); ly++)
-        for (int lz=0; lz<Ar.extent(1); lz++)
-            for (int lx=0; lx<Ar.extent(2); lx++) {
+    for (int lx=0; lx<Ar.extent(0); lx++)
+		for (int ly=0; ly<Ar.extent(1); ly++)
+	        for (int lz=0; lz<Ar.extent(2); lz++) {
 				 Kpll = AnisKpll(lx, ly, lz);
 				
 				 Kperp = AnisKperp(lx, ly, lz);
@@ -274,7 +274,7 @@ void SSS_SLAB::Local_cyl_ring_mult_all
 				if ( Kperp <=  Kperp_max) {
 					Compute_cylindrical_ring_index(Kpll,  Kperp, global.energy_transfer.cylindrical_ring_to_ring.radii, global.energy_transfer.cylindrical_ring_to_ring.kpll_array, shell_index, slab_index);
 					
-					local_result(shell_index, slab_index) +=  2* Multiplicity_factor(lx,ly,lz)* Ar(ly,lz,lx)*Br(ly,lz,lx);
+					local_result(shell_index, slab_index) +=  2* Multiplicity_factor(lx,ly,lz)* Ar(lx,ly,lz)*Br(lx,ly,lz);
 				}										
 			}
 		
@@ -290,13 +290,13 @@ void SSS_SLAB::Local_cyl_ring_mult_all
 	Array<DP,2> local_result
 )
 {
-	Array<DP,3> Axr=Array<DP,3>(reinterpret_cast<DP*>(Ax.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
-    Array<DP,3> Ayr=Array<DP,3>(reinterpret_cast<DP*>(Ay.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
-	Array<DP,3> Azr=Array<DP,3>(reinterpret_cast<DP*>(Az.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
+	Array<DP,3> Axr=Array<DP,3>(reinterpret_cast<DP*>(Ax.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+    Array<DP,3> Ayr=Array<DP,3>(reinterpret_cast<DP*>(Ay.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<DP,3> Azr=Array<DP,3>(reinterpret_cast<DP*>(Az.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 	
-	Array<DP,3> Bxr=Array<DP,3>(reinterpret_cast<DP*>(Bx.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
-    Array<DP,3> Byr=Array<DP,3>(reinterpret_cast<DP*>(By.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
-	Array<DP,3> Bzr=Array<DP,3>(reinterpret_cast<DP*>(Bz.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
+	Array<DP,3> Bxr=Array<DP,3>(reinterpret_cast<DP*>(Bx.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+    Array<DP,3> Byr=Array<DP,3>(reinterpret_cast<DP*>(By.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<DP,3> Bzr=Array<DP,3>(reinterpret_cast<DP*>(Bz.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 
 	DP  Kpll,  Kperp, AdotB;
 	int shell_index, slab_index;
@@ -305,9 +305,9 @@ void SSS_SLAB::Local_cyl_ring_mult_all
 	
 	int	 Kperp_max = Anis_max_Krho_radius_inside();
 	
-	for (int ly=0; ly<Axr.extent(0); ly++)
-        for (int lz=0; lz<Axr.extent(1); lz++)
-            for (int lx=0; lx<Axr.extent(2); lx++) {
+    for (int lx=0; lx<Axr.extent(0); lx++)
+		for (int ly=0; ly<Axr.extent(1); ly++)
+	        for (int lz=0; lz<Axr.extent(2); lz++) {
 				 Kpll = AnisKpll(lx, ly, lz);
 				
 				 Kperp = AnisKperp(lx, ly, lz);
@@ -315,7 +315,7 @@ void SSS_SLAB::Local_cyl_ring_mult_all
 				if ( Kperp <=  Kperp_max) {
 					Compute_cylindrical_ring_index( Kpll,  Kperp, global.energy_transfer.cylindrical_ring_to_ring.radii, global.energy_transfer.cylindrical_ring_to_ring.kpll_array, shell_index, slab_index);
 					
-					AdotB = Axr(ly,lz,lx)*Bxr(ly,lz,lx) + Ayr(ly,lz,lx)*Byr(ly,lz,lx)  + Azr(ly,lz,lx)*Bzr(ly,lz,lx);
+					AdotB = Axr(lx,ly,lz)*Bxr(lx,ly,lz) + Ayr(lx,ly,lz)*Byr(lx,ly,lz)  + Azr(lx,ly,lz)*Bzr(lx,ly,lz);
 					
 					local_result(shell_index, slab_index) +=  2 *Multiplicity_factor(lx,ly,lz)* AdotB;
 				}									
@@ -357,7 +357,7 @@ void SSS_SLAB::Local_shell_mult_all_imagVW_B0
 					
 					Wavenumber(lx, ly, lz, K);	
 					
-					AdotB = mydot_imag(Ax(ly,lz,lx),Ay(ly,lz,lx),Az(ly,lz,lx),Bx(ly,lz,lx),By(ly,lz,lx),Bz(ly,lz,lx));
+					AdotB = mydot_imag(Ax(lx,ly,lz),Ay(lx,ly,lz),Az(lx,ly,lz),Bx(lx,ly,lz),By(lx,ly,lz),Bz(lx,ly,lz));
 					
 					local_result(shell_index) += 2* Multiplicity_factor(lx,ly,lz)*  dot(B0,K)* AdotB;
 				}									
@@ -397,7 +397,7 @@ void SSS_SLAB::Local_ring_mult_all_imagVW_B0
 					Compute_ring_index(Kmag, theta, global.energy_transfer.ring_to_ring.radii, global.energy_transfer.ring_to_ring.sector_angles, shell_index, sector_index);
 					
 					Wavenumber(lx, ly, lz, K);
-					AdotB = mydot_imag(Ax(ly,lz,lx),Ay(ly,lz,lx),Az(ly,lz,lx),Bx(ly,lz,lx),By(ly,lz,lx),Bz(ly,lz,lx));
+					AdotB = mydot_imag(Ax(lx,ly,lz),Ay(lx,ly,lz),Az(lx,ly,lz),Bx(lx,ly,lz),By(lx,ly,lz),Bz(lx,ly,lz));
 					
 					local_result(shell_index, sector_index)  +=	 2* Multiplicity_factor(lx,ly,lz)* dot(B0,K)* AdotB;
 				}									
@@ -441,7 +441,7 @@ void SSS_SLAB::Local_cyl_ring_mult_all_imagVW_B0
 					Compute_cylindrical_ring_index( Kpll,  Kperp, global.energy_transfer.cylindrical_ring_to_ring.radii, global.energy_transfer.cylindrical_ring_to_ring.kpll_array, shell_index, slab_index);
 
 					Wavenumber(lx, ly, lz, K);
-					AdotB = mydot_imag(Ax(ly,lz,lx),Ay(ly,lz,lx),Az(ly,lz,lx),Bx(ly,lz,lx),By(ly,lz,lx),Bz(ly,lz,lx));
+					AdotB = mydot_imag(Ax(lx,ly,lz),Ay(lx,ly,lz),Az(lx,ly,lz),Bx(lx,ly,lz),By(lx,ly,lz),Bz(lx,ly,lz));
 
 					local_result(shell_index, slab_index) += 2* Multiplicity_factor(lx,ly,lz)* dot(B0,K)* AdotB;
 				}									
@@ -480,7 +480,7 @@ DP SSS_SLAB::Local_shell_mult_vorticity
 					if (Ny > 1) {	
 						Compute_Modal_vorticity(lx, ly, lz, Bx, By, Bz, vorticity);
 						
-						AdotB = mydot(Ax(ly,lz,lx),Ay(ly,lz,lx),Az(ly,lz,lx), vorticity(0),vorticity(1),vorticity(2));
+						AdotB = mydot(Ax(lx,ly,lz),Ay(lx,ly,lz),Az(lx,ly,lz), vorticity(0),vorticity(1),vorticity(2));
 						
 						// factor 2 below to account for the absent complex conj modes. 
 						result += 2* Multiplicity_factor(lx,ly,lz)* AdotB;
@@ -492,7 +492,7 @@ DP SSS_SLAB::Local_shell_mult_vorticity
 						
 						// nlin2 contains U.grad omega
 						// factor 2 to account for the absent complex conj modes.
-						result += 2* Multiplicity_factor(lx,0,lz)*real_cprod(Ay(ly,lz,lx), vort_y);
+						result += 2* Multiplicity_factor(lx,0,lz)*real_cprod(Ay(lx,ly,lz), vort_y);
 					}	
 				}	
 			}
@@ -530,7 +530,7 @@ DP SSS_SLAB::Local_shell_mult_vector_potential
 					if (Ny > 1) {	
 						Compute_Modal_vorticity(lx, ly, lz, Bx, By, Bz, vorticity);
 						
-						AdotB = mydot(Ax(ly,lz,lx),Ay(ly,lz,lx),Az(ly,lz,lx), vorticity(0),vorticity(1),vorticity(2));
+						AdotB = mydot(Ax(lx,ly,lz),Ay(lx,ly,lz),Az(lx,ly,lz), vorticity(0),vorticity(1),vorticity(2));
 						
 						result += 2* Multiplicity_factor(lx,ly,lz)/pow2(Kmag)* AdotB;
 							// factor 2 to account for the absent complex conj modes. 
@@ -539,7 +539,7 @@ DP SSS_SLAB::Local_shell_mult_vector_potential
 					else if (Ny ==1)	{
 						Compute_Modal_vorticity_y_component(lx, 0, lz, Bx, By, Bz, vort_y);
 						
-						result += 2 * Multiplicity_factor(lx,0,lz)*real_cprod(Ay(ly,lz,lx), vort_y)/pow2(Kmag);
+						result += 2 * Multiplicity_factor(lx,0,lz)*real_cprod(Ay(lx,ly,lz), vort_y)/pow2(Kmag);
 							// nlin2 contains U.grad a; a(k) = curl(b)/k^2
 							// factor 2 to account for the absent complex conj modes. 
 					}	
@@ -585,7 +585,7 @@ void SSS_SLAB::Local_shell_mult_vorticity_all
 					if (Ny > 1) {	
 						Compute_Modal_vorticity(lx, ly, lz, Bx, By, Bz, vorticity);
 						
-						AdotB = mydot(Ax(ly,lz,lx),Ay(ly,lz,lx),Az(ly,lz,lx), vorticity(0),vorticity(1),vorticity(2));
+						AdotB = mydot(Ax(lx,ly,lz),Ay(lx,ly,lz),Az(lx,ly,lz), vorticity(0),vorticity(1),vorticity(2));
 						
 						// factor 2 to account for the absent complex conj modes.
 						result(shell_index) += 2* Multiplicity_factor(lx,ly,lz)* AdotB;
@@ -597,7 +597,7 @@ void SSS_SLAB::Local_shell_mult_vorticity_all
 						
 						// nlin2 contains U.grad omega
 						// factor 2 to account for the absent complex conj modes. 
-						result(shell_index) += 2* Multiplicity_factor(lx,0,lz)*real_cprod(Ay(ly,lz,lx), vort_y);
+						result(shell_index) += 2* Multiplicity_factor(lx,0,lz)*real_cprod(Ay(lx,ly,lz), vort_y);
 					}
 				}							
 			}
@@ -637,7 +637,7 @@ void SSS_SLAB::Local_shell_mult_vector_potential_all
 					if (Ny > 1) {	
 						Compute_Modal_vorticity(lx, ly, lz, Bx, By, Bz, vorticity);
 						
-						AdotB = mydot(Ax(ly,lz,lx),Ay(ly,lz,lx),Az(ly,lz,lx), vorticity(0),vorticity(1),vorticity(2));
+						AdotB = mydot(Ax(lx,ly,lz),Ay(lx,ly,lz),Az(lx,ly,lz), vorticity(0),vorticity(1),vorticity(2));
 						
 						// factor 2 to account for the absent complex conj modes.
 						result(shell_index) += 2* Multiplicity_factor(lx,ly,lz)* AdotB/pow2(Kmag);
@@ -646,7 +646,7 @@ void SSS_SLAB::Local_shell_mult_vector_potential_all
 					else if (Ny ==1)	{
 						Compute_Modal_vorticity_y_component(lx, 0, lz, Bx, By, Bz, vort_y);
 						
-						result(shell_index) += 2* Multiplicity_factor(lx,0,lz)* real_cprod(Ay(ly,lz,lx),vort_y)/ pow2(Kmag);
+						result(shell_index) += 2* Multiplicity_factor(lx,0,lz)* real_cprod(Ay(lx,ly,lz),vort_y)/ pow2(Kmag);
 						
 					}
 				}							
@@ -661,42 +661,42 @@ void SSS_SLAB::Local_shell_mult_vector_potential_all
 void SSS_SLAB::Fill_array_shell(Array<complx,3> A, Array<complx,3> B, DP inner_radius, DP outer_radius)					
 {
 	
-	Array<DP,3> Ar=Array<DP,3>(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
-    Array<DP,3> Br=Array<DP,3>(reinterpret_cast<DP*>(B.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
+	Array<DP,3> Ar=Array<DP,3>(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+    Array<DP,3> Br=Array<DP,3>(reinterpret_cast<DP*>(B.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 	
 	DP Kmag;
 	
 	B = 0.0;
 	
-	for (int ly=0; ly<Ar.extent(0); ly++)
-        for (int lz=0; lz<Ar.extent(1); lz++)
-            for (int lx=0; lx<Ar.extent(2); lx++) {
+    for (int lx=0; lx<Ar.extent(0); lx++)
+		for (int ly=0; ly<Ar.extent(1); ly++)
+	        for (int lz=0; lz<Ar.extent(2); lz++) {
 				Kmag = Kmagnitude(lx, ly, lz);
 				
 				if ( (Kmag > inner_radius) && (Kmag <= outer_radius) ) 
-					Br(ly,lz,lx) = Ar(ly,lz,lx);
+					Br(lx,ly,lz) = Ar(lx,ly,lz);
 				}
 }
 
 
 void SSS_SLAB::Fill_array_ring(Array<complx,3> A, Array<complx,3> B, DP inner_radius, DP outer_radius, DP left_angle, DP right_angle)		
 {
-	Array<DP,3> Ar=Array<DP,3>(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
-    Array<DP,3> Br=Array<DP,3>(reinterpret_cast<DP*>(B.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
+	Array<DP,3> Ar=Array<DP,3>(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+    Array<DP,3> Br=Array<DP,3>(reinterpret_cast<DP*>(B.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 	
 	DP Kmag, theta;
 	
 	B = 0.0;
 	
-	for (int ly=0; ly<Ar.extent(0); ly++)
-        for (int lz=0; lz<Ar.extent(1); lz++)
-            for (int lx=0; lx<Ar.extent(2); lx++) {
+    for (int lx=0; lx<Ar.extent(0); lx++)
+		for (int ly=0; ly<Ar.extent(1); ly++)
+	        for (int lz=0; lz<Ar.extent(2); lz++) {
 				Kmag = Kmagnitude(lx, ly, lz);
 				theta = AnisKvect_polar_angle(lx, ly, lz);
 				
 				if ((Kmag > inner_radius) && (Kmag <= outer_radius)) 
 					if ( ((theta > left_angle) && (theta <= right_angle)) || ((abs(theta) < MYEPS) && (left_angle < MYEPS)) )
-						Br(ly,lz,lx) = Ar(ly,lz,lx);
+						Br(lx,ly,lz) = Ar(lx,ly,lz);
 			}
 }
 
@@ -705,23 +705,23 @@ void SSS_SLAB::Fill_array_ring(Array<complx,3> A, Array<complx,3> B, DP inner_ra
 void SSS_SLAB::Fill_array_cylindrical_ring(Array<complx,3> A, Array<complx,3> B, DP inner_radius, DP outer_radius, DP h_lower, DP h_upper)		
 {
 	
-	Array<DP,3> Ar=Array<DP,3>(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
-    Array<DP,3> Br=Array<DP,3>(reinterpret_cast<DP*>(B.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
+	Array<DP,3> Ar=Array<DP,3>(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+    Array<DP,3> Br=Array<DP,3>(reinterpret_cast<DP*>(B.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 	
 	
 	DP Kmag, Kpll;
 	
 	B = 0.0;
 	
-	for (int ly=0; ly<Ar.extent(0); ly++)
-        for (int lz=0; lz<Ar.extent(1); lz++)
-            for (int lx=0; lx<Ar.extent(2); lx++) {
+    for (int lx=0; lx<Ar.extent(0); lx++)
+		for (int ly=0; ly<Ar.extent(1); ly++)
+	        for (int lz=0; lz<Ar.extent(2); lz++) {
 				Kmag = Kmagnitude(lx, ly, lz);
 				Kpll = AnisKpll(lx, ly, lz);
 				
 				if ((Kmag > inner_radius) && (Kmag <= outer_radius)) 
 					if ( ((Kpll > h_lower) && (Kpll <= h_upper)) || ((abs(Kpll) < MYEPS) && (h_lower < MYEPS)) )
-						Br(ly,lz,lx) = Ar(ly,lz,lx);
+						Br(lx,ly,lz) = Ar(lx,ly,lz);
 			}
 }
 

@@ -70,8 +70,6 @@ public:
 		Array<DP,3> A, Array<DP,3> B, Array<DP,3> C
 	);
 
-	static void Get_XY_plane(Array<complx,3> A, Array<complx,2> plane, int kz);
-	
 	template<class T, int rank>
 	static void Print_array_all_procs(Array<T, rank> A){
 		for (int i=0; i<numprocs; i++){

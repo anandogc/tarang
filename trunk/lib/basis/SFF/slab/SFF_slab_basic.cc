@@ -106,8 +106,7 @@ void SFF_SLAB::Dealias(Array<complx,3> A)
 	if (Ny>1)
 		A(Range(first_x,last_x), Range(Ny/3+1,2*Ny/3-1), Range(Nz/3+1,toEnd)) = 0.0;
 	else
-		A(0,Range(Nz/3+1,toEnd),Range(first_x,last_x)) = 0.0;
-	
+		A(Range(first_x,last_x), 0, Range(Nz/3+1,toEnd)) = 0.0;
 }
 
 // Data resides till outer_radius in k-space
@@ -235,7 +234,12 @@ int SFF_SLAB::Read(Array<complx,3> A, BasicIO::H5_plan plan, string file_name, s
 int SFF_SLAB::Read(Array<DP,3> Ar, BasicIO::H5_plan plan, string file_name, string dataset_name)
 {
 	int err = BasicIO::Read(global.temp_array.X.data(), plan, file_name, dataset_name);
-	spectralTransform.Transpose(global.temp_array.X, Ar);
+
+	if (Ny>1)
+		spectralTransform.Transpose(global.temp_array.X, Ar);
+	else
+		spectralTransform.Transpose(global.temp_array.X(Range::all(),0,Range::all()), Ar(Range::all(),0,Range::all()));
+
 	return err;
 }
 
@@ -247,7 +251,11 @@ int SFF_SLAB::Write(Array<complx,3> A, BasicIO::H5_plan plan, string folder_name
 
 int SFF_SLAB::Write(Array<DP,3> Ar, BasicIO::H5_plan plan, string folder_name, string file_name, string dataset_name)
 {
-	spectralTransform.Transpose(Ar, global.temp_array.X);
+	if (Ny>1)
+		spectralTransform.Transpose(Ar, global.temp_array.X);
+	else
+		spectralTransform.Transpose(Ar(Range::all(),0,Range::all()), global.temp_array.X(Range::all(),0,Range::all()));
+
 	return BasicIO::Write(global.temp_array.X.data(), plan, folder_name, file_name, dataset_name);  
 }
 

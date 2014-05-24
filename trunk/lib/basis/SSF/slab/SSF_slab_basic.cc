@@ -115,15 +115,15 @@ void SSF_SLAB::Dealias(Array<complx,3> A)
 	int first_x = first(Ax_filter(Range(my_id*local_Nx,(my_id+1)*local_Nx-1)) == 1);
 	int last_x = last(Ax_filter(Range(my_id*local_Nx,(my_id+1)*local_Nx-1)) == 1);
 	
-	A(Range(2*Ny/3+1,toEnd), Range(Nz/3,toEnd), Range(first_x,last_x)) = 0.0;
+	A(Range(first_x,last_x), Range(2*Ny/3+1,toEnd), Range(Nz/3,toEnd)) = 0.0;
 }
 
 // Data resides till outer_radius in k-space
 bool SSF_SLAB::Is_dealiasing_necessary(Array<complx,3> A, DP outer_radius)
 {
-	int kx_max = (int) ceil(outer_radius/kfactor[1]);
-	int ky_max = (int) ceil(outer_radius/kfactor[2]);
-	int kz_max = (int) ceil(outer_radius/kfactor[3]);
+	int kx_max = ceil(outer_radius/kfactor[1]);
+	int ky_max = ceil(outer_radius/kfactor[2]);
+	int kz_max = ceil(outer_radius/kfactor[3]);
 	
 	if ((kx_max > 2*Nx/3) || (ky_max > 2*Ny/3) || (kz_max > Nz/3))
 		return true;
@@ -170,34 +170,39 @@ void SSF_SLAB::Zero_modes(Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3
     
     if (global.program.sincostr_switch == "SCF") {
         if (master)
-            Ax(Range::all(),Range::all(),0) = 0.0;
+            Ax(0,Range::all(),Range::all()) = ZERO;
         
-        Ay(0,Range::all(),Range::all()) = 0.0;
+        Ay(Range::all(),0,Range::all()) = ZERO;
     }
     
     else if (global.program.sincostr_switch == "CSF") {
-        Ax(0,Range::all(),Range::all()) = 0.0;
+        Ax(Range::all(),0,Range::all()) = ZERO;
         
         if (master)
-            Ay(Range::all(),Range::all(),0) = 0.0;
+            Ay(0,Range::all(),Range::all()) = ZERO;
         
         if (master)
-            Az(0,Range::all(),0) = 0.0;
+            Az(0,Range::all(),Range::all()) = ZERO;
+
+        Az(Range::all(),0,Range::all()) = ZERO;
     }
     
     else if (global.program.sincostr_switch == "SSF") {
         if (master)
-            Ax(0,Range::all(),0) = 0.0;
+            Ax(0,Range::all(),Range::all()) = ZERO;
         
-        Az(0,Range::all(),Range::all()) = 0.0;
+        Ax(Range::all(),0,Range::all()) = ZERO;
+        Az(Range::all(),0,Range::all()) = ZERO;
     }
     
     else if (global.program.sincostr_switch == "CCF") {
         if (master)
-            Ay(0,Range::all(),0) = 0.0;
+            Ay(0,Range::all(),Range::all()) = ZERO;
+
+        Ay(Range::all(),0,Range::all()) = ZERO;
         
         if (master)
-            Az(Range::all(),Range::all(),0) = 0.0;
+            Az(0,Range::all(),Range::all()) = ZERO;
     }
     
 }
@@ -213,19 +218,44 @@ void SSF_SLAB::Zero_modes(Array<complx,3> F)
     
 	if (global.program.sincostr_switch == "SCF") {
         if (master)
-            F(Range::all(),Range::all(),0) = 0.0;
+            F(0,Range::all(),Range::all()) = 0.0;
     }
     
     else if (global.program.sincostr_switch == "CSF")
-        F(0,Range::all(),Range::all()) = 0.0;
+        F(Range::all(),0,Range::all()) = 0.0;
     
     else if (global.program.sincostr_switch == "SSF") {
         if (master)
-            F(0,Range::all(),0) = 0.0;
+            F(0,Range::all(),Range::all()) = 0.0;
+        
+        F(Range::all(),0,Range::all()) = 0.0;
     }
 }
 
 
+int SSF_SLAB::Read(Array<complx,3> A, BasicIO::H5_plan plan, string file_name, string dataset_name)
+{
+	return BasicIO::Read(A.data(), plan, file_name, dataset_name);
+}
+
+int SSF_SLAB::Read(Array<DP,3> Ar, BasicIO::H5_plan plan, string file_name, string dataset_name)
+{
+	int err = BasicIO::Read(global.temp_array.X.data(), plan, file_name, dataset_name);
+	spectralTransform.Transpose(global.temp_array.X, Ar);
+	return err;
+}
+
+
+int SSF_SLAB::Write(Array<complx,3> A, BasicIO::H5_plan plan, string folder_name, string file_name, string dataset_name)
+{
+	return BasicIO::Write(A.data(), plan, folder_name, file_name, dataset_name);
+}
+
+int SSF_SLAB::Write(Array<DP,3> Ar, BasicIO::H5_plan plan, string folder_name, string file_name, string dataset_name)
+{
+	spectralTransform.Transpose(Ar, global.temp_array.X);
+	return BasicIO::Write(global.temp_array.X.data(), plan, folder_name, file_name, dataset_name);  
+}
 //*********************************  End of scft_basic.cc *************************************
 
 

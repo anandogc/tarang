@@ -47,76 +47,35 @@
 class SpectralPlan
 {
 protected:
-
-	enum orientation{
-		X,
-		Y,
-		Z,
-		XZ,
-		YZ
-	};
-
-	Array<complx,3> X_3d;
-
 	MPI_Request *request;
 	MPI_Status *status;
-
-
-	MPI_Datatype MPI_Vector_z_strip_send;
-	MPI_Datatype MPI_Vector_z_strip_recv;
-
-	MPI_Datatype MPI_Struct_yz_plane_block;
-
-
-	template<typename T>
-	void Isend_yz_x(Array<T,3> A);
-
-	template<typename T>
-	void Isend_yz_y(Array<T,3> Ar);
-
-	template<typename T>
-
-	void Isend_xz_y(Array<T,3> A);
-
-	template<typename T>
-	void Recv_yz_y(Array<T,3> A);
-
-	template<typename T>
-	void Recv_xz_x(Array<T,3> A);
-	
-	template<typename T>
-	void Recv_yz_x(Array<T,3> A);
-
-	template<typename T1, typename T2>
-	void Alltoall(Array<T1,3> A1, Array<T2,3> A2, int orientation);
-
-	void Zero_pad_last_plane(Array<DP,3> Ar);
-
-	void SinCostr_x(char sincostr_switch, Array<DP,3> Ar);
-	void ISinCostr_x(char sincostr_switch, Array<DP,3> Ar);
-
-	void ArrayShiftRight(Array<DP,3> Ar, int axis);
-	void ArrayShiftLeft(Array<DP,3> Ar, int axis);
 
 public:
 	int my_id;
 	int numprocs;
 
-	size_t Nx;
-	size_t Ny;
-	size_t Nz;
+	string basis;
 
-	size_t local_Nx;
-	size_t local_Ny;
-	size_t local_Nz;
+	int Nx;
+	int Ny;
+	int Nz;
 
-	size_t local_Nx_start;
-	size_t local_Ny_start;
-	size_t local_Nz_start;
+	int local_Nx;
+	int local_Ny;
+	int local_Nz;
 
+	int local_Nx_start;
+	int local_Ny_start;
+	int local_Nz_start;
 
+	double time_per_step;
 
-	SpectralPlan(int my_id, int numprocs, size_t Nx, size_t Ny, size_t Nz);
+	SpectralPlan(string basis, int my_id, int numprocs, int Nx, int Nz);
+	SpectralPlan(string basis, int my_id, int numprocs, int Nx, int Ny, int Nz);
+
+	virtual void Init_array() = 0;
+	virtual void Evaluate_time_per_step(double num_iter) = 0;
+	virtual void Evaluate_time_per_step(string sincostr_option, double num_iter) = 0;
 
 	//3D FFF
 	virtual void Forward_transform(Array<DP,3> Ar, Array<complx,3> A);
@@ -143,88 +102,6 @@ public:
 	virtual void Transpose(Array<complx,2> A, Array<DP,2> Ar);
 
 };
-
-//Isend
-template<typename T>
-void SpectralPlan::Isend_yz_x(Array<T,3> A)
-{
-	for (int lx=0; lx<local_Nx; lx++)
-		for (int p=0; p<numprocs; p++)
-			MPI_Isend(A(lx, Range(p*local_Ny, (p+1)*local_Ny-1), Range::all()).data(), (Nz+2)*local_Ny, MPI_DP, p, lx, MPI_COMM_WORLD, &request[p*local_Nx + lx]);
-}
-
-template<typename T>
-void SpectralPlan::Isend_yz_y(Array<T,3> Ar)
-{
-	for (int lx=0; lx<local_Nx; lx++)
-		for (int p=0; p<numprocs; p++)
-			MPI_Isend(Ar(p*local_Nx + lx, Range::all(), Range::all()).data(), (Nz+2)*local_Ny, MPI_DP, p, lx, MPI_COMM_WORLD, &request[p*local_Nx + lx]);
-}
-
-template<typename T>
-void SpectralPlan::Isend_xz_y(Array<T,3> A)
-{
- 	for (int ly=0; ly<local_Ny; ly++)
-		for (int p=0; p<numprocs; p++)
-			MPI_Isend(A(Range(p*local_Nx,(p+1)*local_Nx-1),ly,Range::all()).data(), 1, MPI_Vector_z_strip_send, p, ly, MPI_COMM_WORLD, &request[p*local_Ny + ly]);
-}
-
-
-//Recv
-template<typename T>
-void SpectralPlan::Recv_xz_x(Array<T,3> A)
-{
-	for (int ly=0; ly<local_Ny; ly++)
-		for (int p=0; p<numprocs; p++)
-			MPI_Recv(A(Range::all(),p*local_Ny+ly,Range::all()).data(), 1, MPI_Vector_z_strip_recv, p, ly, MPI_COMM_WORLD, status);
-
-	MPI_Waitall(Ny, request, status);
-}
-
-template<typename T>
-void SpectralPlan::Recv_yz_x(Array<T,3> A)
-{
-	for (int lx=0; lx<local_Nx; lx++)
-	{
-		for (int p=0; p<numprocs; p++)
-		{
-			MPI_Recv(A(lx, Range(p*local_Ny, (p+1)*local_Ny-1), Range::all()).data(), (Nz+2)*local_Ny, MPI_DP, p, lx, MPI_COMM_WORLD, status);
-
-		}
-	}
-	MPI_Waitall(Nx, request, status);
-}
-
-template<typename T>
-void SpectralPlan::Recv_yz_y(Array<T,3> A)
-{
-	for (int lx=0; lx<local_Nx; lx++)
-		for (int p=0; p<numprocs; p++) {
-			MPI_Recv(A(p*local_Nx + lx, Range::all(), Range::all()).data(), (Nz+2)*local_Ny, MPI_DP, p, lx, MPI_COMM_WORLD, status);
-		}
-	MPI_Waitall(Nx, request, status);
-}
-
-
-
-
-//Alltoall
-template<typename T1, typename T2>
-void SpectralPlan::Alltoall(Array<T1,3> A1, Array<T2,3> A2, int orientation)
-{
-	switch (orientation)
-	{
-		case YZ:
-			for (int lx=0; lx<local_Nx; lx++)
-				MPI_Alltoall(A1(lx,Range::all(),Range::all()).data(), (Nz+2)*local_Ny, MPI_DP, A2(lx,Range::all(),Range::all()).data(), 1, MPI_Struct_yz_plane_block, MPI_COMM_WORLD);
-			break;
-
-		case XZ:
-			for (int lx=0; lx<local_Nx; lx++)
-				MPI_Alltoall(A1(lx,Range::all(),Range::all()).data(), 1, MPI_Struct_yz_plane_block, A2(lx,Range::all(),Range::all()).data(), (Nz+2)*local_Ny, MPI_DP, MPI_COMM_WORLD);
-			break;
-	}
-}
 
 #endif
 
