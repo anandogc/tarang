@@ -246,7 +246,7 @@ void FluidSF::Mult_nlin_exp_ksqr_dt(DP a)
 void FluidSF::Add_complex_conj(int kx, int ky, int kz, complx localG)					
 {	
 	// On kz=0 or kz=N[3]/2 plane
-	if ((basis_type == "FFF") && ((kz == 0) || (kz == N[3]/2)) )	{          
+	if ((basis_type == "FFF" || basis_type == "FFFW") && ((kz == 0) || (kz == N[3]/2)) )	{          
 		universal->Assign_spectral_field(-kx, -ky, kz, csf.F, localG);
 		cout << "Complex-conj(F) added for k = (" << -kx << "," << -ky << "," << kz << ")" << endl;	
 	}

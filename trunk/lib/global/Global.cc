@@ -361,31 +361,37 @@ Global::Global()
     spectral_probe_packet_size_table["FLUID_INCOMPRESS"]["SSF"]=11;
     spectral_probe_packet_size_table["FLUID_INCOMPRESS"]["SFF"]=11;
     spectral_probe_packet_size_table["FLUID_INCOMPRESS"]["FFF"]=11;
+    spectral_probe_packet_size_table["FLUID_INCOMPRESS"]["FFFW"]=11;
     
     spectral_probe_packet_size_table["RBC"]["SSS"]=10;
     spectral_probe_packet_size_table["RBC"]["SSF"]=14;
     spectral_probe_packet_size_table["RBC"]["SFF"]=14;
     spectral_probe_packet_size_table["RBC"]["FFF"]=14;
+    spectral_probe_packet_size_table["RBC"]["FFFW"]=14;
     
     spectral_probe_packet_size_table["STRATIFIED"]["SSS"]=10;
     spectral_probe_packet_size_table["STRATIFIED"]["SSF"]=14;
     spectral_probe_packet_size_table["STRATIFIED"]["SFF"]=14;
     spectral_probe_packet_size_table["STRATIFIED"]["FFF"]=14;
+    spectral_probe_packet_size_table["STRATIFIED"]["FFFW"]=14;
     
     spectral_probe_packet_size_table["SCALAR_INCOMPRESS"]["SSS"]=10;
     spectral_probe_packet_size_table["SCALAR_INCOMPRESS"]["SSF"]=14;
     spectral_probe_packet_size_table["SCALAR_INCOMPRESS"]["SFF"]=14;
     spectral_probe_packet_size_table["SCALAR_INCOMPRESS"]["FFF"]=14;
+    spectral_probe_packet_size_table["SCALAR_INCOMPRESS"]["FFFW"]=14;
 	
 	spectral_probe_packet_size_table["MRBC"]["SSS"]=12;
     spectral_probe_packet_size_table["MRBC"]["SSF"]=17;
     spectral_probe_packet_size_table["MRBC"]["SFF"]=17;
     spectral_probe_packet_size_table["MRBC"]["FFF"]=17;
+    spectral_probe_packet_size_table["MRBC"]["FFFW"]=17;
 
     spectral_probe_packet_size_table["MHD_INCOMPRESS"]["SSS"]=12;
     spectral_probe_packet_size_table["MHD_INCOMPRESS"]["SSF"]=18;
     spectral_probe_packet_size_table["MHD_INCOMPRESS"]["SFF"]=18;
     spectral_probe_packet_size_table["MHD_INCOMPRESS"]["FFF"]=18;
+    spectral_probe_packet_size_table["MHD_INCOMPRESS"]["FFFW"]=18;
     
     spectral_probe_packet_size_table["KEPLERIAN"]["FFF"]=18;
     

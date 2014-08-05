@@ -43,7 +43,7 @@
 #include "spectral_plan.h"
 
 //FFFW
-#include "plans/FFFW_slab/2d/fffw_slab_transposed_order_2d.h"
+#include "plans/FFFW_slab/2d/fffw_slab_in_order_2d.h"
 #include "plans/FFFW_slab/3d/fffw_slab_transposed_order_3d.h"
 
 

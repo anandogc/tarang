@@ -39,7 +39,7 @@
 
 	
 //*********************************************************************************************
-FFF_slab_Isend_Recv_overlap_Isend_forward_3D::FFF_slab_Isend_Recv_overlap_Isend_forward_3D(int my_id, int numprocs, int num_iter, int Nx, int Ny, int Nz): SpectralPlan_Slab_3D("FFF", my_id, numprocs, Nz, Ny, Nz)
+FFF_slab_Isend_Recv_overlap_Isend_forward_3D::FFF_slab_Isend_Recv_overlap_Isend_forward_3D(int my_id, int numprocs, int num_iter, int Nx, int Ny, int Nz): SpectralPlan_Slab_3D("FFF", my_id, numprocs, Nx, Ny, Nz)
 {
 	X_3d.resize(Nx, local_Ny, Nz/2+1);
 	Xr_3d.resize(local_Nx, Ny, Nz+2);

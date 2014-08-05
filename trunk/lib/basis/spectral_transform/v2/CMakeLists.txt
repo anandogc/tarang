@@ -32,7 +32,7 @@ spectral_plan_slab_2d.cc
 spectral_plan_slab_3d.cc
 
 ####
-plans/FFFW_slab/2d/fffw_slab_transposed_order_2d.cc
+plans/FFFW_slab/2d/fffw_slab_in_order_2d.cc
 plans/FFFW_slab/3d/fffw_slab_transposed_order_3d.cc
 
 

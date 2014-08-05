@@ -360,9 +360,7 @@ void FFFW_SLAB::Get_XY_plane(Array<complx,3> A, Array<complx,2> plane_xy, int kz
 
 int FFFW_SLAB::Read(Array<complx,3> A, BasicIO::H5_plan plan, string file_name, string dataset_name)
 {
-    int err = BasicIO::Read(global.temp_array.Xr.data(), plan, file_name, dataset_name);
-    spectralTransform.Transpose(global.temp_array.Xr, A);
-    return err;
+    return BasicIO::Read(A.data(), plan, file_name, dataset_name);
 }
 
 int FFFW_SLAB::Read(Array<DP,3> Ar, BasicIO::H5_plan plan, string file_name, string dataset_name)
@@ -373,8 +371,7 @@ int FFFW_SLAB::Read(Array<DP,3> Ar, BasicIO::H5_plan plan, string file_name, str
 
 int FFFW_SLAB::Write(Array<complx,3> A, BasicIO::H5_plan plan, string folder_name, string file_name, string dataset_name)
 {
-    spectralTransform.Transpose(A, global.temp_array.Xr);
-    return BasicIO::Write(global.temp_array.Xr.data(), plan, folder_name, file_name, dataset_name);
+    return BasicIO::Write(A.data(), plan, folder_name, file_name, dataset_name);
 }
 
 int FFFW_SLAB::Write(Array<DP,3> Ar, BasicIO::H5_plan plan, string folder_name, string file_name, string dataset_name)

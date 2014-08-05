@@ -117,11 +117,10 @@ FFFW_SLAB::FFFW_SLAB()
 		global.field.shape_complex_array = spectralTransform.local_Nx, Ny, Nz/2+1;
 		global.field.shape_real_array = spectralTransform.local_Ny, Nx, Nz+2;
 
-//For HDF5 this is always the case, because it is more efficient to divide the data along the slowest direction.
 		BasicIO::Array_properties<3> array_properties;
 
 		array_properties.shape_full_complex_array = Nx, Ny, Nz/2+1;
-		array_properties.shape_full_real_array = Nx, Ny, Nz+2;
+		array_properties.shape_full_real_array = Ny, Nx, Nz+2;
 
 		array_properties.id_complex_array = my_id, 0, 0;
 		array_properties.id_real_array = my_id, 0, 0;
@@ -166,7 +165,7 @@ FFFW_SLAB::FFFW_SLAB()
 		if (global.io.N_out_reduced.size() == 3)
 			array_properties.shape_N_out_reduced = global.io.N_out_reduced[0], global.io.N_out_reduced[2]/2+1;
 
-		array_properties.Fourier_directions = 0,1;
+		array_properties.Fourier_directions = 1,1;
 		array_properties.Z = 1;
 	
 		array_properties.datatype_complex_space = BasicIO::H5T_COMPLX;

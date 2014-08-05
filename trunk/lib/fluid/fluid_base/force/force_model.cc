@@ -80,7 +80,7 @@ void FORCE::Setup_Taylor_Green_force_field(FluidVF& U, int k0, DP amp)
 			universal->Assign_spectral_field(k0, -k0, k0, U.Force2, complx(0, -amp/8));
 		}
 		
-		else if (basis_type == "FFF") {
+		else if (basis_type == "FFF" || basis_type == "FFFW") {
 			universal->Assign_spectral_field(k0, k0, k0, U.Force1, complx(0, -amp/8));
 			universal->Assign_spectral_field(k0, -k0, k0, U.Force1, complx(0, -amp/8));
 			universal->Assign_spectral_field(-k0, k0, k0, U.Force1, complx(0, amp/8));
@@ -116,7 +116,7 @@ void FORCE::Setup_ABC_force_field(FluidVF& U, int k0, DP amp, DP A, DP B, DP C)
 		U.Force3 = 0.0; 
 		// initialize
 
-		if (basis_type == "FFF") {
+		if (basis_type == "FFF" || basis_type == "FFFW") {
 			universal->Assign_spectral_field(0, k0, 0, U.Force1, complx(amp*B/2, 0));
 			universal->Assign_spectral_field(0, -k0, 0, U.Force1, complx(amp*B/2, 0));
 			universal->Assign_spectral_field(0, 0, k0, U.Force1, complx(0, -amp*C));
@@ -149,7 +149,7 @@ void FORCE::Setup_SIX_MODE_force_field(FluidVF& U, int k0, DP amp101, DP amp011,
 		U.Force2 = 0.0;  
 		U.Force3 = 0.0; // initialize
 
-		if (basis_type == "FFF")
+		if (basis_type == "FFF" || basis_type == "FFFW")
 		{
 			int lx_k0 = Get_lx("FFF", k0, N);
 			int lx_minus_k0 = Get_lx("FFF", -k0, N);
@@ -236,7 +236,7 @@ void FORCE::Add_complex_conj_force(FluidVF& U, int kx, int ky, int kz, complx Fx
 	TinyVector<complx,3> localF;
 	
 	// On kz=0 or kz=N[3]/2 plane
-	if ((basis_type == "FFF") && ((kz == 0) || (kz == N[3]/2)) ) {
+	if ((basis_type == "FFF" || basis_type == "FFFW") && ((kz == 0) || (kz == N[3]/2)) ) {
 		localF = conj(Fx), conj(Fy), conj(Fz);
 		universal->Assign_spectral_field(-kx, -ky, kz, U.Force1, U.Force2, U.Force3, localF);
 		cout << "Complex-conj(Force) added for k = (" << -kx << "," << -ky << "," << kz << ")" << endl;	
@@ -257,7 +257,7 @@ void FORCE::Add_complex_conj_force(FluidSF& T, int kx, int ky, int kz, complx lo
 {	
 	
 	// On kz=0 or kz=N[3]/2 plane
-	if ((basis_type == "FFF") && ((kz == 0) || (kz == N[3]/2)) )	{          
+	if ((basis_type == "FFF" || basis_type == "FFFW") && ((kz == 0) || (kz == N[3]/2)) )	{          
 		universal->Assign_spectral_field(-kx, -ky, kz, T.Force, localG);
 		cout << "Complex-conj(Force) added for k = (" << -kx << "," << -ky << "," << kz << ")" << endl;	
 	}

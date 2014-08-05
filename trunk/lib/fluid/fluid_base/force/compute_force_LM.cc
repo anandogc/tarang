@@ -166,7 +166,7 @@ void FORCE::Compute_force_Kolmogorov_flow_basic_assign(FluidVF& U, DP k0, DP for
 		universal->Assign_spectral_field(k0, 0, k0, U.Force3, complx(-force_amp/2, 0));
 	}
 	
-	else if (basis_type == "FFF") {
+	else if (basis_type == "FFF" || basis_type == "FFFW") {
 		universal->Assign_spectral_field(k0, 0, k0, U.Force1, complx(0, -force_amp/4));
 		universal->Assign_spectral_field(-k0, 0, k0, U.Force1, complx(0, force_amp/4));
 		
@@ -202,7 +202,7 @@ void FORCE::Compute_force_Kolmogorov_flow_basic_add(FluidVF& U, DP k0, DP force_
 		universal->Add_spectral_field(k0, 0, k0, U.Force3, complx(-force_amp/2, 0));
 	}
 	
-	else if (basis_type == "FFF") {
+	else if (basis_type == "FFF" || basis_type == "FFFW") {
 		universal->Add_spectral_field(k0, 0, k0, U.Force1, complx(0, -force_amp/4));
 		universal->Add_spectral_field(-k0, 0, k0, U.Force1, complx(0, force_amp/4));
 		

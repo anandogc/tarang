@@ -54,7 +54,7 @@ void SpectralTransform::Init(string basis, int Nx, int Nz)
 
 	if (basis=="FFW") {
 		test_plan.resize(1);
-		test_plan[0] = new FFFW_slab_transposed_order_2D(my_id, numprocs, num_iter, Nx, Nz);
+		test_plan[0] = new FFFW_slab_in_order_2D(my_id, numprocs, num_iter, Nx, Nz);
 	}
 	else if (basis=="FF") {
 		test_plan.resize(1);
@@ -127,13 +127,12 @@ void SpectralTransform::Init(string basis, int Nx, int Ny, int Nz)
 
 	vector<SpectralPlan*> test_plan;
 
-
 	if (basis=="FFFW") {
 		test_plan.resize(1);
 		test_plan[0] = new FFFW_slab_transposed_order_3D(my_id, numprocs, num_iter, Nx, Ny, Nz);
 	}
 	else if (basis=="FFF") {
-		test_plan.resize(3);
+		test_plan.resize(2);
 		test_plan[0] = new FFF_slab_Isend_Recv_overlap_Isend_forward_3D(my_id, numprocs, num_iter, Nx, Ny, Nz);
 		test_plan[1] = new FFF_slab_Isend_Recv_overlap_Isend_both_3D(my_id, numprocs, num_iter, Nx, Ny, Nz);
 		test_plan[2] = new FFF_slab_Alltoall_3D(my_id, numprocs, num_iter, Nx, Ny, Nz);
@@ -160,7 +159,7 @@ void SpectralTransform::Init(string basis, int Nx, int Ny, int Nz)
 
 	for (int i=0; i<test_plan.size(); i++)
 	{
-		// if (my_id==0) cout << "Algo " << i << " time = " << test_plan[i]->time_per_step << '\n';
+		//if (my_id==0) cout << "Algo " << i << " time = " << test_plan[i]->time_per_step << '\n';
 		if (i!=min_time_plan_index)
 		{
 			// if (my_id==0) cout << "deleting plan " << i << endl;

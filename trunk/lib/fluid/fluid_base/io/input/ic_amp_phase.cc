@@ -107,14 +107,15 @@ void FluidIO::Put_vector_amp_phase_comp_conj(FluidVF U, int lx, int ly, int lz, 
 	
 	if (global.field.anisotropy_dirn == 1)
 		VFour = vpll, vh1, vh2;
-	
+		//VFour = vpll, vh2, vh1; //Patch for 2D
+
 	else if (global.field.anisotropy_dirn == 2)
 		VFour = vh2, vpll, vh1;
 	
 	else if (global.field.anisotropy_dirn == 3)
 		VFour = vh1, vh2, vpll;
         
-	if (basis_type == "FFF") {
+	if (basis_type == "FFF" || basis_type == "FFFW") {
 		Vlocal_complex = VFour;
 		universal->Assign_local_spectral_field(lx, ly, lz, U.cvf.V1, U.cvf.V2, U.cvf.V3, Vlocal_complex);
 	}
@@ -149,7 +150,7 @@ void FluidIO::Put_scalar_amp_phase_comp_conj(FluidSF& T, int lx, int ly, int lz,
 	
 	complx G_Four = amp * exp(I * phase);
 	
-	if (basis_type == "FFF") {
+	if (basis_type == "FFF" || basis_type == "FFFW") {
 		Glocal_complex = G_Four;
 		universal->Assign_local_spectral_field(lx, ly, lz, T.csf.F, Glocal_complex);
     }

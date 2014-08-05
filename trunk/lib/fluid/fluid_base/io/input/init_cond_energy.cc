@@ -71,10 +71,9 @@ void  FluidIO::Initialize_using_energy_helicity_spectrum(FluidVF& U, DP epsilon,
     
 	Model_initial_using_shell_spectrum_Pope(U.dissipation_coefficient, epsilon, Correlation::shell_ek1);
     
-    
-	for (int ly=0; ly<=global.field.maxly; ly++)
-        for (int lz=0; lz<=global.field.maxlz; lz++)
-            for (int lx=0; lx<=global.field.maxlx; lx++) {
+	for (int lx=0; lx<=global.field.maxlx; lx++)
+		for (int ly=0; ly<=global.field.maxly; ly++)
+			for (int lz=0; lz<=global.field.maxlz; lz++) {
 
 				Kmag = universal->Kmagnitude(lx, ly, lz);
 				
@@ -111,9 +110,9 @@ void  FluidIO::Initialize_using_energy_helicity_spectrum(FluidSF& T, DP epsilon)
 	
 	Model_initial_using_shell_spectrum_Pope(T.diffusion_coefficient, epsilon, Correlation::shell_ek);
 	
-	for (int ly=0; ly<=global.field.maxly; ly++)
-        for (int lz=0; lz<=global.field.maxlz; lz++)
-            for (int lx=0; lx<=global.field.maxlx; lx++) {
+    for (int lx=0; lx<=global.field.maxlx; lx++)
+        for (int ly=0; ly<=global.field.maxly; ly++)
+            for (int lz=0; lz<=global.field.maxlz; lz++) {
 				Kmag = universal->Kmagnitude(lx, ly, lz);
 				
 				if (Kmag > MYEPS) {
@@ -319,9 +318,9 @@ void  FluidIO::Init_cond_energy_helicity_spectrum(FluidVF& U, FluidVF& W)
 		DP Kmag, ek, amp, phase1, phase2, phase3;
 		DP ekW, ampW, phase1W, phase2W, phase3W;
 		
-		for (int ly=0; ly<=global.field.maxly; ly++)
-            for (int lz=0; lz<=global.field.maxlz; lz++)
-                for (int lx=0; lx<=global.field.maxlx; lx++) {
+        for (int lx=0; lx<=global.field.maxlx; lx++)
+            for (int ly=0; ly<=global.field.maxly; ly++)
+                for (int lz=0; lz<=global.field.maxlz; lz++) {
 					
 					Kmag = universal->Kmagnitude(lx, ly, lz);
 					
@@ -445,9 +444,9 @@ void  FluidIO::Init_cond_energy_helicity_spectrum(FluidVF& U, FluidVF& W, FluidS
 		DP Kmag, ek, amp, phase1, phase2, phase3;
 		DP ekW, ampW, phase1W, phase2W, phase3W;
 		
-		for (int ly=0; ly<=global.field.maxly; ly++)
-            for (int lz=0; lz<=global.field.maxlz; lz++)
-                for (int lx=0; lx<=global.field.maxlx; lx++) {
+        for (int lx=0; lx<=global.field.maxlx; lx++)
+            for (int ly=0; ly<=global.field.maxly; ly++)
+                for (int lz=0; lz<=global.field.maxlz; lz++) {
 					
 					Kmag = universal->Kmagnitude(lx, ly, lz);
 					

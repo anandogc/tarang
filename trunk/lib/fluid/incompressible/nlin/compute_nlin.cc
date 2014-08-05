@@ -85,7 +85,7 @@ void Nlin_incompress::Compute_nlin(FluidVF& U)
 	Compute_nlin_diag(U);
 	
 	Compute_nlin_offdiag(U);
-	
+
 	
 	/*if (master) cout << "nlin1 " << sum(abs(U.nlin1)) << endl;
 	universal->Print_large_Fourier_elements(U.nlin1);

@@ -33,8 +33,8 @@
  * @bug		ArrayIFFT
  */ 
 
-#include <iomanip>
 #include "spectral_transform.h"
+#include <iomanip>
 
 SpectralTransform spectralTransform;
 

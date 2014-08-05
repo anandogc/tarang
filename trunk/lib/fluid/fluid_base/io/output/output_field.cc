@@ -81,10 +81,6 @@ void FluidIO::Output_complex_field(FluidVF& U, FluidSF& T)
 void FluidIO::Output_complex_field_scalar(FluidVF& U, FluidSF& T)
 {
 	// Set Output directory
-	cout << "FluidIO::Output_complex_field_scalar:"
-	     << "U.cvf.V1 = " << U.cvf.V1
-	     << "U.cvf.V3 = " << U.cvf.V3
-	     << endl;
 	U.cvf.Write_complex_field();
 	T.csf.Write_complex_field();
 }
@@ -726,13 +722,13 @@ void FluidIO::Output_field_r(FluidVF& U)
 			
 			global.io.probes.real_space.field_buffer(global.io.probes.real_space.buffer_index++) = global.time.now;
             
-            for (int r=1; r<=3; r++) 
+            for (int r=1; r<=3; r++)
                 global.io.probes.real_space.field_buffer(global.io.probes.real_space.buffer_index++) = ((DP) global.io.probes.real_space.coords(probe,r));
             
 				// Get the field now..
-                Vr = universal->Get_real_field(rx, ry, rz, U.rvf.V1r, U.rvf.V2r, U.rvf.V3r);
-                for (int r=1; r<=3; r++) 
-                    global.io.probes.real_space.field_buffer(global.io.probes.real_space.buffer_index++) = Vr(r-1);
+            Vr = universal->Get_real_field(rx, ry, rz, U.rvf.V1r, U.rvf.V2r, U.rvf.V3r);
+            for (int r=1; r<=3; r++)
+                global.io.probes.real_space.field_buffer(global.io.probes.real_space.buffer_index++) = Vr(r-1);
 		}
 	}
 	
@@ -777,9 +773,9 @@ void FluidIO::Output_field_r(FluidVF& U, FluidSF& T)
 				// Get the field now..
 			Vr = universal->Get_real_field(rx, ry, rz, U.rvf.V1r, U.rvf.V2r, U.rvf.V3r);
 			Fr = universal->Get_real_field(rx, ry, rz, T.rsf.Fr);
-			for (int r=1; r<=3; r++) 
+			for (int r=1; r<=3; r++)
 				global.io.probes.real_space.field_buffer(global.io.probes.real_space.buffer_index++) = Vr(r-1);
-			
+
 			global.io.probes.real_space.field_buffer(global.io.probes.real_space.buffer_index++) = Fr;
 		}
 	}

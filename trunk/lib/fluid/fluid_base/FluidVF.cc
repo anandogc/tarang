@@ -381,7 +381,7 @@ void FluidVF::Add_complex_conj(int kx, int ky, int kz, complx Vx, complx Vy, com
 	TinyVector<complx,3> localV;
 	
 		// On kz=0 or kz=N[3]/2 plane
-	if ((basis_type == "FFF") && (kz == 0)) {
+	if ((basis_type == "FFF" || basis_type == "FFFW") && (kz == 0)) {
 		localV = conj(Vx), conj(Vy), conj(Vz);
 		universal->Assign_spectral_field(-kx, -ky, kz, cvf.V1, cvf.V2, cvf.V3, localV);
 		cout << "Complex-conj(V) added for k = (" << -kx << "," << -ky << "," << kz << ")" << endl;	

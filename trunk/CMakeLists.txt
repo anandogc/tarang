@@ -67,7 +67,7 @@ SET (SPECTRAL_TRANSFORM_VERSION v2)
 #Required libraries, One of FFTW_FLOAT_LIBS or FFTW_DOUBLE_LIBS is selected depending on DP
 SET (FFTW_FLOAT_LIBS fftw3f_mpi fftw3f)
 SET (FFTW_DOUBLE_LIBS fftw3_mpi fftw3)
-SET (OTHER_LIBS blitz m hdf5 yaml-cpp dl z)
+SET (OTHER_LIBS hdf5 yaml-cpp blitz m)
 
 
 #################################################
@@ -262,7 +262,6 @@ IF (NOT FFTW_PLAN_DISPLAYED)
 ENDIF()
 
 
-
 #Folders where header files will be searched for
 INCLUDE_DIRECTORIES(
 ${CMAKE_SOURCE_DIR}/lib/global
@@ -315,9 +314,24 @@ ${LIBRARY_DIRS}
 ADD_DEFINITIONS(-DVERSION=${VERSION})
 
 IF (DP MATCHES "FLOAT")
-    SET(SYSTEM_LIBRARIES ${FFTW_FLOAT_LIBS} ${OTHER_LIBS})
+    SET(SYSTEM_LIBRARIES
+            ${FFTW_FLOAT_LIBS}
+            ${OTHER_LIBS}
+            ${HDF5_LIBRARIES} 
+            ${FFTW3_LIBRARIES}
+            ${FFTW3F_LIBRARIES}
+            ${BLITZ_LIBRARIES}
+            ${YAML_CPP_LIBRARIES}
+        )
 ELSEIF(DP MATCHES "DOUBLE")
-    SET(SYSTEM_LIBRARIES ${FFTW_DOUBLE_LIBS} ${OTHER_LIBS})
+    SET(SYSTEM_LIBRARIES ${FFTW_DOUBLE_LIBS}
+            ${OTHER_LIBS}
+            ${HDF5_LIBRARIES} 
+            ${FFTW3_LIBRARIES}
+            ${FFTW3F_LIBRARIES}
+            ${BLITZ_LIBRARIES}
+            ${YAML_CPP_LIBRARIES}
+        )
 ENDIF()
 
 #Build type

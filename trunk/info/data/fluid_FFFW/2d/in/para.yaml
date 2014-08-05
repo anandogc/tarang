@@ -16,10 +16,10 @@ program:
     sincostr_switch: FFF
     
 field:
-    N: [8, 1, 6]
+    N: [64, 1, 62]
     kfactor: [1, 1, 1]
     L: 
-    diss_coefficients: [0]               
+    diss_coefficients: [0.01]               
     hyper_diss_coefficients: 
     hyper_diss_exponents: 
            
@@ -45,7 +45,7 @@ force:
     W_switch: false
     T_switch: false
     # 0:decay, 1:ek_hk_suppy, 2:const_ek_hk, 3: modes, 4:TG, 5:ABC,  
-    field_procedure: 0  
+    field_procedure: 1  
     int_para: 
     #if ... provide ()
     #para: [inner_rad,outer_rad, amp, exponent, 0, q, omega, x0]
@@ -57,13 +57,13 @@ force:
 #          mode:
         
 io:
-    input_field_procedure: 4
+    input_field_procedure: 3
     #1:complex field, 2: complex_reduced field, 3: real field, 4: modes, 5: Ek,Hk; 6: TG, 7:ABC
     input_vx_vy_switch: true
     output_vx_vy_switch: true
     diagnostic_procedures: 
-    N_in_reduced: [16, 8, 6]
-    N_out_reduced: [16, 8, 6]
+    N_in_reduced: #[16, 8, 6]
+    N_out_reduced: #[16, 8, 6]
     int_para: 
     double_para: [0.1, 0]
     string_para:
@@ -101,8 +101,8 @@ io:
               
     time:
         global_save_first: 0
-        complex_field_save_first: 
-        field_frequent_save_first: 
+        complex_field_save_first:
+        field_frequent_save_first:
         field_reduced_save_first: 
         real_field_save_first: 
         field_k_save_first: 
@@ -146,9 +146,9 @@ io:
         
         global_save_last:
         complex_field_save_last: 
-        field_frequent_save_last:
+        field_frequent_save_last: true
         field_reduced_save_last: 
-        real_field_save_last: 
+        real_field_save_last: true
         field_k_save_last: 
         field_r_save_last: 
         pressure_save_last: 

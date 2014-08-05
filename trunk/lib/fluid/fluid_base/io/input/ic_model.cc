@@ -80,7 +80,7 @@ void FluidIO::Setup_Taylor_Green_field(FluidVF& U, int k0, DP amp)
 		universal->Assign_spectral_field(k0, -k0, k0, U.cvf.V2, complx(0, -amp/8));
 	}
 	
-	else if (basis_type == "FFF") {
+	else if (basis_type == "FFF" || basis_type == "FFFW") {
 		universal->Assign_spectral_field(k0, k0, k0, U.cvf.V1, complx(0, -amp/8));
 		universal->Assign_spectral_field(k0, -k0, k0, U.cvf.V1, complx(0, -amp/8));
 		universal->Assign_spectral_field(-k0, k0, k0, U.cvf.V1, complx(0, amp/8));
@@ -114,7 +114,7 @@ void FluidIO::Setup_ABC_field(FluidVF& U, int k0, DP amp, DP A, DP B, DP C)
 	U.cvf.V2 = 0.0;  
 	U.cvf.V3 = 0.0;			
 	
-	if (basis_type == "FFF") {
+	if (basis_type == "FFF" || basis_type == "FFFW") {
 		universal->Assign_spectral_field(0, k0, 0, U.cvf.V1, complx(amp*B/2, 0));
 		universal->Assign_spectral_field(0, -k0, 0, U.cvf.V1, complx(amp*B/2, 0));
 		universal->Assign_spectral_field(0, 0, k0, U.cvf.V1, complx(0, -amp*C));
@@ -147,7 +147,7 @@ void FluidIO::Setup_SIX_MODE_field(FluidVF& U, int k0, DP amp101, DP amp011, DP 
 	V3 = 0.0; 
 	// initialize
 
-	if (basis_type == "FFF") {
+	if (basis_type == "FFF" || basis_type == "FFFW") {
 		int lx_k0 = Get_lx(k0);
 		int lx_minus_k0 = Get_lx(-k0);
 		int ly_k0 = Get_ly3D(k0);

@@ -73,6 +73,8 @@ using namespace blitz;
 #define MPI_DP							MPI_FLOAT
 #define FFTW_COMPLEX					fftwf_complex
 
+#define FFTW_MPI_INIT                   fftwf_mpi_init
+
 #define FFTW_PLAN						fftwf_plan
 #define FFTW_MPI_PLAN_DFT_3D			fftwf_mpi_plan_dft_3d   // for GP
 #define FFTW_MPI_PLAN_DFT_R2C_2D		fftwf_mpi_plan_dft_r2c_2d
@@ -100,6 +102,8 @@ using namespace blitz;
 #define DP 								double
 #define MPI_DP							MPI_DOUBLE
 #define FFTW_COMPLEX					fftw_complex
+
+#define FFTW_MPI_INIT                   fftw_mpi_init
 
 #define FFTW_PLAN						fftw_plan
 #define FFTW_MPI_PLAN_DFT_3D			fftw_mpi_plan_dft_3d   // for GP

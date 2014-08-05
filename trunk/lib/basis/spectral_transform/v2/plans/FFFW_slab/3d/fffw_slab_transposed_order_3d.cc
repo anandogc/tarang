@@ -45,7 +45,7 @@ FFFW_slab_transposed_order_3D::FFFW_slab_transposed_order_3D(int my_id, int nump
 	X_3d.resize(local_Nx, Ny, Nz/2+1);
 	Xr_3d.resize(local_Ny, Nx, Nz+2);
 
-	fftw_mpi_init();
+	FFTW_MPI_INIT();
 
 	//Initialize plans
 	plan_ft_r2c_xyz = FFTW_MPI_PLAN_DFT_R2C_3D(Ny, Nx, Nz,

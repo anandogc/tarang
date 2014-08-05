@@ -82,10 +82,10 @@ void  FORCE::Compute_force_using_random_energy_helicity_spectrum_basic(FluidVF& 
 	
 	kx_min = ky_min = kz_min = 0;
 	
-	if (basis_type == "FFF")
+	if (basis_type == "FFF" || basis_type == "FFFW")
 		kx_min = -kx_max;
 	
-	if ((basis_type == "FFF") || (basis_type == "SFF"))
+	if ((basis_type == "FFF" || basis_type == "FFFW") || (basis_type == "SFF"))
 		ky_min = -ky_max;
     
 	int lx, ly, lz;
@@ -159,7 +159,7 @@ void  FORCE::Compute_force_using_random_energy_spectrum_basic(FluidSF& T, DP inn
 	
 	kx_min = ky_min = kz_min = 0;
 	
-	if (basis_type == "FFF")
+	if (basis_type == "FFF" || basis_type == "FFFW")
 		kx_min = -kx_max;
 	
 	if ((basis_type == "FFF") || (basis_type == "SFF"))

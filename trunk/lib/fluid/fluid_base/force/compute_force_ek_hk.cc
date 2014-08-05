@@ -100,10 +100,10 @@ void FORCE::Force_energy_helicity_supply_or_level_basic(FluidVF& U, string force
 	
 	kx_min = ky_min = kz_min = 0;
 	
-	if (basis_type == "FFF")
+	if (basis_type == "FFF" || basis_type == "FFFW")
 		kx_min = -kx_max;
 	
-	if ((basis_type == "FFF") || (basis_type == "SFF"))
+	if ((basis_type == "FFF" || basis_type == "FFFW") || (basis_type == "SFF"))
 		ky_min = -ky_max; 
 	
 	int lx, ly, lz;
@@ -249,10 +249,10 @@ void FORCE::Force_energy_helicity_supply_or_level_basic(FluidSF& T, string force
 	
 	kx_min = ky_min = kz_min = 0;
 	
-	if (basis_type == "FFF")
+	if (basis_type == "FFF" || basis_type == "FFFW")
 		kx_min = -kx_max;
 	
-	if ((basis_type == "FFF") || (basis_type == "SFF"))
+	if ((basis_type == "FFF" || basis_type == "FFFW") || (basis_type == "SFF"))
 		ky_min = -ky_max; 
 					
 	

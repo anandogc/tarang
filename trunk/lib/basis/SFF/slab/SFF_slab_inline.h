@@ -347,7 +347,7 @@ inline TinyVector<DP,3> SFF_SLAB::Get_real_field(int rx, int ry, int rz, Array<D
 		int ly = Get_ly_real_space(ry);
 		int lz = Get_lz_real_space(rz);
 		
-		TinyVector<DP,3>(Ax(rx, ly, lz), Ay(rx, ly, lz), Az(rx, ly, lz));
+		return TinyVector<DP,3>(Ax(rx, ly, lz), Ay(rx, ly, lz), Az(rx, ly, lz));
 	}
 	return TinyVector<DP,3>(0,0,0);
 }

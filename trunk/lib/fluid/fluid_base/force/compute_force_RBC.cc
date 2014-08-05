@@ -347,7 +347,7 @@ void FORCE::Compute_force_stratified_random(FluidVF& U, FluidSF& T)
     
     Compute_force_using_random_energy_helicity_spectrum_basic_add(U, inner_radius, outer_radius, force_spectrum_amplitude, force_spectrum_exponent, hk_by_kek);
     
-    Compute_force_using_random_energy_spectrum_basic_add(T, inner_radius, outer_radius, Tforce_spectrum_amplitude, Tforce_spectrum_exponent);
+    //Compute_force_using_random_energy_spectrum_basic_add(T, inner_radius, outer_radius, Tforce_spectrum_amplitude, Tforce_spectrum_exponent);
 }
 
 //************************ End of compute_force_RB.cc *****************************************

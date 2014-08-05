@@ -313,13 +313,13 @@ inline void FFFW_SLAB::Add_local_spectral_field(int lx, int ly, int lz, Array<co
 // REAL - SPACE FNS
 //TODO - Hybrid
 ////////////////
-inline int FFFW_SLAB::Get_lx_real_space(int rx)  {return  rx;}
+inline int FFFW_SLAB::Get_lx_real_space(int rx)  {return  rx-local_Nx_start;}
 
 inline int FFFW_SLAB::Get_ly_real_space(int ry)  {return  ry-local_Ny_start;}	
 
 inline int FFFW_SLAB::Get_lz_real_space(int rz) {return rz-2*local_Nz_start;}
 
-inline int FFFW_SLAB::Get_rx_real_space(int lx)  {return  lx; }
+inline int FFFW_SLAB::Get_rx_real_space(int lx)  {return  lx+local_Nx_start; }
 
 inline int FFFW_SLAB::Get_ry_real_space(int ly)  {return  ly+local_Ny_start; }	
 
@@ -332,8 +332,8 @@ inline bool FFFW_SLAB::Probe_in_me_real_space(int rx, int ry, int rz)
     	return ((ly >= 0) && (ly < local_Ny));
     }
     else {
-	    int lz = Get_lz_real_space(rz);
-    	return ((lz >= 0) && (lz < 2*local_Nz));	
+	    int lx = Get_lx_real_space(rx);
+    	return ((lx >= 0) && (lx < local_Nx));	
     }
 }
 
@@ -343,12 +343,12 @@ inline DP FFFW_SLAB::Get_real_field(int rx, int ry, int rz, Array<DP,3> A)
 	if (Ny>1) {
 		int ly = Get_ly_real_space(ry);	
   	 	if ((ly >= 0) && (ly < local_Ny))  
-        	return (A(rx, ly, rz));
+        	return (A(ly, rx, rz));
     }
     else {
-		int lz = Get_lz_real_space(rz);	
-  	 	if ((lz >= 0) && (lz < 2*local_Nz))  
-        	return (A(rx, 0, lz));
+		int lx = Get_lx_real_space(rx);	
+  	 	if ((lx >= 0) && (lx < local_Nx))  
+        	return (A(lx, 0, rz));
 
     }
     return 0;
@@ -361,13 +361,13 @@ inline TinyVector<DP,3> FFFW_SLAB::Get_real_field(int rx, int ry, int rz, Array<
 	    int ly = Get_ly_real_space(ry);
 		
 	    if ((ly >= 0) && (ly < local_Ny))
-			return TinyVector<DP,3>(Ax(rx, ly, rz), Ay(rx, ly, rz), Az(rx, ly, rz));
+			return TinyVector<DP,3>(Ax(ly, rx, rz), Ay(ly, rx, rz), Az(ly, rx, rz));
     }
     else {
-	    int lz = Get_lz_real_space(rz);
+	    int lx = Get_lx_real_space(rx);
 	
-	    if ((lz >= 0) && (lz < 2*local_Nz))
-			return TinyVector<DP,3>(Ax(rx, 0, lz), Ay(rx, 0, lz), Az(rx, 0, lz));
+	    if ((lx >= 0) && (lx < local_Nx))
+			return TinyVector<DP,3>(Ax(lx, 0, rz), Ay(lx, 0, rz), Az(lx, 0, rz));
 
     }
 
@@ -383,13 +383,13 @@ inline void FFFW_SLAB::Assign_real_field(int rx, int ry, int rz, Array<DP,3> A, 
 	    int ly = Get_ly_real_space(ry);
 		
 	    if ((ly >= 0) && (ly < local_Ny))
-			A(rx, ly, rz) = field;
+			A(ly, rx, rz) = field;
     }
     else {
-	    int lz = Get_lz_real_space(rz);
+	    int lx = Get_lx_real_space(rx);
 		
-	    if ((lz >= 0) && (lz < 2*local_Nz))
-			A(rx, 0, lz) = field;
+	    if ((lx >= 0) && (lx < local_Nx))
+			A(lx, 0, rz) = field;
     }
 }
 
@@ -399,18 +399,18 @@ inline void FFFW_SLAB::Assign_real_field(int rx, int ry, int rz, Array<DP,3> Ax,
 	    int ly = Get_ly_real_space(ry);
 		
 	    if ((ly >= 0) && (ly < local_Ny)) {
-			Ax(rx, ly, rz) = V(0);
-			Ay(rx, ly, rz) = V(1);
-			Az(rx, ly, rz) = V(2);
+			Ax(ly, rx, rz) = V(0);
+			Ay(ly, rx, rz) = V(1);
+			Az(ly, rx, rz) = V(2);
 		}
     }
     else {
-	    int lz = Get_lz_real_space(rz);
+	    int lx = Get_lx_real_space(rx);
 		
-	    if ((lz >= 0) && (lz < 2*local_Nz)) {
-			Ax(rx, 0, lz) = V(0);
-			Ay(rx, 0, lz) = V(1);
-			Az(rx, 0, lz) = V(2);
+	    if ((lx >= 0) && (lx < local_Nx)) {
+			Ax(lx, 0, rz) = V(0);
+			Ay(lx, 0, rz) = V(1);
+			Az(lx, 0, rz) = V(2);
 		}
     }
 }

@@ -107,6 +107,7 @@ void FORCE::Put_force_amp_phase_comp_conj(FluidVF U, int lx, int ly, int lz,  DP
 	
 	if (global.field.anisotropy_dirn == 1)
 		F_FOUR = fpll, fh1, fh2;
+		//F_FOUR = fpll, fh2, fh1; //Patch for 2D
 	
 	else if (global.field.anisotropy_dirn == 2)
 		F_FOUR = fh2, fpll, fh1;
@@ -114,7 +115,7 @@ void FORCE::Put_force_amp_phase_comp_conj(FluidVF U, int lx, int ly, int lz,  DP
 	else if (global.field.anisotropy_dirn == 3)
 		F_FOUR = fh1, fh2, fpll;
         
-	if (basis_type == "FFF") {
+	if (basis_type == "FFF" || basis_type == "FFFW") {
 		Flocal_complex = F_FOUR;
         
         if (!add_flag)
@@ -161,7 +162,7 @@ void FORCE::Put_force_amp_phase_comp_conj(FluidSF& T, int lx, int ly, int lz, DP
 	
 	complx G_Four = amp * exp(I * phase);
 	
-	if (basis_type == "FFF") {
+	if (basis_type == "FFF" || basis_type == "FFFW") {
 		Glocal_complex = G_Four;
         
         if (!add_flag)
