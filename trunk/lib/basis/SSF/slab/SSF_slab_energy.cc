@@ -59,7 +59,6 @@ DP SSF_SLAB::Get_local_energy_real_space(Array<DP,3> Ar)
 
 DP SSF_SLAB::Get_local_energy(Array<complx,3> A)  
 {
-
 	DP  total = 4*Array_sqr(A);
 	
 	// subtractions |A(ky=0,:,:)|^2
@@ -80,7 +79,7 @@ DP SSF_SLAB::Get_local_energy(Array<complx,3> A)
 		total += Array_sqr(A(0, Range::all(), 0));
 		total -= my_pow(real(A(0,0,0)),2)/2;
 	} 
-	
+
 	return total;
 }
 

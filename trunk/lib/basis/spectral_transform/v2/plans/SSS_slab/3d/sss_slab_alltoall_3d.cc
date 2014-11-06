@@ -90,7 +90,6 @@ SSS_slab_Alltoall_3D::SSS_slab_Alltoall_3D(int my_id, int numprocs, int num_iter
 
 
 	//Sin y
-	cout << "SSS_slab_Alltoall_3D::SSS_slab_Alltoall_3D: " << X_3d.shape() << " " << Nx << " " << Ny << " " << Nz << endl;
 	kind[0]=FFTW_RODFT10;
 	plan_sintr_y = FFTW_PLAN_MANY_R2R(1, Ny_dims, Nz,
 	    reinterpret_cast<DP*>(X_3d.data()), NULL,

@@ -63,23 +63,19 @@ int main(int argc, char** argv)
 
 	global.Parse(argc, argv, false);
 
-
-	BasicIO::data_in_folder = ".";
-	BasicIO::data_out_folder = ".";
-	
-    BasicIO::Initialize();
+    BasicIO::Initialize(global.io.data_dir);
 
 	master = (global.mpi.my_id == 0);
 
     vector<BasicIO::H5_dataset_meta> meta;
 
-	if (!BasicIO::File_exists(global.io.data_dir + "/input.h5")) {
+	if (!BasicIO::File_exists(BasicIO::data_in_folder  + "/input.h5")) {
 		if (master)
-			cout << global.io.data_dir + "/input.h5 does not exists." << endl;
+			cout << BasicIO::data_in_folder + "/input.h5 does not exists." << endl;
 		return 1;
 	}
 
-    meta = BasicIO::Get_meta(global.io.data_dir + "/input.h5", "/");
+    meta = BasicIO::Get_meta(BasicIO::data_in_folder  + "/input.h5", "/");
 
     global.field.N[1]=meta[0].dimensions[0];
     global.field.N[2]=meta[0].dimensions[1];
@@ -116,25 +112,25 @@ int main(int argc, char** argv)
 	BasicIO::Set_H5_plans(array_properties, &tarang1);
 
 	
-	//Configure tarang 2.3 output
-	H5_Planner tarang_2_3;
+	//Configure tarang 2.4 output
+	H5_Planner tarang_2p4;
 
-	array_properties.shape_full_complex_array = Ny, Nz/2+1, Nx;
+	array_properties.shape_full_complex_array = Nx, Ny, Nz/2+1;
 	array_properties.shape_full_real_array = Nx, Ny, Nz+2;
 
-	array_properties.id_complex_array = my_id, 0, 0;
-	array_properties.id_real_array = 0, my_id, 0;
+	array_properties.id_complex_array = 0, my_id, 0;
+	array_properties.id_real_array = my_id, 0, 0;
 
-	array_properties.numprocs_complex_array = numprocs, 1, 1;
-	array_properties.numprocs_real_array = 1, numprocs, 1;
+	array_properties.numprocs_complex_array = 1, numprocs, 1;
+	array_properties.numprocs_real_array = numprocs, 1, 1;
 
 	array_properties.Fourier_directions = 1,1,1;
-	array_properties.Z = 1;
+	array_properties.Z = 2;
 
 	array_properties.datatype_complex_space = BasicIO::H5T_COMPLX;
 	array_properties.datatype_real_space = BasicIO::H5T_DP;
 
-	BasicIO::Set_H5_plans(array_properties, &tarang_2_3);
+	BasicIO::Set_H5_plans(array_properties, &tarang_2p4);
 
 	static map<string, string> transition_table;
 	transition_table["CV1"]="U.V1";
@@ -166,26 +162,14 @@ int main(int argc, char** argv)
 		if (master)
 			cout << "Converting " << meta[i].name << " -> " << output_dataset_name << " .." << flush;
 
-		if (!vx_vy_switch)
+		if (!vx_vy_switch) {
 			BasicIO::Read(A.data(), tarang1.H5_full, "input", "/"+meta[i].name);
-		else
-			BasicIO::Read(A.data(), tarang1.H5_kz0_full, "input", "/"+meta[i].name);
-
-		for (int x=0; x<Nx; x++){
-			for (int y=0; y<local_Ny; y++){
-				for (int z=0; z<Nz/2+1; z++){
-					B(y,z,x) = A(x,y,z);
-				}
-			}
+			BasicIO::Write(A.data(), tarang_2p4.H5_full, "", output_dataset_name);
 		}
-
-		// cout << B(0,1,0) << " " << A(0,0,1) << endl;
-
-
-		if (!vx_vy_switch)
-			BasicIO::Write(B.data(), tarang_2_3.H5_full, "", output_dataset_name);
-		else
-			BasicIO::Write(B.data(), tarang_2_3.H5_kz0_full, "", output_dataset_name);
+		else {
+			BasicIO::Read(A.data(), tarang1.H5_kz0_full, "input", "/"+meta[i].name);
+			BasicIO::Write(A.data(), tarang_2p4.H5_kz0_full, "", output_dataset_name);
+		}
 
 		if (master) cout << "done" << endl;
 	}

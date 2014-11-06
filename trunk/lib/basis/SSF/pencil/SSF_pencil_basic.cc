@@ -85,9 +85,9 @@ void SSF_PENCIL::Last_component(int kx, int ky, int kz, complx &Vx, complx &Vy, 
 		else { // k = (kx,0,0); input fields are (Vy, Vz) field is purely real
 			if ( (abs(imag(Vx)) < MYEPS) || (abs(imag(Vx)) < MYEPS))
 				cout << "MYERROR: SSF_PENCIL::Last_component(); For (kx,0,0), the modes are purely real; Setting imag part to zero. " << endl;
-			Vz = complx(real(Vy), 0);
-			Vy = complx(real(Vx), 0);
 			Vx = complx(0,0);
+			Vy = complx(real(Vx), 0);
+			Vz = complx(real(Vy), 0);
 		}
 	}
 	
@@ -102,7 +102,7 @@ Dealias
 
 void SSF_PENCIL::Dealias(Array<complx,3> A)
 {
-	Assign_sub_array(Range(2*Ny/3+1,toEnd), Range(Nz/3+1,toEnd), Range(2*Nx/3+1,toEnd), A, complx(0,0));
+	Assign_sub_array(Range(2*Nx/3+1,toEnd), Range(2*Ny/3+1,toEnd), Range(Nz/3+1,toEnd), A, complx(0,0));
 }
 
 // Data resides till outer_radius in k-space
@@ -155,24 +155,33 @@ void SSF_PENCIL::Zero_modes(Array<complx,3> Ax, Array<complx,3> Ay, Array<complx
 	global.program.sincostr_switch = sincostr_switch_Vx;
 	
 	if (global.program.sincostr_switch == "SCF") {
-		Assign_sub_array(Range::all(),Range::all(),zero,Ax,complx(0,0));
-		Assign_sub_array(zero,Range::all(),Range::all(),Ay,complx(0,0));
+		Assign_sub_array(zero,Range::all(),Range::all(),Ax,complx(0,0));
+		Assign_sub_array(Range::all(),zero,Range::all(),Ay,complx(0,0));
 	}
 	
 	else if (global.program.sincostr_switch == "CSF") {
-		Assign_sub_array(zero,Range::all(),Range::all(),Ax,complx(0,0));
+		if (Ny>1)
+			Ax(Range::all(),0,Range::all()) = 0.0;
+
+		Assign_sub_array(Range::all(),Range::all(),zero,Ax,complx(0,0));
+
+
+		Assign_sub_array(zero,Range::all(),Range::all(),Ay,complx(0,0));
 		Assign_sub_array(Range::all(),Range::all(),zero,Ay,complx(0,0));
-		Assign_sub_array(zero,Range::all(),zero,Az,complx(0,0));
 	}
 	
 	else if (global.program.sincostr_switch == "SSF") {
 		Assign_sub_array(zero,Range::all(),zero,Ax,complx(0,0));
-		Assign_sub_array(Range::all(),Range::all(),zero,Az,complx(0,0));
+		if (Ny>1)
+			Ax(Range::all(),0,Range::all()) = 0.0;
 	}
 	
 	else if (global.program.sincostr_switch == "CCF") {
-		Assign_sub_array(zero,Range::all(),zero,Ay,complx(0,0));
-		Assign_sub_array(Range::all(),Range::all(),zero,Az,complx(0,0));
+		Assign_sub_array(Range::all(),Range::all(),zero,Ax,complx(0,0));
+
+		Assign_sub_array(zero,Range::all(),Range::all(),Ay,complx(0,0));
+		if (Ny>1)
+			Ay(Range::all(),0,Range::all()) = 0.0;	
 	}
 	
 }
@@ -189,41 +198,64 @@ void SSF_PENCIL::Zero_modes(Array<complx,3> F)
 	global.program.sincostr_switch = sincostr_switch_F;
 	
 	if (global.program.sincostr_switch == "SCF")
-		Assign_sub_array(Range::all(),Range::all(),zero,F,complx(0,0));
+		Assign_sub_array(zero,Range::all(),Range::all(),F,complx(0,0));
 
 	else if (global.program.sincostr_switch == "CSF")
-		Assign_sub_array(Range::all(),Range::all(),zero,F,complx(0,0));
+		Assign_sub_array(zero,Range::all(),Range::all(),F,complx(0,0));
 
 	else if (global.program.sincostr_switch == "SSF")
 		Assign_sub_array(zero,Range::all(),zero,F,complx(0,0));
 }
 
-void SSF_PENCIL::Assign_sub_array(Range y_range, Range z_range, Range x_range, Array<complx,3> A, complx value)
+void SSF_PENCIL::Assign_sub_array(Range x_range, Range y_range, Range z_range, Array<complx,3> A, complx value)
 {
-	static Array<int,1> y_filter(Ny);
 	static Array<int,1> x_filter(Nx);
+	static Array<int,1> y_filter(Ny);
 	
-	y_filter = 0;
 	x_filter = 0;
+	y_filter = 0;
 	
-	y_filter(y_range)=1;
 	x_filter(x_range)=1;
+	y_filter(y_range)=1;
 	
 	
-	static Range y_apply, x_apply;
+	static Range x_apply, y_apply;
 	
-	
-	y_apply = Range(first(y_filter(Range(my_y_pcoord*local_Ny,(my_y_pcoord+1)*local_Ny-1)) == 1),
-	                 last(y_filter(Range(my_y_pcoord*local_Ny,(my_y_pcoord+1)*local_Ny-1)) == 1));
 	
 	x_apply = Range(first(x_filter(Range(my_x_pcoord*local_Nx,(my_x_pcoord+1)*local_Nx-1)) == 1),
 	                 last(x_filter(Range(my_x_pcoord*local_Nx,(my_x_pcoord+1)*local_Nx-1)) == 1));
 	
+	y_apply = Range(first(y_filter(Range(my_y_pcoord*local_Ny,(my_y_pcoord+1)*local_Ny-1)) == 1),
+	                 last(y_filter(Range(my_y_pcoord*local_Ny,(my_y_pcoord+1)*local_Ny-1)) == 1));
 	
-	if ( (y_apply(0)>=0) && (x_apply(0)>=0))
-		A(y_apply, z_range, x_apply) = value;
+	
+	if ( (x_apply(0)>=0) && (y_apply(0)>=0))
+		A(x_apply, y_apply, z_range) = value;
 }
 
+int SSF_PENCIL::Read(Array<complx,3> A, BasicIO::H5_plan plan, string file_name, string dataset_name)
+{
+	int err = BasicIO::Read(global.temp_array.Xr.data(), plan, file_name, dataset_name);
+	spectralTransform.Transpose(global.temp_array.Xr, A);
+	return err;
+}
+
+int SSF_PENCIL::Read(Array<DP,3> Ar, BasicIO::H5_plan plan, string file_name, string dataset_name)
+{
+	return BasicIO::Read(Ar.data(), plan, file_name, dataset_name);
+}
+
+
+int SSF_PENCIL::Write(Array<complx,3> A, BasicIO::H5_plan plan, string folder_name, string file_name, string dataset_name)
+{
+	spectralTransform.Transpose(A, global.temp_array.Xr);
+	return BasicIO::Write(global.temp_array.Xr.data(), plan, folder_name, file_name, dataset_name);
+}
+
+int SSF_PENCIL::Write(Array<DP,3> Ar, BasicIO::H5_plan plan, string folder_name, string file_name, string dataset_name)
+{
+	return BasicIO::Write(Ar.data(), plan, folder_name, file_name, dataset_name);  
+}
 
 //*********************************  End of scft_basic.cc *************************************
 

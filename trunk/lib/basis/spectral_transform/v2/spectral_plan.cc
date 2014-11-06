@@ -57,6 +57,17 @@ SpectralPlan::SpectralPlan(string basis, int my_id, int numprocs, int Nx, int Ny
 	time_per_step(0)
 {}
 
+SpectralPlan::SpectralPlan(string basis, int my_id, int numprocs, int Nx, int Ny, int Nz, int num_p_cols)
+   :basis(basis),
+    my_id(my_id), 
+	numprocs(numprocs),
+	Nx(Nx),
+	Ny(Ny),
+	Nz(Nz),
+	num_p_cols(num_p_cols),
+	time_per_step(0)
+{}
+
 
 //3D FFF
 void SpectralPlan::Forward_transform(Array<DP,3> Ar, Array<complx,3> A){}
@@ -70,7 +81,6 @@ void SpectralPlan::Inverse_transform(string sincostr_option, Array<complx,3> A, 
 void SpectralPlan::Transpose(Array<DP,3> Ar, Array<complx,3> A){}
 void SpectralPlan::Transpose(Array<complx,3> A, Array<DP,3> Ar){}
 
-
 //2D FFF
 void SpectralPlan::Forward_transform(Array<DP,2> Ar, Array<complx,2> A){}
 void SpectralPlan::Inverse_transform(Array<complx,2> A, Array<DP,2> Ar){}
@@ -82,7 +92,6 @@ void SpectralPlan::Inverse_transform(string sincostr_option, Array<complx,2> A, 
 //2D Transpose
 void SpectralPlan::Transpose(Array<DP,2> Ar, Array<complx,2> A){}
 void SpectralPlan::Transpose(Array<complx,2> A, Array<DP,2> Ar){}
-
 
 
 //******************************** End of field_basic.h  **************************************

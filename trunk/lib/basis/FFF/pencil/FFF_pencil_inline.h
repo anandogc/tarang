@@ -91,7 +91,7 @@ inline int FFF_PENCIL::Get_ix(int kx) {return  (kx >= 0) ? kx : (kx + Nx);  }
  * \param ly  second local index of an array
  * \return kx corresponding to lx
  */
-inline int FFF_PENCIL::Get_ky(int ly) {return  ((local_Ny_start + ly) <= Ny/2) ? (local_Ny_start + ly) : (local_Ny_start + ly-Ny); }
+inline int FFF_PENCIL::Get_ky(int ly) {return  ((ly_start + ly) <= Ny/2) ? (ly_start + ly) : (ly_start + ly-Ny); }
 
 /*! @brief	Get local array index ly given grid waveno ky.
  * 
@@ -100,46 +100,46 @@ inline int FFF_PENCIL::Get_ky(int ly) {return  ((local_Ny_start + ly) <= Ny/2) ?
  * \param	ky  grid wavenumber along y
  * \return	ly  local array index along y
  */
-inline int FFF_PENCIL::Get_ly(int ky) { return  (ky >= 0) ? (ky-local_Ny_start) : (ky + Ny-local_Ny_start);  } 
+inline int FFF_PENCIL::Get_ly(int ky) { return  (ky >= 0) ? (ky-ly_start) : (ky + Ny-ly_start);  } 
 
 inline int FFF_PENCIL::Get_iy(int ky) { return  (ky >= 0) ? ky : (ky + Ny); }
 
-inline int FFF_PENCIL::Get_kz(int lz)  {return local_Nz_start + lz;} 
+inline int FFF_PENCIL::Get_kz(int lz)  {return lz + lx_start;} 
 
-inline int FFF_PENCIL::Get_lz(int kz)  {return kz - local_Nz_start;}
+inline int FFF_PENCIL::Get_lz(int kz)  {return kz - lz_start;}
 
 inline int FFF_PENCIL::Get_iz(int kz)  {return kz;}
 
 inline bool FFF_PENCIL::Probe_in_me(int kx, int ky, int kz) 
 {  
-    int ly = Get_ly(ky);
-    int lz = Get_lz(kz);
-    
-	return ( ((ly >= 0) && (ly < local_Ny)) && ((lz >= 0) && (lz < local_Nz)) );
+	int ly = Get_ly(ky);
+	int lz = Get_lz(kz);
+	
+	return ( ((ly >= 0) && (ly < maxly)) && ((lz >= 0) && (lz < maxlz)) );
 }
 
 
 inline complx FFF_PENCIL::Get_spectral_field(int kx, int ky, int kz, Array<complx,3> A)
 { 
-    int lx = Get_lx(kx);
-    int ly = Get_ly(ky);
-    int lz = Get_lz(kz);
-    
-    if ( ((ly >= 0) && (ly < local_Ny)) && ((lz >= 0) && (lz < local_Nz)) )
-        return A(lx, ly, lz);
+	int lx = Get_lx(kx);
+	int ly = Get_ly(ky);
+	int lz = Get_lz(kz);
+	
+	if ( ((ly >= 0) && (ly < maxly)) && ((lz >= 0) && (lz < maxlz)) )
+		return A(lx, ly, lz);
 
-    return complx(0,0);
+	return complx(0,0);
 }
 
 inline TinyVector<complx,3> FFF_PENCIL::Get_spectral_field(int kx, int ky, int kz, Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az)
 {
 	
 	int lx = Get_lx(kx);
-    int ly = Get_ly(ky);
-    int lz = Get_lz(kz);
-    
-    if ( ((ly >= 0) && (ly < local_Ny)) && ((lz >= 0) && (lz < local_Nz)) )
-        return TinyVector<complx,3>(Ax(lx, ly, lz), Ay(lx, ly, lz), Az(lx, ly, lz));
+	int ly = Get_ly(ky);
+	int lz = Get_lz(kz);
+	
+	if ( ((ly >= 0) && (ly < maxly)) && ((lz >= 0) && (lz < maxlz)) )
+		return TinyVector<complx,3>(Ax(lx, ly, lz), Ay(lx, ly, lz), Az(lx, ly, lz));
 
 	return TinyVector<complx,3>(0,0,0);
 }
@@ -150,11 +150,11 @@ inline void FFF_PENCIL::Assign_spectral_field(int kx, int ky, int kz, Array<comp
 {
 
 	int lx = Get_lx(kx);
-    int ly = Get_ly(ky);
-    int lz = Get_lz(kz);
-    
-    if ( ((ly >= 0) && (ly < local_Ny)) && ((lz >= 0) && (lz < local_Nz)) )
-        A(lx, ly, lz) = field;
+	int ly = Get_ly(ky);
+	int lz = Get_lz(kz);
+	
+	if ( ((ly >= 0) && (ly < maxly)) && ((lz >= 0) && (lz < maxlz)) )
+		A(lx, ly, lz) = field;
 
 }
 
@@ -162,16 +162,14 @@ inline void FFF_PENCIL::Assign_spectral_field(int kx, int ky, int kz, Array<comp
 {
 	
 	int lx = Get_lx(kx);
-    int ly = Get_ly(ky);
-    int lz = Get_lz(kz);
-    
-    cout << "FFF pencil inline " << kx << " " << ky << " " << kz << lx << " " << ly << " " << ly << " " << lz << " " << Ax(lx,ly,lz) << " " << Ay(lx,ly,lz) << " " << Az(lx,ly,lz) << local_Ny << " " << local_Nz << endl;
-
-    if ( ((ly >= 0) && (ly < local_Ny)) && ((lz >= 0) && (lz < local_Nz)) ) {
-        Ax(lx, ly, lz) = V(0);
-        Ay(lx, ly, lz) = V(1);
-        Az(lx, ly, lz) = V(2);
-    }
+	int ly = Get_ly(ky);
+	int lz = Get_lz(kz);
+	
+	if ( ((ly >= 0) && (ly < maxly)) && ((lz >= 0) && (lz < maxlz)) ) {
+		Ax(lx, ly, lz) = V(0);
+		Ay(lx, ly, lz) = V(1);
+		Az(lx, ly, lz) = V(2);
+	}
 }
 
 inline void FFF_PENCIL::Assign_spectral_field(int kx, int ky, int kz, Array<complx,3> A,DP field)
@@ -189,11 +187,11 @@ inline void FFF_PENCIL::Add_spectral_field(int kx, int ky, int kz, Array<complx,
 {
 
 	int lx = Get_lx(kx);
-    int ly = Get_ly(ky);
-    int lz = Get_lz(kz);
-    
-    if ( ((ly >= 0) && (ly < local_Ny)) && ((lz >= 0) && (lz < local_Nz)) )
-        A(lx, ly, lz) += field;
+	int ly = Get_ly(ky);
+	int lz = Get_lz(kz);
+	
+	if ( ((ly >= 0) && (ly < maxly)) && ((lz >= 0) && (lz < maxlz)) )
+		A(lx, ly, lz) += field;
 
 }
 
@@ -201,14 +199,14 @@ inline void FFF_PENCIL::Add_spectral_field(int kx, int ky, int kz, Array<complx,
 {
 	
 	int lx = Get_lx(kx);
-    int ly = Get_ly(ky);
-    int lz = Get_lz(kz);
-    
-    if ( ((ly >= 0) && (ly < local_Ny)) && ((lz >= 0) && (lz < local_Nz)) ) {
-        Ax(lx, ly, lz) += V(0);
-        Ay(lx, ly, lz) += V(1);
-        Az(lx, ly, lz) += V(2);
-    }
+	int ly = Get_ly(ky);
+	int lz = Get_lz(kz);
+	
+	if ( ((ly >= 0) && (ly < maxly)) && ((lz >= 0) && (lz < maxlz)) ) {
+		Ax(lx, ly, lz) += V(0);
+		Ay(lx, ly, lz) += V(1);
+		Az(lx, ly, lz) += V(2);
+	}
 
 }
 
@@ -230,7 +228,7 @@ inline void FFF_PENCIL::Add_spectral_field(int kx, int ky, int kz, Array<complx,
 
 inline complx FFF_PENCIL::Get_local_spectral_field(int lx, int ly, int lz, Array<complx,3> A)
 { 
-    return A(lx, ly, lz);
+	return A(lx, ly, lz);
 }
 
 inline TinyVector<complx,3> FFF_PENCIL::Get_local_spectral_field(int lx, int ly, int lz, Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az)
@@ -243,17 +241,17 @@ inline TinyVector<complx,3> FFF_PENCIL::Get_local_spectral_field(int lx, int ly,
 	//  Assign
 inline void FFF_PENCIL::Assign_local_spectral_field(int lx, int ly, int lz, Array<complx,3> A, complx field)
 { 
-    if ( ((ly >= 0) && (ly < local_Ny)) && ((lz >= 0) && (lz < local_Nz)) )
-        A(lx, ly, lz) = field;
+	if ( ((ly >= 0) && (ly < maxly)) && ((lz >= 0) && (lz < maxlz)) )
+		A(lx, ly, lz) = field;
 }
 
 inline void FFF_PENCIL::Assign_local_spectral_field(int lx, int ly, int lz, Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az, TinyVector<complx,3> V)
 {
-    if ( ((ly >= 0) && (ly < local_Ny)) && ((lz >= 0) && (lz < local_Nz)) ) {
-        Ax(lx, ly, lz) = V(0);
-        Ay(lx, ly, lz) = V(1);
-        Az(lx, ly, lz) = V(2);
-    }
+	if ( ((ly >= 0) && (ly < maxly)) && ((lz >= 0) && (lz < maxlz)) ) {
+		Ax(lx, ly, lz) = V(0);
+		Ay(lx, ly, lz) = V(1);
+		Az(lx, ly, lz) = V(2);
+	}
 }
 
 inline void FFF_PENCIL::Assign_local_spectral_field(int lx, int ly, int lz, Array<complx,3> A,DP field)
@@ -271,17 +269,17 @@ inline void FFF_PENCIL::Assign_local_spectral_field(int lx, int ly, int lz, Arra
 
 inline void FFF_PENCIL::Add_local_spectral_field(int lx, int ly, int lz, Array<complx,3> A, complx field)
 { 
-    if ( ((ly >= 0) && (ly < local_Ny)) && ((lz >= 0) && (lz < local_Nz)) )
-        A(lx, ly, lz) += field;
+	if ( ((ly >= 0) && (ly < maxly)) && ((lz >= 0) && (lz < maxlz)) )
+		A(lx, ly, lz) += field;
 }
 
 inline void FFF_PENCIL::Add_local_spectral_field(int lx, int ly, int lz, Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az, TinyVector<complx,3> V)
 {
-    if ( ((ly >= 0) && (ly < local_Ny)) && ((lz >= 0) && (lz < local_Nz)) ) {
-        Ax(lx, ly, lz) += V(0);
-        Ay(lx, ly, lz) += V(1);
-        Az(lx, ly, lz) += V(2);
-    }
+	if ( ((ly >= 0) && (ly < maxly)) && ((lz >= 0) && (lz < maxlz)) ) {
+		Ax(lx, ly, lz) += V(0);
+		Ay(lx, ly, lz) += V(1);
+		Az(lx, ly, lz) += V(2);
+	}
 }
 
 inline void FFF_PENCIL::Add_local_spectral_field(int lx, int ly, int lz, Array<complx,3> A,DP field)
@@ -314,9 +312,9 @@ inline int FFF_PENCIL::Get_rz_real_space(int lz) {return lz;}
 
 inline bool FFF_PENCIL::Probe_in_me_real_space(int rx, int ry, int rz) 
 {
-    int lx = Get_lx_real_space(rx);
-    int ly = Get_ly_real_space(ry);
-    
+	int lx = Get_lx_real_space(rx);
+	int ly = Get_ly_real_space(ry);
+	
 	return ( ((lx >= 0) && (lx < local_Nx_real)) && ((ly >= 0) && (ly < local_Ny_real)) );
 }
 
@@ -324,24 +322,24 @@ inline bool FFF_PENCIL::Probe_in_me_real_space(int rx, int ry, int rz)
 // lz is the coord of the complex array
 inline DP FFF_PENCIL::Get_real_field(int rx, int ry, int rz, Array<DP,3> A)
 {	
-    int lx = Get_lx_real_space(rx);
-    int ly = Get_ly_real_space(ry);
-    int lz = Get_lz_real_space(rz);
-    
-    if ( ((lx >= 0) && (lx < local_Nx_real)) && ((ly >= 0) && (ly < local_Ny_real)) )
-        return (A(lx, ly, lz));
+	int lx = Get_lx_real_space(rx);
+	int ly = Get_ly_real_space(ry);
+	int lz = Get_lz_real_space(rz);
+	
+	if ( ((lx >= 0) && (lx < local_Nx_real)) && ((ly >= 0) && (ly < local_Ny_real)) )
+		return (A(lx, ly, lz));
 
-    return 0;
+	return 0;
 }
 
 inline TinyVector<DP,3> FFF_PENCIL::Get_real_field(int rx, int ry, int rz, Array<DP,3> Ax, Array<DP,3> Ay, Array<DP,3> Az)
 {
-    
+	
 	int lx = Get_lx_real_space(rx);
-    int ly = Get_ly_real_space(ry);
+	int ly = Get_ly_real_space(ry);
 	int lz = Get_lz_real_space(rz);
-    
-    if ( ((lx >= 0) && (lx < local_Nx_real)) && ((ly >= 0) && (ly < local_Ny_real)) )
+	
+	if ( ((lx >= 0) && (lx < local_Nx_real)) && ((ly >= 0) && (ly < local_Ny_real)) )
 		return TinyVector<DP,3>(Ax(lx, ly, lz), Ay(lx, ly, lz), Az(lx, ly, lz));
 	
 	return TinyVector<DP,3>(0,0,0);
@@ -351,26 +349,26 @@ inline TinyVector<DP,3> FFF_PENCIL::Get_real_field(int rx, int ry, int rz, Array
 // lz is the coord of the complex array
 inline void FFF_PENCIL::Assign_real_field(int rx, int ry, int rz, Array<DP,3> A, DP field)
 {	
-    int lx = Get_lx_real_space(rx);
-    int ly = Get_ly_real_space(ry);
+	int lx = Get_lx_real_space(rx);
+	int ly = Get_ly_real_space(ry);
 	int lz = Get_lz_real_space(rz);
-    
-    if ( ((lx >= 0) && (lx < local_Nx_real)) && ((ly >= 0) && (ly < local_Ny_real)) )
+	
+	if ( ((lx >= 0) && (lx < local_Nx_real)) && ((ly >= 0) && (ly < local_Ny_real)) )
 		A(lx, ly, lz) = field;
 }
 
 inline void FFF_PENCIL::Assign_real_field(int rx, int ry, int rz, Array<DP,3> Ax, Array<DP,3> Ay, Array<DP,3> Az, TinyVector<DP,3> V)
 {
-    
+	
 	int lx = Get_lx_real_space(rx);
-    int ly = Get_ly_real_space(ry);
+	int ly = Get_ly_real_space(ry);
 	int lz = Get_lz_real_space(rz);
-    
-    if ( ((lx >= 0) && (lx < local_Nx_real)) && ((ly >= 0) && (ly < local_Ny_real)) ) {
-        Ax(lx, ly, lz) = V(0);
+	
+	if ( ((lx >= 0) && (lx < local_Nx_real)) && ((ly >= 0) && (ly < local_Ny_real)) ) {
+		Ax(lx, ly, lz) = V(0);
 		Ay(lx, ly, lz) = V(1);
 		Az(lx, ly, lz) = V(2);
-    }    
+	}    
 	
 }
 
@@ -445,16 +443,16 @@ inline int FFF_PENCIL::Max_radius_inside()
 	DP Kmag;
 	
 	if	(global.field.waveno_switch)	{
-        Kmag = min( (Nx/2)*kfactor[1], (Ny/2)*kfactor[2]);
-        Kmag = min(Kmag, (Nz/2)*kfactor[3]); 
+		Kmag = min( (Nx/2)*kfactor[1], (Ny/2)*kfactor[2]);
+		Kmag = min(Kmag, (Nz/2)*kfactor[3]); 
 
 		ans = ((int) Kmag);
 	}
 	
 	else  {
-        ans = min(Nx/2, Ny/2);
-        ans = min(ans, Nz/2);
-    }
+		ans = min(Nx/2, Ny/2);
+		ans = min(ans, Nz/2);
+	}
 	
 	return ans;
 }
@@ -477,11 +475,11 @@ inline int FFF_PENCIL::Max_radius_inside()
  */
 inline DP FFF_PENCIL::Approx_number_modes_in_shell(int radius)
 {	
-    if	(global.field.waveno_switch)
-        return (4*M_PI*radius*radius)/(kfactor[1]*kfactor[2]*kfactor[3]);	
+	if	(global.field.waveno_switch)
+		return (4*M_PI*radius*radius)/(kfactor[1]*kfactor[2]*kfactor[3]);	
 
-    else 
-       return (4*M_PI*radius*radius);
+	else 
+	   return (4*M_PI*radius*radius);
 }
 
 
@@ -507,7 +505,7 @@ inline DP FFF_PENCIL::Multiplicity_factor(int lx, int ly, int lz)
 
 	int kx = lx;
 	int ky = Get_ky(ly);
-    int kz = Get_kz(lz);
+	int kz = Get_kz(lz);
 	
 	if (kz > 0)
 		factor = 1.0;
@@ -689,14 +687,14 @@ inline DP FFF_PENCIL::Anis_max_Kpll()
 { 
 	DP maxkpll = 0;
 		
-    if (global.field.anisotropy_dirn == 1)
-        maxkpll = ((Nx/2) * kfactor[1]); 
-    
-    else if (global.field.anisotropy_dirn == 2)
-        maxkpll = ((Ny/2) * kfactor[2]); 
-        
-    else if (global.field.anisotropy_dirn == 3)
-        maxkpll = ((Nz/2) * kfactor[3]);
+	if (global.field.anisotropy_dirn == 1)
+		maxkpll = ((Nx/2) * kfactor[1]); 
+	
+	else if (global.field.anisotropy_dirn == 2)
+		maxkpll = ((Ny/2) * kfactor[2]); 
+		
+	else if (global.field.anisotropy_dirn == 3)
+		maxkpll = ((Nz/2) * kfactor[3]);
 		
 	return maxkpll;
 }
@@ -706,16 +704,16 @@ inline int FFF_PENCIL::Anis_max_Krho_radius_inside()
 {
 	DP Kmag = 0.0;
 	
-    if (global.field.anisotropy_dirn == 1)
-        Kmag = min( (Ny/2)*kfactor[2], (Nz/2)*kfactor[3] );
-    
-    else if (global.field.anisotropy_dirn == 2)
-        Kmag = min( (Nx/2)*kfactor[1], (Nz/2)*kfactor[3] );  
-    
-    else if (global.field.anisotropy_dirn == 3)
-        Kmag = min( (Nx/2)*kfactor[1], (Ny/2)*kfactor[2] ); 
+	if (global.field.anisotropy_dirn == 1)
+		Kmag = min( (Ny/2)*kfactor[2], (Nz/2)*kfactor[3] );
+	
+	else if (global.field.anisotropy_dirn == 2)
+		Kmag = min( (Nx/2)*kfactor[1], (Nz/2)*kfactor[3] );  
+	
+	else if (global.field.anisotropy_dirn == 3)
+		Kmag = min( (Nx/2)*kfactor[1], (Ny/2)*kfactor[2] ); 
 
-    return ((int) Kmag);
+	return ((int) Kmag);
 }
 
 // Max polar angle

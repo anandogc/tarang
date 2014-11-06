@@ -98,7 +98,7 @@ void FluidIO_incompress::Output_all_inloop(FluidVF& U, Pressure& P)
 		global.io.time.field_reduced_save_next += global.io.time.field_reduced_save_interval;
 	}	
 	
-			
+
 	if (global.time.now >= global.io.time.spectrum_save_next) {
 		Output_shell_spectrum(U);	
 		global.io.time.spectrum_save_next += global.io.time.spectrum_save_interval;

@@ -62,7 +62,6 @@ DP SFF_SLAB::Get_local_energy_real_space(Array<DP,3> Ar)
 // 2D included in this
 DP SFF_SLAB::Get_local_energy(Array<complx,3> A)  
 {
-	
 	DP total = 2*Array_sqr(A);
 	
 	// Subtract kz=0 plane
@@ -75,7 +74,7 @@ DP SFF_SLAB::Get_local_energy(Array<complx,3> A)
 			// kz=0, kx=0 (ADD since it has been subtracted twice)
 		total += Array_sqr(A(0,Range::all(),0))/2;
 	} 
-    
+
     return total;
 }
 

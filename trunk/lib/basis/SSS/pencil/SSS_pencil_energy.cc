@@ -40,8 +40,8 @@
 
 /**********************************************************************************************
 
- 	Computes total energy |f(m,k)|^2  without k=0.
-        Factor 2 because of negative k modes are not stored.
+	Computes total energy |f(m,k)|^2  without k=0.
+		Factor 2 because of negative k modes are not stored.
 		
 	for ky plane Eky = 2*sum(A^2) - sum(A(m,ky,0)^2) - sum(A(0,ky,kz)^2) + A(0,ky,0)^2
 	
@@ -59,27 +59,27 @@ DP SSS_PENCIL::Get_local_energy_real_space(Array<DP,3> Ar)
 
 DP SSS_PENCIL::Get_local_energy(Array<complx,3> A)  
 {
-	Array<DP,3> Ar=Array<DP,3>(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
+	Array<DP,3> Ar=Array<DP,3>(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 	
 	DP total =  4*Array_sqr(Ar);
 	
-	// subtractions |A(ky=0,:,:)|^2;
+	// subtractions |A(:,ky=0,:)|^2;
 	if (my_y_pcoord == 0) {
-		total -= 2*Array_sqr(Ar(0, Range::all(), Range::all()));
-		total += Array_sqr(Ar(0, 0, Range::all()));
+		total -= 2*Array_sqr(Ar(Range::all(), 0, Range::all()));
+		total += Array_sqr(Ar(Range::all(), 0, 0));
 	}
 	
-	// subtractions |A(:, kz=0, :)|^2
-	total -= 2*Array_sqr(Ar(Range::all(), 0, Range::all()));
+	// subtractions |A(:, :, kz=0)|^2
+	total -= 2*Array_sqr(Ar(Range::all(), Range::all(), 0));
 	
 	
 	if (my_x_pcoord == 0) {
-		total -= 2*Array_sqr(Ar(Range::all(), Range::all(),0));
-		total += Array_sqr(Ar(Range::all(),0,0));
+		total -= 2*Array_sqr(Ar(0, Range::all(), Range::all()));
+		total += Array_sqr(Ar(0, Range::all(), 0));
 	}
 	
 	if ((my_x_pcoord == 0) && (my_y_pcoord == 0)) {
-		total +=  Array_sqr(Ar(0, Range::all(), 0));
+		total +=  Array_sqr(Ar(0, 0, Range::all()));
 		total -= my_pow(Ar(0,0,0),2)/2;
 	}
 	
@@ -100,28 +100,28 @@ DP SSS_PENCIL::Get_local_energy_real_space(Array<DP,3> Ar, Array<DP,3> Br)
 
 DP SSS_PENCIL::Get_local_energy(Array<complx,3> A, Array<complx,3> B)
 {
-	Array<DP,3> Ar=Array<DP,3>(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
-	Array<DP,3> Br=Array<DP,3>(reinterpret_cast<DP*>(B.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
+	Array<DP,3> Ar=Array<DP,3>(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<DP,3> Br=Array<DP,3>(reinterpret_cast<DP*>(B.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 	
 	DP total =  4*mydot(Ar, Br);
 	
-	// subtractions |A(ky=0,:,:)|^2;
+	// subtractions |A(:,ky=0,:)|^2;
 	if (my_y_pcoord == 0) {
-		total -= 2*mydot(Ar(0,Range::all(),Range::all()), Br(0,Range::all(),Range::all()));
-		total += mydot(Ar(0,0,Range::all()), Br(0,0,Range::all()));
-	}
-	
-	// subtractions |A(:, kz=0, :)|^2
-	total -= 2*mydot(Ar(Range::all(),0,Range::all()), Br(Range::all(),0,Range::all()));
-	
-	
-	if (my_x_pcoord == 0) {
-		total -= 2*mydot(Ar(Range::all(), Range::all(),0), Br(Range::all(), Range::all(),0));
+		total -= 2*mydot(Ar(Range::all(),0,Range::all()), Br(Range::all(),0,Range::all()));
 		total += mydot(Ar(Range::all(),0,0), Br(Range::all(),0,0));
 	}
 	
+	// subtractions |A(:, :, kz=0)|^2
+	total -= 2*mydot(Ar(Range::all(),Range::all(),0), Br(Range::all(),Range::all(),0));
+	
+	
+	if (my_x_pcoord == 0) {
+		total -= 2*mydot(Ar(0,Range::all(),Range::all()), Br(0,Range::all(),Range::all()));
+		total += mydot(Ar(0,Range::all(),0), Br(0,Range::all(),0));
+	}
+	
 	if ((my_x_pcoord == 0) && (my_y_pcoord == 0)) {
-		total +=  mydot(Ar(0,Range::all(),0), Br(0,Range::all(),0));
+		total +=  mydot(Ar(0,0,Range::all()), Br(0,0,Range::all()));
 		total -=  Ar(0,0,0)*Br(0,0,0)/2;
 	}
 	
@@ -147,7 +147,7 @@ void SSS_PENCIL::Compute_local_helicity
 )
 {
 	local_helicity1 = local_helicity2 = 0;
-    local_k2H1 = local_k2H2 = 0;
+	local_k2H1 = local_k2H2 = 0;
 }
 
 //
@@ -159,8 +159,8 @@ void SSS_PENCIL::Compute_total_helicity
 	DP &local_k2H1, DP &local_k2H2
 )
 {
-    total_helicity1 = total_helicity2 = 0;
-    local_k2H1 = local_k2H2 = 0;
+	total_helicity1 = total_helicity2 = 0;
+	local_k2H1 = local_k2H2 = 0;
 	
 }
 
@@ -182,7 +182,7 @@ void SSS_PENCIL::Compute_local_shell_spectrum_helicity
 	Array<DP,1> local_H1k_count
 )
 {
-    local_H1k1 = 0;
+	local_H1k1 = 0;
 	local_H1k2 = 0;
 	local_H1k3 = 0;
 }
@@ -195,7 +195,7 @@ void SSS_PENCIL::Compute_shell_spectrum_helicity
 	Array<DP,1> H1k1, Array<DP,1> H1k2, Array<DP,1> H1k3
 )	
 {
-    H1k1 = 0;
+	H1k1 = 0;
 	H1k2 = 0;
 	H1k3 = 0;
 }
@@ -269,23 +269,23 @@ void SSS_PENCIL::Compute_cylindrical_ring_spectrum_helicity
 //  Computes \f$ \sum  K^n |A(k)|^2/2 \f$;   k=0 excluded.
 DP SSS_PENCIL::Get_local_Sn(Array<complx,3> A, DP n)
 {
-    Array<DP,3> Ar=Array<DP,3>(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
+	Array<DP,3> Ar=Array<DP,3>(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 	
-    DP Sn = 0.0;
+	DP Sn = 0.0;
 	DP Kmag;	// Kmag = sqrt(Kx^2+Ky^2+Kz^2)
 	
 	int	Kmax = Min_radius_outside();
-    
-    for (int ly=0; ly<Ar.extent(0); ly++)
-        for (int lz=0; lz<Ar.extent(1); lz++) // 0:Nz-1
-			for (int lx=0; lx<Ar.extent(2); lx++) {
-                Kmag = Kmagnitude(lx, ly, lz);
+	
+	for (int lx=0; lx<local_Nx; lx++)
+		for (int ly=0; ly<local_Ny; ly++)
+			for (int lz=0; lz<local_Nz; lz++) { 
+				Kmag = Kmagnitude(lx, ly, lz);
 				
 				if (Kmag <= Kmax)
-					Sn += Multiplicity_factor(lx,ly,lz) *my_pow(Kmag,n)* Vsqr(Ar(ly,lz,lx));
-            }
+					Sn += Multiplicity_factor(lx,ly,lz) *my_pow(Kmag,n)* Vsqr(Ar(lx,ly,lz));
+			}
 	
-    // The above sum adds for k=0 mode for n=0 since my_pow(0,0) = 1.
+	// The above sum adds for k=0 mode for n=0 since my_pow(0,0) = 1.
 	// Subtract the contribution from the origin only for n=0.
 	if ((my_id == master_id) && (n==0))
 		Sn -= Multiplicity_factor(0, 0, 0) * pow2(abs(A(0,0,0)));
@@ -297,21 +297,21 @@ DP SSS_PENCIL::Get_local_Sn(Array<complx,3> A, DP n)
 
 DP SSS_PENCIL::Get_local_Sn(Array<complx,3> A, Array<complx,3> B, DP n)
 {
-    Array<DP,3> Ar=Array<DP,3>(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
-    Array<DP,3> Br=Array<DP,3>(reinterpret_cast<DP*>(B.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
-    
+	Array<DP,3> Ar=Array<DP,3>(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<DP,3> Br=Array<DP,3>(reinterpret_cast<DP*>(B.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	
 	DP Sn = 0.0;
 	DP Kmag;	// Kmag = sqrt(Kx^2+Ky^2+Kz^2)
 	
 	int	Kmax = Min_radius_outside();
 	
-	for (int ly=0; ly<Ar.extent(0); ly++)
-        for (int lz=0; lz<Ar.extent(1); lz++)
-            for (int lx=0; lx<Ar.extent(2); lx++) {
+	for (int lx=0; lx<local_Nx; lx++)
+		for (int ly=0; ly<local_Ny; ly++)
+			for (int lz=0; lz<local_Nz; lz++) { 
 				Kmag = Kmagnitude(lx, ly, lz);
 				
 				if (Kmag <= Kmax)
-					Sn += Multiplicity_factor(lx,ly,lz) *my_pow(Kmag,n)* Ar(ly,lz,lx)*Br(ly,lz,lx);
+					Sn += Multiplicity_factor(lx,ly,lz) *my_pow(Kmag,n)* Ar(lx,ly,lz)*Br(lx,ly,lz);
 			}
 	
 	// The above sum adds for k=0 mode for n=0 since my_pow(0,0) = 1.
@@ -332,8 +332,8 @@ void SSS_PENCIL::Compute_local_shell_spectrum
  Array<DP,1> local_Sk_count
  )
 {
-    Array<DP,3> Ar=Array<DP,3>(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
-    
+	Array<DP,3> Ar=Array<DP,3>(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	
 	local_Sk_count = 0.0;
 	local_Sk = 0.0;
 	
@@ -341,22 +341,22 @@ void SSS_PENCIL::Compute_local_shell_spectrum
 	int index;
 	DP factor;
 	
-    int	Kmax = Min_radius_outside();
+	int	Kmax = Min_radius_outside();
 	
-    for (int ly=0; ly<Ar.extent(0); ly++)
-        for (int lz=0; lz<Ar.extent(1); lz++)
-            for (int lx=0; lx<Ar.extent(2); lx++) {
-                Kmag = Kmagnitude(lx, ly, lz);
-                index = (int) ceil(Kmag);
-                
-                if (index <= Kmax) {
-                    factor = Multiplicity_factor(lx,ly,lz);
+	for (int lx=0; lx<local_Nx; lx++)
+		for (int ly=0; ly<local_Ny; ly++)
+			for (int lz=0; lz<local_Nz; lz++) { 
+				Kmag = Kmagnitude(lx, ly, lz);
+				index = (int) ceil(Kmag);
+				
+				if (index <= Kmax) {
+					factor = Multiplicity_factor(lx,ly,lz);
 					
-                    local_Sk(index) += factor* my_pow(Kmag,n)* Vsqr(Ar(ly,lz,lx));
-                    local_Sk_count(index) += 2*factor;
-                    // Mult by 2 because factor is offset by 2 in Multiply_factor
-                }
-            }
+					local_Sk(index) += factor* my_pow(Kmag,n)* Vsqr(Ar(lx,ly,lz));
+					local_Sk_count(index) += 2*factor;
+					// Mult by 2 because factor is offset by 2 in Multiply_factor
+				}
+			}
 }
 
 
@@ -374,8 +374,8 @@ void SSS_PENCIL::Compute_local_shell_spectrum
  Array<DP,1> local_Sk_count
  )
 {
-	Array<DP,3> Ar=Array<DP,3>(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
-    Array<DP,3> Br=Array<DP,3>(reinterpret_cast<DP*>(B.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
+	Array<DP,3> Ar=Array<DP,3>(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<DP,3> Br=Array<DP,3>(reinterpret_cast<DP*>(B.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 	
 	local_Sk_count=0;
 	local_Sk = 0.0;
@@ -386,16 +386,16 @@ void SSS_PENCIL::Compute_local_shell_spectrum
 	
 	int	Kmax = Min_radius_outside();
 	
-	for (int ly=0; ly<Ar.extent(0); ly++)
-        for (int lz=0; lz<Ar.extent(1); lz++)
-            for (int lx=0; lx<Ar.extent(2); lx++) {
+	for (int lx=0; lx<local_Nx; lx++)
+		for (int ly=0; ly<local_Ny; ly++)
+			for (int lz=0; lz<local_Nz; lz++) { 
 				Kmag = Kmagnitude(lx, ly, lz);
 				index = (int) ceil(Kmag);
 				
 				if (index <= Kmax) {
 					factor = Multiplicity_factor(lx, ly, lz);
 					
-					local_Sk(index) += factor* my_pow(Kmag,n)* Ar(ly,lz,lx)*Br(ly,lz,lx);
+					local_Sk(index) += factor* my_pow(Kmag,n)* Ar(lx,ly,lz)*Br(lx,ly,lz);
 					
 					local_Sk_count(index) += 2*factor;
 				}
@@ -408,9 +408,9 @@ void SSS_PENCIL::Compute_local_shell_spectrum
 DP SSS_PENCIL::Get_local_entropy(Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az)
 {
 	
-	Array<DP,3> Axr=Array<DP,3>(reinterpret_cast<DP*>(Ax.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
-    Array<DP,3> Ayr=Array<DP,3>(reinterpret_cast<DP*>(Ay.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
-	Array<DP,3> Azr=Array<DP,3>(reinterpret_cast<DP*>(Az.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
+	Array<DP,3> Axr=Array<DP,3>(reinterpret_cast<DP*>(Ax.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<DP,3> Ayr=Array<DP,3>(reinterpret_cast<DP*>(Ay.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<DP,3> Azr=Array<DP,3>(reinterpret_cast<DP*>(Az.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 	
 	DP modal_energy, prob, local_entropy;
 	
@@ -420,11 +420,11 @@ DP SSS_PENCIL::Get_local_entropy(Array<complx,3> Ax, Array<complx,3> Ay, Array<c
 	
 	local_entropy = 0.0;
 	
-    for (int ly=0; ly<Axr.extent(0); ly++)
-        for (int lz=0; lz<Axr.extent(1); lz++)
-            for (int lx=0; lx<Axr.extent(2); lx++) {
-                
-				modal_energy = Multiplicity_factor(lx,ly,lz)* Vsqr(Axr(ly,lz,lx),Ayr(ly,lz,lx),Azr(ly,lz,lx));
+	for (int lx=0; lx<local_Nx; lx++)
+		for (int ly=0; ly<local_Ny; ly++)
+			for (int lz=0; lz<local_Nz; lz++) {
+				
+				modal_energy = Multiplicity_factor(lx,ly,lz)* Vsqr(Axr(lx,ly,lz),Ayr(lx,ly,lz),Azr(lx,ly,lz));
 				
 				prob = modal_energy/ total_energy;
 				
@@ -443,7 +443,7 @@ DP SSS_PENCIL::Get_local_entropy(Array<complx,3> Ax, Array<complx,3> Ay, Array<c
 
 DP SSS_PENCIL::Get_local_entropy_scalar(Array<complx,3> A)
 {
-	Array<DP,3> Ar=Array<DP,3>(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
+	Array<DP,3> Ar=Array<DP,3>(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 	
 	DP modal_energy, prob;
 	
@@ -453,10 +453,10 @@ DP SSS_PENCIL::Get_local_entropy_scalar(Array<complx,3> A)
 	
 	MPI_Bcast( &total_energy, 1, MPI_DP, master_id, MPI_COMM_WORLD);
 	
-	for (int ly=0; ly<Ar.extent(0); ly++)
-        for (int lz=0; lz<Ar.extent(1); lz++)
-            for (int lx=0; lx<Ar.extent(2); lx++) {
-				modal_energy = Multiplicity_factor(lx,ly,lz)* Vsqr(Ar(ly,lz,lx));
+	for (int lx=0; lx<local_Nx; lx++)
+		for (int ly=0; ly<local_Ny; ly++)
+			for (int lz=0; lz<local_Nz; lz++) { 
+				modal_energy = Multiplicity_factor(lx,ly,lz)* Vsqr(Ar(lx,ly,lz));
 				
 				prob = modal_energy / total_energy;
 				
@@ -476,9 +476,9 @@ void SSS_PENCIL::Compute_local_ring_spectrum
  Array<DP,2> local_E1k, Array<DP,2> local_E2k, Array<DP,2> local_E3k
  )
 {
-	Array<DP,3> Axr=Array<DP,3>(reinterpret_cast<DP*>(Ax.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
-    Array<DP,3> Ayr=Array<DP,3>(reinterpret_cast<DP*>(Ay.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
-	Array<DP,3> Azr=Array<DP,3>(reinterpret_cast<DP*>(Az.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
+	Array<DP,3> Axr=Array<DP,3>(reinterpret_cast<DP*>(Ax.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<DP,3> Ayr=Array<DP,3>(reinterpret_cast<DP*>(Ay.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<DP,3> Azr=Array<DP,3>(reinterpret_cast<DP*>(Az.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 	
 	local_E1k = 0.0;
 	local_E2k = 0.0;
@@ -490,9 +490,9 @@ void SSS_PENCIL::Compute_local_ring_spectrum
 	
 	int	Kmax = Max_radius_inside();
 	
-	for (int ly=0; ly<Axr.extent(0); ly++)
-        for (int lz=0; lz<Axr.extent(1); lz++)
-            for (int lx=0; lx<Axr.extent(2); lx++) {
+	for (int lx=0; lx<local_Nx; lx++)
+		for (int ly=0; ly<local_Ny; ly++)
+			for (int lz=0; lz<local_Nz; lz++) {
 				
 				Kmag = Kmagnitude(lx, ly, lz);
 				shell_index = (int) ceil(Kmag);
@@ -504,9 +504,9 @@ void SSS_PENCIL::Compute_local_ring_spectrum
 					sector_index = Get_sector_index(theta, global.spectrum.ring.sector_angles);
 					
 					factor = Multiplicity_factor(lx,ly,lz);
-					local_E1k(shell_index, sector_index) += factor*my_pow(Kmag,n)* Vsqr(Axr(ly,lz,lx));
-					local_E2k(shell_index, sector_index) += factor*my_pow(Kmag,n)* Vsqr(Ayr(ly,lz,lx));
-					local_E3k(shell_index, sector_index) += factor*my_pow(Kmag,n)* Vsqr(Azr(ly,lz,lx));
+					local_E1k(shell_index, sector_index) += factor*my_pow(Kmag,n)* Vsqr(Axr(lx,ly,lz));
+					local_E2k(shell_index, sector_index) += factor*my_pow(Kmag,n)* Vsqr(Ayr(lx,ly,lz));
+					local_E3k(shell_index, sector_index) += factor*my_pow(Kmag,n)* Vsqr(Azr(lx,ly,lz));
 				}
 			}
 	
@@ -530,13 +530,13 @@ void SSS_PENCIL::Compute_local_ring_spectrum
  )
 {
 	
-	Array<DP,3> Axr=Array<DP,3>(reinterpret_cast<DP*>(Ax.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
-    Array<DP,3> Ayr=Array<DP,3>(reinterpret_cast<DP*>(Ay.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
-	Array<DP,3> Azr=Array<DP,3>(reinterpret_cast<DP*>(Az.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
+	Array<DP,3> Axr=Array<DP,3>(reinterpret_cast<DP*>(Ax.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<DP,3> Ayr=Array<DP,3>(reinterpret_cast<DP*>(Ay.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<DP,3> Azr=Array<DP,3>(reinterpret_cast<DP*>(Az.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 	
-	Array<DP,3> Bxr=Array<DP,3>(reinterpret_cast<DP*>(Bx.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
-    Array<DP,3> Byr=Array<DP,3>(reinterpret_cast<DP*>(By.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
-	Array<DP,3> Bzr=Array<DP,3>(reinterpret_cast<DP*>(Bz.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
+	Array<DP,3> Bxr=Array<DP,3>(reinterpret_cast<DP*>(Bx.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<DP,3> Byr=Array<DP,3>(reinterpret_cast<DP*>(By.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<DP,3> Bzr=Array<DP,3>(reinterpret_cast<DP*>(Bz.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 	
 	local_E1k = 0.0;
 	local_E2k = 0.0;
@@ -548,9 +548,9 @@ void SSS_PENCIL::Compute_local_ring_spectrum
 	
 	int	Kmax = Max_radius_inside();
 	
-	for (int ly=0; ly<Axr.extent(0); ly++)
-        for (int lz=0; lz<Axr.extent(1); lz++)
-            for (int lx=0; lx<Axr.extent(2); lx++) {
+	for (int lx=0; lx<local_Nx; lx++)
+		for (int ly=0; ly<local_Ny; ly++)
+			for (int lz=0; lz<local_Nz; lz++) {
 				
 				Kmag = Kmagnitude(lx, ly, lz);
 				shell_index = (int) ceil(Kmag);
@@ -561,9 +561,9 @@ void SSS_PENCIL::Compute_local_ring_spectrum
 					sector_index = Get_sector_index(theta, global.spectrum.ring.sector_angles);
 					
 					factor = Multiplicity_factor(lx, ly, lz);
-					local_E1k(shell_index, sector_index) += factor*my_pow(Kmag,n)*  Axr(ly, lz, lx)* Bxr(ly, lz, lx);
-					local_E2k(shell_index, sector_index) += factor*my_pow(Kmag,n)*  Ayr(ly, lz, lx)* Byr(ly, lz, lx);
-					local_E3k(shell_index, sector_index) += factor*my_pow(Kmag,n)*  Azr(ly, lz, lx)* Bzr(ly, lz, lx);
+					local_E1k(shell_index, sector_index) += factor*my_pow(Kmag,n)*  Axr(lx,ly,lz)* Bxr(lx,ly,lz);
+					local_E2k(shell_index, sector_index) += factor*my_pow(Kmag,n)*  Ayr(lx,ly,lz)* Byr(lx,ly,lz);
+					local_E3k(shell_index, sector_index) += factor*my_pow(Kmag,n)*  Azr(lx,ly,lz)* Bzr(lx,ly,lz);
 				}
 			}
 }
@@ -581,8 +581,8 @@ void SSS_PENCIL::Compute_local_ring_spectrum
  Array<DP,2> local_Sk
  )
 {
-	Array<DP,3> Fr=Array<DP,3>(reinterpret_cast<DP*>(F.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
-   	
+	Array<DP,3> Fr=Array<DP,3>(reinterpret_cast<DP*>(F.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	
 	local_Sk = 0.0;
 	
 	DP Kmag, theta;
@@ -591,9 +591,9 @@ void SSS_PENCIL::Compute_local_ring_spectrum
 	
 	int	Kmax = Max_radius_inside();
 	
-	for (int ly=0; ly<Fr.extent(0); ly++)
-        for (int lz=0; lz<Fr.extent(1); lz++)
-            for (int lx=0; lx<Fr.extent(2); lx++) {
+	for (int lx=0; lx<local_Nx; lx++)
+		for (int ly=0; ly<local_Ny; ly++)
+			for (int lz=0; lz<local_Nz; lz++) {
 				Kmag = Kmagnitude(lx, ly, lz);
 				shell_index = (int) ceil(Kmag);
 				
@@ -604,7 +604,7 @@ void SSS_PENCIL::Compute_local_ring_spectrum
 					
 					factor = Multiplicity_factor(lx, ly, lz);
 					
-					local_Sk(shell_index, sector_index) +=  factor*my_pow(Kmag,n)* Vsqr(Fr(ly,lz,lx));
+					local_Sk(shell_index, sector_index) +=  factor*my_pow(Kmag,n)* Vsqr(Fr(lx,ly,lz));
 				}
 			}
 }
@@ -622,8 +622,8 @@ void SSS_PENCIL::Compute_local_ring_spectrum
  Array<DP,2> local_Sk
  )
 {
-	Array<DP,3> Fr=Array<DP,3>(reinterpret_cast<DP*>(F.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
-	Array<DP,3> Gr=Array<DP,3>(reinterpret_cast<DP*>(G.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
+	Array<DP,3> Fr=Array<DP,3>(reinterpret_cast<DP*>(F.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<DP,3> Gr=Array<DP,3>(reinterpret_cast<DP*>(G.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 	
 	local_Sk = 0.0;
 	
@@ -633,9 +633,9 @@ void SSS_PENCIL::Compute_local_ring_spectrum
 	
 	int	Kmax = Max_radius_inside();
 	
-	for (int ly=0; ly<Fr.extent(0); ly++)
-        for (int lz=0; lz<Fr.extent(1); lz++)
-            for (int lx=0; lx<Fr.extent(2); lx++) {
+	for (int lx=0; lx<local_Nx; lx++)
+		for (int ly=0; ly<local_Ny; ly++)
+			for (int lz=0; lz<local_Nz; lz++) {
 				Kmag = Kmagnitude(lx, ly, lz);
 				shell_index = (int) ceil(Kmag);
 				
@@ -646,7 +646,7 @@ void SSS_PENCIL::Compute_local_ring_spectrum
 					
 					factor = Multiplicity_factor(lx, ly, lz);
 					
-					local_Sk(shell_index, sector_index) +=  factor*my_pow(Kmag,n)*Fr(ly,lz,lx)*Gr(ly,lz,lx);
+					local_Sk(shell_index, sector_index) +=  factor*my_pow(Kmag,n)*Fr(lx,ly,lz)*Gr(lx,ly,lz);
 				}
 			}
 	
@@ -670,9 +670,9 @@ void SSS_PENCIL::Compute_local_cylindrical_ring_spectrum
  Array<DP,2> local_S1k, Array<DP,2> local_S2k
  )
 {
-	Array<DP,3> Axr=Array<DP,3>(reinterpret_cast<DP*>(Ax.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
-    Array<DP,3> Ayr=Array<DP,3>(reinterpret_cast<DP*>(Ay.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
-	Array<DP,3> Azr=Array<DP,3>(reinterpret_cast<DP*>(Az.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
+	Array<DP,3> Axr=Array<DP,3>(reinterpret_cast<DP*>(Ax.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<DP,3> Ayr=Array<DP,3>(reinterpret_cast<DP*>(Ay.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<DP,3> Azr=Array<DP,3>(reinterpret_cast<DP*>(Az.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 	
 	local_S1k = 0.0;  												// initialize Ek
 	local_S2k = 0.0;
@@ -687,11 +687,11 @@ void SSS_PENCIL::Compute_local_cylindrical_ring_spectrum
 	
 	int	Kperp_max = Anis_max_Krho_radius_inside();
 	
-	for (int ly=0; ly<Axr.extent(0); ly++)
-        for (int lz=0; lz<Axr.extent(1); lz++)
-            for (int lx=0; lx<Axr.extent(2); lx++) {
+	for (int lx=0; lx<local_Nx; lx++)
+		for (int ly=0; ly<local_Ny; ly++)
+			for (int lz=0; lz<local_Nz; lz++) {
 				
-				V = Axr(ly, lz, lx), Ayr(ly, lz, lx), Azr(ly, lz, lx);
+				V = Axr(lx,ly,lz), Ayr(lx,ly,lz), Azr(lx,ly,lz);
 				Kmag = Kmagnitude(lx, ly, lz);
 				
 				Kperp = AnisKperp(lx, ly, lz);
@@ -727,13 +727,13 @@ void SSS_PENCIL::Compute_local_cylindrical_ring_spectrum
  )
 {
 	
-	Array<DP,3> Axr=Array<DP,3>(reinterpret_cast<DP*>(Ax.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
-    Array<DP,3> Ayr=Array<DP,3>(reinterpret_cast<DP*>(Ay.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
-	Array<DP,3> Azr=Array<DP,3>(reinterpret_cast<DP*>(Az.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
+	Array<DP,3> Axr=Array<DP,3>(reinterpret_cast<DP*>(Ax.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<DP,3> Ayr=Array<DP,3>(reinterpret_cast<DP*>(Ay.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<DP,3> Azr=Array<DP,3>(reinterpret_cast<DP*>(Az.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 	
-	Array<DP,3> Bxr=Array<DP,3>(reinterpret_cast<DP*>(Bx.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
-    Array<DP,3> Byr=Array<DP,3>(reinterpret_cast<DP*>(By.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
-	Array<DP,3> Bzr=Array<DP,3>(reinterpret_cast<DP*>(Bz.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
+	Array<DP,3> Bxr=Array<DP,3>(reinterpret_cast<DP*>(Bx.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<DP,3> Byr=Array<DP,3>(reinterpret_cast<DP*>(By.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<DP,3> Bzr=Array<DP,3>(reinterpret_cast<DP*>(Bz.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 	
 	
 	local_S1k = 0.0;  												// initialize Ek
@@ -748,17 +748,17 @@ void SSS_PENCIL::Compute_local_cylindrical_ring_spectrum
 	
 	int	Kperp_max = Anis_max_Krho_radius_inside();
 	
-	for (int ly=0; ly<Axr.extent(0); ly++)
-        for (int lz=0; lz<Axr.extent(1); lz++)
-            for (int lx=0; lx<Axr.extent(2); lx++) {
+	for (int lx=0; lx<local_Nx; lx++)
+		for (int ly=0; ly<local_Ny; ly++)
+			for (int lz=0; lz<local_Nz; lz++) {
 				
 				Kmag = Kmagnitude(lx, ly, lz);
 				Kperp = AnisKperp(lx, ly, lz);
 				shell_index = (int) ceil(Kperp);
 				
 				if (shell_index <= Kperp_max) {
-					V = Axr(ly, lz, lx), Ayr(ly, lz, lx), Azr(ly, lz, lx);
-					W = Bxr(ly, lz, lx), Byr(ly, lz, lx), Bzr(ly, lz, lx);
+					V = Axr(lx,ly,lz), Ayr(lx,ly,lz), Azr(lx,ly,lz);
+					W = Bxr(lx,ly,lz), Byr(lx,ly,lz), Bzr(lx,ly,lz);
 					
 					Kpll = AnisKpll(lx, ly, lz);
 					
@@ -807,11 +807,11 @@ void SSS_PENCIL::Compute_local_cylindrical_ring_spectrum
  )
 {
 	
-	Array<DP,3> Axr=Array<DP,3>(reinterpret_cast<DP*>(Ax.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
-    Array<DP,3> Ayr=Array<DP,3>(reinterpret_cast<DP*>(Ay.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
-	Array<DP,3> Azr=Array<DP,3>(reinterpret_cast<DP*>(Az.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
+	Array<DP,3> Axr=Array<DP,3>(reinterpret_cast<DP*>(Ax.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<DP,3> Ayr=Array<DP,3>(reinterpret_cast<DP*>(Ay.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<DP,3> Azr=Array<DP,3>(reinterpret_cast<DP*>(Az.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 	
-	Array<DP,3> Fr=Array<DP,3>(reinterpret_cast<DP*>(F.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
+	Array<DP,3> Fr=Array<DP,3>(reinterpret_cast<DP*>(F.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 	
 	
 	local_S1k = 0.0;  												// initialize Ek
@@ -827,12 +827,12 @@ void SSS_PENCIL::Compute_local_cylindrical_ring_spectrum
 	
 	int	Kperp_max = Anis_max_Krho_radius_inside();
 	
-	for (int ly=0; ly<Axr.extent(0); ly++)
-        for (int lz=0; lz<Axr.extent(1); lz++)
-            for (int lx=0; lx<Axr.extent(2); lx++) {
+	for (int lx=0; lx<local_Nx; lx++)
+		for (int ly=0; ly<local_Ny; ly++)
+			for (int lz=0; lz<local_Nz; lz++) {
 				
-				V = Axr(ly, lz, lx), Ayr(ly, lz, lx), Azr(ly, lz, lx);
-				Fval = Fr(ly,lz,lx);
+				V = Axr(lx,ly,lz), Ayr(lx,ly,lz), Azr(lx,ly,lz);
+				Fval = Fr(lx,ly,lz);
 				Kmag = Kmagnitude(lx, ly, lz);
 				
 				Kperp = AnisKperp(lx, ly, lz);
@@ -854,7 +854,7 @@ void SSS_PENCIL::Compute_local_cylindrical_ring_spectrum
 					local_S2k(shell_index, slab_index) += factor*my_pow(Kmag,n)*VTperp;
 				}
 			}
-    
+	
 	
 }
 
@@ -870,7 +870,7 @@ void SSS_PENCIL::Compute_local_cylindrical_ring_spectrum
  Array<DP,2> local_Sk
  )
 {
-	Array<DP,3> Fr=Array<DP,3>(reinterpret_cast<DP*>(F.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
+	Array<DP,3> Fr=Array<DP,3>(reinterpret_cast<DP*>(F.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 	
 	local_Sk = 0.0;
 	
@@ -880,9 +880,9 @@ void SSS_PENCIL::Compute_local_cylindrical_ring_spectrum
 	
 	int	Kperp_max = Anis_max_Krho_radius_inside();
 	
-	for (int ly=0; ly<Fr.extent(0); ly++)
-        for (int lz=0; lz<Fr.extent(1); lz++)
-            for (int lx=0; lx<Fr.extent(2); lx++) {
+	for (int lx=0; lx<local_Nx; lx++)
+		for (int ly=0; ly<local_Ny; ly++)
+			for (int lz=0; lz<local_Nz; lz++) {
 				Kmag = Kmagnitude(lx, ly, lz);
 				
 				Kperp = AnisKperp(lx, ly, lz);
@@ -895,7 +895,7 @@ void SSS_PENCIL::Compute_local_cylindrical_ring_spectrum
 					
 					factor = Multiplicity_factor(lx, ly, lz);
 					
-					local_Sk(shell_index, slab_index) += factor*my_pow(Kmag,n)* Vsqr(Fr(ly,lz,lx));
+					local_Sk(shell_index, slab_index) += factor*my_pow(Kmag,n)* Vsqr(Fr(lx,ly,lz));
 				}
 			}
 	
@@ -913,8 +913,8 @@ void SSS_PENCIL::Compute_local_cylindrical_ring_spectrum
  Array<DP,2> local_Sk
  )
 {
-	Array<DP,3> Fr=Array<DP,3>(reinterpret_cast<DP*>(F.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
-	Array<DP,3> Gr=Array<DP,3>(reinterpret_cast<DP*>(G.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
+	Array<DP,3> Fr=Array<DP,3>(reinterpret_cast<DP*>(F.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<DP,3> Gr=Array<DP,3>(reinterpret_cast<DP*>(G.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 	
 	local_Sk = 0.0;
 	
@@ -924,9 +924,9 @@ void SSS_PENCIL::Compute_local_cylindrical_ring_spectrum
 	
 	int	Kperp_max = Anis_max_Krho_radius_inside();
 	
-	for (int ly=0; ly<Fr.extent(0); ly++)
-        for (int lz=0; lz<Fr.extent(1); lz++)
-            for (int lx=0; lx<Fr.extent(2); lx++) {
+	for (int lx=0; lx<local_Nx; lx++)
+		for (int ly=0; ly<local_Ny; ly++)
+			for (int lz=0; lz<local_Nz; lz++) {
 				Kmag = Kmagnitude(lx, ly, lz);
 				
 				Kperp = AnisKperp(lx, ly, lz);
@@ -939,7 +939,7 @@ void SSS_PENCIL::Compute_local_cylindrical_ring_spectrum
 					
 					factor = Multiplicity_factor(lx, ly, lz);
 					
-					local_Sk(shell_index, slab_index) += factor*my_pow(Kmag,n)* Fr(ly,lz,lx)*Gr(ly,lz,lx);
+					local_Sk(shell_index, slab_index) += factor*my_pow(Kmag,n)* Fr(lx,ly,lz)*Gr(lx,ly,lz);
 				}
 			}
 	
@@ -963,13 +963,13 @@ void SSS_PENCIL::Compute_local_imag_shell_spectrum_B0
 {
 	
 	/*
-	 Array<DP,3> Axr=Array<DP,3>(reinterpret_cast<DP*>(Ax.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
-	 Array<DP,3> Ayr=Array<DP,3>(reinterpret_cast<DP*>(Ay.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
-	 Array<DP,3> Azr=Array<DP,3>(reinterpret_cast<DP*>(Az.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
+	 Array<DP,3> Axr=Array<DP,3>(reinterpret_cast<DP*>(Ax.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	 Array<DP,3> Ayr=Array<DP,3>(reinterpret_cast<DP*>(Ay.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	 Array<DP,3> Azr=Array<DP,3>(reinterpret_cast<DP*>(Az.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 	 
-	 Array<DP,3> Bxr=Array<DP,3>(reinterpret_cast<DP*>(Bx.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
-	 Array<DP,3> Byr=Array<DP,3>(reinterpret_cast<DP*>(By.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
-	 Array<DP,3> Bzr=Array<DP,3>(reinterpret_cast<DP*>(Bz.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
+	 Array<DP,3> Bxr=Array<DP,3>(reinterpret_cast<DP*>(Bx.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	 Array<DP,3> Byr=Array<DP,3>(reinterpret_cast<DP*>(By.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	 Array<DP,3> Bzr=Array<DP,3>(reinterpret_cast<DP*>(Bz.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 	 
 	 DP Kmag;
 	 int shell_index;
@@ -981,17 +981,17 @@ void SSS_PENCIL::Compute_local_imag_shell_spectrum_B0
 	 
 	 int	Kmax = Min_radius_outside();
 	 
-	 for (int ly=0; ly<Axr.extent(0); ly++)
-	 for (int lz=0; lz<Axr.extent(1); lz++)
-	 for (int lx=0; lx<Axr.extent(2); lx++) {
+	 for (int ly=0; ly<local_Ny; ly++)
+	 for (int lz=0; lz<local_Nz; lz++)
+	 for (int lx=0; lx<local_Nx; lx++) {
 	 Kmag = Kmagnitude(lx, ly, lz);
 	 
 	 shell_index = (int) ceil(Kmag);
 	 
 	 if (shell_index <= Kmax) {
 	 Wavenumber(lx, ly, lz, K);
-	 V = Axr(ly, lz, lx), Ayr(ly, lz, lx), Azr(ly, lz, lx);
-	 W = Bxr(ly, lz, lx), Byr(ly, lz, lx), Bzr(ly, lz, lx);
+	 V = Axr(lx,ly,lz), Ayr(lx,ly,lz), Azr(lx,ly,lz);
+	 W = Bxr(lx,ly,lz), Byr(lx,ly,lz), Bzr(lx,ly,lz);
 	 
 	 local_Sk(shell_index) += 2* Multiplicity_factor(lx,ly,lz)* dot(B0,K)* mydot_imag(V,W);
 	 
@@ -1036,8 +1036,8 @@ void SSS_PENCIL::Compute_local_imag_ring_spectrum_B0
 	 sector_index = Get_sector_index(theta, global.spectrum.ring.sector_angles);
 	 
 	 Wavenumber(lx, ly, lz, K);
-	 V = Ax(ly, lz, lx), Ay(ly, lz, lx), Az(ly, lz, lx);
-	 W = Bx(ly, lz, lx), By(ly, lz, lx), Bz(ly, lz, lx);
+	 V = Ax(lx,ly,lz), Ay(lx,ly,lz), Az(lx,ly,lz);
+	 W = Bx(lx,ly,lz), By(lx,ly,lz), Bz(lx,ly,lz);
 	 
 	 local_Sk(shell_index, sector_index) += 2* Multiplicity_factor(lx,ly,lz)* dot(B0,K)* mydot_imag(V,W);
 	 }
@@ -1081,8 +1081,8 @@ void SSS_PENCIL::Compute_local_imag_cylindrical_ring_spectrum_B0
 	 slab_index = Get_slab_index(Kpll, Kperp, global.spectrum.cylindrical_ring.kpll_array);
 	 
 	 Wavenumber(lx, ly, lz, K);
-	 V = Ax(ly, lz, lx), Ay(ly, lz, lx), Az(ly, lz, lx);
-	 W = Bx(ly, lz, lx), By(ly, lz, lx), Bz(ly, lz, lx);
+	 V = Ax(lx,ly,lz), Ay(lx,ly,lz), Az(lx,ly,lz);
+	 W = Bx(lx,ly,lz), By(lx,ly,lz), Bz(lx,ly,lz);
 	 
 	 local_Sk(shell_index, slab_index) +=  2* Multiplicity_factor(lx, ly, lz)* dot(B0,K)* mydot_imag(V,W);
 	 

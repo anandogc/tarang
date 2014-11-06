@@ -96,7 +96,7 @@ inline int SSS_PENCIL::Get_ky(int ly) { return (local_Ny_start + ly); }
  */
 inline int SSS_PENCIL::Get_ly(int ky)  { return  (ky-local_Ny_start); }
 
-inline int SSS_PENCIL::Get_iy(int ky) { return  (ky >= 0) ? ky : (ky + Ny); }
+inline int SSS_PENCIL::Get_iy(int ky) { return  (ky >= 0) ? ky : (ky + Ny); } // not used
 
 
 /*! @brief	Get grid waveno ky given first local array index ly.
@@ -111,7 +111,7 @@ inline int SSS_PENCIL::Get_kz(int lz) { return lz; }
 inline int SSS_PENCIL::Get_lz(int kz)  { return kz; }
 
 	// iz is the array index
-inline int SSS_PENCIL::Get_iz(int kz)  { return kz/2; }
+inline int SSS_PENCIL::Get_iz(int kz)  { return kz/2; } // not used
 
 inline bool SSS_PENCIL::Probe_in_me(int kx, int ky, int kz) 
 {
@@ -126,30 +126,30 @@ inline bool SSS_PENCIL::Probe_in_me(int kx, int ky, int kz)
 
 inline complx SSS_PENCIL::Get_spectral_field(int kx, int ky, int kz, Array<complx,3> A)
 {
-	Array<DP,3> A_real(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
+	Array<DP,3> A_real(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 	
 	int lx = Get_lx(kx);
     int ly = Get_ly(ky);
     int lz = Get_lz(kz);
 	
 	if ( ((lx >= 0) && (lx < local_Nx)) && ((ly >= 0) && (ly < local_Ny)) )
-		return A_real(ly, lz, lx);
+		return A_real(lx, ly, lz);
 
 	return 0;
 }
 
 inline TinyVector<complx,3> SSS_PENCIL::Get_spectral_field(int kx, int ky, int kz, Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az)
 {
-	Array<DP,3> Ax_real(reinterpret_cast<DP*>(Ax.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
-	Array<DP,3> Ay_real(reinterpret_cast<DP*>(Ay.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
-	Array<DP,3> Az_real(reinterpret_cast<DP*>(Az.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
+	Array<DP,3> Ax_real(reinterpret_cast<DP*>(Ax.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<DP,3> Ay_real(reinterpret_cast<DP*>(Ay.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<DP,3> Az_real(reinterpret_cast<DP*>(Az.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 	
 	int lx = Get_lx(kx);
     int ly = Get_ly(ky);
     int lz = Get_lz(kz);
 	
 	if ( ((lx >= 0) && (lx < local_Nx)) && ((ly >= 0) && (ly < local_Ny)) )
-		return TinyVector<complx,3>(Ax_real(ly, lz, lx), Ay_real(ly, lz, lx), Az_real(ly, lz, lx));
+		return TinyVector<complx,3>(Ax_real(lx, ly, lz), Ay_real(lx, ly, lz), Az_real(lx, ly, lz));
 
 	return TinyVector<complx,3>(0,0,0);
 }
@@ -169,31 +169,34 @@ inline void SSS_PENCIL::Assign_spectral_field(int kx, int ky, int kz, Array<comp
 inline void SSS_PENCIL::Assign_spectral_field(int kx, int ky, int kz, Array<complx,3> A, DP field)
 {
 	
-	Array<DP,3> A_real(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
+	Array<DP,3> A_real(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 	
 	int lx = Get_lx(kx);
     int ly = Get_ly(ky);
     int lz = Get_lz(kz);
 	
 	if ( ((lx >= 0) && (lx < local_Nx)) && ((ly >= 0) && (ly < local_Ny)) )
-		A_real(ly, lz, lx) = field;
+		A_real(lx, ly, lz) = field;
 }
 
 inline void SSS_PENCIL::Assign_spectral_field(int kx, int ky, int kz, Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az, TinyVector<DP,3> V)
 {
 	
-	Array<DP,3> Ax_real(reinterpret_cast<DP*>(Ax.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
-	Array<DP,3> Ay_real(reinterpret_cast<DP*>(Ay.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
-	Array<DP,3> Az_real(reinterpret_cast<DP*>(Az.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
+	Array<DP,3> Ax_real(reinterpret_cast<DP*>(Ax.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<DP,3> Ay_real(reinterpret_cast<DP*>(Ay.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<DP,3> Az_real(reinterpret_cast<DP*>(Az.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 	
 	int lx = Get_lx(kx);
     int ly = Get_ly(ky);
     int lz = Get_lz(kz);
 	
+	if (master) cout << "In Assign_spectral_field: lx,ly,lz = " << lx << " " << ly << " " << lz << endl;
+
 	if ( ((lx >= 0) && (lx < local_Nx)) && ((ly >= 0) && (ly < local_Ny)) ) {
-		Ax_real(ly, lz, lx) = V(0);
-        Ay_real(ly, lz, lx) = V(1);
-        Az_real(ly, lz, lx) = V(2);
+		Ax_real(lx, ly, lz) = V(0);
+        Ay_real(lx, ly, lz) = V(1);
+        Az_real(lx, ly, lz) = V(2);
+		if (master) cout << "In Assign_spectral_field: A_real(lx,ly,lz) = " << kx << " " << ky << " " << kz << " " << Az_real(lx,ly,lz) << endl;
 	}
 }
 
@@ -210,31 +213,31 @@ inline void SSS_PENCIL::Add_spectral_field(int kx, int ky, int kz, Array<complx,
 
 inline void SSS_PENCIL::Add_spectral_field(int kx, int ky, int kz, Array<complx,3> A,DP field)
 {
-	Array<DP,3> A_real(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
+	Array<DP,3> A_real(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 	
 	int lx = Get_lx(kx);
     int ly = Get_ly(ky);
     int lz = Get_lz(kz);
 	
 	if ( ((lx >= 0) && (lx < local_Nx)) && ((ly >= 0) && (ly < local_Ny)) )
-		A_real(ly, lz, lx) += field;
+		A_real(lx, ly, lz) += field;
 }
 
 inline void SSS_PENCIL::Add_spectral_field(int kx, int ky, int kz, Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az, TinyVector<DP,3> V)
 {
 	
-	Array<DP,3> Ax_real(reinterpret_cast<DP*>(Ax.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
-	Array<DP,3> Ay_real(reinterpret_cast<DP*>(Ay.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
-	Array<DP,3> Az_real(reinterpret_cast<DP*>(Az.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
+	Array<DP,3> Ax_real(reinterpret_cast<DP*>(Ax.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<DP,3> Ay_real(reinterpret_cast<DP*>(Ay.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<DP,3> Az_real(reinterpret_cast<DP*>(Az.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 	
 	int lx = Get_lx(kx);
     int ly = Get_ly(ky);
     int lz = Get_lz(kz);
 	
 	if ( ((lx >= 0) && (lx < local_Nx)) && ((ly >= 0) && (ly < local_Ny)) ) {
-		Ax_real(ly, lz, lx) += V(0);
-        Ay_real(ly, lz, lx) += V(1);
-        Az_real(ly, lz, lx) += V(2);
+		Ax_real(lx, ly, lz) += V(0);
+        Ay_real(lx, ly, lz) += V(1);
+        Az_real(lx, ly, lz) += V(2);
 	}
 }
 
@@ -242,18 +245,18 @@ inline void SSS_PENCIL::Add_spectral_field(int kx, int ky, int kz, Array<complx,
 // LOCAL...
 inline complx SSS_PENCIL::Get_local_spectral_field(int lx, int ly, int lz, Array<complx,3> A)
 {
-	Array<DP,3> A_real(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
+	Array<DP,3> A_real(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 	
-	return A_real(ly, lz, lx);
+	return A_real(lx, ly, lz);
 }
 
 inline TinyVector<complx,3> SSS_PENCIL::Get_local_spectral_field(int lx, int ly, int lz, Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az)
 {
-	Array<DP,3> Ax_real(reinterpret_cast<DP*>(Ax.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
-	Array<DP,3> Ay_real(reinterpret_cast<DP*>(Ay.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
-	Array<DP,3> Az_real(reinterpret_cast<DP*>(Az.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
+	Array<DP,3> Ax_real(reinterpret_cast<DP*>(Ax.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<DP,3> Ay_real(reinterpret_cast<DP*>(Ay.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<DP,3> Az_real(reinterpret_cast<DP*>(Az.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 	
-	return TinyVector<complx,3>(Ax_real(ly, lz, lx), Ay_real(ly, lz, lx), Az_real(ly, lz, lx));
+	return TinyVector<complx,3>(Ax_real(lx, ly, lz), Ay_real(lx, ly, lz), Az_real(lx, ly, lz));
 }
 
 
@@ -270,22 +273,22 @@ inline void SSS_PENCIL::Assign_local_spectral_field(int lx, int ly, int lz, Arra
 
 inline void SSS_PENCIL::Assign_local_spectral_field(int lx, int ly, int lz, Array<complx,3> A,DP field)
 {
-	Array<DP,3> A_real(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
+	Array<DP,3> A_real(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 	
 	if ( ((lx >= 0) && (lx < local_Nx)) && ((ly >= 0) && (ly < local_Ny)) )
-		A_real(ly, lz, lx) = field;
+		A_real(lx, ly, lz) = field;
 }
 
 inline void SSS_PENCIL::Assign_local_spectral_field(int lx, int ly, int lz, Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az, TinyVector<DP,3> V)
 {
-	Array<DP,3> Ax_real(reinterpret_cast<DP*>(Ax.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
-	Array<DP,3> Ay_real(reinterpret_cast<DP*>(Ay.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
-	Array<DP,3> Az_real(reinterpret_cast<DP*>(Az.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
+	Array<DP,3> Ax_real(reinterpret_cast<DP*>(Ax.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<DP,3> Ay_real(reinterpret_cast<DP*>(Ay.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<DP,3> Az_real(reinterpret_cast<DP*>(Az.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 	
 	if ( ((lx >= 0) && (lx < local_Nx)) && ((ly >= 0) && (ly < local_Ny)) ) {
-		Ax_real(ly, lz, lx) = V(0);
-        Ay_real(ly, lz, lx) = V(1);
-        Az_real(ly, lz, lx) = V(2);
+		Ax_real(lx, ly, lz) = V(0);
+        Ay_real(lx, ly, lz) = V(1);
+        Az_real(lx, ly, lz) = V(2);
 	}
 }
 
@@ -304,38 +307,37 @@ inline void SSS_PENCIL::Add_local_spectral_field(int lx, int ly, int lz, Array<c
 
 inline void SSS_PENCIL::Add_local_spectral_field(int lx, int ly, int lz, Array<complx,3> A,DP field)
 {
-	Array<DP,3> A_real(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
+	Array<DP,3> A_real(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 	
 	if ( ((lx >= 0) && (lx < local_Nx)) && ((ly >= 0) && (ly < local_Ny)) )
-		A_real(ly, lz, lx) += field;
+		A_real(lx, ly, lz) += field;
 }
 
 inline void SSS_PENCIL::Add_local_spectral_field(int lx, int ly, int lz, Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az, TinyVector<DP,3> V)
 {
 	
-	Array<DP,3> Ax_real(reinterpret_cast<DP*>(Ax.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
-	Array<DP,3> Ay_real(reinterpret_cast<DP*>(Ay.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
-	Array<DP,3> Az_real(reinterpret_cast<DP*>(Az.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
+	Array<DP,3> Ax_real(reinterpret_cast<DP*>(Ax.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<DP,3> Ay_real(reinterpret_cast<DP*>(Ay.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<DP,3> Az_real(reinterpret_cast<DP*>(Az.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 	
 	if ( ((lx >= 0) && (lx < local_Nx)) && ((ly >= 0) && (ly < local_Ny)) ) {
-		Ax_real(ly, lz, lx) += V(0);
-        Ay_real(ly, lz, lx) += V(1);
-        Az_real(ly, lz, lx) += V(2);
+		Ax_real(lx, ly, lz) += V(0);
+        Ay_real(lx, ly, lz) += V(1);
+        Az_real(lx, ly, lz) += V(2);
 	}
 }
 
 
 //REAL-SPACE
 inline int SSS_PENCIL::Get_lx_real_space(int rx)  { return  rx;}
-
-inline int SSS_PENCIL::Get_ly_real_space(int ry) {return  ry - my_y_pcoord_real*local_Ny_real; }
-
-inline int SSS_PENCIL::Get_lz_real_space(int rz) {return  rz - my_z_pcoord_real*local_Nz_real; }
-
 inline int SSS_PENCIL::Get_rx_real_space(int lx)  {return  lx;}
 
-inline int SSS_PENCIL::Get_ry_real_space(int ly)  {return  ly + my_y_pcoord_real*local_Ny_real; }
 
+inline int SSS_PENCIL::Get_ly_real_space(int ry) {return  ry - my_y_pcoord_real*local_Ny_real; }
+inline int SSS_PENCIL::Get_ry_real_space(int ly) {return  ly + my_y_pcoord_real*local_Ny_real; }
+
+
+inline int SSS_PENCIL::Get_lz_real_space(int rz) {return  rz - my_z_pcoord_real*local_Nz_real; }
 inline int SSS_PENCIL::Get_rz_real_space(int lz) {return  lz + my_z_pcoord_real*local_Nz_real; }
 
 
@@ -356,7 +358,7 @@ inline DP SSS_PENCIL::Get_real_field(int rx, int ry, int rz, Array<DP,3> A)
 	int lz = Get_lz_real_space(rz);
     
 	if ( ((ly >= 0) && (ly < local_Ny_real)) && ((lz >= 0) && (lz < local_Nz_real)) )
-        return (A(ly, lz, rx));
+        return (A(rx, ly, lz));
 
     return 0;
 }
@@ -367,7 +369,7 @@ inline TinyVector<DP,3> SSS_PENCIL::Get_real_field(int rx, int ry, int rz, Array
 	int lz = Get_lz_real_space(rz);
     
 	if ( ((ly >= 0) && (ly < local_Ny_real)) && ((lz >= 0) && (lz < local_Nz_real)) )
-        return TinyVector<DP,3>(Ax(ly, lz, rx), Ay(ly, lz, rx), Az(ly, lz, rx));
+        return TinyVector<DP,3>(Ax(rx, ly, lz), Ay(rx, ly, lz), Az(rx, ly, lz));
 
 	return TinyVector<DP,3>(0,0,0);
 }
@@ -379,7 +381,7 @@ inline void SSS_PENCIL::Assign_real_field(int rx, int ry, int rz, Array<DP,3> A,
 	int lz = Get_lz_real_space(rz);
 	
 	if ( ((ly >= 0) && (ly < local_Ny_real)) && ((lz >= 0) && (lz < local_Nz_real)) )
-		A(ly, lz, rx) = field;
+		A(rx, ly, lz) = field;
 }
 
 inline void SSS_PENCIL::Assign_real_field(int rx, int ry, int rz, Array<DP,3> Ax, Array<DP,3> Ay, Array<DP,3> Az, TinyVector<DP,3> V)
@@ -388,9 +390,9 @@ inline void SSS_PENCIL::Assign_real_field(int rx, int ry, int rz, Array<DP,3> Ax
 	int lz = Get_lz_real_space(rz);
 	
 	if ( ((ly >= 0) && (ly < local_Ny_real)) && ((lz >= 0) && (lz < local_Nz_real)) ) {
-		Ax(ly, lz, rx) = V(0);
-		Ay(ly, lz, rx) = V(1);
-		Az(ly, lz, rx) = V(2);
+		Ax(rx, ly, lz) = V(0);
+		Ay(rx, ly, lz) = V(1);
+		Az(rx, ly, lz) = V(2);
 	}
 	
 }
@@ -541,10 +543,10 @@ inline DP SSS_PENCIL::Modal_energy(int lx, int ly, int lz, Array<complx,3> A)
 {
     
     if (lz%2 == 1)
-        return pow2(imag(A(ly, lz/2, lx)));
+        return pow2(imag(A(lx, ly, lz/2)));
     
     else
-        return pow2(real(A(ly, lz/2, lx)));
+        return pow2(real(A(lx, ly, lz/2)));
 }
 
 /**********************************************************************************************

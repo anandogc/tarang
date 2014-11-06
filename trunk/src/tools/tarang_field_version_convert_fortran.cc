@@ -77,7 +77,7 @@ int main(int argc, char** argv)
 
 
 	BasicIO::data_in_folder = "fortran";
-	BasicIO::data_out_folder = "tarang2.3";
+	BasicIO::data_out_folder = "tarang";
 	
     BasicIO::Initialize();
 
@@ -111,7 +111,7 @@ int main(int argc, char** argv)
     DP* B_data = B.data();
     
 
- 	//Configure tarang 2.2 input
+ 	//Configure fortran input
 
     H5_Planner fortran_output;
 

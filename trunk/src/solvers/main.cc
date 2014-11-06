@@ -74,34 +74,32 @@ int main(int argc, char** argv)
     if (global.program.basis_type == "FFFW"){
 		if (global.program.decomposition == "SLAB")
 			universal=new FFFW_SLAB;
-	//	else if (global.program.decomposition == "PENCIL")
-	//		universal=new FFFW_PENCIL;
     }
 
     else if (global.program.basis_type == "FFF"){
 		if (global.program.decomposition == "SLAB")
 			universal=new FFF_SLAB;
-	//	else if (global.program.decomposition == "PENCIL")
-	//		universal=new FFF_PENCIL;
+		else if (global.program.decomposition == "PENCIL")
+			universal=new FFF_PENCIL;
     }
 	
     else if (global.program.basis_type == "SFF"){
 		if (global.program.decomposition == "SLAB")
 			universal=new SFF_SLAB;
-	//	else if (global.program.decomposition == "PENCIL")
-	//		universal=new SFF_PENCIL;
+		else if (global.program.decomposition == "PENCIL")
+			universal=new SFF_PENCIL;
 	}
     else if (global.program.basis_type == "SSF"){
 		if (global.program.decomposition == "SLAB")
 			universal=new SSF_SLAB;
-//		else if (global.program.decomposition == "PENCIL")
-//			universal=new SSF_PENCIL;
+		else if (global.program.decomposition == "PENCIL")
+			universal=new SSF_PENCIL;
 	}
 	else if (global.program.basis_type == "SSS"){
 		if (global.program.decomposition == "SLAB")
 			universal=new SSS_SLAB;	
-		// else if (global.program.decomposition == "PENCIL")
-			// universal=new SSS_PENCIL;
+		else if (global.program.decomposition == "PENCIL")
+			universal=new SSS_PENCIL;
 	}
 /*    else if (global.program.basis_type == "ChFF"){
 		if (global.program.decomposition == "SLAB")

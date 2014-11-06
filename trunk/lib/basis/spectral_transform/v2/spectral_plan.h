@@ -51,10 +51,16 @@ protected:
 	MPI_Status *status;
 
 public:
+	string basis;
+
 	int my_id;
 	int numprocs;
 
-	string basis;
+	int my_id_col;
+	int my_id_row;
+
+	int num_p_cols;
+	int num_p_rows;
 
 	int Nx;
 	int Ny;
@@ -64,14 +70,40 @@ public:
 	int local_Ny;
 	int local_Nz;
 
+	int local_Nx_col;
+	int local_Ny_col;
+	int local_Nz_col;
+
+	int local_Nx_row;
+	int local_Ny_row;
+	int local_Nz_row;
+
 	int local_Nx_start;
 	int local_Ny_start;
 	int local_Nz_start;
 
+	int local_Nx_start_col;
+	int local_Ny_start_col;
+	int local_Nz_start_col;
+
+	int local_Nx_start_row;
+	int local_Ny_start_row;
+	int local_Nz_start_row;
+
 	double time_per_step;
+	double *timers;
+	int num_timers;
+
+
+	int *PAPI_events;
+	long long counters[3];
+	long long dummy_counters[3];
+	int papi_err;
+
 
 	SpectralPlan(string basis, int my_id, int numprocs, int Nx, int Nz);
 	SpectralPlan(string basis, int my_id, int numprocs, int Nx, int Ny, int Nz);
+	SpectralPlan(string basis, int my_id, int numprocs, int Nx, int Ny, int Nz, int num_p_col);
 
 	virtual void Init_array() = 0;
 	virtual void Evaluate_time_per_step(double num_iter) = 0;

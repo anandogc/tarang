@@ -55,17 +55,28 @@ SpectralPlan_Slab_3D::SpectralPlan_Slab_3D(string basis, int my_id, int numprocs
 		status = new MPI_Status[max(Nx,Ny)];
 
 		//Vector types required during Isend-Recv
-		MPI_Type_vector(local_Nx,Nz+2,local_Ny*(Nz+2),MPI_DP,&MPI_Vector_z_strip_send);
+		int count=local_Nx;
+		int blocklength=Nz+2;
+		int stride=local_Ny*(Nz+2);
+		MPI_Type_vector(count,blocklength,stride,MPI_DP,&MPI_Vector_z_strip_send);
 		MPI_Type_commit(&MPI_Vector_z_strip_send);
 
-		MPI_Type_vector(local_Nx,Nz+2,Ny*(Nz+2),MPI_DP,&MPI_Vector_z_strip_recv);
+		count=local_Nx;
+		blocklength=Nz+2;
+		stride=Ny*(Nz+2);
+		MPI_Type_vector(count,blocklength,stride,MPI_DP,&MPI_Vector_z_strip_recv);
 		MPI_Type_commit(&MPI_Vector_z_strip_recv);
 
 
 		//Required for Alltoall transpose
+		count=1;
+		blocklength=(Nz+2)*local_Ny;
+		stride=1;
 		MPI_Type_vector(1,(Nz+2)*local_Ny,1,MPI_DP,&MPI_Vector_yz_plane_block);
 		MPI_Type_commit(&MPI_Vector_yz_plane_block);
 
+		int lower_bound=0;
+		int extent=(Nz+2)*local_Ny*local_Nx*sizeof(DP);
 		MPI_Type_create_resized(MPI_Vector_yz_plane_block, 0, (Nz+2)*local_Ny*local_Nx*sizeof(DP), &MPI_Vector_resized_yz_plane_block);
 		MPI_Type_commit(&MPI_Vector_resized_yz_plane_block);
 

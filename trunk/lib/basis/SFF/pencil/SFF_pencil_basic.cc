@@ -93,7 +93,7 @@ void SFF_PENCIL::Last_component(int kx, int ky, int kz, complx &Vx, complx &Vy, 
 
 void SFF_PENCIL::Dealias(Array<complx,3> A)
 {
-	Assign_sub_array(Range(Ny/3+1,2*Ny/3-1), Range(Nz/3+1,toEnd), Range(2*Nx/3+1,toEnd), A, complx(0,0));
+	Assign_sub_array(Range(2*Nx/3+1,toEnd), Range(Ny/3+1,2*Ny/3-1), Range(Nz/3+1,toEnd), A, complx(0,0));
 }
 
 
@@ -128,24 +128,24 @@ void SFF_PENCIL::Satisfy_strong_reality_condition_in_Array(Array<complx,3> A)
     // For a given (., minusky), locate (.,ky) and then subst.
     // A(., minusky,0) = conj(A(.,ky,0))
 	if (my_z_pcoord == 0) {
-        for (int lx=0; lx<local_Nx; lx++)
+        for (int lx=0; lx<maxlx; lx++)
             for (int ly=Ny/2+1; ly<Ny; ly++) {
                 array_index_minus_ky = -Get_ky(ly);        // minusky = Get_ky(ly)
                 
-                A(ly,0,lx) = conj(A(array_index_minus_ky,0,lx));
+                A(lx,ly,0) = conj(A(lx,array_index_minus_ky,0));
             }
             // for (ky=0,kz=0) line
-            imag(A(0,0,Range::all())) = 0.0;
+            imag(A(Range::all(),0,0)) = 0.0;
 	}
 	
 	if (my_z_pcoord == num_z_procs-1)
-         A(Range::all(),local_Nz-1,Range::all()) = 0.0;
+         A(Range::all(),Range::all(),maxlz-1) = 0.0;
 }
 
 void SFF_PENCIL::Satisfy_weak_reality_condition_in_Array(Array<complx,3> A)
 {
     if (my_z_pcoord == num_z_procs-1)
-        A(Range::all(),local_Nz-1,Range::all()) = 0.0;
+        A(Range::all(),Range::all(),maxlz-1) = 0.0;
 }
 
 
@@ -155,25 +155,25 @@ void SFF_PENCIL::Test_reality_condition_in_Array(Array<complx,3> A)
     int array_index_minus_ky;
 	
 	if (my_z_pcoord == 0) {
-        for (int lx=0; lx<local_Nx; lx++) {
+        for (int lx=0; lx<maxlx; lx++) {
            for (int ly=Ny/2+1; ly<Ny; ly++) {
                 array_index_minus_ky = -Get_ky(ly);
                
-                if (abs(A(ly,0,lx)-conj(A(array_index_minus_ky,0,lx))) > MYEPS2)
+                if (abs(A(lx,ly,0)-conj(A(lx,array_index_minus_ky,0))) > MYEPS2)
                     cout << "Reality condition voilated for (kx,ky,kz)=(" << lx <<  "," << ly << "," << 0 << ")" << endl; 
             }
             // for (ky=0,kz=0) line
-            if (abs(imag(A(0,0,lx))) > MYEPS2)
+            if (abs(imag(A(lx,0,0))) > MYEPS2)
                 cout << "Reality condition voilated for (kx,ky,kz)=(" << lx <<  "," << 0 << "," << 0 << ")" << endl;
         }
 	}
 	
     // for kz=Nz/2
-    int last_index=local_Nz-1;
+    int last_index=maxlz-1;
 	if (my_z_pcoord == num_z_procs-1) {
-        for (int lx=0; lx<local_Nx; lx++)
+        for (int lx=0; lx<maxlx; lx++)
 			for (int ly=0; ly<Ny; ly++)
-                if (abs(A(last_index,lx,ly)) > MYEPS)
+                if (abs(A(lx,ly,last_index)) > MYEPS)
                     cout << "Reality condition voilated for (kx,ky,kz)=(" << Get_kx(lx) <<  "," << Get_ky(ly) << "," << Nz/2 << ")" << endl;
     }
 
@@ -194,13 +194,13 @@ void SFF_PENCIL::Zero_modes(Array<complx,3> Ax, Array<complx,3> Ay, Array<complx
     Range zero(0,0);
     global.program.sincostr_switch = sincostr_switch_Vx;
 
-	if (my_vert_pcoord == 0) {
+	if (my_x_pcoord == 0) {
         if (global.program.sincostr_switch == "SFF")
-        	Assign_sub_array(Range::all(),Range::all(),zero,Ax,complx(0,0));
+        	Assign_sub_array(zero,Range::all(),Range::all(),Ax,complx(0,0));
         
         else if (global.program.sincostr_switch == "CFF") {
-        	Assign_sub_array(Range::all(),Range::all(),zero,Ay,complx(0,0));
-        	Assign_sub_array(Range::all(),Range::all(),zero,Az,complx(0,0));
+        	Assign_sub_array(zero,Range::all(),Range::all(),Ay,complx(0,0));
+        	Assign_sub_array(zero,Range::all(),Range::all(),Az,complx(0,0));
         }
     }
 }
@@ -214,36 +214,61 @@ void SFF_PENCIL::Zero_modes(Array<complx,3> F)
     // lx = 0 reside in master node
     Range zero(0,0);
     global.program.sincostr_switch = sincostr_switch_F;
-    if ((my_vert_pcoord == 0) && (global.program.sincostr_switch == "SFF"))
-    	Assign_sub_array(Range::all(),Range::all(),zero,F,complx(0,0));
+    if ((my_x_pcoord == 0) && (global.program.sincostr_switch == "SFF"))
+    	Assign_sub_array(zero,Range::all(),Range::all(),F,complx(0,0));
 }
 
-void SFF_PENCIL::Assign_sub_array(Range y_range, Range z_range, Range x_range, Array<complx,3> A, complx value)
+void SFF_PENCIL::Assign_sub_array(Range x_range, Range y_range, Range z_range, Array<complx,3> A, complx value)
 {
 	
-	static Array<int,1> z_filter(Nz/2+1);
 	static Array<int,1> x_filter(Nx);
+	static Array<int,1> z_filter(Nz/2+1);
 	
-	z_filter = 0;
 	x_filter = 0;
+	z_filter = 0;
 	
-	z_filter(z_range)=1;
 	x_filter(x_range)=1;
+	z_filter(z_range)=1;
 	
 	
-	static Range z_apply, x_apply;
+	static Range x_apply, z_apply;
 	
+	
+	x_apply = Range(first(x_filter(Range(lx_start,lx_start+maxlx-1)) == 1),
+					 last(x_filter(Range(lx_start,lx_start+maxlx-1)) == 1));
 		
-	z_apply = Range(first(z_filter(Range(my_z_pcoord*local_Nz,(my_z_pcoord+1)*local_Nz-1)) == 1),
-					 last(z_filter(Range(my_z_pcoord*local_Nz,(my_z_pcoord+1)*local_Nz-1)) == 1));
-	
-	x_apply = Range(first(x_filter(Range(my_x_pcoord*local_Nx,(my_x_pcoord+1)*local_Nx-1)) == 1),
-					 last(x_filter(Range(my_x_pcoord*local_Nx,(my_x_pcoord+1)*local_Nx-1)) == 1));
+	z_apply = Range(first(z_filter(Range(lz_start,lz_start+maxlz-1)) == 1),
+					 last(z_filter(Range(lz_start,lz_start+maxlz-1)) == 1));
 
 	
 	
-	if ( (z_apply(0)>=0) && (x_apply(0)>=0))
-		A(y_range, z_apply, x_apply) = value;
+	if ( (x_apply(0)>=0) && (z_apply(0)>=0))
+		A(x_apply, y_range, z_apply) = value;
+}
+
+
+int SFF_PENCIL::Read(Array<complx,3> A, BasicIO::H5_plan plan, string file_name, string dataset_name)
+{
+	int err = BasicIO::Read(global.temp_array.Xr.data(), plan, file_name, dataset_name);
+	spectralTransform.Transpose(global.temp_array.Xr, A);
+	return err;
+}
+
+int SFF_PENCIL::Read(Array<DP,3> Ar, BasicIO::H5_plan plan, string file_name, string dataset_name)
+{
+	return BasicIO::Read(Ar.data(), plan, file_name, dataset_name);
+}
+
+
+int SFF_PENCIL::Write(Array<complx,3> A, BasicIO::H5_plan plan, string folder_name, string file_name, string dataset_name)
+{
+	spectralTransform.Transpose(A, global.temp_array.Xr);
+	return BasicIO::Write(global.temp_array.Xr.data(), plan, folder_name, file_name, dataset_name);
+}
+
+int SFF_PENCIL::Write(Array<DP,3> Ar, BasicIO::H5_plan plan, string folder_name, string file_name, string dataset_name)
+{
+	return BasicIO::Write(Ar.data(), plan, folder_name, file_name, dataset_name);  
 }
 
 //*********************************  End of scft_basic.cc *************************************

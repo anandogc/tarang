@@ -111,7 +111,7 @@ void Universal::Array_mult_ksqr(Array<complx,3> A)
 	DP Kxysqr;
     DP Ksqr;
 	
-    #pragma omp parallel for private(Kysqr,Kyzsqr,Ksqr) 
+    //#pragma omp parallel for private(Kysqr,Kyzsqr,Ksqr) 
 	for (int lx=0; lx<A.extent(0); lx++) {
 		Kxsqr = my_pow(Get_kx(lx)*kfactor[1],2);
 		
@@ -141,7 +141,7 @@ void Universal::Array_divide_ksqr(Array<complx,3> A)
     DP Kxysqr;
     DP Ksqr;
     
-    #pragma omp parallel for private(Kysqr,Kyzsqr,Ksqr) 
+    //#pragma omp parallel for private(Kysqr,Kyzsqr,Ksqr) 
     for (int lx=0; lx<A.extent(0); lx++) {
         Kxsqr = my_pow(Get_kx(lx)*kfactor[1],2);
         
@@ -175,7 +175,7 @@ void Universal::Array_exp_ksqr(Array<complx,3> A, DP factor)
 	DP Kxysqr;
 	DP Ksqr;
 	
-	#pragma omp parallel for private(Kysqr,Kyzsqr,Ksqr) 
+	//#pragma omp parallel for private(Kysqr,Kyzsqr,Ksqr) 
 	for (int lx=0; lx<A.extent(0); lx++) {
 		Kxsqr = my_pow(Get_kx(lx)*kfactor[1],2);
 		
@@ -289,11 +289,11 @@ void Universal::Compute_divergence(Array<complx,3> Ax, Array<complx,3> Ay, Array
 	Add_Zderiv(Az, div);
 	
     if (field_or_nlin == "field") {
-        total_abs_div = sqrt(Array_sqr(div));
+        total_abs_div = max(abs(div))>MYEPS2;
         
         if ((print_switch) && (total_abs_div > MYEPS2)) {
             cout << "NON-ZERO DIVERGENCE for the following modes:"  << endl;
-            Print_large_Fourier_elements(div);
+            Print_large_Fourier_elements(div, "Divergence");
         }
     }
 }
@@ -309,7 +309,7 @@ void Universal::Fill_Vz(Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> 
     if (global.io.input_vx_vy_switch && global.field.incompressible) {
 		complx vz;
         
-        #pragma omp parallel for
+        //#pragma omp parallel for
 		for (int lx=0; lx<Ax.extent(0); lx++)
             for (int ly=0; ly<Ax.extent(1); ly++)
         		for (int lz=1; lz<Ax.extent(2); lz++){

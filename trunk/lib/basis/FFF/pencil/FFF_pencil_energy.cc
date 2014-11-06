@@ -43,7 +43,7 @@
 
 /**********************************************************************************************
 
-       		Computes A^2/2 & Re(A.B*)/2 except k=0
+			Computes A^2/2 & Re(A.B*)/2 except k=0
 
 ***********************************************************************************************/
 
@@ -62,7 +62,7 @@ DP FFF_PENCIL::Get_local_energy(Array<complx,3> A)
 	DP total = Array_sqr(A);
 	
 	if (my_z_pcoord == 0)
-		total -= Array_sqr(A(Range::all(), Range::all(), 0))/2;
+		total -= Array_sqr(A(Range::all(),Range::all(),0))/2;
 	
 	return total;
 	
@@ -107,17 +107,17 @@ void FFF_PENCIL::Compute_local_helicity
 	
 	int	Kmax = Min_radius_outside();
 	
-	for (int lx=0; lx<Nx; lx++) 
-		for (int ly=0; ly<local_Ny; ly++)
-			for (int lz=0; lz<local_Nz; lz++) {
-				Kmag = Kmagnitude(lx, ly, lz);
+	for (int lx=0; lx<maxlx; lx++) 
+		for (int ly=0; ly<maxly; ly++)
+			for (int lz=0; lz<maxlz; lz++) {
+				Kmag = Kmagnitude(lx,ly,lz);
 				
 				if (Kmag <= Kmax) {
-					factor = 2*Multiplicity_factor(lx, ly, lz);
+					factor = 2*Multiplicity_factor(lx,ly,lz);
 					// factor multiplied by 2 because of the defn  Hk = K . (Vr x Vi).
 					// recall the defn of energy spectrum that contains 1/2.
 					
-					modal_helicity = factor* Get_Modal_helicity(lx, ly, lz, Ax, Ay, Az);
+					modal_helicity = factor* Get_Modal_helicity(lx,ly,lz, Ax,Ay,Az);
 					local_helicity1 += modal_helicity;
 					
 					Ksqr = pow2(Kmag);
@@ -189,25 +189,25 @@ void FFF_PENCIL::Compute_local_shell_spectrum_helicity
 	int	Kmax = Min_radius_outside();
 	
 		
-	for (int lx=0; lx<Nx; lx++) 
-		for (int ly=0; ly<local_Ny; ly++)
-			for (int lz=0; lz<local_Nz; lz++)  {
-                
-				Kmag = Kmagnitude(lx, ly, lz);
+	for (int lx=0; lx<maxlx; lx++) 
+		for (int ly=0; ly<maxly; ly++)
+			for (int lz=0; lz<maxlz; lz++)  {
+				
+				Kmag = Kmagnitude(lx,ly,lz);
 				index = (int) ceil(Kmag);
 				
 				if (index <= Kmax) 	{
-					factor = 2*Multiplicity_factor(lx, ly, lz);
+					factor = 2*Multiplicity_factor(lx,ly,lz);
 					// factor multiplied by 2 because of the defn  Hk = K . (Vr x Vi).
 					// recall the defn of energy spectrum that contains 1/2.
 					
-					Vreal = real(Ax(lx, ly, lz)), real(Ay(lx, ly, lz)), real(Az(lx, ly, lz));
-					Vimag = imag(Ax(lx, ly, lz)), imag(Ay(lx, ly, lz)), imag(Az(lx, ly, lz));
+					Vreal = real(Ax(lx,ly,lz)), real(Ay(lx,ly,lz)), real(Az(lx,ly,lz));
+					Vimag = imag(Ax(lx,ly,lz)), imag(Ay(lx,ly,lz)), imag(Az(lx,ly,lz));
 			
 					VrcrossVi = cross(Vreal, Vimag);
-					Wavenumber(lx, ly, lz, K);
+					Wavenumber(lx,ly,lz, K);
 					
-                    // modal_helicity = factor * dot(kk, VrcrossVi);	
+					// modal_helicity = factor * dot(kk, VrcrossVi);	
 					local_H1k1(index) += factor* (K(0)*VrcrossVi(0));
 					local_H1k2(index) += factor* (K(1)*VrcrossVi(1));
 					local_H1k3(index) += factor* (K(2)*VrcrossVi(2));
@@ -256,13 +256,13 @@ void FFF_PENCIL::Compute_shell_spectrum_helicity
 
 	// The shells near the edges do not complete half sphere, so normalize the shells.
 	
-	if (my_id == master_id) {
+	if (master) {
 		int Kmax_inside = Max_radius_inside(); 	
 		int	Kmax = Min_radius_outside();
 
 		for (int index = Kmax_inside+1; index <= Kmax; index++) 
 			if (H1k1_count(index) >= 1) {
-                
+				
 				H1k1(index) = H1k1(index) * Approx_number_modes_in_shell(index)/H1k1_count(index); 
 										
 				H1k2(index) = H1k2(index) * Approx_number_modes_in_shell(index)/H1k1_count(index); 
@@ -299,27 +299,27 @@ void FFF_PENCIL::Compute_local_ring_spectrum_helicity
 
 	int	Kmax = Max_radius_inside();
 		
-	for (int lx=0; lx<Nx; lx++) 
-		for (int ly=0; ly<local_Ny; ly++)
-			for (int lz=0; lz<local_Nz; lz++) {
+	for (int lx=0; lx<maxlx; lx++) 
+		for (int ly=0; ly<maxly; ly++)
+			for (int lz=0; lz<maxlz; lz++) {
 			
-				Kmag = Kmagnitude(lx, ly, lz);
+				Kmag = Kmagnitude(lx,ly,lz);
 				shell_index = (int) ceil(Kmag);
 				
 				if ((Kmag > MYEPS) && (shell_index <= Kmax)) {
-					theta = AnisKvect_polar_angle(lx, ly, lz); 
+					theta = AnisKvect_polar_angle(lx,ly,lz); 
 					
 					sector_index = Get_sector_index(theta, global.spectrum.ring.sector_angles);
 									
-					factor = 2*Multiplicity_factor(lx, ly, lz); 
+					factor = 2*Multiplicity_factor(lx,ly,lz); 
 					// factor multiplied by 2 because of the defn  Hk = K . (Vr x Vi).
 					// recall the defn of energy spectrum that contains 1/2.
 					
-					Vreal = real(Ax(lx, ly, lz)), real(Ay(lx, ly, lz)), real(Az(lx, ly, lz));
-					Vimag = imag(Ax(lx, ly, lz)), imag(Ay(lx, ly, lz)), imag(Az(lx, ly, lz));
+					Vreal = real(Ax(lx,ly,lz)), real(Ay(lx,ly,lz)), real(Az(lx,ly,lz));
+					Vimag = imag(Ax(lx,ly,lz)), imag(Ay(lx,ly,lz)), imag(Az(lx,ly,lz));
 					
 					VrcrossVi = cross(Vreal, Vimag);
-					Wavenumber(lx, ly, lz, K);
+					Wavenumber(lx,ly,lz, K);
 					
 					// modal_helicity = factor * dot(K, VrcrossVi);
 					local_H1k1(shell_index, sector_index) += factor* (K(0)*VrcrossVi(0));
@@ -384,27 +384,27 @@ void FFF_PENCIL::Compute_local_cylindrical_ring_spectrum_helicity
 	
 	int	Kperp_max = Anis_max_Krho_radius_inside();
 	
-    for (int lx=0; lx<Ax.extent(0); lx++)
-		for (int ly=0; ly<Ax.extent(1); ly++)
-	        for (int lz=0; lz<Ax.extent(2); lz++) {
-				Kmag = Kmagnitude(lx, ly, lz);
+	for (int lx=0; lx<maxlx; lx++)
+		for (int ly=0; ly<maxly; ly++)
+			for (int lz=0; lz<maxlz; lz++) {
+				Kmag = Kmagnitude(lx,ly,lz);
 				
-				Kperp = AnisKperp(lx, ly, lz);
+				Kperp = AnisKperp(lx,ly,lz);
 				
 				shell_index = (int) ceil(Kperp);
 				
 				if (shell_index <= Kperp_max) {
-					Kpll = AnisKpll(lx, ly, lz);
+					Kpll = AnisKpll(lx,ly,lz);
 					
 					slab_index = Get_slab_index(Kpll, Kperp, global.spectrum.cylindrical_ring.kpll_array);
 					
-					factor = 2*Multiplicity_factor(lx, ly, lz);
+					factor = 2*Multiplicity_factor(lx,ly,lz);
 					
-					Vreal = real(Ax(lx, ly, lz)), real(Ay(lx, ly, lz)), real(Az(lx, ly, lz));
-					Vimag = imag(Ax(lx, ly, lz)), imag(Ay(lx, ly, lz)), imag(Az(lx, ly, lz));
+					Vreal = real(Ax(lx,ly,lz)), real(Ay(lx,ly,lz)), real(Az(lx,ly,lz));
+					Vimag = imag(Ax(lx,ly,lz)), imag(Ay(lx,ly,lz)), imag(Az(lx,ly,lz));
 					
 					VrcrossVi = cross(Vreal, Vimag);
-					Wavenumber(lx, ly, lz, K);
+					Wavenumber(lx,ly,lz, K);
 					
 					// modal_helicity = factor * dot(K, VrcrossVi);
 					if (global.field.anisotropy_dirn == 1) {

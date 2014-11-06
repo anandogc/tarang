@@ -216,10 +216,7 @@ void CVF::Compute_total_energy()
 	total_E1 = universal->Get_total_energy(V1);
 	total_E2 = universal->Get_total_energy(V2);
 	total_E3 = universal->Get_total_energy(V3);
-
 	
-
-
 	total_energy = total_E1 + total_E2 + total_E3;
 }
 

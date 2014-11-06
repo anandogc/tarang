@@ -205,7 +205,7 @@ void Global::Parse(int argc, char** argv, bool parse_para)
 	const struct option longOpts[] = {
 		{ "version", no_argument, NULL, 'v' },
 		{ "help", no_argument, NULL, 'h' },
-		{ "nh", required_argument, NULL, 'n' },
+		{ "num_cols", required_argument, NULL, 'n' },
 		{ NULL, no_argument, NULL, 0 }
 	};
 
@@ -221,27 +221,27 @@ void Global::Parse(int argc, char** argv, bool parse_para)
 				
 			case 'h':
 				if (mpi.master)
-					cout << "Usage: mpirun -np num_procs " << argv[0] << "  [-v,-version] [-h,-help] [-n,-nh <num_hor_procs>] [/path/to/data]" << endl;
+					cout << "Usage: mpirun -np num_procs " << argv[0] << "  [-v,-version] [-h,-help] [-n,-num_cols <num_col_procs>] [/path/to/data]" << endl;
 				stop=true;
 				break;
 				
 			case 'n':
-				mpi.num_p_hor=atoi(optarg);
-				if (mpi.num_p_hor>0){
-					if (mpi.numprocs%mpi.num_p_hor==0){
-						mpi.num_p_vert = mpi.numprocs/mpi.num_p_hor;
+				mpi.num_p_cols=atoi(optarg);
+				if (mpi.num_p_cols>0){
+					if (mpi.numprocs%mpi.num_p_cols==0){
+						mpi.num_p_rows = mpi.numprocs/mpi.num_p_cols;
 					
 					}
 					else{
 						if (mpi.master)
-							cerr << "mpi.numprocs(="<<mpi.numprocs<<") must be divisible by mpi.num_p_hor(="<<mpi.num_p_hor<<")." << endl;
+							cerr << "mpi.numprocs(="<<mpi.numprocs<<") must be divisible by mpi.num_p_cols(="<<mpi.num_p_cols<<")." << endl;
 						stop=true;
 					}
 
 				}
 				else{
 					if (mpi.master)
-						cerr << "num_p_hor must be greater than 0." << endl;
+						cerr << "num_p_cols must be greater than 0." << endl;
 					stop=true;
 				}
 				break;
@@ -256,7 +256,7 @@ void Global::Parse(int argc, char** argv, bool parse_para)
 
 	if (optind>=argc && parse_para) {
 		if (mpi.master)
-			cout << "Usage: mpirun -np num_procs " << argv[0] << "  [-v,-version] [-h,-help] [-n,-nh <num_hor_procs>] [/path/to/data]" << endl;
+			cout << "Usage: mpirun -np num_procs " << argv[0] << "  [-v,-version] [-h,-help] [-n,-num_cols <num_col_procs>] [/path/to/data]" << endl;
 		stop=true;
 	}
 

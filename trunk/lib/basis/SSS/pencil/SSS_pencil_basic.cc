@@ -47,16 +47,16 @@
 
 void SSS_PENCIL::Print_large_Fourier_elements(Array<complx,3> A, string array_name)
 {
-	Array<DP,3> B=Array<DP,3>(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
+	Array<DP,3> B=Array<DP,3>(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 	
-    for (int ly=0; ly<B.extent(0); ly++)
-        for (int lz=0; lz<B.extent(1); lz++) // 0:Nz-1
-			for (int lx=0; lx<B.extent(2); lx++) {
-				if (abs(B(ly,lz,lx)) > MYEPS2)
-					cout << "my_id = " << my_id <<  " vect(k) = (" << Get_kx(lx) << "," << ly  << "," << lz <<");  " << array_name << "(k) = " <<  B(ly, lz, lx) << '\n';
+	for (int lx=0; lx<local_Nx; lx++)
+		for (int ly=0; ly<local_Ny; ly++)
+			for (int lz=0; lz<local_Nz; lz++) {
+				if (abs(B(lx,ly,lz)) > MYEPS2)
+					cout << "my_id = " << my_id <<  " vect(k) = (" << Get_kx(lx) << "," << ly  << "," << lz <<");  " << array_name << "(k) = " <<  B(lx, ly, lz) << '\n';
 			}
 	
-    cout << endl;
+	cout << endl;
 }
 
 
@@ -128,7 +128,7 @@ Dealias
 
 void SSS_PENCIL::Dealias(Array<complx,3> A)
 {
-	Assign_sub_array(Range(2*Ny/3+1,toEnd), Range(Nz/3,toEnd), Range(2*Nx/3+1,toEnd), A, complx(0,0));
+	Assign_sub_array(Range(2*Nx/3+1,toEnd), Range(2*Ny/3+1,toEnd), Range(Nz/3,toEnd), A, complx(0,0));
 }
 
 
@@ -183,48 +183,48 @@ void SSS_PENCIL::Zero_modes(Array<complx,3> Ax, Array<complx,3> Ay, Array<complx
 	global.program.sincostr_switch = sincostr_switch_Vx;
 	
 	if (global.program.sincostr_switch == "SCC") {
-		Assign_sub_array(Range::all(),Range::all(),zero,Ax,complx(0,0));
-		Assign_sub_array(zero,Range::all(),Range::all(),Ay,complx(0,0));
-		Assign_sub_array(Range::all(),zero,Range::all(),Az,complx(0,0));
-	}
-	
-	else if (global.program.sincostr_switch == "CSS") {
-		Assign_sub_array(zero,zero,Range::all(),Ax,complx(0,0));
-		Assign_sub_array(zero,Range::all(),zero,Ay,complx(0,0));
-		Assign_sub_array(zero,Range::all(),zero,Az,complx(0,0));
-	}
-	
-	else if (global.program.sincostr_switch == "CCS") {
-		Assign_sub_array(Range::all(),zero,Range::all(),Ax,complx(0,0));
-		Assign_sub_array(zero,zero,zero,Ay,complx(0,0));
+		Assign_sub_array(zero,Range::all(),Range::all(),Ax,complx(0,0));
+		Assign_sub_array(Range::all(),zero,Range::all(),Ay,complx(0,0));
 		Assign_sub_array(Range::all(),Range::all(),zero,Az,complx(0,0));
 	}
 	
-	else if (global.program.sincostr_switch == "SSC") {
-		Assign_sub_array(zero,Range::all(),zero,Ax,complx(0,0));
+	else if (global.program.sincostr_switch == "CSS") {
+		Assign_sub_array(Range::all(),zero,zero,Ax,complx(0,0));
+		Assign_sub_array(zero,zero,Range::all(),Ay,complx(0,0));
 		Assign_sub_array(zero,zero,Range::all(),Az,complx(0,0));
 	}
 	
+	else if (global.program.sincostr_switch == "CCS") {
+		Assign_sub_array(Range::all(),Range::all(),zero,Ax,complx(0,0));
+		Assign_sub_array(zero,zero,zero,Ay,complx(0,0));
+		Assign_sub_array(zero,Range::all(),Range::all(),Az,complx(0,0));
+	}
+	
+	else if (global.program.sincostr_switch == "SSC") {
+		Assign_sub_array(zero,zero,Range::all(),Ax,complx(0,0));
+		Assign_sub_array(Range::all(),zero,zero,Az,complx(0,0));
+	}
+	
 	else if (global.program.sincostr_switch == "CSC") {
-		Assign_sub_array(zero,Range::all(),Range::all(),Ax,complx(0,0));
-		Assign_sub_array(Range::all(),Range::all(),zero,Ay,complx(0,0));
+		Assign_sub_array(Range::all(),zero,Range::all(),Ax,complx(0,0));
+		Assign_sub_array(zero,Range::all(),Range::all(),Ay,complx(0,0));
 		Assign_sub_array(zero,zero,zero,Az,complx(0,0));
 	}
 	
 	else if (global.program.sincostr_switch == "SCS") {
-		Assign_sub_array(zero,Range::all(),zero,Ax,complx(0,0));
-		Assign_sub_array(zero,zero,Range::all(),Ay,complx(0,0));
+		Assign_sub_array(zero,zero,Range::all(),Ax,complx(0,0));
+		Assign_sub_array(Range::all(),zero,zero,Ay,complx(0,0));
 	}
 	
 	else if (global.program.sincostr_switch == "CCC") {
-		Assign_sub_array(zero,Range::all(),zero,Ay,complx(0,0));
-		Assign_sub_array(Range::all(),zero,zero,Az,complx(0,0));
+		Assign_sub_array(zero,zero,Range::all(),Ay,complx(0,0));
+		Assign_sub_array(zero,Range::all(),zero,Az,complx(0,0));
 	}
 	
 	else if (global.program.sincostr_switch == "SSS") {
 		Assign_sub_array(zero,zero,zero,Ax,complx(0,0));
-		Assign_sub_array(Range::all(),zero,Range::all(),Ay,complx(0,0));
-		Assign_sub_array(zero,Range::all(),Range::all(),Az,complx(0,0));
+		Assign_sub_array(Range::all(),Range::all(),zero,Ay,complx(0,0));
+		Assign_sub_array(Range::all(),zero,Range::all(),Az,complx(0,0));
 	}
 }
 	
@@ -239,22 +239,22 @@ void SSS_PENCIL::Zero_modes(Array<complx,3> F)
 	global.program.sincostr_switch = sincostr_switch_F;
 	
 	if (global.program.sincostr_switch == "SCC")
-		Assign_sub_array(Range::all(),Range::all(),zero,F,complx(0,0));
-	
-	else if (global.program.sincostr_switch == "CSS")
-		Assign_sub_array(zero,zero,Range::all(),F,complx(0,0));
-	
-	else if (global.program.sincostr_switch == "CCS")
-		Assign_sub_array(Range::all(),zero,Range::all(),F,complx(0,0));
-
-	else if (global.program.sincostr_switch == "SSC")
-		Assign_sub_array(zero,Range::all(),zero,F,complx(0,0));
-	
-	else if (global.program.sincostr_switch == "CSC")
 		Assign_sub_array(zero,Range::all(),Range::all(),F,complx(0,0));
 	
+	else if (global.program.sincostr_switch == "CSS")
+		Assign_sub_array(Range::all(),zero,zero,F,complx(0,0));
+	
+	else if (global.program.sincostr_switch == "CCS")
+		Assign_sub_array(Range::all(),Range::all(),zero,F,complx(0,0));
+
+	else if (global.program.sincostr_switch == "SSC")
+		Assign_sub_array(zero,zero,Range::all(),F,complx(0,0));
+	
+	else if (global.program.sincostr_switch == "CSC")
+		Assign_sub_array(Range::all(),zero,Range::all(),F,complx(0,0));
+	
 	else if (global.program.sincostr_switch == "SCS")
-		Assign_sub_array(zero,Range::all(),zero,F,complx(0,0));
+		Assign_sub_array(zero,zero,Range::all(),F,complx(0,0));
 	
 	else if (global.program.sincostr_switch == "CCC")
 		;
@@ -263,62 +263,70 @@ void SSS_PENCIL::Zero_modes(Array<complx,3> F)
 		Assign_sub_array(zero,zero,zero,F,complx(0,0));
 }
 
-void SSS_PENCIL::Assign_sub_array(Range y_range, Range z_range, Range x_range, Array<complx,3> A, complx value)
+void SSS_PENCIL::Assign_sub_array(Range x_range, Range y_range, Range z_range, Array<complx,3> A, complx value)
 {
-	static Array<int,1> y_filter(Ny);
+    Array<DP,3> Ar=Array<DP,3>(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+
+
 	static Array<int,1> x_filter(Nx);
+	static Array<int,1> y_filter(Ny);
 	
-	y_filter = 0;
 	x_filter = 0;
+	y_filter = 0;
 	
-	y_filter(y_range)=1;
 	x_filter(x_range)=1;
+	y_filter(y_range)=1;
 	
 	
 	static Range y_apply, x_apply;
 	
 	
+	x_apply = Range(first(x_filter(Range(my_x_pcoord*local_Nx,(my_x_pcoord+1)*local_Nx-1)) == 1),
+					 last(x_filter(Range(my_x_pcoord*local_Nx,(my_x_pcoord+1)*local_Nx-1)) == 1));
+	
 	y_apply = Range(first(y_filter(Range(my_y_pcoord*local_Ny,(my_y_pcoord+1)*local_Ny-1)) == 1),
 					 last(y_filter(Range(my_y_pcoord*local_Ny,(my_y_pcoord+1)*local_Ny-1)) == 1));
 	
-	x_apply = Range(first(x_filter(Range(my_x_pcoord*local_Nx,(my_x_pcoord+1)*local_Nx-1)) == 1),
-	                 last(x_filter(Range(my_x_pcoord*local_Nx,(my_x_pcoord+1)*local_Nx-1)) == 1));
-	
-	
-	if ( (y_apply(0)>=0) && (x_apply(0)>=0))
-		A(y_apply, z_range, x_apply) = value;
+	// if (my_x_pcoord==0) {
+	// 	cout << "apply shape = " << x_apply << " " << y_apply << " " <<z_range << endl;
+	// }
+	if ( (x_apply(0)>=0) && (y_apply(0)>=0) ) {
+		// Print_large_Fourier_elements(A, "Before");
+		Ar(x_apply, y_apply, z_range) = real(value);
+		// Print_large_Fourier_elements(A, "After");
+	}
 }
 
 
 /**********************************************************************************************
 
-       		Replaces A(k) by A(k)*K^2.
+			Replaces A(k) by A(k)*K^2.
 
 ***********************************************************************************************/
 
 
 void SSS_PENCIL::Array_mult_ksqr(Array<complx,3> A)
 {
-	Array<DP,3> Ar=Array<DP,3>(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
+	Array<DP,3> Ar=Array<DP,3>(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 	
-    DP Kysqr;    // Ky^2
-	DP Kyzsqr;
-    DP Ksqr;
+	DP Kxsqr;    // Kx^2
+	DP Kxysqr;
+	DP Ksqr;
 	
-    #pragma omp parallel for private(Kysqr,Kyzsqr,Ksqr) 
-	for (int ly=0; ly<Ar.extent(0); ly++) {
-		Kysqr = my_pow(Get_ky(ly)*kfactor[2],2);	
-		
-        for (int lz=0; lz<Ar.extent(1); lz++) {
-            Kyzsqr = Kysqr + my_pow(Get_kz(lz)*kfactor[3],2);
-			
-            for (int lx=0; lx<Ar.extent(2); lx++) {
-                Ksqr= Kyzsqr + my_pow(Get_kx(lx)*kfactor[1],2);
+	// #pragma omp parallel for private(Kysqr,Kyzsqr,Ksqr) 
+	for (int lx=0; lx<local_Nx; lx++) {
+		Kxsqr = my_pow(Get_kx(lx)*kfactor[1],2);
 
-		      Ar(ly, lz, lx) *= Ksqr;
-          }
-        }
-    }
+		for (int ly=0; ly<local_Ny; ly++) {
+			Kxysqr = Kxsqr + my_pow(Get_ky(ly)*kfactor[2],2);	
+			
+			for (int lz=0; lz<local_Nz; lz++) {
+				Ksqr = Kxysqr + my_pow(Get_kz(lz)*kfactor[3],2);
+
+				Ar(lx, ly, lz) *= Ksqr;
+		  }
+		}
+	}
 }
 
 
@@ -332,25 +340,26 @@ void SSS_PENCIL::Array_mult_ksqr(Array<complx,3> A)
 
 void SSS_PENCIL::Array_divide_ksqr(Array<complx,3> A)
 {
-	Array<DP,3> Ar=Array<DP,3>(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
+	Array<DP,3> Ar=Array<DP,3>(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 	
-    DP Kysqr;    // Ky^2
-    DP Kyzsqr;
-    DP Ksqr;
-    
-    #pragma omp parallel for private(Kysqr,Kyzsqr,Ksqr) 
-    for (int ly=0; ly<Ar.extent(0); ly++) {
-        Kysqr = my_pow(Get_ky(ly)*kfactor[2],2);    
-        
-        for (int lz=0; lz<Ar.extent(1); lz++) {
-            Kyzsqr = Kysqr + my_pow(Get_kz(lz)*kfactor[3],2);
-            
-            for (int lx=0; lx<Ar.extent(2); lx++) {
-                Ksqr= Kyzsqr + my_pow(Get_kx(lx)*kfactor[1],2);
-                Ar(ly, lz, lx) /= Ksqr;
-            }
-        }
-    }  
+	DP Kxsqr;    // Kx^2
+	DP Kxysqr;
+	DP Ksqr;
+	
+	// #pragma omp parallel for private(Kysqr,Kyzsqr,Ksqr) 
+	for (int lx=0; lx<local_Nx; lx++) {
+		Kxsqr= my_pow(Get_kx(lx)*kfactor[1],2);
+
+		for (int ly=0; ly<local_Ny; ly++) {
+			Kxysqr = Kxsqr + my_pow(Get_ky(ly)*kfactor[2],2);    
+			
+			for (int lz=0; lz<local_Nz; lz++) {
+				Ksqr = Kxysqr + my_pow(Get_kz(lz)*kfactor[3],2);
+			
+				Ar(lx, ly, lz) /= Ksqr;
+			}
+		}
+	}  
 	   
 	// To avoid division by zero
 	if (master)
@@ -367,23 +376,23 @@ void SSS_PENCIL::Array_divide_ksqr(Array<complx,3> A)
 
 void SSS_PENCIL::Array_exp_ksqr(Array<complx,3> A, DP factor)
 {	
-    Array<DP,3> Ar=Array<DP,3>(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
+	Array<DP,3> Ar=Array<DP,3>(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 	
-	DP Kysqr;    // Ky^2
-	DP Kyzsqr;
+	DP Kxsqr;    // Kx^2
+	DP Kxysqr;
 	DP Ksqr;
 	
-	#pragma omp parallel for private(Kysqr,Kyzsqr,Ksqr) 
-	for (int ly=0; ly<Ar.extent(0); ly++) {
-		Kysqr = my_pow(Get_ky(ly)*kfactor[2],2);    
-		
-		for (int lz=0; lz<Ar.extent(1); lz++) {
-			Kyzsqr = Kysqr + my_pow(Get_kz(lz)*kfactor[3],2);
-			
-			for (int lx=0; lx<Ar.extent(2); lx++) {
-				Ksqr= Kyzsqr + my_pow(Get_kx(lx)*kfactor[1],2);
+	// #pragma omp parallel for private(Kysqr,Kyzsqr,Ksqr) 
+	for (int lx=0; lx<local_Nx; lx++) {
+		Kxsqr= my_pow(Get_kx(lx)*kfactor[1],2);
 
-			  Ar(ly, lz, lx) *= exp(factor*Ksqr);
+		for (int ly=0; ly<local_Ny; ly++) {
+			Kxysqr = Kxsqr + my_pow(Get_ky(ly)*kfactor[2],2);    
+		
+			for (int lz=0; lz<local_Nz; lz++) {
+				Ksqr = Kxysqr + my_pow(Get_kz(lz)*kfactor[3],2);
+
+			  Ar(lx, ly, lz) *= exp(factor*Ksqr);
 		  }
 		}
 	}  
@@ -400,28 +409,28 @@ void SSS_PENCIL::Array_exp_ksqr(Array<complx,3> A, DP factor)
 void SSS_PENCIL::Array_exp_ksqr(Array<complx,3> A, DP factor, DP hyper_factor, int hyper_exponent)
 {
 	
-	Array<DP,3> Ar=Array<DP,3>(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
+	Array<DP,3> Ar=Array<DP,3>(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 
-	DP Kysqr;    // Ky^2
-	DP Kyzsqr;
+	DP Kxsqr;    // Kx^2
+	DP Kxysqr;
 	DP Ksqr;
 	DP Kpownm2;	// K^{q-2} where q = hyper_exponent
 	
-	for (int ly=0; ly<Ar.extent(0); ly++) {
-		Kysqr = my_pow(Get_ky(ly)*kfactor[2],2);
-		
-		for (int lz=0; lz<Ar.extent(1); lz++) {
-			Kyzsqr = Kysqr + my_pow(Get_kz(lz)*kfactor[3],2);
+	for (int lx=0; lx<local_Nx; lx++) {
+		Kxsqr = my_pow(Get_kx(lx)*kfactor[1],2);
+	
+		for (int ly=0; ly<local_Ny; ly++) {
+			Kxysqr = my_pow(Get_ky(ly)*kfactor[2],2);
 			
-			for (int lx=0; lx<Ar.extent(2); lx++) {
-				Ksqr= Kyzsqr + my_pow(Get_kx(lx)*kfactor[1],2);
+			for (int lz=0; lz<local_Nz; lz++) {
+				Ksqr = Kxysqr + my_pow(Get_kz(lz)*kfactor[3],2);
 				
 				if (hyper_exponent == 4)
 					Kpownm2 = Ksqr;
 				else
 					Kpownm2 = my_pow(Ksqr,(hyper_exponent-2)/2);
 				
-				Ar(ly, lz, lx) *= exp((factor+hyper_factor*Kpownm2)* Ksqr);
+				Ar(lx, ly, lz) *= exp((factor+hyper_factor*Kpownm2)* Ksqr);
 			}
 		}
 	}
@@ -438,34 +447,35 @@ void SSS_PENCIL::Array_exp_ksqr(Array<complx,3> A, DP factor, DP hyper_factor, i
 
 void SSS_PENCIL::Array_mult_V0_khat_sqr(Array<complx,3> A, TinyVector<DP,3> V0)
 {
-	Array<DP,3> Ar=Array<DP,3>(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
+	Array<DP,3> Ar=Array<DP,3>(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 	
-    DP Kx, Ky, Kz;
-    DP Kysqr;    // Ky^2
-    DP Kyzsqr;
-    DP Ksqr;
+	DP Kx, Ky, Kz;
+	DP Kxsqr;    // Ky^2
+	DP Kxysqr;
+	DP Ksqr;
   
 	DP V0x = V0(0);
 	DP V0y = V0(1);
 	DP V0z = V0(2);
-    
-    for (int ly=0; ly<Ar.extent(0); ly++) {
-        Ky = Get_ky(ly)*kfactor[2];
-        Kysqr = my_pow(Ky,2);
-        
-        for (int lz=0; lz<Ar.extent(1); lz++) {
-            Kz = Get_kz(lz)*kfactor[3];
-            Kyzsqr = Kysqr + my_pow(Kz,2);
-            
-            for (int lx=0; lx<Ar.extent(2); lx++) {
-                Kx = Get_kx(lx)*kfactor[1];
-                Ksqr = Kyzsqr + my_pow(Kx,2);
-                Ar(ly, lz, lx) *= my_pow(V0x*Kx+V0y*Ky+V0z*Kz, 2)/Ksqr;
-            }
-        }
-    }
 	
-    // To avoid division by zero
+	for (int lx=0; lx<local_Nx; lx++) {
+		Kx = Get_kx(lx)*kfactor[1];
+		Kxsqr = my_pow(Kx,2);
+		
+		for (int ly=0; ly<local_Ny; ly++) {
+			Ky = Get_ky(ly)*kfactor[2];
+			Kxysqr = Kxsqr + my_pow(Ky,2);
+			
+			for (int lz=0; lz<local_Nz; lz++) {
+				Kz = Get_kz(lz)*kfactor[3];
+				Ksqr = Kxysqr + my_pow(Kz,2);
+
+				Ar(lx, ly, lz) *= my_pow(V0x*Kx+V0y*Ky+V0z*Kz, 2)/Ksqr;
+			}
+		}
+	}
+	
+	// To avoid division by zero
 	if (my_id == master_id)
 		Ar(0,0,0) = 0.0;
 }
@@ -477,31 +487,53 @@ void SSS_PENCIL::Array_mult_V0_khat_sqr(Array<complx,3> A, TinyVector<DP,3> V0)
 
 void SSS_PENCIL::Fill_Vz(Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az)
 {
-    if (global.io.input_vx_vy_switch && global.field.incompressible) {
+	if (global.io.input_vx_vy_switch && global.field.incompressible) {
 		
-		Array<DP,3> Axr=Array<DP,3>(reinterpret_cast<DP*>(Ax.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
-		Array<DP,3> Ayr=Array<DP,3>(reinterpret_cast<DP*>(Ay.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
-		Array<DP,3> Azr=Array<DP,3>(reinterpret_cast<DP*>(Az.data()), shape_complex_array*shape(1,2,1), neverDeleteData);
+		Array<DP,3> Axr=Array<DP,3>(reinterpret_cast<DP*>(Ax.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+		Array<DP,3> Ayr=Array<DP,3>(reinterpret_cast<DP*>(Ay.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+		Array<DP,3> Azr=Array<DP,3>(reinterpret_cast<DP*>(Az.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 		
 		int kx, ky, kz;
 		DP vz;
-        
-		#pragma omp parallel for
-		for (int ly=0; ly<Axr.extent(0); ly++)
-            for (int lz=1; lz<Axr.extent(1); lz++)
-        		for (int lx=0; lx<Axr.extent(2); lx++){
+		
+		// #pragma omp parallel for
+		for (int lx=0; lx<local_Nx; lx++)
+			for (int ly=0; ly<local_Ny; ly++)
+				for (int lz=1; lz<local_Nz; lz++) {
 					kx = Get_kx(lx);
 					ky = Get_ky(ly);
 					kz = Get_kz(lz);
-                    
-					Last_component(kx, ky, kz, Axr(ly,lz,lx), Ayr(ly,lz,lx), vz);
-                    
+					
+					Last_component(kx, ky, kz, Axr(lx,ly,lz), Ayr(lx,ly,lz), vz);
+					
 					Assign_spectral_field(kx, ky, kz, Az, vz);
 				}
 	}
 }
 
+int SSS_PENCIL::Read(Array<complx,3> A, BasicIO::H5_plan plan, string file_name, string dataset_name)
+{
+	int err = BasicIO::Read(global.temp_array.Xr.data(), plan, file_name, dataset_name);
+	spectralTransform.Transpose(global.temp_array.Xr, A);
+	return err;
+}
 
+int SSS_PENCIL::Read(Array<DP,3> Ar, BasicIO::H5_plan plan, string file_name, string dataset_name)
+{
+	return BasicIO::Read(Ar.data(), plan, file_name, dataset_name);
+}
+
+
+int SSS_PENCIL::Write(Array<complx,3> A, BasicIO::H5_plan plan, string folder_name, string file_name, string dataset_name)
+{
+	spectralTransform.Transpose(A, global.temp_array.Xr);
+	return BasicIO::Write(global.temp_array.Xr.data(), plan, folder_name, file_name, dataset_name);
+}
+
+int SSS_PENCIL::Write(Array<DP,3> Ar, BasicIO::H5_plan plan, string folder_name, string file_name, string dataset_name)
+{
+	return BasicIO::Write(Ar.data(), plan, folder_name, file_name, dataset_name);  
+}
 
 //*********************************  End of scft_basic.cc *************************************
 

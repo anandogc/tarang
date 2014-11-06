@@ -72,8 +72,8 @@ int N[4];
 vector<DP> kfactor;
 
 //mpi
-int num_p_hor;
-int num_p_vert;
+int num_p_cols;
+int num_p_rows;
 int num_x_procs;
 int num_y_procs;
 int num_z_procs;
@@ -89,6 +89,24 @@ bool master;
 
 
 //fft
+
+int maxlx;
+int maxly;
+int maxlz;
+
+int lx_start;
+int ly_start;
+int lz_start;
+
+int maxrx;
+int maxry;
+int maxrz;
+
+int rx_start;
+int ry_start;
+int rz_start;
+
+
 int Nx;
 ptrdiff_t local_Nx;
 ptrdiff_t local_Nx_start;

@@ -371,7 +371,7 @@ void SSS_SLAB::Array_mult_ksqr(Array<complx,3> A)
 	DP Kxysqr;
 	DP Ksqr;
 	
-	#pragma omp parallel for private(Kysqr,Kyzsqr,Ksqr) 
+	//#pragma omp parallel for private(Kysqr,Kyzsqr,Ksqr) 
 	for (int lx=0; lx<Ar.extent(0); lx++) {
 		Kxsqr = my_pow(Get_kx(lx)*kfactor[1],2);
 		
@@ -405,7 +405,7 @@ void SSS_SLAB::Array_divide_ksqr(Array<complx,3> A)
 	DP Kxysqr;
 	DP Ksqr;
 	
-	#pragma omp parallel for private(Kysqr,Kyzsqr,Ksqr) 
+	//#pragma omp parallel for private(Kysqr,Kyzsqr,Ksqr) 
 	for (int lx=0; lx<Ar.extent(0); lx++) {
 		Kxsqr = my_pow(Get_kx(lx)*kfactor[1],2);
 		
@@ -442,7 +442,7 @@ void SSS_SLAB::Array_exp_ksqr(Array<complx,3> A, DP factor)
 	DP Kxysqr;
 	DP Ksqr;
 	
-	#pragma omp parallel for private(Kysqr,Kyzsqr,Ksqr) 
+	//#pragma omp parallel for private(Kysqr,Kyzsqr,Ksqr) 
 	for (int lx=0; lx<Ar.extent(0); lx++) {
 		Kxsqr = my_pow(Get_kx(lx)*kfactor[1],2);
 		
@@ -476,7 +476,7 @@ void SSS_SLAB::Array_exp_ksqr(Array<complx,3> A, DP factor, DP hyper_factor, int
 	DP Ksqr;
 	DP Kpownm2;	// K^{q-2} where q = hyper_exponent
 	
-	#pragma omp parallel for private(Kysqr,Kyzsqr,Ksqr) 
+	//#pragma omp parallel for private(Kysqr,Kyzsqr,Ksqr) 
 	for (int lx=0; lx<Ar.extent(0); lx++) {
 		Kxsqr = my_pow(Get_kx(lx)*kfactor[1],2);
 		
@@ -557,7 +557,7 @@ void SSS_SLAB::Fill_Vz(Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> A
 		int kx, ky, kz;
 		DP vz;
 		
-		#pragma omp parallel for
+		//#pragma omp parallel for
 		for (int lx=0; lx<Axr.extent(0); lx++)
 			for (int ly=0; ly<Axr.extent(1); ly++)
 				for (int lz=1; lz<Axr.extent(2); lz++) {
@@ -596,7 +596,6 @@ int SSS_SLAB::Write(Array<complx,3> A, BasicIO::H5_plan plan, string folder_name
 
 int SSS_SLAB::Write(Array<DP,3> Ar, BasicIO::H5_plan plan, string folder_name, string file_name, string dataset_name)
 {
-	cout << Ar << endl;
 	if (Ny>1)
 		spectralTransform.Transpose(Ar, global.temp_array.X);
 	else

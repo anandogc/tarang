@@ -73,8 +73,8 @@ extern int Ny;
 extern int Nz;
 
 //mpi
-extern int num_p_hor;
-extern int num_p_vert;
+extern int num_p_cols;
+extern int num_p_rows;
 
 extern int num_x_procs;
 extern int num_y_procs;
@@ -103,6 +103,23 @@ extern int my_z_pcoord_real;
 
 
 //fft
+extern int maxlx;
+extern int maxly;
+extern int maxlz;
+
+extern int lx_start;
+extern int ly_start;
+extern int lz_start;
+
+extern int maxrx;
+extern int maxry;
+extern int maxrz;
+
+extern int rx_start;
+extern int ry_start;
+extern int rz_start;
+
+
 extern ptrdiff_t local_Nx;
 extern ptrdiff_t local_Nx_start;
 extern ptrdiff_t local_Nx_hor;

@@ -56,18 +56,18 @@ SET (DEFAULT_CMAKE_BUILD_TYPE "DISTRIBUTION")    #DISTRIBUTION, DEBUG
 SET (DEFAULT_FFTW_PLAN "MEASURE")                #ESTIMATE, MEASURE, PATIENT, EXHAUSTIVE
 
 SET (INCLUDE_DIRS
-       #/path/to/include2
+        #/path/to/include
     )
 SET (LIBRARY_DIRS
-       #/path/to/lib2
+       #/path/to/lib
     )
 
 SET (SPECTRAL_TRANSFORM_VERSION v2)
 
 #Required libraries, One of FFTW_FLOAT_LIBS or FFTW_DOUBLE_LIBS is selected depending on DP
-SET (FFTW_FLOAT_LIBS fftw3f_mpi fftw3f)
-SET (FFTW_DOUBLE_LIBS fftw3_mpi fftw3)
-SET (OTHER_LIBS hdf5 yaml-cpp blitz m)
+SET (FFTW_FLOAT_LIBS fftw3f_mpi fftw3f_omp fftw3f)
+SET (FFTW_DOUBLE_LIBS fftw3_mpi fftw3_omp fftw3)
+SET (OTHER_LIBS hdf5 yaml-cpp blitz m z papi lz4)
 
 
 #################################################
@@ -110,30 +110,6 @@ ENDIF()
 SET (DP ${DP} CACHE STRING "DP")
 SET (FIND_LIBRARIES ${FIND_LIBRARIES} CACHE BOOL "FIND_LIBRARIES")
 SET (FFTW_PLAN ${FFTW_PLAN} CACHE STRING "FFTW_PLAN")
-
-
-#Check CC compiler supports MPI
-#IF (NOT CC_SUPPORTS_MPI)        #CC_SUPPORTS_MPI is undefined when run for the first time.
-#    MESSAGE("")
-#    MESSAGE(STATUS "MPI support in C compiler: ${CMAKE_C_COMPILER}")
-#    FILE(WRITE ${PROJECT_BINARY_DIR}/CMakeFiles/C_has_MPI.c 
-#               "#include <mpi.h>
-#                int main(int argc, char** argv)
-#                { MPI_Init(&argc, &argv);
-#                  MPI_Finalize();} ")
-
-#    EXECUTE_PROCESS(COMMAND ${CMAKE_C_COMPILER} ${PROJECT_BINARY_DIR}/CMakeFiles/C_has_MPI.c
-#                    ERROR_VARIABLE err
-#                    RESULT_VARIABLE CC_HAS_MPI)
-
-#    IF (CC_HAS_MPI MATCHES 0)
-#        MESSAGE(STATUS "MPI support in C compiler: ${CMAKE_C_COMPILER} -- supported")
-#    ELSE()
-#        MESSAGE(FATAL_ERROR "${CMAKE_C_COMPILER} does not support MPI")
-#    ENDIF()
-
-#    SET (CC_SUPPORTS_MPI TRUE CACHE BOOL "CC_SUPPORTS_MPI")
-#ENDIF()
 
 #Check CXX compiler supports MPI
 IF (NOT CXX_SUPPORTS_MPI)        #CXX_SUPPORTS_MPI is undefined when run for the first time.
@@ -288,21 +264,6 @@ ${INCLUDE_DIRS}
 
 #Folders where libraries will be searched for
 LINK_DIRECTORIES(
-
-# ${CMAKE_SOURCE_DIR}/lib/global
-# ${CMAKE_SOURCE_DIR}/lib/basis/basicfn
-# ${CMAKE_SOURCE_DIR}/lib/basis/fff/pencil
-# ${CMAKE_SOURCE_DIR}/lib/basis/fff/slab
-# ${CMAKE_SOURCE_DIR}/lib/basis/SFF/pencil
-# ${CMAKE_SOURCE_DIR}/lib/basis/SFF/slab
-# ${CMAKE_SOURCE_DIR}/lib/basis/SSF/pencil
-# ${CMAKE_SOURCE_DIR}/lib/basis/SSF/slab
-# ${CMAKE_SOURCE_DIR}/lib/basis/SSS/pencil
-# ${CMAKE_SOURCE_DIR}/lib/basis/SSS/slab
-# ${CMAKE_SOURCE_DIR}/lib/fields
-# ${CMAKE_SOURCE_DIR}/lib/fluid/fluid_base
-# ${CMAKE_SOURCE_DIR}/lib/fluid/Incompressible
-
 ${YAML_CPP_LIBRARY_DIRS}
 ${BLITZ_LIBRARY_DIRS}
 ${FFTW3F_LIBRARY_DIRS}
@@ -314,25 +275,13 @@ ${LIBRARY_DIRS}
 ADD_DEFINITIONS(-DVERSION=${VERSION})
 
 IF (DP MATCHES "FLOAT")
-    SET(SYSTEM_LIBRARIES
-            ${FFTW_FLOAT_LIBS}
-            ${OTHER_LIBS}
-            ${HDF5_LIBRARIES} 
-            ${FFTW3_LIBRARIES}
-            ${FFTW3F_LIBRARIES}
-            ${BLITZ_LIBRARIES}
-            ${YAML_CPP_LIBRARIES}
-        )
+    SET(SYSTEM_LIBRARIES ${FFTW_FLOAT_LIBS} ${FFTW3F_LIBRARIES})
 ELSEIF(DP MATCHES "DOUBLE")
-    SET(SYSTEM_LIBRARIES ${FFTW_DOUBLE_LIBS}
-            ${OTHER_LIBS}
-            ${HDF5_LIBRARIES} 
-            ${FFTW3_LIBRARIES}
-            ${FFTW3F_LIBRARIES}
-            ${BLITZ_LIBRARIES}
-            ${YAML_CPP_LIBRARIES}
-        )
+    SET(SYSTEM_LIBRARIES ${FFTW_DOUBLE_LIBS} ${FFTW3_LIBRARIES})
 ENDIF()
+
+SET(SYSTEM_LIBRARIES ${SYSTEM_LIBRARIES} ${OTHER_LIBS} ${HDF5_LIBRARIES} ${FFTW3_LIBRARIES} ${BLITZ_LIBRARIES} ${YAML_CPP_LIBRARIES})
+
 
 #Build type
 IF (NOT CMAKE_BUILD_TYPE_DISPLAYED)
@@ -347,11 +296,9 @@ ENDIF ()
 MESSAGE(STATUS "Source Folder: ${TARANG_SOURCE_DIR}")
 MESSAGE("")
 
-SET(CMAKE_CXX_FLAGS_DISTRIBUTION "-O3")
-#SET(CMAKE_C_FLAGS_DISTRIBUTION "-O3")
+SET(CMAKE_CXX_FLAGS_DISTRIBUTION "-O3 -fopenmp")
 
 SET(CMAKE_CXX_FLAGS_DEBUG "-g")
-#SET(CMAKE_C_FLAGS_DEBUG "-g")
 
 ADD_SUBDIRECTORY(lib)
 ADD_SUBDIRECTORY(src)

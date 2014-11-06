@@ -61,9 +61,9 @@ void Nlin_incompress::Compute_nlin(FluidVF& U)
     if (global.program.alias_option == "DEALIAS")
         U.cvf.Dealias();
     	
-	
+
 	U.Inverse_transform();  // Vir = Inv_transform(Vi)
-	
+
     global.io.real_space_field_available = true;
   
     if (!global.time.dt_computation_done) {

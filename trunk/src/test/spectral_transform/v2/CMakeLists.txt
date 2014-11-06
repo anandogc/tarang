@@ -29,11 +29,13 @@
 ########################################
 #test_spectral_transform
 ########################################
+
 ADD_EXECUTABLE(test_spectral_transform
 	main
 	)
 	
 TARGET_LINK_LIBRARIES(test_spectral_transform spectral_transform ${SYSTEM_LIBRARIES})
+
 
 ADD_CUSTOM_COMMAND(TARGET test_spectral_transform
                    POST_BUILD

@@ -43,7 +43,7 @@
 // Ar: yxz, A: xyz
 void SSF_PENCIL::Forward_transform(Array<DP,3> Ar, Array<complx,3> A)
 {
-	spectralTransform.Forward_transform_SSF_PENCIL(global.program.sincostr_switch,Ar,A);
+	spectralTransform.Forward_transform(global.program.sincostr_switch,Ar,A);
 }
 
 
@@ -52,8 +52,9 @@ void SSF_PENCIL::Forward_transform(Array<DP,3> Ar, Array<complx,3> A)
 
 void SSF_PENCIL::Inverse_transform(Array<complx,3> A, Array<DP,3> Ar)
 {
-	
-    spectralTransform.Inverse_transform_SSF_PENCIL(global.program.sincostr_switch,A, Ar);
+	// cout << "Inverse_transform: shape " << global.temp_array.X_transform.shape() << " " << A.shape() << " " << Ar.shape() << endl;
+	global.temp_array.X_transform = A;	
+    spectralTransform.Inverse_transform(global.program.sincostr_switch,global.temp_array.X_transform, Ar);
     
 }
 
@@ -68,14 +69,14 @@ void  SSF_PENCIL::Xderiv(Array<complx,3> A, Array<complx,3> B)
 {	
 	DP Kx;
 	
-	for (int lx = 0; lx < local_Nx_vert; lx++) 	{
+	for (int lx = 0; lx < local_Nx; lx++) 	{
 		Kx = Get_kx(lx)*kfactor[1];
         
 		if (global.program.sincostr_switch[0] == 'S')
-            B(Range::all(),Range::all(),lx) = Kx * A(Range::all(),Range::all(),lx);
+            B(lx,Range::all(),Range::all()) = Kx * A(lx,Range::all(),Range::all());
 		
         else if (global.program.sincostr_switch[0] == 'C')
-           B(Range::all(),Range::all(),lx) = (-Kx) * A(Range::all(),Range::all(),lx);
+           B(lx,Range::all(),Range::all()) = (-Kx) * A(lx,Range::all(),Range::all());
 	}
 }
 
@@ -83,14 +84,14 @@ void  SSF_PENCIL::Add_Xderiv(Array<complx,3> A, Array<complx,3> B)
 {
 	DP Kx;
 	
-	for (int lx = 0; lx < local_Nx_vert; lx++) 	{
+	for (int lx = 0; lx < local_Nx; lx++) 	{
 		Kx = Get_kx(lx)*kfactor[1];
         
 		if (global.program.sincostr_switch[0] == 'S')
-            B(Range::all(),Range::all(),lx) += Kx * A(Range::all(),Range::all(),lx);
+            B(lx,Range::all(),Range::all()) += Kx * A(lx,Range::all(),Range::all());
 		
         else if (global.program.sincostr_switch[0] == 'C')
-			B(Range::all(),Range::all(),lx) += (-Kx) * A(Range::all(),Range::all(),lx);
+			B(lx,Range::all(),Range::all()) += (-Kx) * A(lx,Range::all(),Range::all());
 	}
 }
 
@@ -115,10 +116,10 @@ void SSF_PENCIL::Yderiv(Array<complx,3> A, Array<complx,3> B)
 		Ky = Get_ky(ly)*kfactor[2];
 				
 		if (global.program.sincostr_switch[1] == 'S')
-			B(ly,Range::all(),Range::all()) = Ky * A(ly,Range::all(),Range::all());
+			B(Range::all(),ly,Range::all()) = Ky * A(Range::all(),ly,Range::all());
 		
 		else if (global.program.sincostr_switch[1] == 'C')
-			B(ly,Range::all(),Range::all()) = (-Ky) * A(ly,Range::all(),Range::all());
+			B(Range::all(),ly,Range::all()) = (-Ky) * A(Range::all(),ly,Range::all());
 	}
 }
 
@@ -130,10 +131,10 @@ void SSF_PENCIL::Add_Yderiv(Array<complx,3> A, Array<complx,3> B)
 		Ky = Get_ky(ly)*kfactor[2];
 		
 		if (global.program.sincostr_switch[1] == 'S')
-			B(ly,Range::all(),Range::all()) += Ky * A(ly,Range::all(),Range::all());
+			B(Range::all(),ly,Range::all()) += Ky * A(Range::all(),ly,Range::all());
 		
 		else if (global.program.sincostr_switch[1] == 'C')
-			B(ly,Range::all(),Range::all()) += (-Ky) * A(ly,Range::all(),Range::all());
+			B(Range::all(),ly,Range::all()) += (-Ky) * A(Range::all(),ly,Range::all());
 	}
 }
 
@@ -151,7 +152,7 @@ void SSF_PENCIL::Zderiv(Array<complx,3> A, Array<complx,3> B)
 	for (int lz=0; lz<=Nz/2; lz++) {
 		Kz = lz*kfactor[3];
 		
-		B(Range::all(),lz,Range::all()) = complx(0, Kz)*(A(Range::all(),lz,Range::all()));	
+		B(Range::all(),Range::all(),lz) = complx(0, Kz)*(A(Range::all(),Range::all(),lz));	
 	}   
 }
 
@@ -162,7 +163,7 @@ void SSF_PENCIL::Add_Zderiv(Array<complx,3> A, Array<complx,3> B)
 	for (int lz=0; lz<=Nz/2; lz++) {
 		Kz = lz*kfactor[3];
 		
-		B(Range::all(),lz,Range::all()) += complx(0, Kz)*(A(Range::all(),lz,Range::all()));
+		B(Range::all(),Range::all(),lz) += complx(0, Kz)*(A(Range::all(),Range::all(),lz));
 	}
 }
 
@@ -178,16 +179,16 @@ void SSF_PENCIL::Laplacian(DP factor, Array<complx,3> A, Array<complx,3> B)
 	
 	DP Ksqr;
 	
-	for (int ly=0; ly<A.extent(0); ly++) {
-		Ksqr = my_pow(Get_ky(ly)*kfactor[2],2);
-		
-        for (int lz=0; lz<A.extent(1); lz++) {
-			Ksqr += my_pow(Get_lz(lz)*kfactor[3],2);
+    for (int lx=0; lx<local_Nx; lx++) {
+		Ksqr =  my_pow(Get_kx(lx)*kfactor[1],2);
+	
+		for (int ly=0; ly<local_Ny; ly++) {
+			Ksqr += my_pow(Get_ky(ly)*kfactor[2],2);
 			
-            for (int lx=0; lx<A.extent(2); lx++) {
-				Ksqr +=  my_pow(Get_kx(lx)*kfactor[1],2);
+	        for (int lz=0; lz<local_Nz; lz++) {
+				Ksqr += my_pow(Get_lz(lz)*kfactor[3],2);
 				
-				B(ly,lz,lx) = (-factor*Ksqr)*A(ly,lz,lx);
+				B(lx,ly,lz) = (-factor*Ksqr)*A(lx,ly,lz);
 			}
 		}
 	}
@@ -207,16 +208,16 @@ void SSF_PENCIL::Subtract_Laplacian(DP factor, Array<complx,3> A, Array<complx,3
 	
 	DP Ksqr, Ksqr_factor;
 	
-	for (int ly=0; ly<A.extent(0); ly++) {
-		Ksqr = my_pow(Get_ky(ly)*kfactor[2],2);
-		
-        for (int lz=0; lz<A.extent(1); lz++) {
-			Ksqr += my_pow(Get_lz(lz)*kfactor[3],2);
+    for (int lx=0; lx<local_Nx; lx++) {
+		Ksqr = my_pow(Get_kx(lx)*kfactor[1],2);
+	
+		for (int ly=0; ly<local_Ny; ly++) {
+			Ksqr += my_pow(Get_ky(ly)*kfactor[2],2);
 			
-            for (int lx=0; lx<A.extent(2); lx++) {
-				Ksqr_factor = factor * (Ksqr+my_pow(Get_kx(lx)*kfactor[1],2));
+	        for (int lz=0; lz<local_Nz; lz++) {
+				Ksqr_factor = factor * (Ksqr+my_pow(Get_lz(lz)*kfactor[3],2));
 				
-				B(ly,lz,lx) += Ksqr_factor*A(ly,lz,lx);
+				B(lx,ly,lz) += Ksqr_factor*A(lx,ly,lz);
 			}
 		}
 	}

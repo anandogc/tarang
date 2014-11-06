@@ -47,17 +47,20 @@ string basis_type, sincostr_option;
 void test_FFFW_2d(char** argv);
 void test_FFFW_3d(char** argv);
 
-void test_FFF_2d(char** argv);
-void test_FFF_3d(char** argv);
+void test_FFF_slab_2d(char** argv);
+void test_FFF_slab_3d(char** argv);
+void test_FFF_pencil_3d(char** argv);
 
 void test_SFF_2d(char** argv);
 void test_SFF_3d(char** argv);
+void test_SFF_pencil_3d(char** argv);
 
 void test_SSF_3d(char** argv);
+void test_SSF_pencil_3d(char** argv);
 
 void test_SS_2d(char** argv);
 void test_SSS_3d(char** argv);
-
+void test_SSS_pencil_3d(char** argv);
 
 DP f(int rx, int ry, int rz);
 
@@ -77,7 +80,7 @@ int main(int argc, char** argv)
 	if (basis_type=="FFW")
 		test_FFFW_2d(argv);
 	else if (basis_type=="FF")
-		test_FFF_2d(argv);
+		test_FFF_slab_2d(argv);
 	else if (basis_type=="SF")
 		test_SFF_2d(argv);
 	else if (basis_type=="SS")
@@ -86,13 +89,17 @@ int main(int argc, char** argv)
 	else if (basis_type=="FFFW")
 		test_FFFW_3d(argv);
 	else if (basis_type=="FFF")
-		test_FFF_3d(argv);
+		// test_FFF_slab_3d(argv);
+		test_FFF_pencil_3d(argv);
 	else if (basis_type=="SFF")
-		test_SFF_3d(argv);
+		//test_SFF_3d(argv);
+		test_SFF_pencil_3d(argv);
 	else if (basis_type=="SSF")
-		test_SSF_3d(argv);
+		//test_SSF_3d(argv);
+		test_SSF_pencil_3d(argv);
 	else if (basis_type=="SSS")
-		test_SSS_3d(argv);
+		//test_SSS_3d(argv);
+		test_SSS_pencil_3d(argv);
 
 	MPI_Finalize();
 	return 0;
@@ -125,7 +132,7 @@ void test_FFFW_3d(char** argv)
 
 }
 
-void test_FFF_2d(char** argv)
+void test_FFF_slab_2d(char** argv)
 {
 	Nx=atoi(argv[2]);
 	Nz=atoi(argv[3]);
@@ -171,7 +178,7 @@ void test_FFF_2d(char** argv)
 
 	Ar = Ar_init;
 
-    DP local_time=0, total_time;
+    DP local_time=0, local_time_max;
     MPI_Barrier(MPI_COMM_WORLD);
     start_time = MPI_Wtime();
 
@@ -195,7 +202,7 @@ void test_FFF_2d(char** argv)
 		spectralTransform.Inverse_transform(A, Ar);
 	}
 	local_time += MPI_Wtime();
-	MPI_Reduce(&local_time, &total_time, 1, MPI_DP, MPI_MAX, 0, MPI_COMM_WORLD);
+	MPI_Reduce(&local_time, &local_time_max, 1, MPI_DP, MPI_MAX, 0, MPI_COMM_WORLD);
 		
 	local_energy = sum(sqr(Ar));
 	MPI_Reduce(&local_energy, &total_energy, 1, MPI_DP, MPI_SUM, 0, MPI_COMM_WORLD);
@@ -211,25 +218,23 @@ void test_FFF_2d(char** argv)
 		cout << "sum(sqr(Ar-Ar_init)) = " << total_diff_energy << endl;
 
 	if (my_id == 0){
-		cout << fixed << setprecision(3) << "Time taken for "<< N_iter <<" pair of transform = " << total_time << endl;
+		cout << fixed << setprecision(3) << "Time taken for "<< N_iter <<" pair of transform = " << local_time_max << endl;
 	}
 }
 
-void test_FFF_3d(char** argv)
+void test_FFF_slab_3d(char** argv)
 {
 	Nx=atoi(argv[2]);
 	Ny=atoi(argv[3]);
 	Nz=atoi(argv[4]);
 
-	//int N_iter=atoi(argv[3]);
+	int N_iter=atoi(argv[5]);
 
 
 	if (my_id==0) cout << "numprocs, Nx, Ny, Nz = " << numprocs << " " << Nx << " " << Ny << " " << Nz << endl;
 
 	spectralTransform.Init(basis_type, Nx, Ny, Nz);
 
-
-	return;
 
 	int local_Nx = spectralTransform.local_Nx;
 	int local_Ny = spectralTransform.local_Ny;
@@ -268,7 +273,7 @@ void test_FFF_3d(char** argv)
 
 	Ar = Ar_init;
 
-    DP local_time=0, total_time;
+    DP local_time=0, local_time_max;
     MPI_Barrier(MPI_COMM_WORLD);
     start_time = MPI_Wtime();
 
@@ -277,7 +282,7 @@ void test_FFF_3d(char** argv)
 
 		spectralTransform.Forward_transform(Ar, A);
 
-		local_energy = sum(sqr(abs(A)));
+/*		local_energy = sum(sqr(abs(A)));
 		MPI_Reduce(&local_energy, &total_energy, 1, MPI_DP, MPI_SUM, 0, MPI_COMM_WORLD);
 
 		if (my_id==0)	cout << "After F transform energy = " << total_energy << endl;
@@ -289,11 +294,11 @@ void test_FFF_3d(char** argv)
 					if (abs(A(lx,ly,lz)) > 1E-3)
 						cout << "Large modes: " << my_id << " " << lx << " " << local_Ny_start + ly << " " << lz << " " << A(lx, ly, lz) << endl;
 		Ar=0;
-
+*/
 		spectralTransform.Inverse_transform(A, Ar);
 	}
 	local_time += MPI_Wtime();
-	MPI_Reduce(&local_time, &total_time, 1, MPI_DP, MPI_MAX, 0, MPI_COMM_WORLD);
+	MPI_Reduce(&local_time, &local_time_max, 1, MPI_DP, MPI_MAX, 0, MPI_COMM_WORLD);
 		
 	local_energy = sum(sqr(Ar));
 	MPI_Reduce(&local_energy, &total_energy, 1, MPI_DP, MPI_SUM, 0, MPI_COMM_WORLD);
@@ -309,9 +314,432 @@ void test_FFF_3d(char** argv)
 		cout << "sum(sqr(Ar-Ar_init)) = " << total_diff_energy << endl;
 
 	if (my_id == 0){
-		cout << fixed << setprecision(3) << "Time taken for "<< N_iter <<" pair of transform = " << total_time << endl;
+		cout << fixed << setprecision(3) << "Time taken for "<< N_iter <<" pair of transform = " << local_time_max << endl;
 	}
 }
+
+void test_FFF_pencil_3d(char** argv)
+{
+	Nx=atoi(argv[2]);
+	Ny=atoi(argv[3]);
+	Nz=atoi(argv[4]);
+	int num_p_cols=atoi(argv[5]);
+
+	int N_iter=atoi(argv[6]);
+
+
+
+	// spectralTransform.select_plan_id = atoi(argv[7]);
+
+	if (my_id==0) cout << "FFF pencil: numprocs, Nx, Ny, Nz, iter = " << numprocs << " " << Nx << " " << Ny << " " << Nz << " " << N_iter << " " << spectralTransform.select_plan_id << endl;
+
+	spectralTransform.Init(basis_type, Nx, Ny, Nz, num_p_cols);
+
+	int num_p_rows = spectralTransform.num_p_rows;
+	if (my_id==0) cout << "FFF pencil: Initialization done with proc_grid = " << num_p_rows << "x" << num_p_cols << endl;
+
+	int local_Nx_col = spectralTransform.local_Nx_col;
+	int local_Ny_col = spectralTransform.local_Ny_col;
+	int local_Nz_col = spectralTransform.local_Nz_col;
+
+	int local_Nx_row = spectralTransform.local_Nx_row;
+	int local_Ny_row = spectralTransform.local_Ny_row;
+	int local_Nz_row = spectralTransform.local_Nz_row;
+
+	int local_Nx_start_col = spectralTransform.local_Nx_start_col;
+	int local_Ny_start_col = spectralTransform.local_Ny_start_col;
+	int local_Nz_start_col = spectralTransform.local_Nz_start_col;
+
+	int local_Nx_start_row = spectralTransform.local_Nx_start_row;
+	int local_Ny_start_row = spectralTransform.local_Ny_start_row;
+	int local_Nz_start_row = spectralTransform.local_Nz_start_row;
+
+
+	Array<complx, 3> A(Nx, local_Ny_row, local_Nz_col);
+	Array<DP, 3> Ar_init(local_Nx_row, local_Ny_col, Nz+2);
+	Array<DP, 3> Ar(local_Nx_row, local_Ny_col, Nz+2);
+
+	Ar_init=0;
+
+
+	//return;
+
+	for (int rx=0; rx<local_Nx_row; rx++)
+		for (int ry=0; ry<local_Ny_col; ry++)
+			for (int rz=0; rz<2*local_Nz_col*num_p_rows; rz++){
+				Ar_init(rx, ry, rz) = f(local_Nx_start_row + rx, local_Ny_start_col + ry, rz);//my_id*Nx*Ny*(Nz+2) + (rx*Ar_init.extent(1)*Ar_init.extent(2)) + ry*Ar_init.extent(2) + rz;
+			}
+
+	//Zero pad
+	Ar_init(Range::all(),Range::all(),Range(Nz,Nz+1)) = 0;
+
+/*
+	for (int rx=0; rx<Ar_init.extent(0); rx++)
+		for (int ry=0; ry<Ar_init.extent(1); ry++)
+			for (int rz=0; rz<Ar_init.extent(1); rz++){
+				// if (abs(Ar_init(rx,ry,rz)) > 1E-3)
+					cout << "Init: " << my_id << " " << rx << " " << local_Ny_start + ry << " " << 2*local_Nz_start + rz << " " << Ar_init(rx, ry, rz) << " " << endl;
+				}
+*/
+
+	/*for (int i=0; i<numprocs; i++) {
+		if (i==my_id)
+			cout << Ar_init(Range::all(), Range::all(), 0);
+		MPI_Barrier(MPI_COMM_WORLD);
+	}
+*/
+	double local_energy = sum(sqr(Ar_init));
+	double total_energy;
+	MPI_Reduce(&local_energy, &total_energy, 1, MPI_DP, MPI_SUM, 0, MPI_COMM_WORLD);
+
+
+	if (my_id == 0)
+		cout << "Before transform energy = " << total_energy << endl;
+
+    DP start_time;
+    DP end_time;
+
+	Ar = Ar_init;
+
+    DP local_time=0, local_time_max;
+    MPI_Barrier(MPI_COMM_WORLD);
+
+	spectralTransform.Forward_transform(Ar, A);
+	spectralTransform.Inverse_transform(A, Ar);
+
+
+	double *timers=spectralTransform.plan->timers;
+	int num_timers=spectralTransform.plan->num_timers;
+
+	for (int i=0; i<22; i++)
+		timers[i]=0;
+
+
+	for (int iter=0; iter<N_iter; iter++) {
+
+		// A=0;
+		local_time -= MPI_Wtime();
+		spectralTransform.Forward_transform(Ar, A);
+		local_time += MPI_Wtime();
+		
+		/*for (int lx=0; lx<A.extent(0); lx++)
+			for (int ly=0; ly<A.extent(1); ly++)
+				for (int lz=0; lz<A.extent(2); lz++)
+					if (abs(A(lx,ly,lz))>1e-3)
+						cout << "Large modes: " << my_id << " " << lx << " " << local_Ny_start_col + ly << " " << local_Nz_start_row + lz << " " << A(lx, ly, lz) << endl;
+
+		local_energy=sum(sqr(abs(A)));
+		MPI_Reduce(&local_energy, &total_energy, 1, MPI_DP, MPI_SUM, 0, MPI_COMM_WORLD);*/
+		// if (my_id==0)	cout << "After F transform energy = " << total_energy << endl;
+		// Ar=0;
+		local_time -= MPI_Wtime();
+		spectralTransform.Inverse_transform(A, Ar);
+		local_time += MPI_Wtime();
+
+	}
+	MPI_Reduce(&local_time, &local_time_max, 1, MPI_DP, MPI_MAX, 0, MPI_COMM_WORLD);
+		
+	local_energy = sum(sqr(Ar));
+	MPI_Reduce(&local_energy, &total_energy, 1, MPI_DP, MPI_SUM, 0, MPI_COMM_WORLD);
+
+	if (my_id == 0)
+		cout << "After I transform energy = " << total_energy << endl;
+
+	DP local_diff_energy = sum(sqr(Ar-Ar_init));
+	DP total_diff_energy = sum(sqr(Ar-Ar_init));
+	MPI_Reduce(&local_diff_energy, &total_diff_energy, 1, MPI_DP, MPI_SUM, 0, MPI_COMM_WORLD);
+
+
+	if (my_id == 0)
+		cout << "sum(sqr(Ar-Ar_init)) = " << total_diff_energy << endl;
+
+	double *timer_sum, *timer_max, *timer_min;
+	timer_sum = new double[num_timers];
+	timer_max = new double[num_timers];
+	timer_min = new double[num_timers];
+
+
+ 	for(int i=0;i < num_timers;i++) {
+ 		timers[i]/=N_iter;
+ 	}
+    
+
+	MPI_Reduce(timers,timer_sum,num_timers,MPI_DOUBLE,MPI_SUM,0,MPI_COMM_WORLD);
+	MPI_Reduce(timers,timer_max,num_timers,MPI_DOUBLE,MPI_MAX,0,MPI_COMM_WORLD);
+	MPI_Reduce(timers,timer_min,num_timers,MPI_DOUBLE,MPI_MIN,0,MPI_COMM_WORLD);
+
+ 	for(int i=0;i < num_timers;i++)
+ 		timer_sum[i]/=numprocs;
+
+	if (my_id == 0){
+		cout << fixed << setprecision(3) << "Time taken per loop = "<< local_time_max/N_iter << endl;
+     	for(int i=0;i < num_timers;i++)
+			cout << "timer["<<i<<"] (avg/max/min): " << timer_sum[i] << " " << timer_max[i] << " " << timer_min[i] << endl;
+
+	}
+}
+
+void test_SFF_pencil_3d(char** argv)
+{
+	Nx=atoi(argv[2]);
+	Ny=atoi(argv[3]);
+	Nz=atoi(argv[4]);
+	int num_p_cols=atoi(argv[5]);
+
+	int N_iter=atoi(argv[6]);
+
+	sincostr_option = "SFF";
+
+	if (my_id==0) cout << "SFF pencil: numprocs, Nx, Ny, Nz = " << numprocs << " " << Nx << " " << Ny << " " << Nz << endl;
+
+
+	spectralTransform.Init(basis_type, Nx, Ny, Nz, num_p_cols);
+
+	int num_p_rows = spectralTransform.num_p_rows;
+
+	int my_id_row = spectralTransform.my_id_row;
+	int my_id_col = spectralTransform.my_id_col;
+
+	int local_Nx_col = spectralTransform.local_Nx_col;
+	int local_Ny_col = spectralTransform.local_Ny_col;
+	int local_Nz_col = spectralTransform.local_Nz_col;
+
+	int local_Nx_row = spectralTransform.local_Nx_row;
+	int local_Ny_row = spectralTransform.local_Ny_row;
+	int local_Nz_row = spectralTransform.local_Nz_row;
+
+	int local_Nx_start_col = spectralTransform.local_Nx_start_col;
+	int local_Ny_start_col = spectralTransform.local_Ny_start_col;
+	int local_Nz_start_col = spectralTransform.local_Nz_start_col;
+
+	int local_Nx_start_row = spectralTransform.local_Nx_start_row;
+	int local_Ny_start_row = spectralTransform.local_Ny_start_row;
+	int local_Nz_start_row = spectralTransform.local_Nz_start_row;
+
+
+	Array<complx, 3> A(local_Nx_row, Ny, local_Nz_col);
+	Array<DP, 3> Ar_init(Nx, local_Ny_col, 2*local_Nz_row);
+	Array<DP, 3> Ar(Nx, local_Ny_col, 2*local_Nz_row);
+
+	Ar_init=0;
+
+
+	for (int rx=0; rx<Nx; rx++)
+		for (int ry=0; ry<local_Ny_col; ry++)
+			for (int rz=0; rz<2*local_Nz_row; rz++){
+				Ar_init(rx, ry, rz) = f(rx, local_Ny_start_col + ry, 2*local_Nz_start_row + rz); //my_id*Nx*Ny*(Nz+2) + (rx*Ar_init.extent(1)*Ar_init.extent(2)) + ry*Ar_init.extent(2) + rz;
+			}
+
+	//ZeroPad only when Nz is divisible
+	if ( (my_id_row == num_p_cols-1) && (2*local_Nz_row*num_p_cols == Nz+2) ) {
+		Ar_init(Range::all(),Range::all(),Range(2*local_Nz_row-2,2*local_Nz_row-1)) = 0;
+	}
+
+	//Zero pad
+	//Ar_init(Range::all(),Range::all(),Range(Nz,Nz+1)) = 0;
+
+/*
+	for (int rx=0; rx<Ar_init.extent(0); rx++)
+		for (int ry=0; ry<Ar_init.extent(1); ry++)
+			for (int rz=0; rz<Ar_init.extent(1); rz++){
+				// if (abs(Ar_init(rx,ry,rz)) > 1E-3)
+					cout << "Init: " << my_id << " " << rx << " " << local_Ny_start + ry << " " << 2*local_Nz_start + rz << " " << Ar_init(rx, ry, rz) << " " << endl;
+				}
+*/
+
+	/*for (int i=0; i<numprocs; i++) {
+		if (i==my_id)
+			cout << Ar_init(Range::all(), Range::all(), 0);
+		MPI_Barrier(MPI_COMM_WORLD);
+	}
+*/
+	double local_energy = sum(sqr(Ar_init));
+	double total_energy;
+	MPI_Reduce(&local_energy, &total_energy, 1, MPI_DP, MPI_SUM, 0, MPI_COMM_WORLD);
+
+
+	if (my_id == 0)
+		cout << "Before transform energy = " << total_energy << endl;
+
+    DP start_time;
+    DP end_time;
+
+	Ar = Ar_init;
+
+    DP local_time=0, local_time_max;
+    MPI_Barrier(MPI_COMM_WORLD);
+    start_time = MPI_Wtime();
+
+	local_time -= MPI_Wtime();
+	for (int iter=0; iter<N_iter; iter++) {
+
+		A=0;
+		spectralTransform.Forward_transform(sincostr_option, Ar, A);
+
+		for (int lx=0; lx<A.extent(0); lx++)
+			for (int ly=0; ly<A.extent(1); ly++)
+				for (int lz=0; lz<A.extent(2); lz++)
+					if (abs(A(lx,ly,lz))>1e-3)
+						cout << "Large modes: " << my_id << " " << lx << " " << local_Ny_start_col + ly << " " << local_Nz_start_row + lz << " " << A(lx, ly, lz) << endl;
+
+		local_energy=sum(sqr(abs(A)));
+		MPI_Reduce(&local_energy, &total_energy, 1, MPI_DP, MPI_SUM, 0, MPI_COMM_WORLD);
+		if (my_id==0)	cout << "After F transform energy = " << total_energy << endl;
+		Ar=0;
+
+		spectralTransform.Inverse_transform(sincostr_option, A, Ar);
+
+	}
+	local_time += MPI_Wtime();
+	MPI_Reduce(&local_time, &local_time_max, 1, MPI_DP, MPI_MAX, 0, MPI_COMM_WORLD);
+
+	local_energy = sum(sqr(Ar));
+	MPI_Reduce(&local_energy, &total_energy, 1, MPI_DP, MPI_SUM, 0, MPI_COMM_WORLD);
+
+	if (my_id == 0)
+		cout << "After I transform energy = " << total_energy << endl;
+
+	DP local_diff_energy = sum(sqr(Ar-Ar_init));
+	DP total_diff_energy = sum(sqr(Ar-Ar_init));
+	MPI_Reduce(&local_diff_energy, &total_diff_energy, 1, MPI_DP, MPI_SUM, 0, MPI_COMM_WORLD);
+
+	if (my_id == 0)
+		cout << "sum(sqr(Ar-Ar_init)) = " << total_diff_energy << endl;
+
+	if (my_id == 0){
+		cout << fixed << setprecision(3) << "Time taken for "<< N_iter <<" pair of transform = " << local_time_max << endl;
+	}
+}
+
+void test_SSF_pencil_3d(char** argv)
+{
+	Nx=atoi(argv[2]);
+	Ny=atoi(argv[3]);
+	Nz=atoi(argv[4]);
+	int num_p_cols=atoi(argv[5]);
+
+	int N_iter=atoi(argv[6]);
+
+	sincostr_option = "SSF";
+
+	if (my_id==0) cout << "SSF pencil: numprocs, Nx, Ny, Nz = " << numprocs << " " << Nx << " " << Ny << " " << Nz << endl;
+
+
+	spectralTransform.Init(basis_type, Nx, Ny, Nz, num_p_cols);
+
+	int num_p_rows = spectralTransform.num_p_rows;
+
+	int my_id_row = spectralTransform.my_id_row;
+	int my_id_col = spectralTransform.my_id_col;
+
+	int local_Nx_col = spectralTransform.local_Nx_col;
+	int local_Ny_col = spectralTransform.local_Ny_col;
+	int local_Nz_col = spectralTransform.local_Nz_col;
+
+	int local_Nx_row = spectralTransform.local_Nx_row;
+	int local_Ny_row = spectralTransform.local_Ny_row;
+	int local_Nz_row = spectralTransform.local_Nz_row;
+
+	int local_Nx_start_col = spectralTransform.local_Nx_start_col;
+	int local_Ny_start_col = spectralTransform.local_Ny_start_col;
+	int local_Nz_start_col = spectralTransform.local_Nz_start_col;
+
+	int local_Nx_start_row = spectralTransform.local_Nx_start_row;
+	int local_Ny_start_row = spectralTransform.local_Ny_start_row;
+	int local_Nz_start_row = spectralTransform.local_Nz_start_row;
+
+
+	Array<complx, 3> A(local_Nx_row, local_Ny_col, Nz/2+1);
+	Array<DP, 3> Ar_init(Nx, local_Ny_row, 2*local_Nz_col);
+	Array<DP, 3> Ar(Nx, local_Ny_row, 2*local_Nz_col);
+
+	Ar_init=0;
+
+
+	for (int rx=0; rx<Nx; rx++)
+		for (int ry=0; ry<local_Ny_row; ry++)
+			for (int rz=0; rz<2*local_Nz_col; rz++){
+				Ar_init(rx, ry, rz) = f(rx, local_Ny_start_row + ry, 2*local_Nz_start_col + rz);//my_id*Nx*Ny*(Nz+2) + (rx*Ar_init.extent(1)*Ar_init.extent(2)) + ry*Ar_init.extent(2) + rz;
+			}
+
+	//ZeroPad only when Nz+2 is divisible
+	if ( (my_id_col == num_p_rows-1) && (2*local_Nz_col*num_p_rows == Nz+2) ) {
+		Ar_init(Range::all(),Range::all(),Range(2*local_Nz_col-2,2*local_Nz_col-1)) = 0;
+	}
+
+/*
+	for (int rx=0; rx<Ar_init.extent(0); rx++)
+		for (int ry=0; ry<Ar_init.extent(1); ry++)
+			for (int rz=0; rz<Ar_init.extent(1); rz++){
+				// if (abs(Ar_init(rx,ry,rz)) > 1E-3)
+					cout << "Init: " << my_id << " " << rx << " " << local_Ny_start + ry << " " << 2*local_Nz_start + rz << " " << Ar_init(rx, ry, rz) << " " << endl;
+				}
+*/
+
+	/*for (int i=0; i<numprocs; i++) {
+		if (i==my_id)
+			cout << Ar_init(Range::all(), Range::all(), 0);
+		MPI_Barrier(MPI_COMM_WORLD);
+	}
+*/
+	double local_energy = sum(sqr(Ar_init));
+	double total_energy;
+	MPI_Reduce(&local_energy, &total_energy, 1, MPI_DP, MPI_SUM, 0, MPI_COMM_WORLD);
+
+
+	if (my_id == 0)
+		cout << "Before transform energy = " << total_energy << endl;
+
+    DP start_time;
+    DP end_time;
+
+	Ar = Ar_init;
+
+    DP local_time=0, local_time_max;
+    MPI_Barrier(MPI_COMM_WORLD);
+    start_time = MPI_Wtime();
+
+	local_time -= MPI_Wtime();
+	for (int iter=0; iter<N_iter; iter++) {
+
+		A=0;
+		spectralTransform.Forward_transform(sincostr_option, Ar, A);
+
+		for (int lx=0; lx<A.extent(0); lx++)
+			for (int ly=0; ly<A.extent(1); ly++)
+				for (int lz=0; lz<A.extent(2); lz++)
+					if (abs(A(lx,ly,lz))>1e-3)
+						cout << "Large modes: " << my_id << " " << lx << " " << local_Ny_start_col + ly << " " << local_Nz_start_row + lz << " " << A(lx, ly, lz) << endl;
+
+		local_energy=sum(sqr(abs(A)));
+		MPI_Reduce(&local_energy, &total_energy, 1, MPI_DP, MPI_SUM, 0, MPI_COMM_WORLD);
+		if (my_id==0)	cout << "After F transform energy = " << total_energy << endl;
+		Ar=0;
+
+		spectralTransform.Inverse_transform(sincostr_option, A, Ar);
+
+	}
+	local_time += MPI_Wtime();
+	MPI_Reduce(&local_time, &local_time_max, 1, MPI_DP, MPI_MAX, 0, MPI_COMM_WORLD);
+
+	local_energy = sum(sqr(Ar));
+	MPI_Reduce(&local_energy, &total_energy, 1, MPI_DP, MPI_SUM, 0, MPI_COMM_WORLD);
+
+	if (my_id == 0)
+		cout << "After I transform energy = " << total_energy << endl;
+
+	DP local_diff_energy = sum(sqr(Ar-Ar_init));
+	DP total_diff_energy = sum(sqr(Ar-Ar_init));
+	MPI_Reduce(&local_diff_energy, &total_diff_energy, 1, MPI_DP, MPI_SUM, 0, MPI_COMM_WORLD);
+
+	if (my_id == 0)
+		cout << "sum(sqr(Ar-Ar_init)) = " << total_diff_energy << endl;
+
+	if (my_id == 0){
+		cout << fixed << setprecision(3) << "Time taken for "<< N_iter <<" pair of transform = " << local_time_max << endl;
+	}
+}
+
 
 
 void test_SFF_2d(char** argv)
@@ -385,11 +813,11 @@ void test_SFF_3d(char** argv)
 
 	Ar = Ar_init;
 
-    DP total_time=0;
+    DP local_time_max=0;
     MPI_Barrier(MPI_COMM_WORLD);
     start_time = MPI_Wtime();
 
-	total_time -= MPI_Wtime();
+	local_time_max -= MPI_Wtime();
 	for (int iter=0; iter<N_iter; iter++) {
 
 		spectralTransform.Forward_transform(sincostr_option, Ar, A);
@@ -410,7 +838,7 @@ void test_SFF_3d(char** argv)
 		spectralTransform.Inverse_transform(sincostr_option, A, Ar);
 
 	}
-	total_time += MPI_Wtime();
+	local_time_max += MPI_Wtime();
 		
 	local_energy = sum(sqr(Ar));
 	MPI_Reduce(&local_energy, &total_energy, 1, MPI_DP, MPI_SUM, 0, MPI_COMM_WORLD);
@@ -426,7 +854,7 @@ void test_SFF_3d(char** argv)
 		cout << "sum(sqr(Ar-Ar_init)) = " << total_diff_energy << endl;
 
 	if (my_id == 0){
-		cout << fixed << setprecision(3) << "Time taken for "<< N_iter <<" pair of transform = " << total_time << endl;
+		cout << fixed << setprecision(3) << "Time taken for "<< N_iter <<" pair of transform = " << local_time_max << endl;
 	}
 }
 
@@ -481,6 +909,130 @@ void test_SSS_3d(char** argv)
 	return;
 }
 
+void test_SSS_pencil_3d(char** argv)
+{
+	Nx=atoi(argv[2]);
+	Ny=atoi(argv[3]);
+	Nz=atoi(argv[4]);
+	int num_p_cols=atoi(argv[5]);
+
+	int N_iter=atoi(argv[6]);
+
+	sincostr_option = "SSS";
+
+	if (my_id==0) cout << "SSS pencil: numprocs, Nx, Ny, Nz = " << numprocs << " " << Nx << " " << Ny << " " << Nz << endl;
+
+
+	spectralTransform.Init(basis_type, Nx, Ny, Nz, num_p_cols);
+
+	int num_p_rows = spectralTransform.num_p_rows;
+
+	int my_id_row = spectralTransform.my_id_row;
+	int my_id_col = spectralTransform.my_id_col;
+
+	int local_Nx_col = spectralTransform.local_Nx_col;
+	int local_Ny_col = spectralTransform.local_Ny_col;
+	int local_Nz_col = spectralTransform.local_Nz_col;
+
+	int local_Nx_row = spectralTransform.local_Nx_row;
+	int local_Ny_row = spectralTransform.local_Ny_row;
+	int local_Nz_row = spectralTransform.local_Nz_row;
+
+	int local_Nx_start_col = spectralTransform.local_Nx_start_col;
+	int local_Ny_start_col = spectralTransform.local_Ny_start_col;
+	int local_Nz_start_col = spectralTransform.local_Nz_start_col;
+
+	int local_Nx_start_row = spectralTransform.local_Nx_start_row;
+	int local_Ny_start_row = spectralTransform.local_Ny_start_row;
+	int local_Nz_start_row = spectralTransform.local_Nz_start_row;
+
+
+	Array<complx, 3> A(local_Nx_row, local_Ny_col, Nz/2);
+	Array<DP, 3> Ar_init(Nx, local_Ny_row, 2*local_Nz_col);
+	Array<DP, 3> Ar(Nx, local_Ny_row, 2*local_Nz_col);
+
+	Ar_init=0;
+
+
+	for (int rx=0; rx<Nx; rx++)
+		for (int ry=0; ry<local_Ny_row; ry++)
+			for (int rz=0; rz<2*local_Nz_col; rz++){
+				Ar_init(rx, ry, rz) = f(rx, local_Ny_start_row + ry, 2*local_Nz_start_col + rz);//my_id*Nx*Ny*(Nz+2) + (rx*Ar_init.extent(1)*Ar_init.extent(2)) + ry*Ar_init.extent(2) + rz;
+			}
+
+/*
+	for (int rx=0; rx<Ar_init.extent(0); rx++)
+		for (int ry=0; ry<Ar_init.extent(1); ry++)
+			for (int rz=0; rz<Ar_init.extent(1); rz++){
+				// if (abs(Ar_init(rx,ry,rz)) > 1E-3)
+					cout << "Init: " << my_id << " " << rx << " " << local_Ny_start + ry << " " << 2*local_Nz_start + rz << " " << Ar_init(rx, ry, rz) << " " << endl;
+				}
+*/
+
+	/*for (int i=0; i<numprocs; i++) {
+		if (i==my_id)
+			cout << Ar_init(Range::all(), Range::all(), 0);
+		MPI_Barrier(MPI_COMM_WORLD);
+	}
+*/
+	double local_energy = sum(sqr(Ar_init));
+	double total_energy;
+	MPI_Reduce(&local_energy, &total_energy, 1, MPI_DP, MPI_SUM, 0, MPI_COMM_WORLD);
+
+
+	if (my_id == 0)
+		cout << "Before transform energy = " << total_energy << endl;
+
+    DP start_time;
+    DP end_time;
+
+	Ar = Ar_init;
+
+    DP local_time=0, local_time_max;
+    MPI_Barrier(MPI_COMM_WORLD);
+    start_time = MPI_Wtime();
+
+	local_time -= MPI_Wtime();
+	for (int iter=0; iter<N_iter; iter++) {
+
+		A=0;
+		spectralTransform.Forward_transform(sincostr_option, Ar, A);
+
+		for (int lx=0; lx<A.extent(0); lx++)
+			for (int ly=0; ly<A.extent(1); ly++)
+				for (int lz=0; lz<A.extent(2); lz++)
+					if (abs(A(lx,ly,lz))>1e-3)
+						cout << "Large modes: " << my_id << " " << lx << " " << local_Ny_start_col + ly << " " << local_Nz_start_row + lz << " " << A(lx, ly, lz) << endl;
+
+		local_energy=sum(sqr(abs(A)));
+		MPI_Reduce(&local_energy, &total_energy, 1, MPI_DP, MPI_SUM, 0, MPI_COMM_WORLD);
+		if (my_id==0)	cout << "After F transform energy = " << total_energy << endl;
+		Ar=0;
+
+		spectralTransform.Inverse_transform(sincostr_option, A, Ar);
+
+	}
+	local_time += MPI_Wtime();
+	MPI_Reduce(&local_time, &local_time_max, 1, MPI_DP, MPI_MAX, 0, MPI_COMM_WORLD);
+
+	local_energy = sum(sqr(Ar));
+	MPI_Reduce(&local_energy, &total_energy, 1, MPI_DP, MPI_SUM, 0, MPI_COMM_WORLD);
+
+	if (my_id == 0)
+		cout << "After I transform energy = " << total_energy << endl;
+
+	DP local_diff_energy = sum(sqr(Ar-Ar_init));
+	DP total_diff_energy = sum(sqr(Ar-Ar_init));
+	MPI_Reduce(&local_diff_energy, &total_diff_energy, 1, MPI_DP, MPI_SUM, 0, MPI_COMM_WORLD);
+
+	if (my_id == 0)
+		cout << "sum(sqr(Ar-Ar_init)) = " << total_diff_energy << endl;
+
+	if (my_id == 0){
+		cout << fixed << setprecision(3) << "Time taken for "<< N_iter <<" pair of transform = " << local_time_max << endl;
+	}
+}
+
 
 DP f(int rx, int ry, int rz)
 {
@@ -494,7 +1046,7 @@ DP f(int rx, int ry, int rz)
 		x = rx*Lx/Nx;
 		y = ry*Ly/Ny;
 		z = rz*Lz/Nz;
-		return 8*sin(k0*x)*cos(k0*y)*cos(k0*z);
+		return 8*sin(k0*x)*sin(k0*y)*sin(k0*z);
 	}
 
 	else if (basis_type == "FFFW") {
@@ -520,12 +1072,22 @@ DP f(int rx, int ry, int rz)
 		x = (rx+0.5)*Lx/Nx;
 		y = (ry+0.5)*Ly/Ny;
 		z = rz*Lz/Nz;
+
+		if (sincostr_option=="SSF")
+			return 8*sin(k0*x)*sin(k0*y)*cos(k0*z);
+		else if (sincostr_option=="CCF")
+			return 8*cos(k0*x)*cos(k0*y)*cos(k0*z);
 	}
 	
 	else if (basis_type == "SSS") {
 		x = (rx+0.5)*Lx/Nx;
 		y = (ry+0.5)*Ly/Ny;
 		z = (rz+0.5)*Lz/Nz;
+
+		if (sincostr_option=="SSS")
+			return 8*sin(k0*x)*sin(k0*y)*sin(k0*z);
+		else if (sincostr_option=="CCC")
+			return 8*cos(k0*x)*cos(k0*y)*cos(k0*z);
 	}
 	
 	else if (basis_type == "ChFF") {

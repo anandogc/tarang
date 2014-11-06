@@ -26,9 +26,9 @@
  #
 
 ADD_LIBRARY(fff_pencil
-		FFF_pencil
-		 FFF_pencil_inline
-			FFF_pencil_tr
-			FFF_pencil_basic
-		       FFF_pencil_energy)
+	FFF_pencil
+	FFF_pencil_inline
+	FFF_pencil_tr
+	FFF_pencil_basic
+	FFF_pencil_energy)
 

@@ -51,7 +51,6 @@ int Iscalar_main()
 	else if (global.program.kind == "RBC") {
 		// For RBC assign from the RBC parameters
 		//if (global.program.basis_type == "SFF") { // box size (1,Ly,Lz)
-			cout << "In RBC " << global.PHYSICS.Pr_option << " " << global.PHYSICS.Uscaling << endl;
 
 			if (global.PHYSICS.Pr_option == "PRZERO") {
 				global.field.diss_coefficients[0] = 1.0;

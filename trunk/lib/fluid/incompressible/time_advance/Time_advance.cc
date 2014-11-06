@@ -59,7 +59,7 @@ void Time_advance_incompress::Time_advance_step(FluidVF& U, Pressure& P, FORCE& 
     
     if (global.program.apply_strong_realitycond_alltime_switch == true)
         U.Satisfy_strong_reality_condition_field();
-    
+   
     if (global.program.apply_weak_realitycond_alltime_switch == true)
         U.Satisfy_weak_reality_condition_field();
 }

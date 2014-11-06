@@ -82,7 +82,7 @@ void FluidIO::Read_init_cond(FluidVF& U)
     
     if ((input_proc==1) || (input_proc==2) || (input_proc==3) || (input_proc==4) || (input_proc==5)) {
       U.Satisfy_strong_reality_condition_field();
-        
+
         if ((basis_type == "SFF") || (basis_type == "SSF") || (basis_type == "SSS")) 
             universal->Zero_modes(U.cvf.V1, U.cvf.V2, U.cvf.V3);
     }

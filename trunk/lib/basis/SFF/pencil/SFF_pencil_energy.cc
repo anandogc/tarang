@@ -56,7 +56,7 @@ DP SFF_PENCIL::Get_local_energy_real_space(Array<DP,3> Ar)
 	DP ans;
 	
 	if (my_z_pcoord_real == num_z_procs_real-1)
-		ans = Array_sqr(Ar(Range::all(),Range(0,local_Nz_real-3),Range::all()));
+		ans = Array_sqr(Ar(Range::all(),Range::all(),Range(0,local_Nz_real-3)));
 	else
 		ans = Array_sqr(Ar);
 	
@@ -67,18 +67,17 @@ DP SFF_PENCIL::Get_local_energy_real_space(Array<DP,3> Ar)
 DP SFF_PENCIL::Get_local_energy(Array<complx,3> A)  
 {
 	DP total =  2*Array_sqr(A);
-	
 	// subtractions from kz = 0 plane.
 	if (my_z_pcoord == 0) 
-		total -= Array_sqr(A(Range::all(), 0, Range::all()));
+		total -= Array_sqr(A(Range::all(), Range::all(), 0));
 	
 	// subtractions from kx = 0 plane.
 	if (my_x_pcoord == 0) {
-		total -= Array_sqr(A(Range::all(), Range::all(), 0));
+		total -= Array_sqr(A(0, Range::all(), Range::all()));
 		
 			// kz=0, kx=0 (ADD since it has been subtracted twice)
 		if (my_z_pcoord == 0)
-			total += Array_sqr(A(Range::all(), 0, 0))/2;
+			total += Array_sqr(A(0, Range::all(), 0))/2;
 	}
 	
 	return total;
@@ -95,7 +94,7 @@ DP SFF_PENCIL::Get_local_energy_real_space(Array<DP,3> Ar, Array<DP,3> Br)
 	DP ans;
 	
 	if (my_z_pcoord_real == num_z_procs_real-1)
-		ans = mydot(Ar(Range::all(),Range(0,local_Nz_real-3),Range::all()), Br(Range::all(),Range(0,local_Nz_real-3),Range::all()));
+		ans = mydot(Ar(Range::all(),Range::all(),Range(0,local_Nz_real-3)), Br(Range::all(),Range::all(),Range(0,local_Nz_real-3)));
 	else
 		ans = mydot(Ar, Br);
 	
@@ -109,15 +108,15 @@ DP SFF_PENCIL::Get_local_energy(Array<complx,3> A, Array<complx,3> B)
 	
 	// subtractions from kz = 0 plane.
 	if (my_z_pcoord == 0) 
-		total -=  mydot(A(Range::all(),0,Range::all()), B(Range::all(),0,Range::all()));
+		total -=  mydot(A(Range::all(),Range::all(),0), B(Range::all(),Range::all(),0));
 	
 	// subtractions from kx = 0 plane.
 	if (my_x_pcoord == 0) {
-		total -= mydot(A(Range::all(),Range::all(),0), B(Range::all(),Range::all(),0));
+		total -= mydot(A(0,Range::all(),Range::all()), B(0,Range::all(),Range::all()));
 		
 			// kz=0, kx=0 (ADD since it has been subtracted twice)
 		if (my_z_pcoord == 0)
-			total += mydot(A(Range::all(),0,0), B(Range::all(),0,0))/2;
+			total += mydot(A(0,Range::all(),0), B(0,Range::all(),0))/2;
 	}
 	
 	return total;
@@ -151,14 +150,14 @@ void SFF_PENCIL::Compute_local_helicity
 	
 	int	Kmax = Min_radius_outside();
 	
-    for (int ly=0; ly<Ax.extent(0); ly++)
-        for (int lz=0; lz<Ax.extent(1); lz++)
-            for (int lx=0; lx<Ax.extent(2); lx++) {
+    for (int lx=0; lx<maxlx; lx++)
+	    for (int ly=0; ly<maxly; ly++)
+	        for (int lz=0; lz<maxlz; lz++) {
 			
-				Kmag = Kmagnitude(lx, ly, lz);
+				Kmag = Kmagnitude(lx,ly,lz);
 				
 				if (Kmag <= Kmax) {					
-					modal_helicity = 2*Multiplicity_factor(lx, ly, lz)*Get_Modal_helicity(lx, ly, lz, Ax, Ay, Az);
+					modal_helicity = 2*Multiplicity_factor(lx,ly,lz)*Get_Modal_helicity(lx,ly,lz, Ax,Ay,Az);
 												
 					local_helicity1 += modal_helicity;
 					
@@ -186,15 +185,15 @@ void SFF_PENCIL::Compute_total_helicity
 	DP local_helicity1, local_helicity2;
 	DP local_k2H1, local_k2H2;
 	
-	Compute_local_helicity(Ax, Ay, Az, local_helicity1, local_helicity2, local_k2H1, local_k2H2);
+	Compute_local_helicity(Ax,Ay,Az, local_helicity1,local_helicity2, local_k2H1,local_k2H2);
 	
-	MPI_Reduce(&local_helicity1, &total_helicity1, 1, MPI_DP, MPI_SUM, master_id, MPI_COMM_WORLD);
+	MPI_Reduce(&local_helicity1,&total_helicity1, 1,MPI_DP,MPI_SUM,master_id,MPI_COMM_WORLD);
 								
-	MPI_Reduce(&local_helicity2, &total_helicity2, 1, MPI_DP, MPI_SUM, master_id, MPI_COMM_WORLD);
+	MPI_Reduce(&local_helicity2,&total_helicity2, 1,MPI_DP,MPI_SUM,master_id,MPI_COMM_WORLD);
 								
-	MPI_Reduce(&local_k2H1, &total_k2H1, 1, MPI_DP, MPI_SUM, master_id, MPI_COMM_WORLD);
+	MPI_Reduce(&local_k2H1,&total_k2H1, 1,MPI_DP,MPI_SUM,master_id,MPI_COMM_WORLD);
 									
-	MPI_Reduce(&local_k2H2, &total_k2H2, 1, MPI_DP, MPI_SUM, master_id, MPI_COMM_WORLD);
+	MPI_Reduce(&local_k2H2,&total_k2H2, 1,MPI_DP,MPI_SUM,master_id,MPI_COMM_WORLD);
 }
 
 
@@ -228,24 +227,24 @@ void SFF_PENCIL::Compute_local_shell_spectrum_helicity
 	
 	int	Kmax = Min_radius_outside();
 	
-	for (int ly=0; ly<Ax.extent(0); ly++)
-        for (int lz=0; lz<Ax.extent(1); lz++)
-            for (int lx=0; lx<Ax.extent(2); lx++) {
+    for (int lx=0; lx<maxlx; lx++)
+		for (int ly=0; ly<maxly; ly++)
+	        for (int lz=0; lz<maxlz; lz++) {
 			
-				Kmag = Kmagnitude(lx, ly, lz);
+				Kmag = Kmagnitude(lx,ly,lz);
 				index = (int) ceil(Kmag);
 				
 				if (index <= Kmax) {
-					factor = 2*Multiplicity_factor(lx, ly, lz);
+					factor = 2*Multiplicity_factor(lx,ly,lz);
 					
-					V = Get_local_spectral_field(lx, ly, lz, Ax, Ay, Az);
+					V = Get_local_spectral_field(lx,ly,lz, Ax,Ay,Az);
 					Convert_to_Fourier_space(V, VFour);
 					
 					Vreal = real(VFour(0)), real(VFour(1)), real(VFour(2));
 					Vimag = imag(VFour(0)), imag(VFour(1)), imag(VFour(2));
 					
 					VrcrossVi = cross(Vreal, Vimag);
-					Wavenumber(lx, ly, lz, K);
+					Wavenumber(lx,ly,lz, K);
 					
 					// modal_helicity = factor * dot(K, VrcrossVi);	
 					local_H1k1(index) += factor* (K(0)*VrcrossVi(0));
@@ -279,7 +278,7 @@ void SFF_PENCIL::Compute_shell_spectrum_helicity
 	
 	local_H1k_count = 0.0; 
 	
-	Compute_local_shell_spectrum_helicity(Ax, Ay, Az, local_H1k1, local_H1k2, local_H1k3, local_H1k_count);
+	Compute_local_shell_spectrum_helicity(Ax,Ay,Az, local_H1k1,local_H1k2,local_H1k3, local_H1k_count);
 	
 	static Array<DP,1> H1k1_count(H1k1.length());	
 	int data_size = H1k1.size();
@@ -294,18 +293,18 @@ void SFF_PENCIL::Compute_shell_spectrum_helicity
 
 	// The shells near the edges do not complete half sphere, so normalize the shells.
 	
-	if (my_id == master_id) {
+	if (master) {
 		int Kmax_inside = Max_radius_inside(); 	
 		int	Kmax = Min_radius_outside();
 
 
 		for (int index = Kmax_inside+1; index <= Kmax; index++) 
 			if (H1k1_count(index) >= 1) {
-				H1k1(index) = H1k1(index) *Approx_number_modes_in_shell(index)/ H1k1_count(index); 
+				H1k1(index) = H1k1(index)*Approx_number_modes_in_shell(index)/ H1k1_count(index); 
 										
-				H1k2(index) = H1k2(index) *Approx_number_modes_in_shell(index)/ H1k1_count(index); 
+				H1k2(index) = H1k2(index)*Approx_number_modes_in_shell(index)/ H1k1_count(index); 
 										
-				H1k3(index) = H1k3(index) *Approx_number_modes_in_shell(index)/ H1k1_count(index); 
+				H1k3(index) = H1k3(index)*Approx_number_modes_in_shell(index)/ H1k1_count(index); 
 			}	
 			
 	}
@@ -338,24 +337,24 @@ void SFF_PENCIL::Compute_local_ring_spectrum_helicity
 	
 	int	Kmax = Max_radius_inside();
 	
-	for (int ly=0; ly<Ax.extent(0); ly++)
-        for (int lz=0; lz<Ax.extent(1); lz++)
-            for (int lx=0; lx<Ax.extent(2); lx++) {
-				Kmag = Kmagnitude(lx, ly, lz);
+    for (int lx=0; lx<maxlx; lx++)
+		for (int ly=0; ly<maxly; ly++)
+	        for (int lz=0; lz<maxlz; lz++) {
+				Kmag = Kmagnitude(lx,ly,lz);
 				shell_index = (int) ceil(Kmag);
 				
 				if ((Kmag > MYEPS) && (shell_index <= Kmax)) {
-					theta = AnisKvect_polar_angle(lx, ly, lz);
+					theta = AnisKvect_polar_angle(lx,ly,lz);
 					
 					sector_index = Get_sector_index(theta, global.spectrum.ring.sector_angles);
 					
-					factor = 2*Multiplicity_factor(lx, ly, lz);
+					factor = 2*Multiplicity_factor(lx,ly,lz);
 					
-					Vreal = real(Ax(ly, lz, lx)), real(Ay(ly, lz, lx)), real(Az(ly, lz, lx));
-					Vimag = imag(Ax(ly, lz, lx)), imag(Ay(ly, lz, lx)), imag(Az(ly, lz, lx));
+					Vreal = real(Ax(lx,ly,lz)), real(Ay(lx,ly,lz)), real(Az(lx,ly,lz));
+					Vimag = imag(Ax(lx,ly,lz)), imag(Ay(lx,ly,lz)), imag(Az(lx,ly,lz));
 					
 					VrcrossVi = cross(Vreal, Vimag);
-					Wavenumber(lx, ly, lz, K);
+					Wavenumber(lx,ly,lz, K);
 					
 					// modal_helicity = factor * dot(K, VrcrossVi);
 					local_H1k1(shell_index, sector_index) += factor* (K(0)*VrcrossVi(0));
@@ -379,7 +378,7 @@ void SFF_PENCIL::Compute_ring_spectrum_helicity
 	static Array<DP,2> local_H1k2(H1k1.shape());
 	static Array<DP,2> local_H1k3(H1k1.shape());
 	
-	Compute_local_ring_spectrum_helicity(Ax, Ay, Az, local_H1k1, local_H1k2, local_H1k3);
+	Compute_local_ring_spectrum_helicity(Ax,Ay,Az, local_H1k1,local_H1k2,local_H1k3);
 	
 	int data_size = H1k1.size();
 	
@@ -412,27 +411,27 @@ void SFF_PENCIL::Compute_local_cylindrical_ring_spectrum_helicity
 	
 	int	Kperp_max = Anis_max_Krho_radius_inside();
 	
-	for (int ly=0; ly<Ax.extent(0); ly++)
-        for (int lz=0; lz<Ax.extent(1); lz++)
-            for (int lx=0; lx<Ax.extent(2); lx++) {
-				Kmag = Kmagnitude(lx, ly, lz);
+    for (int lx=0; lx<maxlx; lx++)
+		for (int ly=0; ly<maxly; ly++)
+	        for (int lz=0; lz<maxlz; lz++) {
+				Kmag = Kmagnitude(lx,ly,lz);
 				
-				Kperp = AnisKperp(lx, ly, lz);
+				Kperp = AnisKperp(lx,ly,lz);
 				
 				shell_index = (int) ceil(Kperp);
 				
 				if (shell_index <= Kperp_max) {
-					Kpll = AnisKpll(lx, ly, lz);
+					Kpll = AnisKpll(lx,ly,lz);
 					
 					slab_index = Get_slab_index(Kpll, Kperp, global.spectrum.cylindrical_ring.kpll_array);
 					
-					factor = 2*Multiplicity_factor(lx, ly, lz);
+					factor = 2*Multiplicity_factor(lx,ly,lz);
 					
-					Vreal = real(Ax(ly, lz, lx)), real(Ay(ly, lz, lx)), real(Az(ly, lz, lx));
-					Vimag = imag(Ax(ly, lz, lx)), imag(Ay(ly, lz, lx)), imag(Az(ly, lz, lx));
+					Vreal = real(Ax(lx,ly,lz)), real(Ay(lx,ly,lz)), real(Az(lx,ly,lz));
+					Vimag = imag(Ax(lx,ly,lz)), imag(Ay(lx,ly,lz)), imag(Az(lx,ly,lz));
 					
 					VrcrossVi = cross(Vreal, Vimag);
-					Wavenumber(lx, ly, lz, K);
+					Wavenumber(lx,ly,lz, K);
 					
 					// modal_helicity = factor * dot(K, VrcrossVi);
 					if (global.field.anisotropy_dirn == 1) {
@@ -465,7 +464,7 @@ void SFF_PENCIL::Compute_cylindrical_ring_spectrum_helicity
 	static Array<DP,2> local_H1k1(H1k1.shape());
 	static Array<DP,2> local_H1k2(H1k1.shape());
 	
-	Compute_local_cylindrical_ring_spectrum_helicity(Ax, Ay, Az, local_H1k1, local_H1k2);
+	Compute_local_cylindrical_ring_spectrum_helicity(Ax,Ay,Az, local_H1k1, local_H1k2);
 	
 	int data_size = H1k1.size();
 	

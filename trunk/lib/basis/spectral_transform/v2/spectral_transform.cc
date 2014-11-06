@@ -36,6 +36,8 @@
 
 #include "spectral_transform.h"
 
+SpectralTransform::SpectralTransform():select_plan_id(-1){}
+
 //*********************************************************************************************
 void SpectralTransform::Init(string basis, int Nx, int Nz)
 {
@@ -45,7 +47,7 @@ void SpectralTransform::Init(string basis, int Nx, int Nz)
 	MPI_Comm_rank(MPI_COMM_WORLD, &my_id);
 	MPI_Comm_size(MPI_COMM_WORLD, &numprocs);
 
-	double num_iter=1;
+	int num_iter=1;
 
 	plan=NULL;
 
@@ -78,7 +80,7 @@ void SpectralTransform::Init(string basis, int Nx, int Nz)
 
 	for (int i=0; i<test_plan.size(); i++)
 	{
-		if (my_id==0) cout << "Algo " << i << " time = " << test_plan[i]->time_per_step << '\n';
+		// if (my_id==0) cout << "Algo " << i << " time = " << test_plan[i]->time_per_step << '\n';
 		if (i!=min_time_plan_index)
 		{
 			// if (my_id==0) cout << "deleting plan " << i << endl;
@@ -132,7 +134,7 @@ void SpectralTransform::Init(string basis, int Nx, int Ny, int Nz)
 		test_plan[0] = new FFFW_slab_transposed_order_3D(my_id, numprocs, num_iter, Nx, Ny, Nz);
 	}
 	else if (basis=="FFF") {
-		test_plan.resize(2);
+		test_plan.resize(3);
 		test_plan[0] = new FFF_slab_Isend_Recv_overlap_Isend_forward_3D(my_id, numprocs, num_iter, Nx, Ny, Nz);
 		test_plan[1] = new FFF_slab_Isend_Recv_overlap_Isend_both_3D(my_id, numprocs, num_iter, Nx, Ny, Nz);
 		test_plan[2] = new FFF_slab_Alltoall_3D(my_id, numprocs, num_iter, Nx, Ny, Nz);
@@ -181,10 +183,144 @@ void SpectralTransform::Init(string basis, int Nx, int Ny, int Nz)
 		local_Nx=plan->local_Nx;
 		local_Ny=plan->local_Ny;
 		local_Nz=plan->local_Nz;
-		
+	
+		local_Nx=plan->local_Nx;
+		local_Ny=plan->local_Ny;
+		local_Nz=plan->local_Nz;
+
 		local_Nx_start=plan->local_Nx_start;
 		local_Ny_start=plan->local_Ny_start;
 		local_Nz_start=plan->local_Nz_start;
+
+		local_Nx_start=plan->local_Nx_start;
+		local_Ny_start=plan->local_Ny_start;
+		local_Nz_start=plan->local_Nz_start;
+	}
+	else {
+		if (my_id==0)
+			cerr << "Invalid parameters. No plan Initialized. " << endl;
+		exit(1);
+	}
+}
+
+void SpectralTransform::Init(string basis, int Nx, int Ny, int Nz, int num_p_col)
+{
+
+	int my_id, numprocs;	
+
+	MPI_Comm_rank(MPI_COMM_WORLD, &my_id);
+	MPI_Comm_size(MPI_COMM_WORLD, &numprocs);
+
+	int num_iter=1;
+
+	vector<SpectralPlan*> test_plan;
+
+	if (basis=="FFF") {
+		//switch(select_plan_id) {
+/*			
+			case 0:
+				test_plan.push_back( new FFF_Pencil_Alltoall_3D_plane_by_plane(basis, my_id, numprocs, num_iter, Nx, Ny, Nz, num_p_col) );
+				break;
+			case 1:
+				test_plan.push_back( new FFF_Pencil_Alltoall_3D_all_at_once(basis, my_id, numprocs, num_iter, Nx, Ny, Nz, num_p_col) );
+				break;
+			case 2:*/
+				test_plan.push_back( new FFF_Pencil_Alltoall_3D_buffered(basis, my_id, numprocs, num_iter, Nx, Ny, Nz, num_p_col) );
+/*				break;
+			case 3:
+				test_plan.push_back( new FFF_Pencil_Alltoall_3D_threaded(basis, my_id, numprocs, num_iter, Nx, Ny, Nz, num_p_col) );
+				break;
+			case 4:
+				test_plan.push_back( new FFF_Pencil_Alltoall_3D_morton(basis, my_id, numprocs, num_iter, Nx, Ny, Nz, num_p_col) );
+				break;
+			case 5:
+				test_plan.push_back( new FFF_Pencil_Alltoall_3D_compressed_gzip(basis, my_id, numprocs, num_iter, Nx, Ny, Nz, num_p_col) );
+				break;
+
+			case 6:
+				test_plan.push_back( new FFF_Pencil_Alltoall_3D_compressed_lz4(basis, my_id, numprocs, num_iter, Nx, Ny, Nz, num_p_col) );
+				break;*/
+		//}
+	}
+	else if (basis=="SFF") {
+		test_plan.push_back( new SFF_Pencil_Alltoall_3D(basis, my_id, numprocs, num_iter, Nx, Ny, Nz, num_p_col) );
+	}
+	else if (basis=="SSF") {
+		test_plan.push_back( new SSF_Pencil_Alltoall_3D(basis, my_id, numprocs, num_iter, Nx, Ny, Nz, num_p_col) );
+	}
+	else if (basis=="SSS") {
+		test_plan.push_back( new SSS_Pencil_Alltoall_3D(basis, my_id, numprocs, num_iter, Nx, Ny, Nz, num_p_col) );
+	}
+
+/*	if (select_plan_id<0) {
+		double min_time = numeric_limits<double>::max();
+
+		for (int i=0; i<test_plan.size(); i++)
+			if (test_plan[i]->time_per_step < min_time)
+				select_plan_id=i;
+
+	}
+*/
+	/*for (int i=0; i<test_plan.size(); i++)
+	{
+		// if (my_id==0) cout << "Algo " << i << " time = " << test_plan[i]->time_per_step << '\n';
+		if (i!=select_plan_id)
+		{
+			// if (my_id==0) cout << "deleting plan " << i << endl;
+			delete test_plan[i];
+		}
+	}*/
+	// if (my_id==0) cout << "Selected plan: " << basis << ", algo " << select_plan_id << endl;
+
+
+	// if (test_plan.size()>0 && select_plan_id>=0 && select_plan_id<test_plan.size()) // A plan has been selected
+	if (test_plan.size()>0) // A plan has been selected
+	{
+		// if (my_id==0) cout << "select_plan_id = " << select_plan_id << endl;
+		//plan=test_plan[select_plan_id];
+		plan=test_plan[0];
+
+
+		basis = plan->basis;
+
+		Nx = plan->Nx;
+		Ny = plan->Ny;
+		Nz = plan->Nz;
+
+		my_id = plan->my_id;
+		numprocs = plan->numprocs;
+
+		my_id_col = plan->my_id_col;
+		my_id_row = plan->my_id_row;
+
+		num_p_cols = plan->num_p_cols;
+		num_p_rows = plan->num_p_rows;
+
+
+		local_Nx = plan->local_Nx;
+		local_Ny = plan->local_Ny;
+		local_Nz = plan->local_Nz;
+
+		local_Nx_col = plan->local_Nx_col;
+		local_Ny_col = plan->local_Ny_col;
+		local_Nz_col = plan->local_Nz_col;
+
+		local_Nx_row = plan->local_Nx_row;
+		local_Ny_row = plan->local_Ny_row;
+		local_Nz_row = plan->local_Nz_row;
+
+		local_Nx_start = plan->local_Nx_start;
+		local_Ny_start = plan->local_Ny_start;
+		local_Nz_start = plan->local_Nz_start;
+
+		local_Nx_start_col = plan->local_Nx_start_col;
+		local_Ny_start_col = plan->local_Ny_start_col;
+		local_Nz_start_col = plan->local_Nz_start_col;
+
+		local_Nx_start_row = plan->local_Nx_start_row;
+		local_Ny_start_row = plan->local_Ny_start_row;
+		local_Nz_start_row = plan->local_Nz_start_row;
+
 	}
 	else {
 		if (my_id==0)
@@ -218,6 +354,7 @@ void SpectralTransform::Transpose(Array<complx,3> A, Array<DP,3> Ar){
 	plan->Transpose(A, Ar);
 }
 
+
 //2D
 void SpectralTransform::Forward_transform(Array<DP,2> Ar, Array<complx,2> A){
 	plan->Forward_transform(Ar, A);
@@ -239,4 +376,3 @@ void SpectralTransform::Transpose(Array<DP,2> Ar, Array<complx,2> A){
 void SpectralTransform::Transpose(Array<complx,2> A, Array<DP,2> Ar){
 	plan->Transpose(A, Ar);
 }
-

@@ -150,6 +150,20 @@ public:
 		DP twobyL1;			// for Chebyshev basis
 		
 		int maxlx, maxly, maxlz;
+
+		//
+		int lx_start;
+		int ly_start;
+		int lz_start;
+
+		int maxrx;
+		int maxry;
+		int maxrz;
+
+		int rx_start;
+		int ry_start;
+		int rz_start;
+		//
 		
 		void Print(int my_level);
 	} field;
@@ -160,9 +174,10 @@ public:
 		int master_id;
 		bool master;
 		
-			// for pencil
-		int num_p_hor;              // processors along the horizontal direction  
-		int num_p_vert;             // processors along the vertical direction
+		// for pencil
+
+		int num_p_cols;              // processors along the horizontal direction  
+		int num_p_rows;             // processors along the vertical direction
 		
 		int num_x_procs;
 		int num_y_procs;
@@ -172,9 +187,6 @@ public:
 		int num_y_procs_real;
 		int num_z_procs_real;
 
-		int my_vert_pcoord;         // processor coordinate along vertical direction
-		int my_hor_pcoord;          // processor coordinate along horizontal direction
-
 		int my_x_pcoord;
 		int my_y_pcoord;
 		int my_z_pcoord;
@@ -183,8 +195,8 @@ public:
 		int my_y_pcoord_real;
 		int my_z_pcoord_real;
 		
-		MPI_Comm MPI_COMM_HOR_SEGMENT;
-		MPI_Comm MPI_COMM_VERT_SEGMENT;
+		MPI_Comm MPI_COMM_ROW;
+		MPI_Comm MPI_COMM_COL;
 		
 		mpi();
 		void Print(int my_level);

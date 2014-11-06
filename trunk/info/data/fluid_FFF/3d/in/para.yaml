@@ -16,7 +16,7 @@ program:
     sincostr_switch: FFF
     
 field:
-    N: [32, 16, 8]
+    N: [64, 64, 64]
     kfactor: [1, 1, 1]
     L: 
     diss_coefficients: [1]               

@@ -151,6 +151,10 @@ void  FluidIO::Init_cond_energy_helicity_spectrum(FluidVF& U)
         Uy000 = global.io.double_para(3);
         Uz000 = global.io.double_para(4);
     }
+    else {
+        cerr << "io.double_para can have only 2 or 5 values." << endl;
+        MPI_Abort(MPI_COMM_WORLD, 1);
+    }
     
     Initialize_using_energy_helicity_spectrum(U, epsilon, sk);
     

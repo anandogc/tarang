@@ -403,8 +403,8 @@ void Global::mpi::Print(int my_level)
     cout<<'\n'<<Indent(my_level)<<"mpi:";
     cout<<boolalpha
         <<'\n'<<Indent(my_level+1)<<"numprocs: "<<numprocs
-        <<'\n'<<Indent(my_level+1)<<"num_p_hor: "<<num_p_hor
-        <<'\n'<<Indent(my_level+1)<<"num_p_vert: "<<num_p_vert
+        <<'\n'<<Indent(my_level+1)<<"num_p_col: "<<num_p_cols
+        <<'\n'<<Indent(my_level+1)<<"num_p_row: "<<num_p_rows
         <<endl; 
 }
 

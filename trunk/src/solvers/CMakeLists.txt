@@ -46,7 +46,16 @@ ADD_EXECUTABLE(${EXECUTABLE_NAME}
 #TARGET_LINK_LIBRARIES(${EXECUTABLE_NAME} fluid_incompressible fluid_base fields fff_pencil fff_slab  sff_pencil sff_slab ssf_pencil ssf_slab sss_pencil sss_slab chff_slab basis_basicfn global spectral_transform ${SYSTEM_LIBRARIES})
 
 # To do fffw_slab cfff_slab
-TARGET_LINK_LIBRARIES(${EXECUTABLE_NAME} fluid_incompressible fluid_base fields sss_slab ssf_slab sff_slab fff_slab fffw_slab basis_basicfn global spectral_transform ${SYSTEM_LIBRARIES})
+TARGET_LINK_LIBRARIES(${EXECUTABLE_NAME} fluid_incompressible fluid_base fields sss_pencil ssf_pencil sff_pencil fff_pencil sss_slab  ssf_slab sff_slab  fff_slab fffw_slab basis_basicfn global spectral_transform ${SYSTEM_LIBRARIES})
+
+ADD_CUSTOM_TARGET(
+    tarang_source_dir_message
+    COMMAND echo 
+    COMMAND echo 'Compiling  from source directory: \"${PROJECT_SOURCE_DIR}\"'
+    COMMAND echo 
+)
+add_dependencies(${EXECUTABLE_NAME} tarang_source_dir_message)
+
 
 ADD_CUSTOM_COMMAND(TARGET ${EXECUTABLE_NAME}
                    POST_BUILD

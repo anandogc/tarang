@@ -69,49 +69,16 @@ void Global::Process_basic_vars()
 	else
 		time.job_time_final =  numeric_limits<clock_t>::max();
 
-	//mpi, fft
-	
-		// Cartesean coordinates for MPI
-	/*if (program.decomposition == "PENCIL")
-	{	
-		int dim_size[2];
-		dim_size[0] = global.mpi.num_p_vert;
-		dim_size[1] = global.mpi.num_p_hor;
-	
-		int periods[2];
-		int reorder = 0;
-		int ndims = 2;
-	
-		periods[0] = 0;
-		periods[1] = 0;
-        
-		MPI_Cart_create(MPI_COMM_WORLD, ndims, dim_size, periods, reorder, &global.mpi.MPI_NEW_COMM );
-	
-		int coord[2];		// coordinates of a proc
-		MPI_Cart_coords(global.mpi.MPI_NEW_COMM, global.mpi.my_id, 2, coord);
-		global.mpi.my_vert_pcoord = coord[0];
-		global.mpi.my_hor_pcoord = coord[1];
 
-	
-		MPI_Comm_split(MPI_COMM_WORLD, global.mpi.my_vert_pcoord, 0, &global.mpi.MPI_COMM_HOR_SEGMENT);
-		MPI_Comm_rank(global.mpi.MPI_COMM_HOR_SEGMENT, &global.mpi.my_id_hor);
-	
-		MPI_Comm_split(MPI_COMM_WORLD, global.mpi.my_hor_pcoord, 0, &global.mpi.MPI_COMM_VERT_SEGMENT);
-		MPI_Comm_rank(global.mpi.MPI_COMM_VERT_SEGMENT, &global.mpi.my_id_vert);
-		
-		//alias
-		my_hor_pcoord = mpi.my_hor_pcoord;
-		my_vert_pcoord = mpi.my_vert_pcoord;
-	}*/
-
+	//mpi
 	my_id=mpi.my_id;
 	numprocs=mpi.numprocs;
 	
 	master_id=mpi.master_id;
 	master=mpi.master;
 
-	num_p_hor = mpi.num_p_hor;
-	num_p_vert = mpi.num_p_vert;
+	num_p_cols = mpi.num_p_cols;
+	num_p_rows = mpi.num_p_rows;
 
 	I = myconstant.I;		
 	
@@ -130,6 +97,9 @@ void Global::Process_basic_vars()
 		/// Infinite radius.. All the modes outside -- for flux and shelltr calc
 	INF_RADIUS = myconstant.INF_RADIUS; 
 	INF_TIME = myconstant.INF_TIME;
+
+	MPI_Comm_split(MPI_COMM_WORLD, my_id/num_p_cols, 0, &mpi.MPI_COMM_ROW);
+	MPI_Comm_split(MPI_COMM_WORLD, my_id%num_p_cols, 0, &mpi.MPI_COMM_COL);
 	
 		
 	// program

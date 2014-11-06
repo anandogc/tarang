@@ -116,61 +116,59 @@ bool FFF_PENCIL::Is_dealiasing_necessary(Array<complx,3> A, DP outer_radius)
 
 void FFF_PENCIL::Satisfy_strong_reality_condition_in_Array(Array<complx,3> A)
 {
+	int array_index_minus_kx, array_index_minus_ky;
 	
-/*    int array_index_minus_kx, array_index_minus_ky;
-	
-    // For a given (minuskx, minusky), locate (kx,ky) and then subst.
-    // A(minuskx, minusky, 0) = conj(A(kx,ky,0))
+	// For a given (minuskx, minusky), locate (kx,ky) and then subst.
+	// A(minuskx, minusky, 0) = conj(A(kx,ky,0))
 	if (my_z_pcoord == 0) {
-        ArrayOps::Get_XY_plane(A, global.temp_array.plane_xy, 0);
-	
-		for (int ly=0; ly<local_Ny; ly++) {
-			if (Get_ky(ly) != Ny/2) {  // Do not apply for ky=Ny/2
+		for (int lx=Nx/2+1; lx<Nx; lx++)  {
+			array_index_minus_kx = -Get_kx(lx);         // kx<0; minuskx = -Get_kx(lx) > 0
+
+			for (int ly=0; ly<maxly; ly++) {
+				if (Get_ky(ly) != Ny/2) {  // Do not apply for ky=Ny/2
 			
 				array_index_minus_ky =  Get_iy(-Get_ky(ly));  // minusky = -Get_ky(ly);
 				
-				for (int lx=Nx/2+1; lx<Nx; lx++)  {
-					array_index_minus_kx = -Get_kx(lx);         // kx<0; minuskx = -Get_kx(lx) > 0
 
-					A(lx, ly, 0) = conj(global.temp_array.plane_xy(array_index_minus_ky,array_index_minus_kx));
+				A(lx,ly,0) = conj(global.temp_array.plane_xy(array_index_minus_ky,array_index_minus_kx));
 				}
 				// for (ky=0,kz=0) line
 				if (Get_ky(ly) < 0)
-					A(0, ly, 0) = conj(global.temp_array.plane_xy(array_index_minus_ky,0));
+					A(0,ly,0) = conj(global.temp_array.plane_xy(array_index_minus_ky,0));
 			}
 		}
 	}
 
 	// for kz=Nz/2
-    if (my_z_pcoord == num_z_procs-1)
-    	    A(Range::all(),Range::all(),local_Nz-1) = 0.0;
-*/	
+	if (my_z_pcoord == num_z_procs-1)
+			A(Range::all(),Range::all(),maxlz-1) = 0.0;
+	
 }
 
 void FFF_PENCIL::Satisfy_weak_reality_condition_in_Array(Array<complx,3> A)
 {
-    // for kz=Nz/2
-    if (my_z_pcoord == num_z_procs-1)
-         A(Range::all(),Range::all(),local_Nz-1) = 0.0;
+	// for kz=Nz/2
+	if (my_z_pcoord == num_z_procs-1)
+		 A(Range::all(),Range::all(),maxlz-1) = 0.0;
 }
 
 void FFF_PENCIL::Test_reality_condition_in_Array(Array<complx,3> A)
 {
-	
 	int array_index_minus_kx, array_index_minus_ky;
 	
-    // For a given (minuskx, minusky), locate (kx,ky) and then subst.
-    // A(minuskx, minusky, 0) = conj(A(kx,ky,0))
+	// For a given (minuskx, minusky), locate (kx,ky) and then subst.
+	// A(minuskx, minusky, 0) = conj(A(kx,ky,0))
 	if (my_z_pcoord == 0) {
-        ArrayOps::Get_XY_plane(A, global.temp_array.plane_xy, 0);
+		Get_XY_plane(A, global.temp_array.plane_xy, 0);
 		
-		for (int ly=0; ly<local_Ny; ly++) {
-			if (Get_ky(ly) != Ny/2) {  // Do not apply for ky=Ny/2
+		for (int lx=Nx/2+1; lx<Nx; lx++)  {
+			array_index_minus_kx = -Get_kx(lx);         // kx<0; minuskx = -Get_kx(lx) > 0
+
+			for (int ly=0; ly<maxly; ly++) {
+				if (Get_ky(ly) != Ny/2) {  // Do not apply for ky=Ny/2
 				
 				array_index_minus_ky =  Get_iy(-Get_ky(ly));  // minusky = -Get_ky(ly);
 				
-				for (int lx=Nx/2+1; lx<Nx; lx++)  {
-					array_index_minus_kx = -Get_kx(lx);         // kx<0; minuskx = -Get_kx(lx) > 0
 					
 					if (abs(A(lx,ly,0)-conj(global.temp_array.plane_xy(array_index_minus_ky,array_index_minus_kx))) > MYEPS2)
 						cout << "Reality condition voilated for (kx,ky,kz)=(" <<array_index_minus_kx <<  "," << Get_ky(ly) << "," << 0 << ")" << endl;
@@ -184,10 +182,10 @@ void FFF_PENCIL::Test_reality_condition_in_Array(Array<complx,3> A)
 	}
 	
 	// for kz=Nz/2
-    //int last_index=local_Nz-1;
+	//int last_index=maxlz-1;
 	if (my_z_pcoord == num_z_procs-1) {
 		for (int lx=0; lx<Nx; lx++)
-			for (int ly=0; ly<local_Ny; ly++)
+			for (int ly=0; ly<maxly; ly++)
 				if (abs(A(ly,Nz/2,lx)) > MYEPS)
 					cout << "Reality condition voilated for (kx,ky,kz)=(" << Get_kx(lx) <<  "," << Get_ky(ly) << "," << Nz/2 << ")" << endl;
 	}
@@ -209,16 +207,50 @@ void FFF_PENCIL::Assign_sub_array(Range x_range, Range y_range, Range z_range, A
 	static Range y_apply, z_apply;
 	
 	
-	y_apply = Range(first(y_filter(Range(my_y_pcoord*local_Ny,(my_y_pcoord+1)*local_Ny-1)) == 1),
-					 last(y_filter(Range(my_y_pcoord*local_Ny,(my_y_pcoord+1)*local_Ny-1)) == 1));
+	y_apply = Range(first(y_filter(Range(my_y_pcoord*maxly,(my_y_pcoord+1)*maxly-1)) == 1),
+					 last(y_filter(Range(my_y_pcoord*maxly,(my_y_pcoord+1)*maxly-1)) == 1));
 	
-	z_apply = Range(first(z_filter(Range(my_z_pcoord*local_Nz,(my_z_pcoord+1)*local_Nz-1)) == 1),
-					 last(z_filter(Range(my_z_pcoord*local_Nz,(my_z_pcoord+1)*local_Nz-1)) == 1));
+	z_apply = Range(first(z_filter(Range(my_z_pcoord*maxlz,(my_z_pcoord+1)*maxlz-1)) == 1),
+					 last(z_filter(Range(my_z_pcoord*maxlz,(my_z_pcoord+1)*maxlz-1)) == 1));
 	
 	
 	if ( (y_apply(0)>=0) && (z_apply(0)>=0))
 		A(x_range, y_apply, z_apply) = value;
 }
+
+void FFF_PENCIL::Get_XY_plane(Array<complx,3> A, Array<complx,2> plane_xy, int kz)
+{
+	if (num_y_procs == 1) {
+		plane_xy= A(Range::all(),Range::all(),kz);
+		cout << "one proc" << endl;
+	}
+	
+	else if (num_y_procs > 1) {
+		int lz = universal->Get_lz(kz);
+		
+		global.temp_array.plane_xy_inproc = A(Range::all(), Range::all(), lz);
+
+		int data_size = 2*maxly*Nx;
+		int full_data_size = 2*Ny*Nx;
+	
+		MPI_Gather(reinterpret_cast<DP*>(global.temp_array.plane_xy_inproc.data()), data_size, MPI_DP, reinterpret_cast<DP*>(plane_xy.data()), 1, MPI_Vector_resized_y_plane_block, 0, global.mpi.MPI_COMM_ROW);
+		
+		MPI_Bcast(reinterpret_cast<DP*>(global.temp_array.plane_xy.data()), full_data_size, MPI_DP, 0, global.mpi.MPI_COMM_ROW);
+
+/*		if (c>77) {
+			for (int i=0; i<num_y_procs; i++) {
+				cout << "my_y_pcoord, i  = " << my_y_pcoord << " " << i << endl;
+				if (my_y_pcoord==i) {
+					cout << "my_y_pcoord = " << my_y_pcoord << endl;
+					cout << global.temp_array.plane_xy_inproc << endl;
+					cout << global.temp_array.plane_xy << endl;
+				}
+				MPI_Barrier(global.mpi.MPI_COMM_ROW);
+			}
+		}*/
+	}
+}
+
 
 int FFF_PENCIL::Read(Array<complx,3> A, BasicIO::H5_plan plan, string file_name, string dataset_name)
 {

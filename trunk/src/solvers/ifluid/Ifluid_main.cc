@@ -82,7 +82,8 @@ int Ifluid_main()
 		}
 		
 		fluidIO_incompress.Output_all_inloop(U, P);  // for initial cond
-			   
+
+
 		if (my_id == master_id)  
 			cout << endl << "STARTING THE SIMULATION NOW" << endl;
 		int  iter=0;  // iterations 
@@ -105,15 +106,13 @@ int Ifluid_main()
 			iter++; 
 			
 			time_advance_incompress.Time_advance_step(U, P, Force);
-
-			
 			
 			DP total_abs_div;
 			U.Compute_divergence_field(global.temp_array.X2, total_abs_div, true);
 			// true mean print nonzero div modes
 			if (total_abs_div > MYEPS2) {
 				cout << "abs(sum(Divergence)) of U = " << total_abs_div << "is large. " << '\n' << "Therefore exiting the program." << endl;
-				return (1);
+				break;
 			}
 	
 			fluidIO_incompress.Output_all_inloop(U, P);

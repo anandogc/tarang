@@ -1,3 +1,4 @@
+----
  1.	 1)	Check local_Nx and make ChFF to run parallel.
  2.	 2)	Add Static Variables in Time_advance_incompress::Tridiagonal_solver.
  3.	 3)	Think for kz = 0 and ky = 0 case in ChFF.
