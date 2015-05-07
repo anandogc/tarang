@@ -58,7 +58,7 @@ extern Universal *co_universal;
 #include "BasicIO.h"
 extern BasicIO basicIO;
 
-extern Uniform<DP> SPECrand;
+extern Uniform<Real> SPECrand;
 
 #endif
 

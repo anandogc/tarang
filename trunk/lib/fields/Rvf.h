@@ -72,13 +72,13 @@ private:
 
 public:
 	//!  \f$ V_x(local_N1, N_2, N_3/2+1) \f$.
-	Array<DP,3> V1r;
+	Array<Real,3> V1r;
 	
 	//!  \f$ V_y(local_N1, N_2, N_3/2+1) \f$.
-	Array<DP,3> V2r;
+	Array<Real,3> V2r;
 	
 	//!  \f$ V_z(local_N1, N_2, N_3/2+1) \f$.
-	Array<DP,3> V3r;
+	Array<Real,3> V3r;
 	
 	
 //*********************************************************************************************			

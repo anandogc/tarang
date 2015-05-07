@@ -56,9 +56,9 @@ public:
 	SFF_SLAB();
 	
 	#include "universal_fn_names.h"
-	void Zero_modes(Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az);
+	void Zero_modes(Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az);
 	
-	void Zero_modes(Array<complx,3> F);
+	void Zero_modes(Array<Complex,3> F);
 	
 	
 };

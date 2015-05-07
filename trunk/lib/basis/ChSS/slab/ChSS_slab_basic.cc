@@ -47,13 +47,13 @@ comment
  
 ***********************************************************************************************/
 
-void ChSS_SLAB::Last_component(int kx, int ky, int kz, DP &dvxdx, DP &Vy, DP &Vz)
+void ChSS_SLAB::Last_component(int kx, int ky, int kz, Real &dvxdx, Real &Vy, Real &Vz)
 {
-	DP Kx = kx*kfactor[1];
-	DP Ky = ky*kfactor[2];
-	DP Kz = kz*kfactor[3];
+	Real Kx = kx*kfactor[1];
+	Real Ky = ky*kfactor[2];
+	Real Kz = kz*kfactor[3];
 	
-	DP dvydy;
+	Real dvydy;
 	int kysign, kzsign;
 	
     global.program.sincostr_switch = sincostr_switch_Vx;
@@ -98,7 +98,7 @@ void ChSS_SLAB::Last_component(int kx, int ky, int kz, DP &dvxdx, DP &Vy, DP &Vz
 	}
 }
 
-void ChSS_SLAB::Last_component(int kx, int ky, int kz,  complx &dvxdx, complx &Vy, complx &Vz)
+void ChSS_SLAB::Last_component(int kx, int ky, int kz,  Complex &dvxdx, Complex &Vy, Complex &Vz)
 {
 }
 
@@ -108,7 +108,7 @@ Dealias
  
  ***********************************************************************************************/
 
-void ChSS_SLAB::Dealias(Array<complx,3> A)
+void ChSS_SLAB::Dealias(Array<Complex,3> A)
 {
 	Array<int,1> Ay_filter(Ny);
 	
@@ -123,7 +123,7 @@ void ChSS_SLAB::Dealias(Array<complx,3> A)
 }
 
 // Data resides till outer_radius in k-space
-bool ChSS_SLAB::Is_dealiasing_necessary(Array<complx,3> A, DP outer_radius)
+bool ChSS_SLAB::Is_dealiasing_necessary(Array<Complex,3> A, Real outer_radius)
 {
 	int kx_max = (int) ceil(outer_radius/kfactor[1]);
 	int ky_max = (int) ceil(outer_radius/kfactor[2]);
@@ -145,18 +145,18 @@ f(m, -ky, 0) = conj(f(m, ky, 0))- do for kz=N[3]/2
  
  ***********************************************************************************************/
 
-void ChSS_SLAB::Satisfy_strong_reality_condition_in_Array(Array<complx,3> A)
+void ChSS_SLAB::Satisfy_strong_reality_condition_in_Array(Array<Complex,3> A)
 {
 	return;
 }
 
-void ChSS_SLAB::Satisfy_weak_reality_condition_in_Array(Array<complx,3> A)
+void ChSS_SLAB::Satisfy_weak_reality_condition_in_Array(Array<Complex,3> A)
 {
 	return;
 }
 
 
-void ChSS_SLAB::Test_reality_condition_in_Array(Array<complx,3> A)
+void ChSS_SLAB::Test_reality_condition_in_Array(Array<Complex,3> A)
 {
 	return;
 }

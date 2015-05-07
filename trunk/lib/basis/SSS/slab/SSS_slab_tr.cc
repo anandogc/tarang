@@ -44,7 +44,7 @@ FT along perp dirn and SIN transform along x dirn of A
 
 ***********************************************************************************************/
 
-void SSS_SLAB::Forward_transform(Array<DP,3> Ar, Array<complx,3> A)
+void SSS_SLAB::Forward_transform(Array<Real,3> Ar, Array<Complex,3> A)
 {
 	if (Ny > 1)
         spectralTransform.Forward_transform(global.program.sincostr_switch, Ar, A);
@@ -63,7 +63,7 @@ void SSS_SLAB::Forward_transform(Array<DP,3> Ar, Array<complx,3> A)
  ***********************************************************************************************/
 
 
-void SSS_SLAB::Inverse_transform(Array<complx,3> A, Array<DP,3> Ar)
+void SSS_SLAB::Inverse_transform(Array<Complex,3> A, Array<Real,3> Ar)
 {
 	global.temp_array.X_transform = A;
     if (Ny > 1)
@@ -80,12 +80,12 @@ void SSS_SLAB::Inverse_transform(Array<complx,3> A, Array<DP,3> Ar)
 
 ***********************************************************************************************/
 
-void  SSS_SLAB::Xderiv(Array<complx,3> A, Array<complx,3> B)
+void  SSS_SLAB::Xderiv(Array<Complex,3> A, Array<Complex,3> B)
 {
-	Array<DP,3> Ar=Array<DP,3>(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
-	Array<DP,3> Br=Array<DP,3>(reinterpret_cast<DP*>(B.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<Real,3> Ar=Array<Real,3>(reinterpret_cast<Real*>(A.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<Real,3> Br=Array<Real,3>(reinterpret_cast<Real*>(B.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 	
-	DP Kx;
+	Real Kx;
 	
 	for (int lx = 0; lx < local_Nx; lx++) 	{
 		Kx = Get_kx(lx)*kfactor[1];
@@ -99,12 +99,12 @@ void  SSS_SLAB::Xderiv(Array<complx,3> A, Array<complx,3> B)
 	}
 }
 
-void  SSS_SLAB::Add_Xderiv(Array<complx,3> A, Array<complx,3> B)
+void  SSS_SLAB::Add_Xderiv(Array<Complex,3> A, Array<Complex,3> B)
 {
-	Array<DP,3> Ar=Array<DP,3>(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
-	Array<DP,3> Br=Array<DP,3>(reinterpret_cast<DP*>(B.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<Real,3> Ar=Array<Real,3>(reinterpret_cast<Real*>(A.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<Real,3> Br=Array<Real,3>(reinterpret_cast<Real*>(B.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 	
-	DP Kx;
+	Real Kx;
 	
 	for (int lx = 0; lx < local_Nx; lx++) 	{
 		Kx = Get_kx(lx)*kfactor[1];
@@ -118,9 +118,9 @@ void  SSS_SLAB::Add_Xderiv(Array<complx,3> A, Array<complx,3> B)
 	}
 }
 
-void  SSS_SLAB::Xderiv(Array<DP,3> A, Array<DP,3> B)
+void  SSS_SLAB::Xderiv(Array<Real,3> A, Array<Real,3> B)
 {
-	cerr << "SSS_SLAB::Xderiv(Array<DP,3> A, Array<DP,3> B) is not defined for this basis. "<<endl;
+	cerr << "SSS_SLAB::Xderiv(Array<Real,3> A, Array<Real,3> B) is not defined for this basis. "<<endl;
 }
 
 
@@ -132,12 +132,12 @@ void  SSS_SLAB::Xderiv(Array<DP,3> A, Array<DP,3> B)
 
 // Note: In the first half- ky=i2;
 // In the second half- i2=0:Ny/-1; fftw-index=(Ny/2 +1+i2); FT-index=fftw-index-N=(i2+1-Ny/2)
-void SSS_SLAB::Yderiv(Array<complx,3> A, Array<complx,3> B)
+void SSS_SLAB::Yderiv(Array<Complex,3> A, Array<Complex,3> B)
 {
-	Array<DP,3> Ar=Array<DP,3>(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
-	Array<DP,3> Br=Array<DP,3>(reinterpret_cast<DP*>(B.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<Real,3> Ar=Array<Real,3>(reinterpret_cast<Real*>(A.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<Real,3> Br=Array<Real,3>(reinterpret_cast<Real*>(B.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 	
-    DP Ky;
+    Real Ky;
 
 	if (Ny > 1)
 		for (int ly=0; ly<Ny; ly++) 	{
@@ -158,12 +158,12 @@ void SSS_SLAB::Yderiv(Array<complx,3> A, Array<complx,3> B)
 }
 
 
-void SSS_SLAB::Add_Yderiv(Array<complx,3> A, Array<complx,3> B)
+void SSS_SLAB::Add_Yderiv(Array<Complex,3> A, Array<Complex,3> B)
 {
-	Array<DP,3> Ar=Array<DP,3>(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
-	Array<DP,3> Br=Array<DP,3>(reinterpret_cast<DP*>(B.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<Real,3> Ar=Array<Real,3>(reinterpret_cast<Real*>(A.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<Real,3> Br=Array<Real,3>(reinterpret_cast<Real*>(B.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 	
-    DP Ky;
+    Real Ky;
 	
 	if (Ny > 1)
 		for (int ly=0; ly<Ny; ly++) 	{
@@ -185,12 +185,12 @@ void SSS_SLAB::Add_Yderiv(Array<complx,3> A, Array<complx,3> B)
 ***********************************************************************************************/
 
 
-void SSS_SLAB::Zderiv(Array<complx,3> A, Array<complx,3> B)
+void SSS_SLAB::Zderiv(Array<Complex,3> A, Array<Complex,3> B)
 {
-    DP Kz;
+    Real Kz;
 	
-	Array<DP,3> Ar(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
-	Array<DP,3> Br(reinterpret_cast<DP*>(B.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<Real,3> Ar(reinterpret_cast<Real*>(A.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<Real,3> Br(reinterpret_cast<Real*>(B.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 	
 	for (int lz=0; lz<Nz; lz++) {
 		Kz = lz*kfactor[3];
@@ -205,12 +205,12 @@ void SSS_SLAB::Zderiv(Array<complx,3> A, Array<complx,3> B)
 }
 
 
-void SSS_SLAB::Add_Zderiv(Array<complx,3> A, Array<complx,3> B)
+void SSS_SLAB::Add_Zderiv(Array<Complex,3> A, Array<Complex,3> B)
 {
-    DP Kz;
+    Real Kz;
 	
-	Array<DP,3> Ar(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
-	Array<DP,3> Br(reinterpret_cast<DP*>(B.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<Real,3> Ar(reinterpret_cast<Real*>(A.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<Real,3> Br(reinterpret_cast<Real*>(B.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 	
 	for (int lz=0; lz<Nz; lz++) {
 		Kz = lz*kfactor[3];
@@ -230,13 +230,13 @@ void SSS_SLAB::Add_Zderiv(Array<complx,3> A, Array<complx,3> B)
  
  ***********************************************************************************************/
 
-void SSS_SLAB::Laplacian(DP factor, Array<complx,3> A, Array<complx,3> B)
+void SSS_SLAB::Laplacian(Real factor, Array<Complex,3> A, Array<Complex,3> B)
 {
 	
-	Array<DP,3> Ar(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
-	Array<DP,3> Br(reinterpret_cast<DP*>(B.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<Real,3> Ar(reinterpret_cast<Real*>(A.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<Real,3> Br(reinterpret_cast<Real*>(B.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 	
-	DP Ksqr;
+	Real Ksqr;
 	
 	for (int lx=0; lx<Ar.extent(0); lx++) {
 		Ksqr = my_pow(Get_kx(lx)*kfactor[1],2);
@@ -259,13 +259,13 @@ void SSS_SLAB::Laplacian(DP factor, Array<complx,3> A, Array<complx,3> B)
  
  ***********************************************************************************************/
 
-void SSS_SLAB::Subtract_Laplacian(DP factor, Array<complx,3> A, Array<complx,3> B)
+void SSS_SLAB::Subtract_Laplacian(Real factor, Array<Complex,3> A, Array<Complex,3> B)
 {
 	
-	Array<DP,3> Ar(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
-	Array<DP,3> Br(reinterpret_cast<DP*>(B.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<Real,3> Ar(reinterpret_cast<Real*>(A.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<Real,3> Br(reinterpret_cast<Real*>(B.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 	
-	DP Ksqr, Ksqr_factor;
+	Real Ksqr, Ksqr_factor;
 	
 	for (int lx=0; lx<Ar.extent(0); lx++) {
 		Ksqr = my_pow(Get_kx(lx)*kfactor[1],2);

@@ -75,31 +75,31 @@ class FluidVF:  public PlainFluidVF
  
 public:
 	//!  Force along x \f$ F_x(local_{N1}, N_2, N_3/2+1) \f$.
-	Array<complx,3> nlin1;						
+	Array<Complex,3> nlin1;						
 	
 	//!  Force along y \f$ F_y(local_{N1}, N_2, N_3/2+1) \f$.
-	Array<complx,3> nlin2;						
+	Array<Complex,3> nlin2;						
 	
 	//!  Force along z \f$ F_x(local_{N1}, N_2, N_3/2+1) \f$.
-	Array<complx,3> nlin3;	
+	Array<Complex,3> nlin3;	
 	
 	
 	//!  Force along x \f$ F_x(local_{N1}, N_2, N_3/2+1) \f$.
-	Array<complx,3> Force1;						
+	Array<Complex,3> Force1;						
 	
 	//!  Force along y \f$ F_y(local_{N1}, N_2, N_3/2+1) \f$.
-	Array<complx,3> Force2;						
+	Array<Complex,3> Force2;						
 	
 	//!  Force along z \f$ F_x(local_{N1}, N_2, N_3/2+1) \f$.
-	Array<complx,3> Force3;
+	Array<Complex,3> Force3;
 	
 	
 	//! Dissipation coefficient appearing before laplacian \f$ \nu \f$.
-	DP		dissipation_coefficient;
+	Real		dissipation_coefficient;
 	bool hyper_diffusion_switch;	
 	//! Hyper_dissipation coefficient appearing before \f$\nabla^exponent \f$: 
 	bool	hyper_dissipation_switch;
-	DP		hyper_dissipation_coefficient;
+	Real		hyper_dissipation_coefficient;
 	int		hyper_dissipation_exponent;
 	
 	bool force_switch;
@@ -114,18 +114,18 @@ public:
 	 */
 	FluidVF
 	(
-		DP dissipation_coefficient, 
-		DP hyper_dissipation_coefficient, 
+		Real dissipation_coefficient, 
+		Real hyper_dissipation_coefficient, 
 		int hyper_dissipation_exponent,
 		bool force_switch,
 		string field_name
 	);
 	
 
-	void Compute_divergence_field(Array<complx,3> div, DP &total_abs_div, bool print_switch);
-    void Compute_divergence_nlin(Array<complx,3> div);
+	void Compute_divergence_field(Array<Complex,3> div, Real &total_abs_div, bool print_switch);
+    void Compute_divergence_nlin(Array<Complex,3> div);
 	
-	DP Get_mag_V0();
+	Real Get_mag_V0();
 	
 	void Satisfy_strong_reality_condition_field();
 	void Satisfy_strong_reality_condition_force_field();
@@ -146,29 +146,29 @@ public:
 	void Copy_field_from(CVF& W);
 	void Copy_field_from(PlainCVF& W);
 	
-	void Add_nlin_factor_dt(DP factor);
-	void Add_field_nlin_factor_dt(PlainCVF& Y, DP factor);
+	void Add_nlin_factor_dt(Real factor);
+	void Add_field_nlin_factor_dt(PlainCVF& Y, Real factor);
 	
-	void Mult_field_exp_ksqr_dt(DP a);
-	void Mult_nlin_exp_ksqr_dt(DP a);
+	void Mult_field_exp_ksqr_dt(Real a);
+	void Mult_nlin_exp_ksqr_dt(Real a);
 	
-	void Add_complex_conj(int kx, int ky, int kz, complx Vx, complx Vy, complx Vz);
-	void Assign_field_and_comp_conj(int kx, int ky, int kz, complx Vx, complx Vy, complx Vz);
-	void Assign_random_complex_vector(int kx, int ky, int kz, DP rand_range);
-	void Assign_random_real_vector(int kx, int ky, int kz, DP rand_range);
+	void Add_complex_conj(int kx, int ky, int kz, Complex Vx, Complex Vy, Complex Vz);
+	void Assign_field_and_comp_conj(int kx, int ky, int kz, Complex Vx, Complex Vy, Complex Vz);
+	void Assign_random_complex_vector(int kx, int ky, int kz, Real rand_range);
+	void Assign_random_real_vector(int kx, int ky, int kz, Real rand_range);
 	
-	void Assign_field(int kx, int ky, int kz, DP Vx, DP Vy, DP Vz);
+	void Assign_field(int kx, int ky, int kz, Real Vx, Real Vy, Real Vz);
 	
-	DP Get_Tk(int kx, int ky, int kz);
+	Real Get_Tk(int kx, int ky, int kz);
 
 	void Zero_modes_RB_slip(FluidSF& T);
 	
-	void Get_local_max_real_space(DP local_ux[]);
+	void Get_local_max_real_space(Real local_ux[]);
 	
-	DP Get_dt();
-	DP Get_dt(FluidSF& T);
-	DP Get_dt(FluidVF& W);
-	DP Get_dt(FluidVF& W, FluidSF& T);
+	Real Get_dt();
+	Real Get_dt(FluidSF& T);
+	Real Get_dt(FluidVF& W);
+	Real Get_dt(FluidVF& W, FluidSF& T);
 };
 	
 #endif

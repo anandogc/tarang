@@ -52,8 +52,8 @@
 void FORCE::Compute_force_astro(FluidVF& U, FluidVF& W, FluidSF& T)
 {
 	
-	DP Schwarzschild = global.force.double_para(0);
-	DP Peclet_astro = global.force.double_para(1);
+	Real Schwarzschild = global.force.double_para(0);
+	Real Peclet_astro = global.force.double_para(1);
 	
 	U.Force1 =  (global.PHYSICS.Rayleigh/global.PHYSICS.Chandrasekhar)*(T.csf.F);
 	
@@ -65,7 +65,7 @@ void FORCE::Compute_force_astro(FluidVF& U, FluidVF& W, FluidSF& T)
 	// Compute unit vector(B)
 	W.Inverse_transform();
 	
-	DP abs_Bxyz;
+	Real abs_Bxyz;
 	for (int ly=0; ly<=(W.rvf.V1r).extent(0); ly++)
         for (int lz=0; lz<=(W.rvf.V1r).extent(1); lz++)
             for (int lx=0; lx<=(W.rvf.V1r).extent(2); lx++) {
@@ -119,9 +119,9 @@ void FORCE::Compute_force_astro(FluidVF& U, FluidVF& W, FluidSF& T)
 void FORCE::Compute_force_astro(FluidVF& U, FluidVF& W, FluidSF& T, FluidSF& C)
 {
 	
-	DP Schwarzschild = global.force.double_para(0);
-	DP Peclet_astro = global.force.double_para(1);
-	DP Peclet_c_astro = global.force.double_para(1);
+	Real Schwarzschild = global.force.double_para(0);
+	Real Peclet_astro = global.force.double_para(1);
+	Real Peclet_c_astro = global.force.double_para(1);
 	
 	U.Force1 =  (global.PHYSICS.Rayleigh/global.PHYSICS.Chandrasekhar)*(T.csf.F);
 	
@@ -134,7 +134,7 @@ void FORCE::Compute_force_astro(FluidVF& U, FluidVF& W, FluidSF& T, FluidSF& C)
 	
 	// Compute unit vector(B)
 	W.Inverse_transform();
-	DP abs_Bxyz;
+	Real abs_Bxyz;
 	for (int ly=0; ly<=(W.rvf.V1r).extent(0); ly++)
         for (int lz=0; lz<=(W.rvf.V1r).extent(1); lz++)
             for (int lx=0; lx<=(W.rvf.V1r).extent(2); lx++) {

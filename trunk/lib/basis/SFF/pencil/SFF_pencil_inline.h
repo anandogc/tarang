@@ -54,24 +54,34 @@
 
 /*! @brief	Get grid waveno kx given first local array index lx.
  * 
+ *  if i1 <=Ni/2, ki=i1; else kx=i1-Ni.  <BR>
  *	i1= local_N1_start + lx.
  * 
  * \param lx  first local index of an array
- * \return kx corresponding to lx
- */
-inline int SFF_PENCIL::Get_kx(int lx) { return  (lx + lx_start); }
 
+ */
+inline int SFF_PENCIL::Get_kx(int lx) {return  (lx <= Nx/2) ? lx : (lx-Nx); } 
+ 
 
 /*! @brief	Get local array index lx given grid waveno kx.
  * 
- *	lx= kx - local_N1_start.
+ *  If kx>=0, i1=kx; else i1=kx+N1.  <BR>
+ *	i1= local_N1_start + lx.
  * 
  * \param	kx  grid wavenumber along x
  * \return	lx  local array index along x
  */
-inline int SFF_PENCIL::Get_lx(int kx)  { return  (kx - lx_start); } 
+inline int SFF_PENCIL::Get_lx(int kx) {return (kx >= 0) ? kx : (kx + Nx); } 
 
-inline int SFF_PENCIL::Get_ix(int kx) {return  kx;} //Not used in this basis
+
+/*! @brief	Get array index ix given grid waveno kx.
+ * 
+ *  If kx>=0, i1=kx; else i1=kx+N1.  <BR>
+ * 
+ * \param	kx  grid wavenumber along x
+ * \return	i1  array index along x
+ */
+inline int SFF_PENCIL::Get_ix(int kx) {return  (kx >= 0) ? kx : (kx + Nx);  }		
 
 
 /*! @brief	Get grid waveno ky given first local array index ly.
@@ -81,8 +91,7 @@ inline int SFF_PENCIL::Get_ix(int kx) {return  kx;} //Not used in this basis
  * \param ly  second local index of an array
  * \return kx corresponding to lx
  */
-inline int SFF_PENCIL::Get_ky(int ly) { return  (ly <= Ny/2) ? ly : (ly-Ny); }
-
+inline int SFF_PENCIL::Get_ky(int ly) {return  ((ly_start + ly) <= Ny/2) ? (ly_start + ly) : (ly_start + ly-Ny); }
 
 /*! @brief	Get local array index ly given grid waveno ky.
  * 
@@ -91,262 +100,279 @@ inline int SFF_PENCIL::Get_ky(int ly) { return  (ly <= Ny/2) ? ly : (ly-Ny); }
  * \param	ky  grid wavenumber along y
  * \return	ly  local array index along y
  */
-inline int SFF_PENCIL::Get_ly(int ky) { return  (ky >= 0) ? ky : (ky + Ny); }
+inline int SFF_PENCIL::Get_ly(int ky) { return  (ky >= 0) ? (ky-ly_start) : (ky + Ny-ly_start);  } 
 
 inline int SFF_PENCIL::Get_iy(int ky) { return  (ky >= 0) ? ky : (ky + Ny); }
 
+inline int SFF_PENCIL::Get_kz(int lz)  {return lz + lz_start;} 
 
-inline int SFF_PENCIL::Get_kz(int lz)  { return lz + lz_start; }
+inline int SFF_PENCIL::Get_lz(int kz)  {return kz - lz_start;}
 
-inline int SFF_PENCIL::Get_lz(int kz)  { return kz - lz_start; }
-
-	// array index
-inline int SFF_PENCIL::Get_iz(int kz)  { return kz; }
-
-
+inline int SFF_PENCIL::Get_iz(int kz)  {return kz;}
 
 inline bool SFF_PENCIL::Probe_in_me(int kx, int ky, int kz) 
-{
-	int lx = Get_lx(kx);
-    int lz = Get_lz(kz);
-	return ( ((lx >= 0) && (lx < maxlx)) && ((lz >= 0) && (lz < maxlz)) );
+{  
+	int ly = Get_ly(ky);
+	int lz = Get_lz(kz);
+	
+	return ( ((ly >= 0) && (ly < maxly)) && ((lz >= 0) && (lz < maxlz)) );
 }
 
 
-inline complx SFF_PENCIL::Get_spectral_field(int kx, int ky, int kz, Array<complx,3> A)
+inline Complex SFF_PENCIL::Get_spectral_field(int kx, int ky, int kz, Array<Complex,3> A)
 { 
 	int lx = Get_lx(kx);
-    int ly = Get_ly(ky);
-    int lz = Get_lz(kz);
+	int ly = Get_ly(ky);
+	int lz = Get_lz(kz);
 	
-	if ( ((lx >= 0) && (lx < maxlx)) && ((lz >= 0) && (lz < maxlz)) )
-		return A(lx,ly,lz);
+	if ( ((ly >= 0) && (ly < maxly)) && ((lz >= 0) && (lz < maxlz)) )
+		return A(lx, ly, lz);
 
-	return 0;
+	return Complex(0,0);
 }
 
-inline TinyVector<complx,3> SFF_PENCIL::Get_spectral_field(int kx, int ky, int kz, Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az)
+inline TinyVector<Complex,3> SFF_PENCIL::Get_spectral_field(int kx, int ky, int kz, Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az)
 {
-	int lx = Get_lx(kx);
-    int ly = Get_ly(ky);
-    int lz = Get_lz(kz);
 	
-	if ( ((lx >= 0) && (lx < maxlx)) && ((lz >= 0) && (lz < maxlz)) )
-		return TinyVector<complx,3>(Ax(lx,ly,lz), Ay(lx,ly,lz), Az(lx,ly,lz));
+	int lx = Get_lx(kx);
+	int ly = Get_ly(ky);
+	int lz = Get_lz(kz);
+	
+	if ( ((ly >= 0) && (ly < maxly)) && ((lz >= 0) && (lz < maxlz)) )
+		return TinyVector<Complex,3>(Ax(lx, ly, lz), Ay(lx, ly, lz), Az(lx, ly, lz));
 
-	return TinyVector<complx,3>(0,0,0);
+	return TinyVector<Complex,3>(0,0,0);
 }
 
-	// Assign....
 
-inline void SFF_PENCIL::Assign_spectral_field(int kx, int ky, int kz, Array<complx,3> A, complx field)
-{ 
-	int lx = Get_lx(kx);
-    int ly = Get_ly(ky);
-    int lz = Get_lz(kz);
-	
-	if ( ((lx >= 0) && (lx < maxlx)) && ((lz >= 0) && (lz < maxlz)) )
-		 A(lx,ly,lz) = field;
-}
-
-inline void SFF_PENCIL::Assign_spectral_field(int kx, int ky, int kz, Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az, TinyVector<complx,3> V)
+//  Assign
+inline void SFF_PENCIL::Assign_spectral_field(int kx, int ky, int kz, Array<Complex,3> A, Complex field)
 {
+
 	int lx = Get_lx(kx);
-    int ly = Get_ly(ky);
-    int lz = Get_lz(kz);
+	int ly = Get_ly(ky);
+	int lz = Get_lz(kz);
 	
+	if ( ((ly >= 0) && (ly < maxly)) && ((lz >= 0) && (lz < maxlz)) )
+		A(lx, ly, lz) = field;
+
+}
+
+inline void SFF_PENCIL::Assign_spectral_field(int kx, int ky, int kz, Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az, TinyVector<Complex,3> V)
+{
 	
-	if ( ((lx >= 0) && (lx < maxlx)) && ((lz >= 0) && (lz < maxlz)) ) {
-		Ax(lx,ly,lz) = V(0);
-        Ay(lx,ly,lz) = V(1);
-        Az(lx,ly,lz) = V(2);
+	int lx = Get_lx(kx);
+	int ly = Get_ly(ky);
+	int lz = Get_lz(kz);
+
+	if ( ((ly >= 0) && (ly < maxly)) && ((lz >= 0) && (lz < maxlz)) ) {
+		Ax(lx, ly, lz) = V(0);
+		Ay(lx, ly, lz) = V(1);
+		Az(lx, ly, lz) = V(2);
 	}
 }
 
-inline void SFF_PENCIL::Assign_spectral_field(int kx, int ky, int kz, Array<complx,3> A,DP field)
+inline void SFF_PENCIL::Assign_spectral_field(int kx, int ky, int kz, Array<Complex,3> A,Real field)
 { 
 	cout << "MYERROR: SFF_PENCIL:Assign_spectral_field(); Use complex data type " << endl; 
 }
 
-inline void SFF_PENCIL::Assign_spectral_field(int kx, int ky, int kz, Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az, TinyVector<DP,3> V)
+inline void SFF_PENCIL::Assign_spectral_field(int kx, int ky, int kz, Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az, TinyVector<Real,3> V)
 {
 	
 	cout << "MYERROR: SFF_PENCIL::Assign_local_spectral_field(); Use complex data type " << endl;
 }
 
-inline void SFF_PENCIL::Add_spectral_field(int kx, int ky, int kz, Array<complx,3> A, complx field)
-{ 
+inline void SFF_PENCIL::Add_spectral_field(int kx, int ky, int kz, Array<Complex,3> A, Complex field)
+{
+
 	int lx = Get_lx(kx);
-    int ly = Get_ly(ky);
-    int lz = Get_lz(kz);
+	int ly = Get_ly(ky);
+	int lz = Get_lz(kz);
 	
-	if ( ((lx >= 0) && (lx < maxlx)) && ((lz >= 0) && (lz < maxlz)) )
-		A(lx,ly,lz) += field;
+	if ( ((ly >= 0) && (ly < maxly)) && ((lz >= 0) && (lz < maxlz)) )
+		A(lx, ly, lz) += field;
+
 }
 
-inline void SFF_PENCIL::Add_spectral_field(int kx, int ky, int kz, Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az, TinyVector<complx,3> V)
+inline void SFF_PENCIL::Add_spectral_field(int kx, int ky, int kz, Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az, TinyVector<Complex,3> V)
 {
+	
 	int lx = Get_lx(kx);
-    int ly = Get_ly(ky);
-    int lz = Get_lz(kz);
+	int ly = Get_ly(ky);
+	int lz = Get_lz(kz);
 	
+	if ( ((ly >= 0) && (ly < maxly)) && ((lz >= 0) && (lz < maxlz)) ) {
+		Ax(lx, ly, lz) += V(0);
+		Ay(lx, ly, lz) += V(1);
+		Az(lx, ly, lz) += V(2);
+	}
+
+}
+
+inline void SFF_PENCIL::Add_spectral_field(int kx, int ky, int kz, Array<Complex,3> A,Real field)
+{ 
+	cout << "MYERROR: SFF_PENCIL::Assign_spectral_field(); Use complex data type " << endl; 
+}
+
+inline void SFF_PENCIL::Add_spectral_field(int kx, int ky, int kz, Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az, TinyVector<Real,3> V)
+{
 	
-	if ( ((lx >= 0) && (lx < maxlx)) && ((lz >= 0) && (lz < maxlz)) ) {
-		Ax(lx,ly,lz) += V(0);
-        Ay(lx,ly,lz) += V(1);
-        Az(lx,ly,lz) += V(2);
+	cout << "MYERROR: SFF_PENCIL::Assign_spectral_field(); Use complex data type " << endl;
+}
+
+
+
+
+// Local field given local lx,ly,lz
+
+inline Complex SFF_PENCIL::Get_local_spectral_field(int lx, int ly, int lz, Array<Complex,3> A)
+{ 
+	return A(lx, ly, lz);
+}
+
+inline TinyVector<Complex,3> SFF_PENCIL::Get_local_spectral_field(int lx, int ly, int lz, Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az)
+{
+	
+	return TinyVector<Complex,3>(Ax(lx, ly, lz), Ay(lx, ly, lz), Az(lx, ly, lz));
+}
+
+
+	//  Assign
+inline void SFF_PENCIL::Assign_local_spectral_field(int lx, int ly, int lz, Array<Complex,3> A, Complex field)
+{ 
+	if ( ((ly >= 0) && (ly < maxly)) && ((lz >= 0) && (lz < maxlz)) )
+		A(lx, ly, lz) = field;
+}
+
+inline void SFF_PENCIL::Assign_local_spectral_field(int lx, int ly, int lz, Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az, TinyVector<Complex,3> V)
+{
+	if ( ((ly >= 0) && (ly < maxly)) && ((lz >= 0) && (lz < maxlz)) ) {
+		Ax(lx, ly, lz) = V(0);
+		Ay(lx, ly, lz) = V(1);
+		Az(lx, ly, lz) = V(2);
 	}
 }
 
-inline void SFF_PENCIL::Add_spectral_field(int kx, int ky, int kz, Array<complx,3> A,DP field)
+inline void SFF_PENCIL::Assign_local_spectral_field(int lx, int ly, int lz, Array<Complex,3> A,Real field)
 { 
-	cout << "MYERROR: SFF_PENCIL:Assign_spectral_field(); Use complex data type " << endl; 
+	cout << "MYERROR: SFF_PENCIL::Assign_local_spectral_field(); Use complex data type " << endl; 
 }
 
-inline void SFF_PENCIL::Add_spectral_field(int kx, int ky, int kz, Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az, TinyVector<DP,3> V)
+inline void SFF_PENCIL::Assign_local_spectral_field(int lx, int ly, int lz, Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az, TinyVector<Real,3> V)
 {
 	
 	cout << "MYERROR: SFF_PENCIL::Assign_local_spectral_field(); Use complex data type " << endl;
 }
 
 
-	// Get_local_spectral field
-inline complx SFF_PENCIL::Get_local_spectral_field(int lx, int ly, int lz, Array<complx,3> A)
+
+inline void SFF_PENCIL::Add_local_spectral_field(int lx, int ly, int lz, Array<Complex,3> A, Complex field)
 { 
-	return A(lx,ly,lz);
+	if ( ((ly >= 0) && (ly < maxly)) && ((lz >= 0) && (lz < maxlz)) )
+		A(lx, ly, lz) += field;
 }
 
-inline TinyVector<complx,3> SFF_PENCIL::Get_local_spectral_field(int lx, int ly, int lz, Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az)
+inline void SFF_PENCIL::Add_local_spectral_field(int lx, int ly, int lz, Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az, TinyVector<Complex,3> V)
 {
-	
-	return TinyVector<complx,3>(Ax(lx,ly,lz), Ay(lx,ly,lz), Az(lx,ly,lz));
-}
-
-
-inline void SFF_PENCIL::Assign_local_spectral_field(int lx, int ly, int lz, Array<complx,3> A, complx field)
-{ 
-	
-	if ( ((lx >= 0) && (lx < maxlx)) && ((lz >= 0) && (lz < maxlz)) )
-		 A(lx,ly,lz) = field;
-}
-
-inline void SFF_PENCIL::Assign_local_spectral_field(int lx, int ly, int lz, Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az, TinyVector<complx,3> V)
-{
-	if ( ((lx >= 0) && (lx < maxlx)) && ((lz >= 0) && (lz < maxlz)) ) {
-		Ax(lx,ly,lz) = V(0);
-        Ay(lx,ly,lz) = V(1);
-        Az(lx,ly,lz) = V(2);
+	if ( ((ly >= 0) && (ly < maxly)) && ((lz >= 0) && (lz < maxlz)) ) {
+		Ax(lx, ly, lz) += V(0);
+		Ay(lx, ly, lz) += V(1);
+		Az(lx, ly, lz) += V(2);
 	}
 }
 
-inline void SFF_PENCIL::Assign_local_spectral_field(int lx, int ly, int lz, Array<complx,3> A,DP field)
+inline void SFF_PENCIL::Add_local_spectral_field(int lx, int ly, int lz, Array<Complex,3> A,Real field)
 { 
-	cout << "MYERROR: SFF_PENCIL:Assign_local_spectral_field(); Use complex data type " << endl; 
+	cout << "MYERROR: SFF_PENCIL::Assign_local_spectral_field(); Use complex data type " << endl; 
 }
 
-inline void SFF_PENCIL::Assign_local_spectral_field(int lx, int ly, int lz, Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az, TinyVector<DP,3> V)
-{
-	
-	cout << "MYERROR: SFF_PENCIL::Assign_local_spectral_field(); Use complex data type " << endl;
-}
-
-inline void SFF_PENCIL::Add_local_spectral_field(int lx, int ly, int lz, Array<complx,3> A, complx field)
-{ 
-	
-	if ( ((lx >= 0) && (lx < maxlx)) && ((lz >= 0) && (lz < maxlz)) )
-		A(lx,ly,lz) += field;
-}
-
-inline void SFF_PENCIL::Add_local_spectral_field(int lx, int ly, int lz, Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az, TinyVector<complx,3> V)
-{
-	if ( ((lx >= 0) && (lx < maxlx)) && ((lz >= 0) && (lz < maxlz)) ) {
-		Ax(lx,ly,lz) += V(0);
-        Ay(lx,ly,lz) += V(1);
-        Az(lx,ly,lz) += V(2);
-	}
-}
-
-inline void SFF_PENCIL::Add_local_spectral_field(int lx, int ly, int lz, Array<complx,3> A,DP field)
-{ 
-	cout << "MYERROR: SFF_PENCIL:Assign_local_spectral_field(); Use complex data type " << endl; 
-}
-
-inline void SFF_PENCIL::Add_local_spectral_field(int lx, int ly, int lz, Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az, TinyVector<DP,3> V)
+inline void SFF_PENCIL::Add_local_spectral_field(int lx, int ly, int lz, Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az, TinyVector<Real,3> V)
 {
 	
 	cout << "MYERROR: SFF_PENCIL::Assign_local_spectral_field(); Use complex data type " << endl;
 }
 
 
-				 
-	// REAL - SPACE FNS
-inline int SFF_PENCIL::Get_lx_real_space(int rx) {return  rx;}
+// REAL - SPACE FNS
+inline int SFF_PENCIL::Get_lx_real_space(int rx)  {return  rx - my_x_pcoord_real*maxrx;}
 
-inline int SFF_PENCIL::Get_rx_real_space(int lx) {return  lx;}
+inline int SFF_PENCIL::Get_ly_real_space(int ry)  {return  ry - my_y_pcoord_real*maxry;}
 
-inline int SFF_PENCIL::Get_ly_real_space(int ry) {return  ry - ry_start; }		
+inline int SFF_PENCIL::Get_lz_real_space(int rz) {return rz;}
 
-inline int SFF_PENCIL::Get_ry_real_space(int ly) {return  ly + ry_start; }
 
-inline int SFF_PENCIL::Get_lz_real_space(int rz) {return  rz - rz_start; }
+inline int SFF_PENCIL::Get_rx_real_space(int lx)  {return  lx + my_x_pcoord_real*maxrx;}
 
-inline int SFF_PENCIL::Get_rz_real_space(int lz) {return  lz + rz_start; }
+inline int SFF_PENCIL::Get_ry_real_space(int ly)  {return  ly + my_y_pcoord_real*maxry; }		
+
+inline int SFF_PENCIL::Get_rz_real_space(int lz) {return lz;}
+
 
 
 inline bool SFF_PENCIL::Probe_in_me_real_space(int rx, int ry, int rz) 
 {
+	int lx = Get_lx_real_space(rx);
 	int ly = Get_ly_real_space(ry);
-	int lz = Get_lz_real_space(rz);
 	
-	return ( ((ly >= 0) && (ly < maxry)) && ((lz >= 0) && (lz < maxrz)) );
+	return ( ((lx >= 0) && (lx < maxrx)) && ((ly >= 0) && (ly < maxry)) );
 }
 
-
-inline DP SFF_PENCIL::Get_real_field(int rx, int ry, int rz,Array<DP,3> A)
-{	
-	int ly = Get_ly_real_space(ry);
-	int lz = Get_lz_real_space(rz);
-    
-	if ( ((ly >= 0) && (ly < maxry)) && ((lz >= 0) && (lz < maxrz)))
-        return (A(rx,ly,lz));
-
-    return 0;
-}
-
-inline TinyVector<DP,3> SFF_PENCIL::Get_real_field(int rx, int ry, int rz, Array<DP,3> Ax, Array<DP,3> Ay, Array<DP,3> Az)
-{
-	int ly = Get_ly_real_space(ry);
-	int lz = Get_lz_real_space(rz);
-    
-	if ( ((ly >= 0) && (ly < maxry)) && ((lz >= 0) && (lz < maxrz)))
-        return TinyVector<DP,3>(Ax(rx,ly,lz), Ay(rx,ly,lz), Az(rx,ly,lz));
-	
-	return TinyVector<DP,3>(0,0,0);
-}
 
 // lz is the coord of the complex array
-inline void SFF_PENCIL::Assign_real_field(int rx, int ry, int rz, Array<DP,3> A, DP field)
+inline Real SFF_PENCIL::Get_real_field(int rx, int ry, int rz, Array<Real,3> A)
 {	
-    int ly = Get_ly_real_space(ry);
-	int lz = Get_lz_real_space(rz);
-	
-	if ( ((ly >= 0) && (ly < maxry)) && ((lz >= 0) && (lz < maxrz)))
-		A(rx,ly,lz) = field;
-}
-
-inline void SFF_PENCIL::Assign_real_field(int rx, int ry, int rz, Array<DP,3> Ax, Array<DP,3> Ay, Array<DP,3> Az, TinyVector<DP,3> V)
-{
-    
+	int lx = Get_lx_real_space(rx);
 	int ly = Get_ly_real_space(ry);
 	int lz = Get_lz_real_space(rz);
 	
-	if ( ((ly >= 0) && (ly < maxry)) && ((lz >= 0) && (lz < maxrz))) {
-		Ax(rx,ly,lz) = V(0);
-		Ay(rx,ly,lz) = V(1);
-		Az(rx,ly,lz) = V(2);
-	}
+	if ( ((lx >= 0) && (lx < maxrx)) && ((ly >= 0) && (ly < maxry)) )
+		return (A(lx, ly, lz));
+
+	return 0;
+}
+
+inline TinyVector<Real,3> SFF_PENCIL::Get_real_field(int rx, int ry, int rz, Array<Real,3> Ax, Array<Real,3> Ay, Array<Real,3> Az)
+{
+	
+	int lx = Get_lx_real_space(rx);
+	int ly = Get_ly_real_space(ry);
+	int lz = Get_lz_real_space(rz);
+	
+	if ( ((lx >= 0) && (lx < maxrx)) && ((ly >= 0) && (ly < maxry)) )
+		return TinyVector<Real,3>(Ax(lx, ly, lz), Ay(lx, ly, lz), Az(lx, ly, lz));
+	
+	return TinyVector<Real,3>(0,0,0);
+}
+
+
+// lz is the coord of the complex array
+inline void SFF_PENCIL::Assign_real_field(int rx, int ry, int rz, Array<Real,3> A, Real field)
+{	
+	int lx = Get_lx_real_space(rx);
+	int ly = Get_ly_real_space(ry);
+	int lz = Get_lz_real_space(rz);
+	
+	if ( ((lx >= 0) && (lx < maxrx)) && ((ly >= 0) && (ly < maxry)) )
+		A(lx, ly, lz) = field;
+}
+
+inline void SFF_PENCIL::Assign_real_field(int rx, int ry, int rz, Array<Real,3> Ax, Array<Real,3> Ay, Array<Real,3> Az, TinyVector<Real,3> V)
+{
+	
+	int lx = Get_lx_real_space(rx);
+	int ly = Get_ly_real_space(ry);
+	int lz = Get_lz_real_space(rz);
+	
+	if ( ((lx >= 0) && (lx < maxrx)) && ((ly >= 0) && (ly < maxry)) ) {
+		Ax(lx, ly, lz) = V(0);
+		Ay(lx, ly, lz) = V(1);
+		Az(lx, ly, lz) = V(2);
+	}    
 	
 }
+
+
 
 
 
@@ -359,7 +385,7 @@ inline void SFF_PENCIL::Assign_real_field(int rx, int ry, int rz, Array<DP,3> Ax
 ***********************************************************************************************/
 
 
-inline void SFF_PENCIL::Wavenumber(int lx, int ly, int lz, TinyVector<DP,3> &K)
+inline void SFF_PENCIL::Wavenumber(int lx, int ly, int lz, TinyVector<Real,3> &K)
 {
 	K = Get_kx(lx)*kfactor[1],  Get_ky(ly)*kfactor[2], Get_kx(lz)*kfactor[3];
 }
@@ -367,9 +393,9 @@ inline void SFF_PENCIL::Wavenumber(int lx, int ly, int lz, TinyVector<DP,3> &K)
 
 // Complex K; The imaginary part is zero.  Written to use cross function of blitz.
 // Omega = cross(V,K).
-inline void SFF_PENCIL::Wavenumber(int lx, int ly, int lz, TinyVector<complx,3> &K)
+inline void SFF_PENCIL::Wavenumber(int lx, int ly, int lz, TinyVector<Complex,3> &K)
 {
-	K = complx(Get_kx(lx)*kfactor[1], 0.0), complx(Get_ky(ly)*kfactor[2], 0.0), complx(Get_kx(lz)*kfactor[3], 0.0);
+	K = Complex(Get_kx(lx)*kfactor[1], 0.0), Complex(Get_ky(ly)*kfactor[2], 0.0), Complex(Get_kx(lz)*kfactor[3], 0.0);
 }
 
 
@@ -382,7 +408,7 @@ inline void SFF_PENCIL::Wavenumber(int lx, int ly, int lz, TinyVector<complx,3> 
 
 
 ///  WAVENOACTUAL: \f$ K = \sqrt{K_x^2 + K_y^2 + K_z^2} \f$
-inline DP SFF_PENCIL::Kmagnitude(int lx, int ly, int lz)
+inline Real SFF_PENCIL::Kmagnitude(int lx, int ly, int lz)
 { 
 	if	(global.field.waveno_switch)
 		return sqrt( pow2(Get_kx(lx)*kfactor[1]) + pow2(Get_ky(ly)*kfactor[2]) + pow2(Get_kz(lz)*kfactor[3]) ); 
@@ -409,7 +435,7 @@ inline int SFF_PENCIL::Min_radius_outside()
 inline int SFF_PENCIL::Max_radius_inside() 
 {
 	int ans = 1;
-	DP Kmag;
+	Real Kmag;
 	
 	if	(global.field.waveno_switch) {
         Kmag = min( (Nx-1)*kfactor[1], (Ny/2)*kfactor[2]);
@@ -437,7 +463,7 @@ inline int SFF_PENCIL::Max_radius_inside()
  * \return The number of modes in a shell of radius. In 2D, it is quarter circle (kx, ky>= 0). 
  *			In 3D, it is quarter sphere with (kx,kz>=0).
  */
-inline DP SFF_PENCIL::Approx_number_modes_in_shell(int radius)
+inline Real SFF_PENCIL::Approx_number_modes_in_shell(int radius)
 {	
     if (global.field.waveno_switch)
         return (4*M_PI*radius*radius)/(kfactor[1]*kfactor[2]*kfactor[3]);	
@@ -462,9 +488,9 @@ inline DP SFF_PENCIL::Approx_number_modes_in_shell(int radius)
  * \param  lx,ly,lz
  * \return Multiplication factor for computing enregy spectrum etc.
  */
-inline DP SFF_PENCIL::Multiplicity_factor(int lx, int ly, int lz)
+inline Real SFF_PENCIL::Multiplicity_factor(int lx, int ly, int lz)
 {
-	DP factor;
+	Real factor;
 
 	int m = Get_kx(lx);
 	int ky = Get_ky(ly);
@@ -496,9 +522,9 @@ inline DP SFF_PENCIL::Multiplicity_factor(int lx, int ly, int lz)
 ***********************************************************************************************/
 /// Modal energy  = \f$ E(k) =  |A(k_x, \vec{k}_{\perp})|^{2} \f$  if  \f$ (k_x > 0) \f$.  <BR>
 /// Modal energy  = \f$ E(k) =  |A(0, \vec{k}_{\perp})|^{2}/2 \f$  if  \f$ (k_x = 0) \f$.  <BR>
-inline DP SFF_PENCIL::Modal_energy(int lx, int ly, int lz, Array<complx,3> A)
+inline Real SFF_PENCIL::Modal_energy(int lx, int ly, int lz, Array<Complex,3> A)
 {
-	return pow2(abs(A(lx,lz,ly)))/2;	
+	return pow2(abs(A(lx, ly, lz)))/2;	
 }
 
 
@@ -509,18 +535,18 @@ inline DP SFF_PENCIL::Modal_energy(int lx, int ly, int lz, Array<complx,3> A)
 
 ***********************************************************************************************/
 
-inline DP SFF_PENCIL::Get_Modal_helicity
+inline Real SFF_PENCIL::Get_Modal_helicity
 (
 	int lx, int ly, int lz, 
-	Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az
+	Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az
 )
 {
 
-	TinyVector<DP,3> Vreal, Vimag, VrcrossVi, K;
+	TinyVector<Real,3> Vreal, Vimag, VrcrossVi, K;
 	
-	complx Vx = Ax(lx,ly,lz);
-	complx Vy = Ay(lx,ly,lz);
-	complx Vz = Az(lx,ly,lz);
+	Complex Vx = Ax(lx,ly,lz);
+	Complex Vy = Ay(lx,ly,lz);
+	Complex Vz = Az(lx,ly,lz);
 	
 	// -I to convert sin to Fourier basis along x axis
 	if ((global.program.sincostr_switch == "SFF") || (global.program.sincostr_switch == "S0F")) {
@@ -551,12 +577,12 @@ inline DP SFF_PENCIL::Get_Modal_helicity
 inline void SFF_PENCIL::Compute_Modal_vorticity
 (
 	int lx, int ly, int lz, 
-	Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az, 
-	TinyVector<complx,3> &vorticity
+	Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az, 
+	TinyVector<Complex,3> &vorticity
 )
 {
-	TinyVector<DP,3> K;
-	TinyVector<complx,3> Vi;
+	TinyVector<Real,3> K;
+	TinyVector<Complex,3> Vi;
 	
 	// -I to convert sin to Fourier basis along x axis
 	if ((global.program.sincostr_switch == "SFF") || (global.program.sincostr_switch == "S0F"))
@@ -578,12 +604,12 @@ inline void SFF_PENCIL::Compute_Modal_vorticity
 inline void SFF_PENCIL::Compute_Modal_vorticity_y_component
 (
     int lx, int ly, int lz, 
-    Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az, 
-    complx &vort_y
+    Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az, 
+    Complex &vort_y
 )
 {
-	TinyVector<DP,3> K;
-	TinyVector<complx,3> Vi;
+	TinyVector<Real,3> K;
+	TinyVector<Complex,3> Vi;
 	
 	// -I to convert sin to Fourier basis along x axis
 	// We have set Vi(1) = 0 to save time.
@@ -604,7 +630,7 @@ inline void SFF_PENCIL::Compute_Modal_vorticity_y_component
 
 /// 3D == Anisotropic axis along x1: for anisotropic energy spectrum and 
 ///			energy transfer calculations,  \f$ K_{||} = K_1 \f$.		
-inline DP SFF_PENCIL::AnisKpll(int lx, int ly, int lz)
+inline Real SFF_PENCIL::AnisKpll(int lx, int ly, int lz)
 {	
 	if (global.field.anisotropy_dirn == 1)
 		return (Get_kx(lx)*kfactor[1]); 
@@ -621,7 +647,7 @@ inline DP SFF_PENCIL::AnisKpll(int lx, int ly, int lz)
 
 /// 3D == Anisotropic axis along x1: for anisotropic energy spectrum and 
 ///			energy transfer calculations,  \f$ K_\perp =\sqrt{K_2^2 + K_3^2} \f$.			
-inline DP SFF_PENCIL::AnisKperp(int lx, int ly, int lz)
+inline Real SFF_PENCIL::AnisKperp(int lx, int ly, int lz)
 {
 	if (global.field.anisotropy_dirn == 1)
 		return sqrt( pow2(Get_ky(ly) * kfactor[2]) + pow2(Get_kz(lz)*kfactor[3]) ); 
@@ -638,7 +664,7 @@ inline DP SFF_PENCIL::AnisKperp(int lx, int ly, int lz)
 
 /// 3D == Anisotropic axis along x1: for anisotropic energy spectrum and 
 ///			energy transfer calculations,  horizontal direction 1, \f$ K_{h1} = K_2 \f$.										
-inline DP SFF_PENCIL::AnisKh1(int lx, int ly, int lz)
+inline Real SFF_PENCIL::AnisKh1(int lx, int ly, int lz)
 {	
 	if (global.field.anisotropy_dirn == 1)
 		return (Get_ky(ly) * kfactor[2]); 
@@ -655,7 +681,7 @@ inline DP SFF_PENCIL::AnisKh1(int lx, int ly, int lz)
 
 /// 3D == Anisotropic axis along x1: for anisotropic energy spectrum and 
 ///			energy transfer calculations,  horizontal direction 2, \f$ K_{h2} = K_3 \f$.				
-inline DP SFF_PENCIL::AnisKh2(int lx, int ly, int lz)
+inline Real SFF_PENCIL::AnisKh2(int lx, int ly, int lz)
 {	
 	if (global.field.anisotropy_dirn == 1)
 		return (Get_kz(lz) * kfactor[3]);  
@@ -671,16 +697,16 @@ inline DP SFF_PENCIL::AnisKh2(int lx, int ly, int lz)
 }
 			
 /// Cylindrical: Anis_min_Kpll
-inline DP SFF_PENCIL::Anis_min_Kpll() 
+inline Real SFF_PENCIL::Anis_min_Kpll() 
 { 
 	return 0.0;
 }
 				
 /// Cylindrical: Anis_max_Kpll
-inline DP SFF_PENCIL::Anis_max_Kpll() 
+inline Real SFF_PENCIL::Anis_max_Kpll() 
 { 
 	
-	DP maxKpll = 0.0;
+	Real maxKpll = 0.0;
 	
     if (global.field.anisotropy_dirn == 1)
         maxKpll = ((Nx-1) * kfactor[1]); 
@@ -698,7 +724,7 @@ inline DP SFF_PENCIL::Anis_max_Kpll()
 /// 3D Cylindrical: Anis_max_Krho_radius_inside the wavenumber box.
 inline int SFF_PENCIL::Anis_max_Krho_radius_inside() 			
 {
-	DP Kmag = 0.0;
+	Real Kmag = 0.0;
 	
     if (global.field.anisotropy_dirn == 1)
         Kmag = min( (Ny/2)*kfactor[2], (Nz/2)*kfactor[3] ); 
@@ -713,7 +739,7 @@ inline int SFF_PENCIL::Anis_max_Krho_radius_inside()
 }
 
 // Max polar angle
-inline DP SFF_PENCIL::Get_max_polar_angle() 
+inline Real SFF_PENCIL::Get_max_polar_angle() 
 {	
 	
 	return M_PI/2;
@@ -729,9 +755,9 @@ inline DP SFF_PENCIL::Get_max_polar_angle()
  * \return \f$ \tan^{-1}(K_{\perp}/K_{||}) \f$.
  * \return \f$ \pi/2 \f$ if \f$ K_{||} = 0 \f$.
  */	
-inline DP SFF_PENCIL::AnisKvect_polar_angle(int lx, int ly, int lz)
+inline Real SFF_PENCIL::AnisKvect_polar_angle(int lx, int ly, int lz)
 {
-	DP kkpll, kkperp;
+	Real kkpll, kkperp;
 	
 	kkpll = AnisKpll(lx,ly,lz);
 	kkperp = AnisKperp(lx,ly,lz);
@@ -748,11 +774,11 @@ inline DP SFF_PENCIL::AnisKvect_polar_angle(int lx, int ly, int lz)
  * \return \f$ \tan^{-1}(Ky}/Kx \f$.
  * \return \f$ \pi/2 \f$ if \f$ K_{||} = 0 \f$.
  */	
-inline DP SFF_PENCIL::AnisKvect_azimuthal_angle(int lx, int ly, int lz)
+inline Real SFF_PENCIL::AnisKvect_azimuthal_angle(int lx, int ly, int lz)
 {
 	
-	DP kkh1 = AnisKh1(lx,ly,lz);
-	DP kkh2 = AnisKh2(lx,ly,lz);
+	Real kkh1 = AnisKh1(lx,ly,lz);
+	Real kkh2 = AnisKh2(lx,ly,lz);
 	
 	return Get_azimuthal_angle(kkh1, kkh2);
 }			

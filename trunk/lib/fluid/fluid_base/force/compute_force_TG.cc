@@ -52,7 +52,7 @@ void FORCE::Compute_force_Taylor_Green(FluidVF& U)
 
 	if (!global.force.configuration_done)	{
 		int k0 = ((int) global.force.double_para(0));
-		DP force_amp = global.force.double_para(1);
+		Real force_amp = global.force.double_para(1);
 		global.force.configuration_done = true; // To read only once.
 		
 		Setup_Taylor_Green_force_field(U, k0, force_amp);
@@ -85,8 +85,8 @@ void FORCE::Compute_force_Taylor_Green(FluidVF& U, FluidVF& W)
 	
 	if (!global.force.configuration_done) {
 		int k0 = int(global.force.double_para(0));
-		DP force_amp = global.force.double_para(1);
-		DP forceW_amp = global.force.double_para(2);
+		Real force_amp = global.force.double_para(1);
+		Real forceW_amp = global.force.double_para(2);
 		
 		Setup_Taylor_Green_force_field(U, k0, force_amp);
 		

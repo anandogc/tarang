@@ -54,10 +54,10 @@ void FORCE::Compute_force_ABC(FluidVF& U)
 	
 	if (!global.force.configuration_done) {
 		int k0 = ((int) global.force.double_para(0));
-		DP A = global.force.double_para(1);
-		DP B = global.force.double_para(2);
-		DP C = global.force.double_para(3);
-		DP force_amp = global.force.double_para(4);
+		Real A = global.force.double_para(1);
+		Real B = global.force.double_para(2);
+		Real C = global.force.double_para(3);
+		Real force_amp = global.force.double_para(4);
 		
 		Setup_ABC_force_field(U, k0, force_amp, A, B, C);
 	
@@ -95,11 +95,11 @@ void FORCE::Compute_force_ABC(FluidVF&U, FluidVF& W)
 	if (!global.force.configuration_done) {
 
 		int k0 = ((int) global.force.double_para(1));
-		DP A = global.force.double_para(2);
-		DP B = global.force.double_para(3);
-		DP C = global.force.double_para(4);
-		DP force_amp = global.force.double_para(5);
-		DP forceW_amp = global.force.double_para(6);
+		Real A = global.force.double_para(2);
+		Real B = global.force.double_para(3);
+		Real C = global.force.double_para(4);
+		Real force_amp = global.force.double_para(5);
+		Real forceW_amp = global.force.double_para(6);
 		
 		Setup_ABC_force_field(U, k0, force_amp, A, B, C);
 		Setup_ABC_force_field(W, k0, forceW_amp, A, B, C);

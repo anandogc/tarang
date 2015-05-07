@@ -45,8 +45,6 @@
 #include "universal.h"
 #include "ArrayOps.h"
 
-using namespace blitz;
-
 //*********************************************************************************************	
 
 

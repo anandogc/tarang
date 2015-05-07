@@ -43,29 +43,29 @@ comment
  
 ***********************************************************************************************/
 
-void SSF_PENCIL::Last_component(int kx, int ky, int kz, DP &Vx, DP &Vy, DP &Vz)
+void SSF_PENCIL::Last_component(int kx, int ky, int kz, Real &Vx, Real &Vy, Real &Vz)
 {}
 
-void SSF_PENCIL::Last_component(int kx, int ky, int kz, complx &Vx, complx &Vy, complx &Vz)
+void SSF_PENCIL::Last_component(int kx, int ky, int kz, Complex &Vx, Complex &Vy, Complex &Vz)
 {
-	DP Kx = kx*kfactor[1];
-	DP Ky = ky*kfactor[2];
-	DP Kz = kz*kfactor[3];
+	Real Kx = kx*kfactor[1];
+	Real Ky = ky*kfactor[2];
+	Real Kz = kz*kfactor[3];
 	
-	complx dvxdx, dvydy;
+	Complex dvxdx, dvydy;
 	int kysign;
 	
 	global.program.sincostr_switch = sincostr_switch_Vx;
 	if (global.program.sincostr_switch[0] == 'S')
-		dvxdx = complx(Kx,0)*Vx;
+		dvxdx = Complex(Kx,0)*Vx;
 	else if (global.program.sincostr_switch[0] == 'C')
-		dvxdx = -complx(Kx,0)*Vx;
+		dvxdx = -Complex(Kx,0)*Vx;
 	
 	global.program.sincostr_switch = sincostr_switch_Vy;
 	if (global.program.sincostr_switch[1] == 'S')
-		dvydy = complx(Ky,0)*Vy;
+		dvydy = Complex(Ky,0)*Vy;
 	else if (global.program.sincostr_switch[1] == 'C')
-		dvydy = complx(-Ky,0)*Vy;
+		dvydy = Complex(-Ky,0)*Vy;
 	
 	if (global.program.sincostr_switch[1] == 'S')
 		kysign = 1;
@@ -74,20 +74,20 @@ void SSF_PENCIL::Last_component(int kx, int ky, int kz, complx &Vx, complx &Vy, 
 
 	
 	if (kz != 0) 
-		Vz = (dvxdx+dvydy)/complx(0,-Kz);
+		Vz = (dvxdx+dvydy)/Complex(0,-Kz);
 		// works for both 2D (Ky=0) and 3D.
 	
 	else {
 		if (ky != 0) {// 3D: input fields are (Vx, Vz); compute Vy
 			Vz = Vy;
-			Vy = dvxdx/complx(0,-Ky*kysign); 
+			Vy = dvxdx/Complex(0,-Ky*kysign); 
 		}
 		else { // k = (kx,0,0); input fields are (Vy, Vz) field is purely real
 			if ( (abs(imag(Vx)) < MYEPS) || (abs(imag(Vx)) < MYEPS))
 				cout << "MYERROR: SSF_PENCIL::Last_component(); For (kx,0,0), the modes are purely real; Setting imag part to zero. " << endl;
-			Vx = complx(0,0);
-			Vy = complx(real(Vx), 0);
-			Vz = complx(real(Vy), 0);
+			Vx = Complex(0,0);
+			Vy = Complex(real(Vx), 0);
+			Vz = Complex(real(Vy), 0);
 		}
 	}
 	
@@ -100,13 +100,13 @@ Dealias
  
  ***********************************************************************************************/
 
-void SSF_PENCIL::Dealias(Array<complx,3> A)
+void SSF_PENCIL::Dealias(Array<Complex,3> A)
 {
-	Assign_sub_array(Range(2*Nx/3+1,toEnd), Range(2*Ny/3+1,toEnd), Range(Nz/3+1,toEnd), A, complx(0,0));
+	Assign_sub_array(Range(2*Nx/3+1,toEnd), Range(2*Ny/3+1,toEnd), Range(Nz/3+1,toEnd), A, Complex(0,0));
 }
 
 // Data resides till outer_radius in k-space
-bool SSF_PENCIL::Is_dealiasing_necessary(Array<complx,3> A, DP outer_radius)
+bool SSF_PENCIL::Is_dealiasing_necessary(Array<Complex,3> A, Real outer_radius)
 {
 	int kx_max = (int) ceil(outer_radius/kfactor[1]);
 	int ky_max = (int) ceil(outer_radius/kfactor[2]);
@@ -124,17 +124,17 @@ bool SSF_PENCIL::Is_dealiasing_necessary(Array<complx,3> A, DP outer_radius)
  
  ***********************************************************************************************/
 
-void SSF_PENCIL::Satisfy_strong_reality_condition_in_Array(Array<complx,3> A)
+void SSF_PENCIL::Satisfy_strong_reality_condition_in_Array(Array<Complex,3> A)
 {
 	return; // Do nothing
 }
 
-void SSF_PENCIL::Satisfy_weak_reality_condition_in_Array(Array<complx,3> A)
+void SSF_PENCIL::Satisfy_weak_reality_condition_in_Array(Array<Complex,3> A)
 {
 	return; // Do nothing
 }
 
-void SSF_PENCIL::Test_reality_condition_in_Array(Array<complx,3> A)
+void SSF_PENCIL::Test_reality_condition_in_Array(Array<Complex,3> A)
 {
 	return; // Do nothing
 }
@@ -147,7 +147,7 @@ void SSF_PENCIL::Test_reality_condition_in_Array(Array<complx,3> A)
  * @return CFF: \f$ V_2(0,ky,kz) = V_3(0,ky,kz) = 0 \f$  because sin(0) =0 [kx =0].
  */
 
-void SSF_PENCIL::Zero_modes(Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az)
+void SSF_PENCIL::Zero_modes(Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az)
 {
 	// lx = 0 reside in master node
 	
@@ -155,31 +155,31 @@ void SSF_PENCIL::Zero_modes(Array<complx,3> Ax, Array<complx,3> Ay, Array<complx
 	global.program.sincostr_switch = sincostr_switch_Vx;
 	
 	if (global.program.sincostr_switch == "SCF") {
-		Assign_sub_array(zero,Range::all(),Range::all(),Ax,complx(0,0));
-		Assign_sub_array(Range::all(),zero,Range::all(),Ay,complx(0,0));
+		Assign_sub_array(zero,Range::all(),Range::all(),Ax,Complex(0,0));
+		Assign_sub_array(Range::all(),zero,Range::all(),Ay,Complex(0,0));
 	}
 	
 	else if (global.program.sincostr_switch == "CSF") {
 		if (Ny>1)
 			Ax(Range::all(),0,Range::all()) = 0.0;
 
-		Assign_sub_array(Range::all(),Range::all(),zero,Ax,complx(0,0));
+		Assign_sub_array(Range::all(),Range::all(),zero,Ax,Complex(0,0));
 
 
-		Assign_sub_array(zero,Range::all(),Range::all(),Ay,complx(0,0));
-		Assign_sub_array(Range::all(),Range::all(),zero,Ay,complx(0,0));
+		Assign_sub_array(zero,Range::all(),Range::all(),Ay,Complex(0,0));
+		Assign_sub_array(Range::all(),Range::all(),zero,Ay,Complex(0,0));
 	}
 	
 	else if (global.program.sincostr_switch == "SSF") {
-		Assign_sub_array(zero,Range::all(),zero,Ax,complx(0,0));
+		Assign_sub_array(zero,Range::all(),zero,Ax,Complex(0,0));
 		if (Ny>1)
 			Ax(Range::all(),0,Range::all()) = 0.0;
 	}
 	
 	else if (global.program.sincostr_switch == "CCF") {
-		Assign_sub_array(Range::all(),Range::all(),zero,Ax,complx(0,0));
+		Assign_sub_array(Range::all(),Range::all(),zero,Ax,Complex(0,0));
 
-		Assign_sub_array(zero,Range::all(),Range::all(),Ay,complx(0,0));
+		Assign_sub_array(zero,Range::all(),Range::all(),Ay,Complex(0,0));
 		if (Ny>1)
 			Ay(Range::all(),0,Range::all()) = 0.0;	
 	}
@@ -190,7 +190,7 @@ void SSF_PENCIL::Zero_modes(Array<complx,3> Ax, Array<complx,3> Ay, Array<complx
  *
  * Temperature same as V_1; (see the above function).
  */    
-void SSF_PENCIL::Zero_modes(Array<complx,3> F)
+void SSF_PENCIL::Zero_modes(Array<Complex,3> F)
 {
 	// lx = 0 reside in master node
 	
@@ -198,65 +198,69 @@ void SSF_PENCIL::Zero_modes(Array<complx,3> F)
 	global.program.sincostr_switch = sincostr_switch_F;
 	
 	if (global.program.sincostr_switch == "SCF")
-		Assign_sub_array(zero,Range::all(),Range::all(),F,complx(0,0));
+		Assign_sub_array(zero,Range::all(),Range::all(),F,Complex(0,0));
 
 	else if (global.program.sincostr_switch == "CSF")
-		Assign_sub_array(zero,Range::all(),Range::all(),F,complx(0,0));
+		Assign_sub_array(zero,Range::all(),Range::all(),F,Complex(0,0));
 
 	else if (global.program.sincostr_switch == "SSF")
-		Assign_sub_array(zero,Range::all(),zero,F,complx(0,0));
+		Assign_sub_array(zero,Range::all(),zero,F,Complex(0,0));
 }
 
-void SSF_PENCIL::Assign_sub_array(Range x_range, Range y_range, Range z_range, Array<complx,3> A, complx value)
+void SSF_PENCIL::Assign_sub_array(Range x_range, Range y_range, Range z_range, Array<Complex,3> A, Complex value)
 {
-	static Array<int,1> x_filter(Nx);
 	static Array<int,1> y_filter(Ny);
+	static Array<int,1> z_filter(Nz/2+1);
 	
-	x_filter = 0;
 	y_filter = 0;
+	z_filter = 0;
 	
-	x_filter(x_range)=1;
 	y_filter(y_range)=1;
+	z_filter(z_range)=1;
+
+	
+	static Range y_apply, z_apply;
 	
 	
-	static Range x_apply, y_apply;
+	y_apply = Range(first(y_filter(Range(my_y_pcoord*maxly,(my_y_pcoord+1)*maxly-1)) == 1),
+					 last(y_filter(Range(my_y_pcoord*maxly,(my_y_pcoord+1)*maxly-1)) == 1));
+	
+	z_apply = Range(first(z_filter(Range(my_z_pcoord*maxlz,(my_z_pcoord+1)*maxlz-1)) == 1),
+					 last(z_filter(Range(my_z_pcoord*maxlz,(my_z_pcoord+1)*maxlz-1)) == 1));
 	
 	
-	x_apply = Range(first(x_filter(Range(my_x_pcoord*local_Nx,(my_x_pcoord+1)*local_Nx-1)) == 1),
-	                 last(x_filter(Range(my_x_pcoord*local_Nx,(my_x_pcoord+1)*local_Nx-1)) == 1));
-	
-	y_apply = Range(first(y_filter(Range(my_y_pcoord*local_Ny,(my_y_pcoord+1)*local_Ny-1)) == 1),
-	                 last(y_filter(Range(my_y_pcoord*local_Ny,(my_y_pcoord+1)*local_Ny-1)) == 1));
-	
-	
-	if ( (x_apply(0)>=0) && (y_apply(0)>=0))
-		A(x_apply, y_apply, z_range) = value;
+	if ( (y_apply(0)>=0) && (z_apply(0)>=0))
+		A(x_range, y_apply, z_apply) = value;
 }
 
-int SSF_PENCIL::Read(Array<complx,3> A, BasicIO::H5_plan plan, string file_name, string dataset_name)
+int SSF_PENCIL::Read(Array<Complex,3> A, BasicIO::H5_plan plan, string file_name, string dataset_name)
 {
-	int err = BasicIO::Read(global.temp_array.Xr.data(), plan, file_name, dataset_name);
+	int err = BasicIO::Read(global.temp_array.Xr_slab.data(), plan, file_name, dataset_name);
+	spectralTransform.To_pencil(global.temp_array.Xr_slab, global.temp_array.Xr);
 	spectralTransform.Transpose(global.temp_array.Xr, A);
 	return err;
 }
 
-int SSF_PENCIL::Read(Array<DP,3> Ar, BasicIO::H5_plan plan, string file_name, string dataset_name)
+int SSF_PENCIL::Read(Array<Real,3> Ar, BasicIO::H5_plan plan, string file_name, string dataset_name)
 {
-	return BasicIO::Read(Ar.data(), plan, file_name, dataset_name);
+	int err = BasicIO::Read(global.temp_array.Xr_slab.data(), plan, file_name, dataset_name);
+	spectralTransform.To_pencil(global.temp_array.Xr_slab, Ar);
+	return err;
 }
 
 
-int SSF_PENCIL::Write(Array<complx,3> A, BasicIO::H5_plan plan, string folder_name, string file_name, string dataset_name)
+int SSF_PENCIL::Write(Array<Complex,3> A, BasicIO::H5_plan plan, string folder_name, string file_name, string dataset_name)
 {
 	spectralTransform.Transpose(A, global.temp_array.Xr);
-	return BasicIO::Write(global.temp_array.Xr.data(), plan, folder_name, file_name, dataset_name);
+	spectralTransform.To_slab(global.temp_array.Xr, global.temp_array.Xr_slab);
+	return BasicIO::Write(global.temp_array.Xr_slab.data(), plan, folder_name, file_name, dataset_name);
 }
 
-int SSF_PENCIL::Write(Array<DP,3> Ar, BasicIO::H5_plan plan, string folder_name, string file_name, string dataset_name)
+int SSF_PENCIL::Write(Array<Real,3> Ar, BasicIO::H5_plan plan, string folder_name, string file_name, string dataset_name)
 {
-	return BasicIO::Write(Ar.data(), plan, folder_name, file_name, dataset_name);  
+	spectralTransform.To_slab(Ar, global.temp_array.Xr_slab);
+	return BasicIO::Write(global.temp_array.Xr_slab.data(), plan, folder_name, file_name, dataset_name);  
 }
-
 //*********************************  End of scft_basic.cc *************************************
 
 

@@ -50,7 +50,7 @@
  ***********************************************************************************************/
 
 
-void FFF_SLAB::Array_exp_ksqr(Array<complx,3> A, DP factor)
+void FFF_SLAB::Array_exp_ksqr(Array<Complex,3> A, Real factor)
 {
 	if (global.program.kind != "KEPLERIAN") {
 		Universal::Array_exp_ksqr(A, factor);
@@ -58,13 +58,13 @@ void FFF_SLAB::Array_exp_ksqr(Array<complx,3> A, DP factor)
     
     else { // Keplerian
         //TODO - Hybrid
-        DP Kx, Ky, Kxsqr, Kysqr;
-        DP Ksqr, mu_sqr;
+        Real Kx, Ky, Kxsqr, Kysqr;
+        Real Ksqr, mu_sqr;
         
-        DP omega_keplerian = global.force.double_para(0);
-        DP q_keplerian = global.force.double_para(1);
+        Real omega_keplerian = global.force.double_para(0);
+        Real q_keplerian = global.force.double_para(1);
         
-        DP q_omega_t = q_keplerian*omega_keplerian*global.time.keplerian;
+        Real q_omega_t = q_keplerian*omega_keplerian*global.time.keplerian;
         
         for (int lx = 0; lx < local_Nx; lx++) {
             Kx = Get_kx(lx)*kfactor[1];
@@ -91,7 +91,7 @@ void FFF_SLAB::Array_exp_ksqr(Array<complx,3> A, DP factor)
  
  ***********************************************************************************************/
 
-void FFF_SLAB::Array_exp_ksqr(Array<complx,3> A, DP factor, DP hyper_factor, int hyper_exponent)
+void FFF_SLAB::Array_exp_ksqr(Array<Complex,3> A, Real factor, Real hyper_factor, int hyper_exponent)
 {
     
 	if (global.program.kind != "KEPLERIAN") {
@@ -99,14 +99,14 @@ void FFF_SLAB::Array_exp_ksqr(Array<complx,3> A, DP factor, DP hyper_factor, int
     }
     
 	/*  else {
-	 DP Kx, Ky, Kxsqr, Kysqr;
-	 DP Ksqr, mu_sqr;
-	 DP Kpownm2;	// K^{q-2} where q = hyper_exponent
+	 Real Kx, Ky, Kxsqr, Kysqr;
+	 Real Ksqr, mu_sqr;
+	 Real Kpownm2;	// K^{q-2} where q = hyper_exponent
 	 
-	 DP omega_keplerian = global.force.double_para(0);
-	 DP q_keplerian = global.force.double_para(1);
+	 Real omega_keplerian = global.force.double_para(0);
+	 Real q_keplerian = global.force.double_para(1);
 	 
-	 DP q_omega_t = q_keplerian*omega_keplerian*global.time.keplerian;
+	 Real q_omega_t = q_keplerian*omega_keplerian*global.time.keplerian;
 	 
 	 for (int ly=0; ly<=global.field.maxly; ly++) {
 	 Kx = Get_kx(lx)*kfactor[1];
@@ -139,28 +139,28 @@ void FFF_SLAB::Array_exp_ksqr(Array<complx,3> A, DP factor, DP hyper_factor, int
  
  ***********************************************************************************************/
 
-void FFF_SLAB::Last_component(int kx, int ky, int kz, DP &Vx, DP &Vy, DP &Vz)
+void FFF_SLAB::Last_component(int kx, int ky, int kz, Real &Vx, Real &Vy, Real &Vz)
 {}
 
-void FFF_SLAB::Last_component(int kx, int ky, int kz, complx &Vx, complx &Vy, complx &Vz)
+void FFF_SLAB::Last_component(int kx, int ky, int kz, Complex &Vx, Complex &Vy, Complex &Vz)
 {
-	DP Kx = kx*kfactor[1];
-	DP Ky = ky*kfactor[2];
-	DP Kz = kz*kfactor[3];
+	Real Kx = kx*kfactor[1];
+	Real Ky = ky*kfactor[2];
+	Real Kz = kz*kfactor[3];
 	
 	if (kz != 0) 
-		Vz = (complx(0,Kx)*Vx + complx(0,Ky)*Vy)/complx(0,-Kz);
+		Vz = (Complex(0,Kx)*Vx + Complex(0,Ky)*Vy)/Complex(0,-Kz);
 		// works for both 2D (Ky=0) and 3D.
 	
 	else {
 		if (ky != 0) { // 3D: input fields are (Vx, Vz); compute Vy
 			Vz = Vy;
-			Vy = (complx(0,Kx)*Vx)/complx(0,-Ky); 
+			Vy = (Complex(0,Kx)*Vx)/Complex(0,-Ky); 
 		}
 		else {	// k = (kx,0,0); input fields are (Vy, Vz)
 			Vz = Vy;
 			Vy = Vx;
-			Vx = complx(0,0);
+			Vx = Complex(0,0);
 		}
 	}
 	
@@ -173,7 +173,7 @@ Dealias
  
  *****************************************************************************************/
 
-void FFF_SLAB::Dealias(Array<complx,3> A)
+void FFF_SLAB::Dealias(Array<Complex,3> A)
 {	
 
 	Array<int,1> Ay_filter(Ny);
@@ -190,7 +190,7 @@ void FFF_SLAB::Dealias(Array<complx,3> A)
 
 
 // Data resides till outer_radius in k-space
-bool FFF_SLAB::Is_dealiasing_necessary(Array<complx,3> A, DP outer_radius)
+bool FFF_SLAB::Is_dealiasing_necessary(Array<Complex,3> A, Real outer_radius)
 {
 
 	int kx_max = (int) ceil(outer_radius/kfactor[1]);
@@ -216,7 +216,7 @@ bool FFF_SLAB::Is_dealiasing_necessary(Array<complx,3> A, DP outer_radius)
  
  ***********************************************************************************************/
 
-void FFF_SLAB::Satisfy_strong_reality_condition_in_Array(Array<complx,3> A)
+void FFF_SLAB::Satisfy_strong_reality_condition_in_Array(Array<Complex,3> A)
 {
 	
 	int array_index_minus_kx, array_index_minus_ky;
@@ -245,7 +245,7 @@ void FFF_SLAB::Satisfy_strong_reality_condition_in_Array(Array<complx,3> A)
 	A(Range::all(),Range::all(),Nz/2) = 0.0;
 }
 
-void FFF_SLAB::Satisfy_weak_reality_condition_in_Array(Array<complx,3> A)
+void FFF_SLAB::Satisfy_weak_reality_condition_in_Array(Array<Complex,3> A)
 {
 
     // for kz=Nz/2
@@ -255,7 +255,7 @@ void FFF_SLAB::Satisfy_weak_reality_condition_in_Array(Array<complx,3> A)
 
 //*********
 
-void FFF_SLAB::Test_reality_condition_in_Array(Array<complx,3> A)
+void FFF_SLAB::Test_reality_condition_in_Array(Array<Complex,3> A)
 {
 	//TODO - Hybrid
 	int array_index_minus_kx, array_index_minus_ky;
@@ -300,7 +300,7 @@ void FFF_SLAB::Test_reality_condition_in_Array(Array<complx,3> A)
  *
  *  @return  \f$ *F = \mathcal{F}(D_i A_i) \f$. 
  */
-void FFF_SLAB::Compute_divergence(Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az, Array<complx,3> div, string field_or_nlin, DP &total_abs_div, bool print_switch)
+void FFF_SLAB::Compute_divergence(Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az, Array<Complex,3> div, string field_or_nlin, Real &total_abs_div, bool print_switch)
 {
     Xderiv(Ax, div);			
 
@@ -312,9 +312,9 @@ void FFF_SLAB::Compute_divergence(Array<complx,3> Ax, Array<complx,3> Ay, Array<
     
     
     if (global.program.kind == "KEPLERIAN") {
-        DP omega_keplerian = global.force.double_para(0);
-        DP q_keplerian = global.force.double_para(1);
-        DP q_omega_t;
+        Real omega_keplerian = global.force.double_para(0);
+        Real q_keplerian = global.force.double_para(1);
+        Real q_omega_t;
         
         if (field_or_nlin == "nlin") // for pressure computation
             q_omega_t = q_keplerian*omega_keplerian*global.time.keplerian;
@@ -322,7 +322,7 @@ void FFF_SLAB::Compute_divergence(Array<complx,3> Ax, Array<complx,3> Ay, Array<
             q_omega_t = q_keplerian*omega_keplerian*global.time.now;
         
         Yderiv(Ax, global.temp_array.X);
-        div = div + complx(q_omega_t,0)*global.temp_array.X;
+        div = div + Complex(q_omega_t,0)*global.temp_array.X;
     }
 	
     if (field_or_nlin == "field") {
@@ -335,7 +335,7 @@ void FFF_SLAB::Compute_divergence(Array<complx,3> Ax, Array<complx,3> Ay, Array<
     }
 }
 
-void FFF_SLAB::Get_XY_plane(Array<complx,3> A, Array<complx,2> plane_xy, int kz)
+void FFF_SLAB::Get_XY_plane(Array<Complex,3> A, Array<Complex,2> plane_xy, int kz)
 {
 	if (numprocs == 1) {
 		plane_xy= A(Range::all(),Range::all(),kz);
@@ -362,7 +362,7 @@ void FFF_SLAB::Get_XY_plane(Array<complx,3> A, Array<complx,2> plane_xy, int kz)
 		extent = 2*local_Ny*Nx;
 		stride = 2*local_Ny*Nx;
 		
-		MPI_Type_vector(num_blocks,extent,stride,MPI_DP,&MPI_Vector_block_send);
+		MPI_Type_vector(num_blocks,extent,stride,MPI_Real,&MPI_Vector_block_send);
 		MPI_Type_commit(&MPI_Vector_block_send);
 		
 
@@ -372,7 +372,7 @@ void FFF_SLAB::Get_XY_plane(Array<complx,3> A, Array<complx,2> plane_xy, int kz)
 		extent = 2*local_Ny;
 		stride = 2*Ny;
 		
-		MPI_Type_vector(num_blocks,extent,stride,MPI_DP,&MPI_Vector_block_recv);
+		MPI_Type_vector(num_blocks,extent,stride,MPI_Real,&MPI_Vector_block_recv);
 		MPI_Type_commit(&MPI_Vector_block_recv);
 		
 		
@@ -380,7 +380,7 @@ void FFF_SLAB::Get_XY_plane(Array<complx,3> A, Array<complx,2> plane_xy, int kz)
 		block_lengths[1]=1;
 		
 		displacements[0]=0;
-		displacements[1]=local_Ny*sizeof(complx);
+		displacements[1]=local_Ny*sizeof(Complex);
 		
 		types[0]=MPI_Vector_block_recv;
 		types[1]=MPI_UB;
@@ -394,32 +394,32 @@ void FFF_SLAB::Get_XY_plane(Array<complx,3> A, Array<complx,2> plane_xy, int kz)
 		
 		full_data_size = 2*Nx*Ny;
 		
-		MPI_Gather(reinterpret_cast<DP*>(global.temp_array.plane_xy_inproc.data()), 1, MPI_Vector_block_send, reinterpret_cast<DP*>(plane_xy.data()), 1, MPI_Struct_block_recv, 0, MPI_COMM_WORLD);
+		MPI_Gather(reinterpret_cast<Real*>(global.temp_array.plane_xy_inproc.data()), 1, MPI_Vector_block_send, reinterpret_cast<Real*>(plane_xy.data()), 1, MPI_Struct_block_recv, 0, MPI_COMM_WORLD);
 
-		MPI_Bcast(reinterpret_cast<DP*>(global.temp_array.plane_xy.data()), full_data_size, MPI_DP, 0, MPI_COMM_WORLD);
+		MPI_Bcast(reinterpret_cast<Real*>(global.temp_array.plane_xy.data()), full_data_size, MPI_Real, 0, MPI_COMM_WORLD);
 	}
 }
 
-int FFF_SLAB::Read(Array<complx,3> A, BasicIO::H5_plan plan, string file_name, string dataset_name)
+int FFF_SLAB::Read(Array<Complex,3> A, BasicIO::H5_plan plan, string file_name, string dataset_name)
 {
 	int err = BasicIO::Read(global.temp_array.Xr.data(), plan, file_name, dataset_name);
 	spectralTransform.Transpose(global.temp_array.Xr, A);
 	return err;
 }
 
-int FFF_SLAB::Read(Array<DP,3> Ar, BasicIO::H5_plan plan, string file_name, string dataset_name)
+int FFF_SLAB::Read(Array<Real,3> Ar, BasicIO::H5_plan plan, string file_name, string dataset_name)
 {
 	return BasicIO::Read(Ar.data(), plan, file_name, dataset_name);
 }
 
 
-int FFF_SLAB::Write(Array<complx,3> A, BasicIO::H5_plan plan, string folder_name, string file_name, string dataset_name)
+int FFF_SLAB::Write(Array<Complex,3> A, BasicIO::H5_plan plan, string folder_name, string file_name, string dataset_name)
 {
 	spectralTransform.Transpose(A, global.temp_array.Xr);
 	return BasicIO::Write(global.temp_array.Xr.data(), plan, folder_name, file_name, dataset_name);
 }
 
-int FFF_SLAB::Write(Array<DP,3> Ar, BasicIO::H5_plan plan, string folder_name, string file_name, string dataset_name)
+int FFF_SLAB::Write(Array<Real,3> Ar, BasicIO::H5_plan plan, string folder_name, string file_name, string dataset_name)
 {
 	return BasicIO::Write(Ar.data(), plan, folder_name, file_name, dataset_name);  
 }

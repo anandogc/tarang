@@ -31,7 +31,7 @@
  * @note 2D:   F(k) = alpha * V(k)
  * @note 3D;   F(k) = alpha * V(k) + beta(k) * Omega(k)
  *
- * @sa void IncVF::Put_random_vector_add_conj(int i1, int ly, DP amp)
+ * @sa void IncVF::Put_random_vector_add_conj(int i1, int ly, Real amp)
  *
  * @author  M. K. Verma
  * @version 4.0 MPI
@@ -53,10 +53,10 @@
  *
  *  @return  F(k) = alpha * V(k)  + beta(k) * Omega(k)
  */
-void FORCE::Const_energy_supply_alpha_beta(FluidVF& U, int lx, int ly, int lz, DP alpha, DP beta, bool add_flag)
+void FORCE::Const_energy_supply_alpha_beta(FluidVF& U, int lx, int ly, int lz, Real alpha, Real beta, bool add_flag)
 {
 	if (basis_type == "SSS") { // Hk =0
-		TinyVector<DP,3> localV_real, localForce_real;
+		TinyVector<Real,3> localV_real, localForce_real;
 		
 		localV_real = real(universal->Get_local_spectral_field(lx, ly, lz, U.cvf.V1, U.cvf.V2, U.cvf.V3));
 		localForce_real = alpha*localV_real;
@@ -69,7 +69,7 @@ void FORCE::Const_energy_supply_alpha_beta(FluidVF& U, int lx, int ly, int lz, D
 		
 	else {
 		static int index=0;
-		TinyVector<complx,3> localV, localForce, vorticity;
+		TinyVector<Complex,3> localV, localForce, vorticity;
 		
 		localV = universal->Get_local_spectral_field(lx, ly, lz, U.cvf.V1, U.cvf.V2, U.cvf.V3);
 		U.cvf.Compute_Modal_vorticity(lx, ly, lz, vorticity);
@@ -95,11 +95,11 @@ void FORCE::Const_energy_supply_alpha_beta(FluidVF& U, int lx, int ly, int lz, D
  *  @note in SCFT basis, conversion to FFF and back to SCFT implies multiplication
  *			of (-I) and (I).  Hence the conversion remains unchanged.
  */
-void FORCE::Const_energy_supply_alpha(FluidSF& T, int lx, int ly, int lz, DP alpha, bool add_flag)
+void FORCE::Const_energy_supply_alpha(FluidSF& T, int lx, int ly, int lz, Real alpha, bool add_flag)
 {
 	
 	if (basis_type == "SSS")  { // Hk =0
-		DP localG_real, localForce_real;
+		Real localG_real, localForce_real;
 		
 		localG_real = real(universal->Get_local_spectral_field(lx, ly, lz, T.csf.F));
 		localForce_real = alpha*localG_real;
@@ -111,7 +111,7 @@ void FORCE::Const_energy_supply_alpha(FluidSF& T, int lx, int ly, int lz, DP alp
 	}
 	
 	else {
-		complx localG, localForce;
+		Complex localG, localForce;
 		
 		localG = universal->Get_local_spectral_field(lx, ly, lz, T.csf.F);
 		
@@ -134,10 +134,10 @@ void FORCE::Const_energy_supply_alpha(FluidSF& T, int lx, int ly, int lz, DP alp
  *
  *  @return  V(k) = alpha * V(k)  + beta(k) * Omega(k)
  */
-void FORCE::Const_energy_alpha_beta(FluidVF& U, int lx, int ly, int lz, DP alpha, DP beta, bool add_flag)
+void FORCE::Const_energy_alpha_beta(FluidVF& U, int lx, int ly, int lz, Real alpha, Real beta, bool add_flag)
 {
 	if (basis_type == "SSS")  { // Hk =0
-		TinyVector<DP,3> localV_real;
+		TinyVector<Real,3> localV_real;
 		
 		localV_real = real(universal->Get_local_spectral_field(lx, ly, lz, U.cvf.V1, U.cvf.V2, U.cvf.V3));
 		localV_real = alpha*localV_real;
@@ -149,7 +149,7 @@ void FORCE::Const_energy_alpha_beta(FluidVF& U, int lx, int ly, int lz, DP alpha
 	}
 	
 	else {
-		TinyVector<complx,3> localV, vorticity;
+		TinyVector<Complex,3> localV, vorticity;
 		
 		localV = universal->Get_local_spectral_field(lx, ly, lz, U.cvf.V1, U.cvf.V2, U.cvf.V3);
 		U.cvf.Compute_Modal_vorticity(lx, ly, lz, vorticity);
@@ -175,11 +175,11 @@ void FORCE::Const_energy_alpha_beta(FluidVF& U, int lx, int ly, int lz, DP alpha
  *  @note in SCFT basis, conversion to FFF and back to SCFT implies multiplication
  *			of (-I) and (I).  Hence the conversion remains unchanged.
  */
-void FORCE::Const_energy_alpha(FluidSF& T, int lx, int ly, int lz, DP alpha, bool add_flag)
+void FORCE::Const_energy_alpha(FluidSF& T, int lx, int ly, int lz, Real alpha, bool add_flag)
 {
 	
 	if (basis_type == "SSS") { // Hk =0
-		DP localG_real;
+		Real localG_real;
 		
 		localG_real  = real(universal->Get_local_spectral_field(lx, ly, lz, T.csf.F));
 		localG_real = alpha*localG_real;
@@ -191,7 +191,7 @@ void FORCE::Const_energy_alpha(FluidSF& T, int lx, int ly, int lz, DP alpha, boo
 	}
 	
 	else {
-		complx localG;
+		Complex localG;
 		
 		localG = universal->Get_local_spectral_field(lx, ly, lz, T.csf.F);
 		

@@ -78,11 +78,11 @@ class RSF
 public:
 
 	//!  \f$F(local_N1, N_2, N_3/2+1) \f$.
-	Array<complx,3> *Fr;
+	Array<Complex,3> *Fr;
 	
 
 	//! max grid coordinate along the anisotropy direction.
-//	DP RS_structure_fn_rpll_max;
+//	Real RS_structure_fn_rpll_max;
 	
 	int Qi1_start, Qi2_start, Qi3_start;
 	int Qi1_end, Qi2_end, Qi3_end;
@@ -96,13 +96,13 @@ public:
 	 *  m=0:  for \f$ \Delta u_{||} \f$
 	 *  m=1:  for \f$ \Delta u_{\perp} \f$
 	 */
-	Array<DP,2> *RS_St;
-	Array<DP,1> *RS_St_count;
+	Array<Real,2> *RS_St;
+	Array<Real,1> *RS_St_count;
 	
-	Array<DP,2> *RS_St_final;
-	Array<DP,1> *RS_St_count_final;
+	Array<Real,2> *RS_St_final;
+	Array<Real,1> *RS_St_count_final;
 	
-	Array<DP,3> *RS_st_planar;
+	Array<Real,3> *RS_st_planar;
 	
 
 //*********************************************************************************************
@@ -134,7 +134,7 @@ public:
 	 *  @return FOUR: Not applicable so far.
 	 *  @return SCFT: SFT(Fr) -> F  (Ftr unaffected).
 	 */	
-	void RS_Forward_transform_transpose_order(Array<complx,3> F);
+	void RS_Forward_transform_transpose_order(Array<Complex,3> F);
 	
 	
 	//*****************************************************************************************
@@ -156,7 +156,7 @@ public:
 	 *  @return FOUR: Not applicable so far.
 	 *  @return SCFT: ISFT(F) -> Fr  (F unaffected).
 	 */	
-	void RS_Inverse_transform_transpose_order(Array<complx,3> F);
+	void RS_Inverse_transform_transpose_order(Array<Complex,3> F);
 
 	//*****************************************************************************************
 	
@@ -166,13 +166,13 @@ public:
 	void Compute_dSt
 	(
 		TinyVector<int,3> j1, TinyVector<int,3> j2,
-		DP F1, DP F2
+		Real F1, Real F2
 	);
 	
 	void Compute_structure_function_unit
 	(
 		int otherproc,
-		Array<complx,3> otherprocF
+		Array<Complex,3> otherprocF
 	);
 	
 	void Compute_local_structure_function();
@@ -189,7 +189,7 @@ public:
 	(
 		int pll_index,
 		int otherproc, 
-		Array<complx,2> otherprocF
+		Array<Complex,2> otherprocF
 	);
 	
 	
@@ -197,7 +197,7 @@ public:
 	(
 		int pll_index,
 		int otherproc, 
-		Array<DP,2> otherprocF,
+		Array<Real,2> otherprocF,
 		int imag_switch
 	);
 	

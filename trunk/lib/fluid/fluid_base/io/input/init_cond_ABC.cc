@@ -52,10 +52,10 @@
 void FluidIO::Init_cond_ABC(FluidVF& U)
 {
 	int k0 = (int) global.io.double_para(0);
-	DP A = global.io.double_para(1);
-	DP B = global.io.double_para(2);
-	DP C = global.io.double_para(3);
-	DP amp = global.io.double_para(4);
+	Real A = global.io.double_para(1);
+	Real B = global.io.double_para(2);
+	Real C = global.io.double_para(3);
+	Real amp = global.io.double_para(4);
 	
 	Setup_ABC_field(U, k0, amp, A, B, C);
 }
@@ -79,11 +79,11 @@ void FluidIO::Init_cond_ABC(FluidVF& U, FluidSF& T)
 void FluidIO::Init_cond_ABC(FluidVF& U, FluidVF& W)
 {
 	int k0 = int(global.io.double_para(0));
-	DP A = global.io.double_para(1);
-	DP B = global.io.double_para(2);
-	DP C = global.io.double_para(3);
-	DP amp = global.io.double_para(4);
-	DP ampW = global.io.double_para(5);
+	Real A = global.io.double_para(1);
+	Real B = global.io.double_para(2);
+	Real C = global.io.double_para(3);
+	Real amp = global.io.double_para(4);
+	Real ampW = global.io.double_para(5);
 	
 	Setup_ABC_field(U, k0, amp, A, B, C);
 	Setup_ABC_field(W, k0, ampW, A, B, C);

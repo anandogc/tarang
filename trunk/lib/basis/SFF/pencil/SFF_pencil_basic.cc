@@ -45,38 +45,38 @@
  COmment
  
 ***********************************************************************************************/
-void SFF_PENCIL::Last_component(int kx, int ky, int kz, DP &Vx, DP &Vy, DP &Vz)
+void SFF_PENCIL::Last_component(int kx, int ky, int kz, Real &Vx, Real &Vy, Real &Vz)
 {}
 
-void SFF_PENCIL::Last_component(int kx, int ky, int kz, complx &Vx, complx &Vy, complx &Vz)
+void SFF_PENCIL::Last_component(int kx, int ky, int kz, Complex &Vx, Complex &Vy, Complex &Vz)
 {
-	DP Kx = kx*kfactor[1];
-	DP Ky = ky*kfactor[2];
-	DP Kz = kz*kfactor[3];
+	Real Kx = kx*kfactor[1];
+	Real Ky = ky*kfactor[2];
+	Real Kz = kz*kfactor[3];
 	
-	complx dvxdx;
+	Complex dvxdx;
 	
 	if (global.program.sincostr_switch[0] == 'S')
-		dvxdx = complx(Kx,0)*Vx;
+		dvxdx = Complex(Kx,0)*Vx;
 	
 	else if (global.program.sincostr_switch[0] == 'C') 
-		dvxdx = complx(-Kx,0)*Vx;
+		dvxdx = Complex(-Kx,0)*Vx;
 	
 	if (kz != 0) 
-		Vz = (dvxdx + complx(0,Ky)*Vy)/complx(0,-Kz);
+		Vz = (dvxdx + Complex(0,Ky)*Vy)/Complex(0,-Kz);
 		// works for both 2D (Ky=0) and 3D.
 	
 	else {
 		if (ky != 0) {// 3D: input fields are (Vx, Vz); compute Vy
 			Vz = Vy;
-			Vy = dvxdx/complx(0,-Ky); 
+			Vy = dvxdx/Complex(0,-Ky); 
 		}
 		else { // k = (kx,0,0)
 			if ( (abs(imag(Vx)) > MYEPS) || (abs(imag(Vx)) > MYEPS))
 				cout << "MYERROR: SCFT_SLAB::Last_component(); For (kx,0,0), the modes are purely real; Setting imag part to zero. " << endl;
-			Vz = complx(real(Vy), 0);
-			Vy = complx(real(Vx), 0);
-			Vx = complx(0,0);
+			Vz = Complex(real(Vy), 0);
+			Vy = Complex(real(Vx), 0);
+			Vx = Complex(0,0);
 		}
 	}
 	
@@ -91,14 +91,14 @@ void SFF_PENCIL::Last_component(int kx, int ky, int kz, complx &Vx, complx &Vy, 
  
  *******************************************************************************/
 
-void SFF_PENCIL::Dealias(Array<complx,3> A)
+void SFF_PENCIL::Dealias(Array<Complex,3> A)
 {
-	Assign_sub_array(Range(2*Nx/3+1,toEnd), Range(Ny/3+1,2*Ny/3-1), Range(Nz/3+1,toEnd), A, complx(0,0));
+	Assign_sub_array(Range(2*Nx/3+1,toEnd), Range(Ny/3+1,2*Ny/3-1), Range(Nz/3+1,toEnd), A, Complex(0,0));
 }
 
 
 // Data resides till outer_radius in k-space
-bool SFF_PENCIL::Is_dealiasing_necessary(Array<complx,3> A, DP outer_radius)
+bool SFF_PENCIL::Is_dealiasing_necessary(Array<Complex,3> A, Real outer_radius)
 {
 	int kx_max = (int) ceil(outer_radius/kfactor[1]);
 	int ky_max = (int) ceil(outer_radius/kfactor[2]);
@@ -121,7 +121,7 @@ f(m, -ky, 0) = conj(f(m, ky, 0))- do for kz=N[3]/2
  
  ***********************************************************************************************/
 
-void SFF_PENCIL::Satisfy_strong_reality_condition_in_Array(Array<complx,3> A)
+void SFF_PENCIL::Satisfy_strong_reality_condition_in_Array(Array<Complex,3> A)
 {
 	int array_index_minus_ky;
     
@@ -142,7 +142,7 @@ void SFF_PENCIL::Satisfy_strong_reality_condition_in_Array(Array<complx,3> A)
          A(Range::all(),Range::all(),maxlz-1) = 0.0;
 }
 
-void SFF_PENCIL::Satisfy_weak_reality_condition_in_Array(Array<complx,3> A)
+void SFF_PENCIL::Satisfy_weak_reality_condition_in_Array(Array<Complex,3> A)
 {
     if (my_z_pcoord == num_z_procs-1)
         A(Range::all(),Range::all(),maxlz-1) = 0.0;
@@ -150,7 +150,7 @@ void SFF_PENCIL::Satisfy_weak_reality_condition_in_Array(Array<complx,3> A)
 
 
 
-void SFF_PENCIL::Test_reality_condition_in_Array(Array<complx,3> A)
+void SFF_PENCIL::Test_reality_condition_in_Array(Array<Complex,3> A)
 {
     int array_index_minus_ky;
 	
@@ -187,7 +187,7 @@ void SFF_PENCIL::Test_reality_condition_in_Array(Array<complx,3> A)
  * @return CFF: \f$ V_2(0,ky,kz) = V_3(0,ky,kz) = 0 \f$  because sin(0) =0 [kx =0].
  */
 
-void SFF_PENCIL::Zero_modes(Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az)
+void SFF_PENCIL::Zero_modes(Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az)
 {
     // lx = 0 reside in master node
     
@@ -196,11 +196,11 @@ void SFF_PENCIL::Zero_modes(Array<complx,3> Ax, Array<complx,3> Ay, Array<complx
 
 	if (my_x_pcoord == 0) {
         if (global.program.sincostr_switch == "SFF")
-        	Assign_sub_array(zero,Range::all(),Range::all(),Ax,complx(0,0));
+        	Assign_sub_array(zero,Range::all(),Range::all(),Ax,Complex(0,0));
         
         else if (global.program.sincostr_switch == "CFF") {
-        	Assign_sub_array(zero,Range::all(),Range::all(),Ay,complx(0,0));
-        	Assign_sub_array(zero,Range::all(),Range::all(),Az,complx(0,0));
+        	Assign_sub_array(zero,Range::all(),Range::all(),Ay,Complex(0,0));
+        	Assign_sub_array(zero,Range::all(),Range::all(),Az,Complex(0,0));
         }
     }
 }
@@ -209,66 +209,69 @@ void SFF_PENCIL::Zero_modes(Array<complx,3> Ax, Array<complx,3> Ay, Array<complx
  *
  * Temperature same as V_1; (see the above function).
  */    
-void SFF_PENCIL::Zero_modes(Array<complx,3> F)
+void SFF_PENCIL::Zero_modes(Array<Complex,3> F)
 {
     // lx = 0 reside in master node
     Range zero(0,0);
     global.program.sincostr_switch = sincostr_switch_F;
     if ((my_x_pcoord == 0) && (global.program.sincostr_switch == "SFF"))
-    	Assign_sub_array(zero,Range::all(),Range::all(),F,complx(0,0));
+    	Assign_sub_array(zero,Range::all(),Range::all(),F,Complex(0,0));
 }
 
-void SFF_PENCIL::Assign_sub_array(Range x_range, Range y_range, Range z_range, Array<complx,3> A, complx value)
+void SFF_PENCIL::Assign_sub_array(Range x_range, Range y_range, Range z_range, Array<Complex,3> A, Complex value)
 {
-	
-	static Array<int,1> x_filter(Nx);
+	static Array<int,1> y_filter(Ny);
 	static Array<int,1> z_filter(Nz/2+1);
 	
-	x_filter = 0;
+	y_filter = 0;
 	z_filter = 0;
 	
-	x_filter(x_range)=1;
+	y_filter(y_range)=1;
 	z_filter(z_range)=1;
-	
-	
-	static Range x_apply, z_apply;
-	
-	
-	x_apply = Range(first(x_filter(Range(lx_start,lx_start+maxlx-1)) == 1),
-					 last(x_filter(Range(lx_start,lx_start+maxlx-1)) == 1));
-		
-	z_apply = Range(first(z_filter(Range(lz_start,lz_start+maxlz-1)) == 1),
-					 last(z_filter(Range(lz_start,lz_start+maxlz-1)) == 1));
 
 	
+	static Range y_apply, z_apply;
 	
-	if ( (x_apply(0)>=0) && (z_apply(0)>=0))
-		A(x_apply, y_range, z_apply) = value;
+	
+	y_apply = Range(first(y_filter(Range(my_y_pcoord*maxly,(my_y_pcoord+1)*maxly-1)) == 1),
+					 last(y_filter(Range(my_y_pcoord*maxly,(my_y_pcoord+1)*maxly-1)) == 1));
+	
+	z_apply = Range(first(z_filter(Range(my_z_pcoord*maxlz,(my_z_pcoord+1)*maxlz-1)) == 1),
+					 last(z_filter(Range(my_z_pcoord*maxlz,(my_z_pcoord+1)*maxlz-1)) == 1));
+	
+	
+	if ( (y_apply(0)>=0) && (z_apply(0)>=0))
+		A(x_range, y_apply, z_apply) = value;
 }
 
 
-int SFF_PENCIL::Read(Array<complx,3> A, BasicIO::H5_plan plan, string file_name, string dataset_name)
+int SFF_PENCIL::Read(Array<Complex,3> A, BasicIO::H5_plan plan, string file_name, string dataset_name)
 {
-	int err = BasicIO::Read(global.temp_array.Xr.data(), plan, file_name, dataset_name);
+	int err = BasicIO::Read(global.temp_array.Xr_slab.data(), plan, file_name, dataset_name);
+	spectralTransform.To_pencil(global.temp_array.Xr_slab, global.temp_array.Xr);
 	spectralTransform.Transpose(global.temp_array.Xr, A);
 	return err;
 }
 
-int SFF_PENCIL::Read(Array<DP,3> Ar, BasicIO::H5_plan plan, string file_name, string dataset_name)
+int SFF_PENCIL::Read(Array<Real,3> Ar, BasicIO::H5_plan plan, string file_name, string dataset_name)
 {
-	return BasicIO::Read(Ar.data(), plan, file_name, dataset_name);
+	int err = BasicIO::Read(global.temp_array.Xr_slab.data(), plan, file_name, dataset_name);
+	spectralTransform.To_pencil(global.temp_array.Xr_slab, Ar);
+	return err;
 }
 
 
-int SFF_PENCIL::Write(Array<complx,3> A, BasicIO::H5_plan plan, string folder_name, string file_name, string dataset_name)
+int SFF_PENCIL::Write(Array<Complex,3> A, BasicIO::H5_plan plan, string folder_name, string file_name, string dataset_name)
 {
 	spectralTransform.Transpose(A, global.temp_array.Xr);
-	return BasicIO::Write(global.temp_array.Xr.data(), plan, folder_name, file_name, dataset_name);
+	spectralTransform.To_slab(global.temp_array.Xr, global.temp_array.Xr_slab);
+	return BasicIO::Write(global.temp_array.Xr_slab.data(), plan, folder_name, file_name, dataset_name);
 }
 
-int SFF_PENCIL::Write(Array<DP,3> Ar, BasicIO::H5_plan plan, string folder_name, string file_name, string dataset_name)
+int SFF_PENCIL::Write(Array<Real,3> Ar, BasicIO::H5_plan plan, string folder_name, string file_name, string dataset_name)
 {
-	return BasicIO::Write(Ar.data(), plan, folder_name, file_name, dataset_name);  
+	spectralTransform.To_slab(Ar, global.temp_array.Xr_slab);
+	return BasicIO::Write(global.temp_array.Xr_slab.data(), plan, folder_name, file_name, dataset_name);  
 }
 
 //*********************************  End of scft_basic.cc *************************************

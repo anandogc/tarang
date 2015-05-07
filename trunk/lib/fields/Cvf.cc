@@ -226,13 +226,13 @@ void CVF::Compute_total_k2energy()
 	total_k2energy = TWO*(universal->Get_total_Sn(V1, 2)+ universal->Get_total_Sn(V2, 2) + universal->Get_total_Sn(V3, 2));
 }
 
-void CVF::Compute_total_kn_energy(int n, DP &result)
+void CVF::Compute_total_kn_energy(int n, Real &result)
 {
 	result = 2*(universal->Get_total_Sn(V1, n)+ universal->Get_total_Sn(V2, n) + universal->Get_total_Sn(V3, n));		
 }
 
 
-void CVF::Compute_total_k2Hc(Array<complx,3> W1, Array<complx,3> W2, Array<complx,3> W3)
+void CVF::Compute_total_k2Hc(Array<Complex,3> W1, Array<Complex,3> W2, Array<Complex,3> W3)
 {
 	total_k2Hc = TWO*(universal->Get_total_Sn(V1, W1, 2) + universal->Get_total_Sn(V2, W2, 2) + universal->Get_total_Sn(V3, W3, 2));
 }
@@ -257,7 +257,7 @@ void CVF::Compute_entropy()
 
 
 
-DP CVF::Modal_energy(int l1, int l2, int l3)
+Real CVF::Modal_energy(int l1, int l2, int l3)
 {
 	return (universal->Modal_energy(l1, l2, l3, V1) + universal->Modal_energy(l1, l2, l3, V2) + universal->Modal_energy(l1, l2, l3, V3));
 }				
@@ -265,12 +265,12 @@ DP CVF::Modal_energy(int l1, int l2, int l3)
 //
 //
 
-void CVF::Compute_Modal_vorticity(int l1, int l2, int l3, TinyVector<complx,3> &vorticity)
+void CVF::Compute_Modal_vorticity(int l1, int l2, int l3, TinyVector<Complex,3> &vorticity)
 {
 	universal->Compute_Modal_vorticity(l1, l2, l3, V1, V2, V3, vorticity);
 }
 
-void CVF::Compute_Modal_vorticity_y_component(int l1, int l2, int l3, complx &vort_y)
+void CVF::Compute_Modal_vorticity_y_component(int l1, int l2, int l3, Complex &vort_y)
 {
 	universal->Compute_Modal_vorticity_y_component(l1, l2, l3, V1, V2, V3, vort_y);
 }
@@ -278,7 +278,7 @@ void CVF::Compute_Modal_vorticity_y_component(int l1, int l2, int l3, complx &vo
 //
 //
 
-DP CVF::Modal_helicity(int l1, int l2, int l3)
+Real CVF::Modal_helicity(int l1, int l2, int l3)
 {
 	return universal->Get_Modal_helicity(l1, l2, l3, V1, V2, V3);
 }

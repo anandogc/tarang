@@ -45,16 +45,16 @@ comment
  
 ***********************************************************************************************/
 
-void SFF_SLAB::Last_component(int kx, int ky, int kz, DP &Vx, DP &Vy, DP &Vz)
+void SFF_SLAB::Last_component(int kx, int ky, int kz, Real &Vx, Real &Vy, Real &Vz)
 {}
 
-void SFF_SLAB::Last_component(int kx, int ky, int kz, complx &Vx, complx &Vy, complx &Vz)
+void SFF_SLAB::Last_component(int kx, int ky, int kz, Complex &Vx, Complex &Vy, Complex &Vz)
 {
-	DP Kx = kx*kfactor[1];
-	DP Ky = ky*kfactor[2];
-	DP Kz = kz*kfactor[3];
+	Real Kx = kx*kfactor[1];
+	Real Ky = ky*kfactor[2];
+	Real Kz = kz*kfactor[3];
 	
-	complx dvxdx;
+	Complex dvxdx;
 	
 	if (global.program.sincostr_switch[0] == 'S')
 		dvxdx = Kx*Vx;
@@ -64,20 +64,20 @@ void SFF_SLAB::Last_component(int kx, int ky, int kz, complx &Vx, complx &Vy, co
 	
 	
 	if (kz != 0) 
-		Vz = (dvxdx + complx(0,Ky)*Vy)/complx(0,-Kz);
+		Vz = (dvxdx + Complex(0,Ky)*Vy)/Complex(0,-Kz);
 		// works for both 2D (Ky=0) and 3D.
 	
 	else {
 		if (ky != 0) {// 3D: input fields are (Vx, Vz); compute Vy
 			Vz = Vy;
-			Vy = dvxdx/complx(0,-Ky); 
+			Vy = dvxdx/Complex(0,-Ky); 
 		}
 		else { // k = (kx,0,0); input fields are (Vy, Vz) field is purely real
 			if ( (abs(imag(Vx)) > MYEPS) || (abs(imag(Vx)) > MYEPS))
 				cout << "MYERROR: SFF_SLAB::Last_component(); For (kx,0,0), the modes are purely real; Setting imag part to zero. " << endl;
-			Vz = complx(real(Vy), 0);
-			Vy = complx(real(Vx), 0);
-			Vx = complx(0,0);
+			Vz = Complex(real(Vy), 0);
+			Vy = Complex(real(Vx), 0);
+			Vx = Complex(0,0);
 		}
 	}
 	
@@ -92,7 +92,7 @@ Dealias
  
  ***********************************************************************************************/
 
-void SFF_SLAB::Dealias(Array<complx,3> A)
+void SFF_SLAB::Dealias(Array<Complex,3> A)
 {
 	Array<int,1> Ax_filter(Nx);
 	
@@ -110,7 +110,7 @@ void SFF_SLAB::Dealias(Array<complx,3> A)
 }
 
 // Data resides till outer_radius in k-space
-bool SFF_SLAB::Is_dealiasing_necessary(Array<complx,3> A, DP outer_radius)
+bool SFF_SLAB::Is_dealiasing_necessary(Array<Complex,3> A, Real outer_radius)
 {
 	int kx_max = (int) ceil(outer_radius/kfactor[1]);
 	int ky_max = (int) ceil(outer_radius/kfactor[2]);
@@ -135,7 +135,7 @@ f(m, -ky, 0) = conj(f(m, ky, 0))- do for kz=N[3]/2
  
  ***********************************************************************************************/
 
-void SFF_SLAB::Satisfy_strong_reality_condition_in_Array(Array<complx,3> A)
+void SFF_SLAB::Satisfy_strong_reality_condition_in_Array(Array<Complex,3> A)
 {
 	
 	int array_index_minus_ky;
@@ -157,14 +157,14 @@ void SFF_SLAB::Satisfy_strong_reality_condition_in_Array(Array<complx,3> A)
 }
 
 
-void SFF_SLAB::Satisfy_weak_reality_condition_in_Array(Array<complx,3> A)
+void SFF_SLAB::Satisfy_weak_reality_condition_in_Array(Array<Complex,3> A)
 {
 
 	A(Range::all(),Range::all(),Nz/2) = 0.0;
 }
 
 
-void SFF_SLAB::Test_reality_condition_in_Array(Array<complx,3> A)
+void SFF_SLAB::Test_reality_condition_in_Array(Array<Complex,3> A)
 {
 	int array_index_ky;
 
@@ -197,7 +197,7 @@ void SFF_SLAB::Test_reality_condition_in_Array(Array<complx,3> A)
  * @return CFF: \f$ V_2(0,ky,kz) = V_3(0,ky,kz) = 0 \f$  because sin(0) =0 [kx =0].
  */
 
-void SFF_SLAB::Zero_modes(Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az)
+void SFF_SLAB::Zero_modes(Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az)
 {
     // lx = 0 reside in master node
     global.program.sincostr_switch = sincostr_switch_Vx;
@@ -217,7 +217,7 @@ void SFF_SLAB::Zero_modes(Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3
  *
  * Temperature same as V_1; (see the above function).
  */    
-void SFF_SLAB::Zero_modes(Array<complx,3> F)
+void SFF_SLAB::Zero_modes(Array<Complex,3> F)
 {
     // lx = 0 reside in master node
     global.program.sincostr_switch = sincostr_switch_F;
@@ -226,12 +226,12 @@ void SFF_SLAB::Zero_modes(Array<complx,3> F)
         F(0,Range::all(),Range::all()) = 0.0;
 }
 
-int SFF_SLAB::Read(Array<complx,3> A, BasicIO::H5_plan plan, string file_name, string dataset_name)
+int SFF_SLAB::Read(Array<Complex,3> A, BasicIO::H5_plan plan, string file_name, string dataset_name)
 {
 	return BasicIO::Read(A.data(), plan, file_name, dataset_name);
 }
 
-int SFF_SLAB::Read(Array<DP,3> Ar, BasicIO::H5_plan plan, string file_name, string dataset_name)
+int SFF_SLAB::Read(Array<Real,3> Ar, BasicIO::H5_plan plan, string file_name, string dataset_name)
 {
 	int err = BasicIO::Read(global.temp_array.X.data(), plan, file_name, dataset_name);
 
@@ -244,12 +244,12 @@ int SFF_SLAB::Read(Array<DP,3> Ar, BasicIO::H5_plan plan, string file_name, stri
 }
 
 
-int SFF_SLAB::Write(Array<complx,3> A, BasicIO::H5_plan plan, string folder_name, string file_name, string dataset_name)
+int SFF_SLAB::Write(Array<Complex,3> A, BasicIO::H5_plan plan, string folder_name, string file_name, string dataset_name)
 {
 	return BasicIO::Write(A.data(), plan, folder_name, file_name, dataset_name);
 }
 
-int SFF_SLAB::Write(Array<DP,3> Ar, BasicIO::H5_plan plan, string folder_name, string file_name, string dataset_name)
+int SFF_SLAB::Write(Array<Real,3> Ar, BasicIO::H5_plan plan, string folder_name, string file_name, string dataset_name)
 {
 	if (Ny>1)
 		spectralTransform.Transpose(Ar, global.temp_array.X);

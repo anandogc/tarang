@@ -47,7 +47,7 @@
 //*********************************************************************************************
 
 // omega = 2 omega(orig) L/nu
-void FORCE::Compute_force_Coriolis_basic_assign(FluidVF& U, int rotation_direction, DP two_omega)
+void FORCE::Compute_force_Coriolis_basic_assign(FluidVF& U, int rotation_direction, Real two_omega)
 {
 	if (rotation_direction == 1) {	// omega along x
 		U.Force2 = two_omega*(U.cvf.V3);
@@ -62,7 +62,7 @@ void FORCE::Compute_force_Coriolis_basic_assign(FluidVF& U, int rotation_directi
 		U.Force2 = -two_omega*(U.cvf.V1);
 }
 }
-void FORCE::Compute_force_Coriolis_basic_add(FluidVF& U, int rotation_direction, DP two_omega)
+void FORCE::Compute_force_Coriolis_basic_add(FluidVF& U, int rotation_direction, Real two_omega)
 {
 	if (rotation_direction == 1) {	// omega along x
 		U.Force2 += two_omega*(U.cvf.V3);
@@ -79,7 +79,7 @@ void FORCE::Compute_force_Coriolis_basic_add(FluidVF& U, int rotation_direction,
 }
 
 
-void FORCE::Compute_force_Coriolis_basic_assign(FluidVF& U, DP two_omega1, DP two_omega2, DP two_omega3)
+void FORCE::Compute_force_Coriolis_basic_assign(FluidVF& U, Real two_omega1, Real two_omega2, Real two_omega3)
 {
 	U.Force1 = -two_omega2*(U.cvf.V3) + two_omega3*(U.cvf.V2);
 	U.Force2 = -two_omega3*(U.cvf.V1) + two_omega1*(U.cvf.V3);
@@ -87,7 +87,7 @@ void FORCE::Compute_force_Coriolis_basic_assign(FluidVF& U, DP two_omega1, DP tw
 
 }
 
-void FORCE::Compute_force_Coriolis_basic_add(FluidVF& U, DP two_omega1, DP two_omega2, DP two_omega3)
+void FORCE::Compute_force_Coriolis_basic_add(FluidVF& U, Real two_omega1, Real two_omega2, Real two_omega3)
 {
 	U.Force1 += -two_omega2*(U.cvf.V3) + two_omega3*(U.cvf.V2);
 	U.Force2 += -two_omega3*(U.cvf.V1) + two_omega1*(U.cvf.V3);
@@ -108,15 +108,15 @@ void FORCE::Compute_force_Coriolis(FluidVF& U)
 		
 		if (omega_components == 1) {
 			int rotation_direction = global.force.int_para(1);
-			DP two_omega =  2*global.force.double_para(0);
+			Real two_omega =  2*global.force.double_para(0);
 			
 			Compute_force_Coriolis_basic_assign(U, rotation_direction, two_omega);
 		}
 		
 		else if (omega_components == 3) {
-			DP two_omega1 = 2*global.force.double_para(0);
-			DP two_omega2 = 2*global.force.double_para(1);
-			DP two_omega3 = 2*global.force.double_para(2);
+			Real two_omega1 = 2*global.force.double_para(0);
+			Real two_omega2 = 2*global.force.double_para(1);
+			Real two_omega3 = 2*global.force.double_para(2);
 			
 			Compute_force_Coriolis_basic_assign(U, two_omega1, two_omega2, two_omega3);
 		}
@@ -145,30 +145,30 @@ void FORCE::Compute_force_Coriolis(FluidVF& U, FluidVF& W, FluidSF& T)
 //******************************************************************************
 
 
-void FORCE::Compute_force_Ekman_friction_basic_assign(FluidVF& U, DP alpha)
+void FORCE::Compute_force_Ekman_friction_basic_assign(FluidVF& U, Real alpha)
 {		
-	U.Force1 = complx(-alpha,0) * (U.cvf.V1);
+	U.Force1 = Complex(-alpha,0) * (U.cvf.V1);
 	
 	if (N[2] > 1)	
-		U.Force2 = complx(-alpha,0) * (U.cvf.V2);
+		U.Force2 = Complex(-alpha,0) * (U.cvf.V2);
 	
-	U.Force3 = complx(-alpha,0) * (U.cvf.V3);
+	U.Force3 = Complex(-alpha,0) * (U.cvf.V3);
 }
 
-void FORCE::Compute_force_Ekman_friction_basic_add(FluidVF& U, DP alpha)
+void FORCE::Compute_force_Ekman_friction_basic_add(FluidVF& U, Real alpha)
 {
-	U.Force1 += complx(-alpha,0) * (U.cvf.V1);
+	U.Force1 += Complex(-alpha,0) * (U.cvf.V1);
 	
 	if (N[2] > 1)	
-		U.Force2 += complx(-alpha,0) * (U.cvf.V2);
+		U.Force2 += Complex(-alpha,0) * (U.cvf.V2);
 	
-	U.Force3 += complx(-alpha,0) * (U.cvf.V3);
+	U.Force3 += Complex(-alpha,0) * (U.cvf.V3);
 }
 
 // derived fn
 void FORCE::Compute_force_Ekman_friction(FluidVF& U)
 {
-	DP alpha = global.force.double_para(0);
+	Real alpha = global.force.double_para(0);
 	
 	U.Force1 = 0.0;
 	U.Force2 = 0.0;
@@ -182,12 +182,12 @@ void FORCE::Compute_force_Ekman_friction(FluidVF& U)
 void FORCE::Compute_force_Ekman_friction_const_energy_supply(FluidVF& U)
 {	
 	
-	DP inner_radius =  global.force.double_para(0);
-	DP outer_radius = global.force.double_para(1);
-	DP energy_supply = global.force.double_para(2);
-	DP epsh_by_k_epse = global.force.double_para(3);				// epsh(k)/(k*eps(k))
+	Real inner_radius =  global.force.double_para(0);
+	Real outer_radius = global.force.double_para(1);
+	Real energy_supply = global.force.double_para(2);
+	Real epsh_by_k_epse = global.force.double_para(3);				// epsh(k)/(k*eps(k))
 	
-	DP alpha = global.force.double_para(4);
+	Real alpha = global.force.double_para(4);
 	
 	U.Force1 = 0.0;
 	U.Force2 = 0.0;
@@ -203,7 +203,7 @@ void FORCE::Compute_force_Ekman_friction_const_energy_supply(FluidVF& U)
 //******************************************************************************
 
 
-void FORCE::Compute_force_Keplerian_basic_assign(FluidVF& U, DP omega_keplerian, DP q_keplerian)
+void FORCE::Compute_force_Keplerian_basic_assign(FluidVF& U, Real omega_keplerian, Real q_keplerian)
 {
 	
 	if (U.force_switch == 1) {
@@ -222,7 +222,7 @@ void FORCE::Compute_force_Keplerian_basic_assign(FluidVF& U, DP omega_keplerian,
 	}
 }
 
-void FORCE::Compute_force_Keplerian_basic_add(FluidVF& U, DP omega_keplerian, DP q_keplerian)
+void FORCE::Compute_force_Keplerian_basic_add(FluidVF& U, Real omega_keplerian, Real q_keplerian)
 {
 	
 	if (U.force_switch == 1) {
@@ -245,14 +245,14 @@ void FORCE::Compute_force_Keplerian_basic_add(FluidVF& U, DP omega_keplerian, DP
 void FORCE::Compute_force_Keplerian(FluidVF& U)
 {
 	
-	DP omega_keplerian = global.force.double_para(0);
-	DP q_keplerian = global.force.double_para(1);
+	Real omega_keplerian = global.force.double_para(0);
+	Real q_keplerian = global.force.double_para(1);
 	
 	Compute_force_Keplerian_basic_assign(U, omega_keplerian, q_keplerian);
 	
 }
 
-void FORCE::Compute_force_Keplerian_basic_assign(FluidVF& U, FluidVF& W, DP omega_keplerian, DP q_keplerian)
+void FORCE::Compute_force_Keplerian_basic_assign(FluidVF& U, FluidVF& W, Real omega_keplerian, Real q_keplerian)
 {
 	
 	if (U.force_switch == 1) {
@@ -268,7 +268,7 @@ void FORCE::Compute_force_Keplerian_basic_assign(FluidVF& U, FluidVF& W, DP omeg
 	};
 }
 
-void FORCE::Compute_force_Keplerian_basic_add(FluidVF& U, FluidVF& W, DP omega_keplerian, DP q_keplerian)
+void FORCE::Compute_force_Keplerian_basic_add(FluidVF& U, FluidVF& W, Real omega_keplerian, Real q_keplerian)
 {
 	
 	if (U.force_switch == 1) {
@@ -288,8 +288,8 @@ void FORCE::Compute_force_Keplerian_basic_add(FluidVF& U, FluidVF& W, DP omega_k
 void FORCE::Compute_force_Keplerian(FluidVF& U, FluidVF& W)
 {
 	
-	DP omega_keplerian = global.force.double_para(0);
-	DP q_keplerian = global.force.double_para(1);
+	Real omega_keplerian = global.force.double_para(0);
+	Real q_keplerian = global.force.double_para(1);
 	
 	Compute_force_Keplerian_basic_assign(U, W, omega_keplerian, q_keplerian);
 	
@@ -299,16 +299,16 @@ void FORCE::Compute_force_Keplerian(FluidVF& U, FluidVF& W)
 void FORCE::Compute_force_Keplerian_SB(FluidVF& U)
 {
 	
-	DP inner_radius = global.force.double_para(0);
-	DP outer_radius = global.force.double_para(1);
-	DP force_spectrum_amplitude = global.force.double_para(2);
-	DP force_spectrum_exponent = global.force.double_para(3);
-	DP hk_by_kek = global.force.double_para(4);
-	// DP omega_keplerian = global.force.double_para(5);
-	DP q_keplerian = global.force.double_para(6);
-	DP x0 = global.force.double_para(7);
+	Real inner_radius = global.force.double_para(0);
+	Real outer_radius = global.force.double_para(1);
+	Real force_spectrum_amplitude = global.force.double_para(2);
+	Real force_spectrum_exponent = global.force.double_para(3);
+	Real hk_by_kek = global.force.double_para(4);
+	// Real omega_keplerian = global.force.double_para(5);
+	Real q_keplerian = global.force.double_para(6);
+	Real x0 = global.force.double_para(7);
 	
-	DP omega_keplerian = 1/q_keplerian;
+	Real omega_keplerian = 1/q_keplerian;
 	
 	
 	Compute_force_using_random_energy_helicity_spectrum_basic_assign(U, inner_radius, outer_radius, force_spectrum_amplitude, force_spectrum_exponent, hk_by_kek);
@@ -330,17 +330,17 @@ void FORCE::Compute_force_Keplerian_SB(FluidVF& U)
 void FORCE::Compute_force_Keplerian_SB(FluidVF& U, FluidVF& W)
 {
 	
-	DP inner_radius = global.force.double_para(0);
-	DP outer_radius = global.force.double_para(1);
-	DP force_spectrum_amplitude = global.force.double_para(2);
-	DP force_spectrum_exponent = global.force.double_para(3);
-	DP hk_by_kek = global.force.double_para(4);
-	DP Wforce_spectrum_amplitude = global.force.double_para(5);
-	DP Wforce_spectrum_exponent = global.force.double_para(6);
-	DP Whk_by_kek = global.force.double_para(7);
-	//DP omega_keplerian = global.force.double_para(8);
-	DP q_keplerian = global.force.double_para(9);
-	DP omega_keplerian = 1/q_keplerian;
+	Real inner_radius = global.force.double_para(0);
+	Real outer_radius = global.force.double_para(1);
+	Real force_spectrum_amplitude = global.force.double_para(2);
+	Real force_spectrum_exponent = global.force.double_para(3);
+	Real hk_by_kek = global.force.double_para(4);
+	Real Wforce_spectrum_amplitude = global.force.double_para(5);
+	Real Wforce_spectrum_exponent = global.force.double_para(6);
+	Real Whk_by_kek = global.force.double_para(7);
+	//Real omega_keplerian = global.force.double_para(8);
+	Real q_keplerian = global.force.double_para(9);
+	Real omega_keplerian = 1/q_keplerian;
 	
 	Compute_force_using_random_energy_helicity_spectrum_basic_assign(U, inner_radius, outer_radius, force_spectrum_amplitude, force_spectrum_exponent, hk_by_kek);
 	

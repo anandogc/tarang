@@ -41,10 +41,10 @@
 //*********************************************************************************************
 
 // Ar: yxz, A: xyz
-void CFFF_SLAB::Forward_transform(Array<DP,3> Ar, Array<complx,3> A)
+void CFFF_SLAB::Forward_transform(Array<Real,3> Ar, Array<Complex,3> A)
 {
     if (Ny > 1) 
-        spectralTransform.Forward_transform_CFFF_SLAB(Cast_array<DP,complx>(Ar, global.field.shape_complex_array), A);
+        spectralTransform.Forward_transform_CFFF_SLAB(Cast_array<Real,Complex>(Ar, global.field.shape_complex_array), A);
     
     else if (Ny == 1)
         if (my_id == 0) cerr << "ERROR: 2D Not implemented for FFF basis, Please use FFTW basis (uses original FFTW functions)" << endl;
@@ -54,10 +54,10 @@ void CFFF_SLAB::Forward_transform(Array<DP,3> Ar, Array<complx,3> A)
 //*********************************************************************************************
 
 
-void CFFF_SLAB::Inverse_transform(Array<complx,3> A, Array<DP,3> Ar)
+void CFFF_SLAB::Inverse_transform(Array<Complex,3> A, Array<Real,3> Ar)
 {
     if (Ny > 1)
-        spectralTransform.Inverse_transform_CFFF_SLAB(A, Cast_array<DP,complx>(Ar, global.field.shape_complex_array));
+        spectralTransform.Inverse_transform_CFFF_SLAB(A, Cast_array<Real,Complex>(Ar, global.field.shape_complex_array));
     
     else if (Ny == 1)
        if (my_id == 0) cerr << "ERROR: 2D Not implemented for FFF basis, Please use FFTW basis (uses original FFTW functions)" << endl;
@@ -67,27 +67,27 @@ void CFFF_SLAB::Inverse_transform(Array<complx,3> A, Array<DP,3> Ar)
 
 //*********************************************************************************************
 
-void CFFF_SLAB::Xderiv(Array<complx,3> A, Array<complx,3> B)
+void CFFF_SLAB::Xderiv(Array<Complex,3> A, Array<Complex,3> B)
 {
-	DP Kx;
+	Real Kx;
 	
 	for (int lx = 0; lx < Nx; lx++) {
 		Kx = Get_kx(lx)*kfactor[1];
-		B(Range::all(),Range::all(),lx) = complx(0, Kx)* (A(Range::all(),Range::all(),lx)); 	
+		B(Range::all(),Range::all(),lx) = Complex(0, Kx)* (A(Range::all(),Range::all(),lx)); 	
 	}
 }
 
-void CFFF_SLAB::Add_Xderiv(Array<complx,3> A, Array<complx,3> B)
+void CFFF_SLAB::Add_Xderiv(Array<Complex,3> A, Array<Complex,3> B)
 {
-	DP Kx;
+	Real Kx;
 	
 	for (int lx = 0; lx < Nx; lx++) {
 		Kx = Get_kx(lx)*kfactor[1];
-		B(Range::all(),Range::all(),lx) += complx(0, Kx)* (A(Range::all(),Range::all(),lx));
+		B(Range::all(),Range::all(),lx) += Complex(0, Kx)* (A(Range::all(),Range::all(),lx));
 	}
 }
 
-void  CFFF_SLAB::Xderiv(Array<DP,3> A, Array<DP,3> B)
+void  CFFF_SLAB::Xderiv(Array<Real,3> A, Array<Real,3> B)
 {
 	if (master) cerr <<  "Xderiv(real array)  is not defined for this basis. "<<endl;
 }
@@ -98,14 +98,14 @@ void  CFFF_SLAB::Xderiv(Array<DP,3> A, Array<DP,3> B)
 
 
 
-void CFFF_SLAB::Yderiv(Array<complx,3> A, Array<complx,3> B)
+void CFFF_SLAB::Yderiv(Array<Complex,3> A, Array<Complex,3> B)
 {
-	DP Ky;
+	Real Ky;
 	
 	if (Ny > 1)
 		for (int ly=0; ly<local_Ny; ly++) {
 			Ky = Get_ky(ly)*kfactor[2];
-			B(ly,Range::all(),Range::all()) = complx(0, Ky)* (A(ly,Range::all(),Range::all())); 
+			B(ly,Range::all(),Range::all()) = Complex(0, Ky)* (A(ly,Range::all(),Range::all())); 
 		}
 	
 	else 
@@ -114,38 +114,38 @@ void CFFF_SLAB::Yderiv(Array<complx,3> A, Array<complx,3> B)
 
 
 
-void CFFF_SLAB::Add_Yderiv(Array<complx,3> A, Array<complx,3> B)
+void CFFF_SLAB::Add_Yderiv(Array<Complex,3> A, Array<Complex,3> B)
 {
-	DP Ky;
+	Real Ky;
 	
 	if (Ny > 1)
 		for (int ly=0; ly<local_Ny; ly++) {
 			Ky = Get_ky(ly)*kfactor[2];
-			B(ly,Range::all(),Range::all()) += complx(0, Ky)* (A(ly,Range::all(),Range::all()));
+			B(ly,Range::all(),Range::all()) += Complex(0, Ky)* (A(ly,Range::all(),Range::all()));
 		}
 }
 
 //*********************************************************************************************
 
 
-void CFFF_SLAB::Zderiv(Array<complx,3> A, Array<complx,3> B)
+void CFFF_SLAB::Zderiv(Array<Complex,3> A, Array<Complex,3> B)
 {
-	DP Kz;
+	Real Kz;
     
     for (int lz=0; lz<=Nz/2; lz++) {
 		Kz = lz*kfactor[3];
-		B(Range::all(),lz,Range::all()) = complx(0, Kz)*(A(Range::all(),lz,Range::all())); 	
+		B(Range::all(),lz,Range::all()) = Complex(0, Kz)*(A(Range::all(),lz,Range::all())); 	
 	}
 }
 
 
-void CFFF_SLAB::Add_Zderiv(Array<complx,3> A, Array<complx,3> B)
+void CFFF_SLAB::Add_Zderiv(Array<Complex,3> A, Array<Complex,3> B)
 {
-	DP Kz;
+	Real Kz;
     
     for (int lz=0; lz<=Nz/2; lz++) {
 		Kz = lz*kfactor[3];
-		B(Range::all(),lz,Range::all()) += complx(0, Kz)*(A(Range::all(),lz,Range::all()));
+		B(Range::all(),lz,Range::all()) += Complex(0, Kz)*(A(Range::all(),lz,Range::all()));
 	}
 }
 
@@ -155,10 +155,10 @@ void CFFF_SLAB::Add_Zderiv(Array<complx,3> A, Array<complx,3> B)
  
  ***********************************************************************************************/
 
-void CFFF_SLAB::Laplacian(DP factor, Array<complx,3> A, Array<complx,3> B)
+void CFFF_SLAB::Laplacian(Real factor, Array<Complex,3> A, Array<Complex,3> B)
 {
 	
-	DP Ksqr;
+	Real Ksqr;
 	
 	for (int ly=0; ly<A.extent(0); ly++) {
 		Ksqr = my_pow(Get_ky(ly)*kfactor[2],2);
@@ -181,10 +181,10 @@ void CFFF_SLAB::Laplacian(DP factor, Array<complx,3> A, Array<complx,3> B)
  
  ***********************************************************************************************/
 
-void CFFF_SLAB::Subtract_Laplacian(DP factor, Array<complx,3> A, Array<complx,3> B)
+void CFFF_SLAB::Subtract_Laplacian(Real factor, Array<Complex,3> A, Array<Complex,3> B)
 {
 	
-	DP Ksqr, Ksqr_factor;
+	Real Ksqr, Ksqr_factor;
 	
 	for (int ly=0; ly<A.extent(0); ly++) {
 		Ksqr = my_pow(Get_ky(ly)*kfactor[2],2);

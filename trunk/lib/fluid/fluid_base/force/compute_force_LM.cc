@@ -43,10 +43,10 @@
 //*********************************************************************************************
 
 
-void FORCE::Compute_force_Liquid_metal_basic_assign(FluidVF& U, DP B0x, DP B0y, DP B0z)
+void FORCE::Compute_force_Liquid_metal_basic_assign(FluidVF& U, Real B0x, Real B0y, Real B0z)
 {	
 	
-	TinyVector <DP,3> B0;
+	TinyVector <Real,3> B0;
 	B0 = B0x, B0y, B0z;
 	
 	U.Force1 = U.cvf.V1;
@@ -57,36 +57,36 @@ void FORCE::Compute_force_Liquid_metal_basic_assign(FluidVF& U, DP B0x, DP B0y, 
 	universal->Array_mult_V0_khat_sqr(U.Force2, B0);
 	universal->Array_mult_V0_khat_sqr(U.Force3, B0);
 	
-	U.Force1 = complx(-1,0) * (U.Force1);
-	U.Force2 = complx(-1,0) * (U.Force2);
-	U.Force3 = complx(-1,0) * (U.Force3); 
+	U.Force1 = Complex(-1,0) * (U.Force1);
+	U.Force2 = Complex(-1,0) * (U.Force2);
+	U.Force3 = Complex(-1,0) * (U.Force3); 
 }
 
 
-void FORCE::Compute_force_Liquid_metal_basic_add(FluidVF& U, DP B0x, DP B0y, DP B0z)
+void FORCE::Compute_force_Liquid_metal_basic_add(FluidVF& U, Real B0x, Real B0y, Real B0z)
 {	
 	
-	TinyVector <DP,3> B0;
+	TinyVector <Real,3> B0;
 	B0 = B0x, B0y, B0z;
 		
 	global.temp_array.X = U.cvf.V1;
 	universal->Array_mult_V0_khat_sqr(global.temp_array.X, B0);
-	U.Force1 += complx(-1,0) * (global.temp_array.X);
+	U.Force1 += Complex(-1,0) * (global.temp_array.X);
 	
 	global.temp_array.X = U.cvf.V2;
 	universal->Array_mult_V0_khat_sqr(global.temp_array.X, B0);
-	U.Force2 += complx(-1,0) * (global.temp_array.X);
+	U.Force2 += Complex(-1,0) * (global.temp_array.X);
 	
 	global.temp_array.X = U.cvf.V3;
 	universal->Array_mult_V0_khat_sqr(global.temp_array.X, B0);
-	U.Force3 += complx(-1,0) * (global.temp_array.X);
+	U.Force3 += Complex(-1,0) * (global.temp_array.X);
 }
 void FORCE::Compute_force_Liquid_metal(FluidVF& U)
 {
 	
-	DP B0x = global.force.double_para(0);
-	DP B0y = global.force.double_para(1);
-	DP B0z = global.force.double_para(2);
+	Real B0x = global.force.double_para(0);
+	Real B0y = global.force.double_para(1);
+	Real B0z = global.force.double_para(2);
 	
 	Compute_force_Liquid_metal_basic_assign(U, B0x, B0y, B0z);
 }
@@ -94,14 +94,14 @@ void FORCE::Compute_force_Liquid_metal(FluidVF& U)
 
 void FORCE::Compute_force_Liquid_metal_const_energy_supply(FluidVF& U)
 {	
-	DP inner_radius = global.force.double_para(0);
-	DP outer_radius = global.force.double_para(1);
-	DP energy_supply = global.force.double_para(2);
-	DP epsh_by_k_epse = global.force.double_para(3);				// epsh(k)/(k*eps(k))
+	Real inner_radius = global.force.double_para(0);
+	Real outer_radius = global.force.double_para(1);
+	Real energy_supply = global.force.double_para(2);
+	Real epsh_by_k_epse = global.force.double_para(3);				// epsh(k)/(k*eps(k))
 	
-	DP B0x = global.force.double_para(4);
-	DP B0y = global.force.double_para(5);
-	DP B0z = global.force.double_para(6);
+	Real B0x = global.force.double_para(4);
+	Real B0y = global.force.double_para(5);
+	Real B0z = global.force.double_para(6);
 	
 	// first feed const eps force;
 	Force_energy_helicity_supply_or_level_basic_assign(U, "ENERGY_SUPPLY", inner_radius, outer_radius, energy_supply, epsh_by_k_epse); 
@@ -115,9 +115,9 @@ void FORCE::Compute_force_Liquid_metal_const_energy_supply(FluidVF& U)
 
 void FORCE::Compute_force_Liquid_metal(FluidVF& U, FluidSF& T)
 {
-	DP B0x = global.force.double_para(0);
-	DP B0y = global.force.double_para(1);
-	DP B0z = global.force.double_para(2);
+	Real B0x = global.force.double_para(0);
+	Real B0y = global.force.double_para(1);
+	Real B0z = global.force.double_para(2);
 	
 	Compute_force_RBC_basic_assign(U, T);
 	
@@ -139,13 +139,13 @@ void FORCE::Compute_force_Liquid_metal(FluidVF& U, FluidSF& T)
  *	@param amp  
  *
  */
-void FORCE::Compute_force_Kolmogorov_flow_basic_assign(FluidVF& U, DP k0, DP force_amp, DP Rh)
+void FORCE::Compute_force_Kolmogorov_flow_basic_assign(FluidVF& U, Real k0, Real force_amp, Real Rh)
 {	
 		
 	// -u/Rh
-	U.Force1 = complx(-1/Rh,0) * (U.cvf.V1);
+	U.Force1 = Complex(-1/Rh,0) * (U.cvf.V1);
 	U.Force2 = 0.0; 
-	U.Force3 = complx(-1/Rh,0) * (U.cvf.V3);
+	U.Force3 = Complex(-1/Rh,0) * (U.cvf.V3);
 	
 	// CHOOSE SCC type
 	if (basis_type == "SSS") {
@@ -162,26 +162,26 @@ void FORCE::Compute_force_Kolmogorov_flow_basic_assign(FluidVF& U, DP k0, DP for
 	// CHOOSE SFF type
 	else if (basis_type == "SFF") {
 		
-		universal->Assign_spectral_field(k0, 0, k0, U.Force1, complx(force_amp/2, 0));
-		universal->Assign_spectral_field(k0, 0, k0, U.Force3, complx(-force_amp/2, 0));
+		universal->Assign_spectral_field(k0, 0, k0, U.Force1, Complex(force_amp/2, 0));
+		universal->Assign_spectral_field(k0, 0, k0, U.Force3, Complex(-force_amp/2, 0));
 	}
 	
 	else if (basis_type == "FFF" || basis_type == "FFFW") {
-		universal->Assign_spectral_field(k0, 0, k0, U.Force1, complx(0, -force_amp/4));
-		universal->Assign_spectral_field(-k0, 0, k0, U.Force1, complx(0, force_amp/4));
+		universal->Assign_spectral_field(k0, 0, k0, U.Force1, Complex(0, -force_amp/4));
+		universal->Assign_spectral_field(-k0, 0, k0, U.Force1, Complex(0, force_amp/4));
 		
-		universal->Assign_spectral_field(k0, 0, k0, U.Force3, complx(0, force_amp/4));
-		universal->Assign_spectral_field(-k0, 0, k0, U.Force3, complx(0, force_amp/4));
+		universal->Assign_spectral_field(k0, 0, k0, U.Force3, Complex(0, force_amp/4));
+		universal->Assign_spectral_field(-k0, 0, k0, U.Force3, Complex(0, force_amp/4));
 	}
 }
 
-void FORCE::Compute_force_Kolmogorov_flow_basic_add(FluidVF& U, DP k0, DP force_amp, DP Rh)
+void FORCE::Compute_force_Kolmogorov_flow_basic_add(FluidVF& U, Real k0, Real force_amp, Real Rh)
 {	
 		
 	// -u/Rh
-	U.Force1 += complx(-1/Rh,0) * (U.cvf.V1);
+	U.Force1 += Complex(-1/Rh,0) * (U.cvf.V1);
 	//U.Force2 += 0.0; 
-	U.Force3 += complx(-1/Rh,0) * (U.cvf.V3);
+	U.Force3 += Complex(-1/Rh,0) * (U.cvf.V3);
 	
 	// CHOOSE SCC type
 	if (basis_type == "SSS") {
@@ -198,16 +198,16 @@ void FORCE::Compute_force_Kolmogorov_flow_basic_add(FluidVF& U, DP k0, DP force_
 	// CHOOSE SFF type
 	else if (basis_type == "SFF") {
 		
-		universal->Add_spectral_field(k0, 0, k0, U.Force1, complx(force_amp/2, 0));
-		universal->Add_spectral_field(k0, 0, k0, U.Force3, complx(-force_amp/2, 0));
+		universal->Add_spectral_field(k0, 0, k0, U.Force1, Complex(force_amp/2, 0));
+		universal->Add_spectral_field(k0, 0, k0, U.Force3, Complex(-force_amp/2, 0));
 	}
 	
 	else if (basis_type == "FFF" || basis_type == "FFFW") {
-		universal->Add_spectral_field(k0, 0, k0, U.Force1, complx(0, -force_amp/4));
-		universal->Add_spectral_field(-k0, 0, k0, U.Force1, complx(0, force_amp/4));
+		universal->Add_spectral_field(k0, 0, k0, U.Force1, Complex(0, -force_amp/4));
+		universal->Add_spectral_field(-k0, 0, k0, U.Force1, Complex(0, force_amp/4));
 		
-		universal->Add_spectral_field(k0, 0, k0, U.Force3, complx(0, force_amp/4));
-		universal->Add_spectral_field(-k0, 0, k0, U.Force3, complx(0, force_amp/4));
+		universal->Add_spectral_field(k0, 0, k0, U.Force3, Complex(0, force_amp/4));
+		universal->Add_spectral_field(-k0, 0, k0, U.Force3, Complex(0, force_amp/4));
 	}
 }
 
@@ -215,8 +215,8 @@ void FORCE::Compute_force_Kolmogorov_flow_basic_add(FluidVF& U, DP k0, DP force_
 void FORCE::Compute_force_Kolmogorov_flow(FluidVF& U)
 {
 	int k0 = ((int) global.force.double_para(0));
-	DP force_amp = global.force.double_para(1);
-	DP Rh = global.force.double_para(2);
+	Real force_amp = global.force.double_para(1);
+	Real Rh = global.force.double_para(2);
 	
 	Compute_force_Kolmogorov_flow_basic_assign(U, k0, force_amp, Rh);
 	

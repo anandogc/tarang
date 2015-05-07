@@ -166,10 +166,10 @@ void Nlin_incompress::Compute_nlin_diag(FluidVF& U, FluidVF& W)
     else {
      /*   // for Keplerian: (Basis=FFF with no-transpose option)
         // d/dx -> d/dx + q omega t d/dy
-        DP omega_keplerian = global.force.double_para(0);
-        DP q_keplerian = global.force.double_para(1);
+        Real omega_keplerian = global.force.double_para(0);
+        Real q_keplerian = global.force.double_para(1);
         
-        DP q_omega_t = q_keplerian*omega_keplerian*global.time.keplerian;
+        Real q_omega_t = q_keplerian*omega_keplerian*global.time.keplerian;
         
         global.program.sincostr_switch = global.program.sincostr_switch_Visqr;
         
@@ -180,7 +180,7 @@ void Nlin_incompress::Compute_nlin_diag(FluidVF& U, FluidVF& W)
         universal->Yderiv(global.temp_array.X,  global.temp_array.X);
         
         universal->Xderiv(U.nlin1, U.nlin1);
-        U.nlin1 = U.nlin1 + complex<DP>(q_omega_t,0)*global.temp_array.X;
+        U.nlin1 = U.nlin1 + complex<Real>(q_omega_t,0)*global.temp_array.X;
         
         if (!global.program.two_dimension) {  // for 3d and 2.5d
             ArrayOps::Real_space_multiply(U.rvf.V2r, W.rvf.V2r, U.nlin2);
@@ -258,22 +258,22 @@ void Nlin_incompress::Compute_nlin_offdiag(FluidVF& U, FluidVF& W)
         
         // For Keplerian: Notranspose order, FFF basis only
         if (global.program.kind == "KEPLERIAN") {
-       /*     DP omega_keplerian = global.force.double_para(0);
-            DP q_keplerian = global.force.double_para(1);
+       /*     Real omega_keplerian = global.force.double_para(0);
+            Real q_keplerian = global.force.double_para(1);
             
-            DP q_omega_t = q_keplerian*omega_keplerian*global.time.keplerian;
+            Real q_omega_t = q_keplerian*omega_keplerian*global.time.keplerian;
             
             universal->Yderiv(W.rvf.V1r, global.temp_array.X);
-            U.nlin2 = U.nlin2 + complx(q_omega_t,0)*global.temp_array.X;
+            U.nlin2 = U.nlin2 + Complex(q_omega_t,0)*global.temp_array.X;
             
             universal->Yderiv(U.rvf.V3r, global.temp_array.X);
-            U.nlin3 = U.nlin3 + complx(q_omega_t,0)*global.temp_array.X;
+            U.nlin3 = U.nlin3 + Complex(q_omega_t,0)*global.temp_array.X;
             
             universal->Yderiv(U.rvf.V1r, global.temp_array.X);
-            W.nlin2 = W.nlin2 + complx(q_omega_t,0)*global.temp_array.X;
+            W.nlin2 = W.nlin2 + Complex(q_omega_t,0)*global.temp_array.X;
             
             universal->Yderiv(W.rvf.V3r, global.temp_array.X);
-            W.nlin3 = W.nlin3 + complx(q_omega_t,0)*global.temp_array.X; */
+            W.nlin3 = W.nlin3 + Complex(q_omega_t,0)*global.temp_array.X; */
         }
     }
     
@@ -417,8 +417,8 @@ void Nlin_incompress::Compute_nlin_offdiag(FluidVF& U, PlainFluidVF& W)
 void Nlin_incompress::Compute_nlin_Tsqr(FluidSF& T)
 {
     
-/*    DP C=1.0;
-    DP Potential_amp = 0.0;
+/*    Real C=1.0;
+    Real Potential_amp = 0.0;
     
     //	global.program.sincostr_switch = global.program.sincostr_switch_Visqr;
     
@@ -428,7 +428,7 @@ void Nlin_incompress::Compute_nlin_Tsqr(FluidSF& T)
 
     // Compute Vtrap
     int rx,ry,rz;
-    DP x,y,z;
+    Real x,y,z;
 
     
       for (int lx=0; lx<local_Nx; lx++) {

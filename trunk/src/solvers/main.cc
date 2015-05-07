@@ -48,7 +48,7 @@ Global global;
 
 SpectralTransform spectralTransform;
 
-Uniform<DP> SPECrand;
+Uniform<Real> SPECrand;
 
 FluidIO_incompress fluidIO_incompress;
 
@@ -58,7 +58,7 @@ FluidIO_incompress fluidIO_incompress;
 int main(int argc, char** argv)
 {
 
-  	MPI_Init(&argc, &argv);
+	MPI_Init(&argc, &argv);
 
 
 	MPI_Comm_rank(MPI_COMM_WORLD, &global.mpi.my_id);
@@ -69,67 +69,63 @@ int main(int argc, char** argv)
 
 	global.Process_basic_vars();
 	
-    BasicIO::Initialize(global.io.data_dir); 
+    BasicIO::Initialize(global.io.data_dir, global.mpi.num_p_rows, global.mpi.num_p_cols); 
 
-    if (global.program.basis_type == "FFFW"){
-		if (global.program.decomposition == "SLAB")
-			universal=new FFFW_SLAB;
-    }
+	if (global.program.basis_type == "FFFW"){
+		// if (global.program.decomposition == "SLAB")
+		// 	universal=new FFFW_SLAB;
+	}
 
-    else if (global.program.basis_type == "FFF"){
-		if (global.program.decomposition == "SLAB")
-			universal=new FFF_SLAB;
-		else if (global.program.decomposition == "PENCIL")
+	else if (global.program.basis_type == "FFF"){
+		// if (global.program.decomposition == "SLAB")
+		// 	universal=new FFF_SLAB;
+		if (global.program.decomposition == "PENCIL")
 			universal=new FFF_PENCIL;
-    }
+	}
 	
-    else if (global.program.basis_type == "SFF"){
-		if (global.program.decomposition == "SLAB")
-			universal=new SFF_SLAB;
-		else if (global.program.decomposition == "PENCIL")
+   else if (global.program.basis_type == "SFF"){
+		// if (global.program.decomposition == "SLAB")
+			// universal=new SFF_SLAB;
+		if (global.program.decomposition == "PENCIL")
 			universal=new SFF_PENCIL;
 	}
-    else if (global.program.basis_type == "SSF"){
-		if (global.program.decomposition == "SLAB")
-			universal=new SSF_SLAB;
-		else if (global.program.decomposition == "PENCIL")
+   else if (global.program.basis_type == "SSF"){
+		// if (global.program.decomposition == "SLAB")
+			// universal=new SSF_SLAB;
+		if (global.program.decomposition == "PENCIL")
 			universal=new SSF_PENCIL;
 	}
 	else if (global.program.basis_type == "SSS"){
-		if (global.program.decomposition == "SLAB")
-			universal=new SSS_SLAB;	
-		else if (global.program.decomposition == "PENCIL")
+		// if (global.program.decomposition == "SLAB")
+			// universal=new SSS_SLAB;	
+		if (global.program.decomposition == "PENCIL")
 			universal=new SSS_PENCIL;
 	}
 /*    else if (global.program.basis_type == "ChFF"){
 		if (global.program.decomposition == "SLAB")
 			universal=new ChFF_SLAB;
-    } */
+	} */
 /*    else if (global.program.basis_type == "CFFF"){
 //		if (global.program.decomposition == "SLAB")
 //			universal=new CFFF_SLAB;
-    }*/
-    else {
-            cerr << "program.basis_type must be one of FFFW, FFF, SFF, SSF, SSS, ChFF, CFFF. And program.decomposition must be one of PENCIL or SLAB"<< endl;
-            exit(1);
-    }
-
-    global.Process_advanced_vars();
-	global.Print();
-    
-    Correlation::Initialize();
+	}*/
 	
-/*	if (global.program.decomposition=="PENCIL"){
-		global.mpi.MPI_COMM_HOR_SEGMENT = spectralTransform.MPI_COMM_HOR_SEGMENT;
-		global.mpi.MPI_COMM_VERT_SEGMENT = spectralTransform.MPI_COMM_VERT_SEGMENT;
-	} */
-		
+	if (universal == NULL){
+			if(master) cerr << "program.basis_type must be one of FFF, SFF, SSF, SSS. And program.decomposition must be PENCIL"<< endl;
+			MPI_Abort(MPI_COMM_WORLD, 1);
+	}
 
+	global.Process_advanced_vars();
+	global.Print();
 
-    time_t          start;
-    time_t          end;
+	
+	
+	Correlation::Initialize();
+	
+	time_t start;
+	time_t end;
 
-    time (&start);
+	time (&start);
 
 	
 	SPECrand.seed((unsigned int)time(0));				// Initialize random number seed
@@ -137,22 +133,22 @@ int main(int argc, char** argv)
 	if (global.program.kind == "FLUID_INCOMPRESS")
 		Ifluid_main();
 
- 	else if (global.program.kind == "SCALAR_INCOMPRESS")
-        Iscalar_main();
+	else if (global.program.kind == "SCALAR_INCOMPRESS")
+		Iscalar_main();
 	
 	else if (global.program.kind == "RBC")
- 		Iscalar_main();
+		Iscalar_main();
 	
 	else if (global.program.kind == "STRATIFIED")
 		Iscalar_main();
 
 	else if (global.program.kind == "MRBC")
- 		MRBC_main();
+		MRBC_main();
 
 	else if (global.program.kind == "MHD_INCOMPRESS")
 		IMHD_main();
-    
-    else if (global.program.kind == "KEPLERIAN")
+	
+	else if (global.program.kind == "KEPLERIAN")
 		IMHD_main();
 	
 	else if (global.program.kind == "MHD_SCALAR_INCOMPRESS")
@@ -160,16 +156,16 @@ int main(int argc, char** argv)
 	
 	else if (global.program.kind == "MHD_ASTRO_INCOMPRESS")
 		IMHDastro_main();
-    
-    else if (global.program.kind == "GP")
+	
+	else if (global.program.kind == "GP")
 		GP_main();
 
 	time(&end);
 
-	DP vm, rss;
+	Real vm, rss;
 	process_mem_usage(vm, rss);
 
-	DP dif = difftime(end, start);
+	Real dif = difftime(end, start);
 	if (my_id == master_id){
 		cout << endl << "Memory usage by Process " << my_id
 		<< "   VM: " << vm << "KB  RSS: " << rss << "KB" << endl;

@@ -339,8 +339,8 @@ void FluidIO::Output_field_k(FluidVF& U)
 	if (global.time.now < global.io.time.field_k_save_next)
 		return;
 		
-    TinyVector<DP,3> Vk_real;
-    TinyVector<complx,3> Vk_complex;
+    TinyVector<Real,3> Vk_real;
+    TinyVector<Complex,3> Vk_complex;
 	int kx, ky, kz;
 	
     bool probe_in_me_flag;
@@ -365,7 +365,7 @@ void FluidIO::Output_field_k(FluidVF& U)
             global.io.probes.spectral_space.field_buffer(global.io.probes.spectral_space.buffer_index++) = global.time.now;
             
             for (int k=1; k<=3; k++) 
-                global.io.probes.spectral_space.field_buffer(global.io.probes.spectral_space.buffer_index++) = ((DP) global.io.probes.spectral_space.coords(probe,k));
+                global.io.probes.spectral_space.field_buffer(global.io.probes.spectral_space.buffer_index++) = ((Real) global.io.probes.spectral_space.coords(probe,k));
             
 			// Get the field now..
             if (basis_type == "SSS") {
@@ -397,10 +397,10 @@ void FluidIO::Output_field_k(FluidVF& U, FluidSF& T)
 	if (global.time.now < global.io.time.field_k_save_next)
 		return;
 	
-	TinyVector<DP,3> Vk_real;
-    TinyVector<complx,3> Vk_complex;
-	DP Fk_real;
-	complx Fk_complex;
+	TinyVector<Real,3> Vk_real;
+    TinyVector<Complex,3> Vk_complex;
+	Real Fk_real;
+	Complex Fk_complex;
 	int kx, ky, kz;
 	
     bool probe_in_me_flag;
@@ -425,7 +425,7 @@ void FluidIO::Output_field_k(FluidVF& U, FluidSF& T)
             global.io.probes.spectral_space.field_buffer(global.io.probes.spectral_space.buffer_index++) = global.time.now;
             
             for (int k=1; k<=3; k++) 
-                global.io.probes.spectral_space.field_buffer(global.io.probes.spectral_space.buffer_index++) = ((DP) global.io.probes.spectral_space.coords(probe,k));
+                global.io.probes.spectral_space.field_buffer(global.io.probes.spectral_space.buffer_index++) = ((Real) global.io.probes.spectral_space.coords(probe,k));
             
 			// Get the field now..
             if (basis_type == "SSS") {
@@ -463,10 +463,10 @@ void FluidIO::Output_field_k(FluidVF& U, FluidSF& T1, FluidSF& T2)
 	if (global.time.now < global.io.time.field_k_save_next)
 		return;
 	
-	TinyVector<DP,3> Vk_real;
-    TinyVector<complx,3> Vk_complex;
-	DP F1k_real, F2k_real;
-	complx F1k_complex, F2k_complex;
+	TinyVector<Real,3> Vk_real;
+    TinyVector<Complex,3> Vk_complex;
+	Real F1k_real, F2k_real;
+	Complex F1k_complex, F2k_complex;
 	int kx, ky, kz;
 	
     bool probe_in_me_flag;
@@ -491,7 +491,7 @@ void FluidIO::Output_field_k(FluidVF& U, FluidSF& T1, FluidSF& T2)
             global.io.probes.spectral_space.field_buffer(global.io.probes.spectral_space.buffer_index++) = global.time.now;
             
             for (int k=1; k<=3; k++) 
-                global.io.probes.spectral_space.field_buffer(global.io.probes.spectral_space.buffer_index++) = ((DP) global.io.probes.spectral_space.coords(probe,k));
+                global.io.probes.spectral_space.field_buffer(global.io.probes.spectral_space.buffer_index++) = ((Real) global.io.probes.spectral_space.coords(probe,k));
             
 				// Get the field now..
             if (basis_type == "SSS") {
@@ -538,10 +538,10 @@ void FluidIO::Output_field_k(FluidVF& U, FluidVF& W)
 	if (global.time.now < global.io.time.field_k_save_next)
 		return;
 	
-	TinyVector<DP,3> Vk_real, Wk_real;
-    TinyVector<complx,3> Vk_complex, Wk_complex;
-	DP Fk_real;
-	complx Fk_complex;
+	TinyVector<Real,3> Vk_real, Wk_real;
+    TinyVector<Complex,3> Vk_complex, Wk_complex;
+	Real Fk_real;
+	Complex Fk_complex;
 	int kx, ky, kz;
 	
     bool probe_in_me_flag;
@@ -566,7 +566,7 @@ void FluidIO::Output_field_k(FluidVF& U, FluidVF& W)
             global.io.probes.spectral_space.field_buffer(global.io.probes.spectral_space.buffer_index++) = global.time.now;
             
             for (int k=1; k<=3; k++) 
-                global.io.probes.spectral_space.field_buffer(global.io.probes.spectral_space.buffer_index++) = ((DP) global.io.probes.spectral_space.coords(probe,k));
+                global.io.probes.spectral_space.field_buffer(global.io.probes.spectral_space.buffer_index++) = ((Real) global.io.probes.spectral_space.coords(probe,k));
             
 				// Get the field now..
             if (basis_type == "SSS") {
@@ -608,10 +608,10 @@ void FluidIO::Output_field_k(FluidVF& U, FluidVF& W, FluidSF& T)
 	if (global.time.now < global.io.time.field_k_save_next)
 		return;
 	
-	TinyVector<DP,3> Vk_real, Wk_real;
-    TinyVector<complx,3> Vk_complex, Wk_complex;
-	DP Fk_real;
-	complx Fk_complex;
+	TinyVector<Real,3> Vk_real, Wk_real;
+    TinyVector<Complex,3> Vk_complex, Wk_complex;
+	Real Fk_real;
+	Complex Fk_complex;
 	
 	int kx, ky, kz;
 	
@@ -637,7 +637,7 @@ void FluidIO::Output_field_k(FluidVF& U, FluidVF& W, FluidSF& T)
             global.io.probes.spectral_space.field_buffer(global.io.probes.spectral_space.buffer_index++) = global.time.now;
             
             for (int k=1; k<=3; k++) 
-                global.io.probes.spectral_space.field_buffer(global.io.probes.spectral_space.buffer_index++) = ((DP) global.io.probes.spectral_space.coords(probe,k));
+                global.io.probes.spectral_space.field_buffer(global.io.probes.spectral_space.buffer_index++) = ((Real) global.io.probes.spectral_space.coords(probe,k));
             
 				// Get the field now..
             if (basis_type == "SSS") {
@@ -698,7 +698,7 @@ void FluidIO::Output_field_r(FluidVF& U)
 	if (global.time.now < global.io.time.field_r_save_next)
 		return;
 	
-	TinyVector<DP,3> Vr;
+	TinyVector<Real,3> Vr;
 	int rx, ry, rz;
 	
 	bool probe_in_me_flag;
@@ -723,7 +723,7 @@ void FluidIO::Output_field_r(FluidVF& U)
 			global.io.probes.real_space.field_buffer(global.io.probes.real_space.buffer_index++) = global.time.now;
             
             for (int r=1; r<=3; r++)
-                global.io.probes.real_space.field_buffer(global.io.probes.real_space.buffer_index++) = ((DP) global.io.probes.real_space.coords(probe,r));
+                global.io.probes.real_space.field_buffer(global.io.probes.real_space.buffer_index++) = ((Real) global.io.probes.real_space.coords(probe,r));
             
 				// Get the field now..
             Vr = universal->Get_real_field(rx, ry, rz, U.rvf.V1r, U.rvf.V2r, U.rvf.V3r);
@@ -742,8 +742,8 @@ void FluidIO::Output_field_r(FluidVF& U, FluidSF& T)
 	if (global.time.now < global.io.time.field_r_save_next)
 		return;
 	
-	TinyVector<DP,3> Vr;
-	DP Fr;
+	TinyVector<Real,3> Vr;
+	Real Fr;
 	
 	int rx, ry, rz;
 	bool probe_in_me_flag;
@@ -768,7 +768,7 @@ void FluidIO::Output_field_r(FluidVF& U, FluidSF& T)
 			global.io.probes.real_space.field_buffer(global.io.probes.real_space.buffer_index++) = global.time.now;
             
             for (int r=1; r<=3; r++) 
-                global.io.probes.real_space.field_buffer(global.io.probes.real_space.buffer_index++) = ((DP) global.io.probes.real_space.coords(probe,r));
+                global.io.probes.real_space.field_buffer(global.io.probes.real_space.buffer_index++) = ((Real) global.io.probes.real_space.coords(probe,r));
             
 				// Get the field now..
 			Vr = universal->Get_real_field(rx, ry, rz, U.rvf.V1r, U.rvf.V2r, U.rvf.V3r);
@@ -791,8 +791,8 @@ void FluidIO::Output_field_r(FluidVF& U, FluidSF& T1, FluidSF& T2)
 	if (global.time.now < global.io.time.field_r_save_next)
 		return;
 	
-	TinyVector<DP,3> Vr;
-	DP F1r, F2r;
+	TinyVector<Real,3> Vr;
+	Real F1r, F2r;
 	
 	int rx, ry, rz;
 	bool probe_in_me_flag;
@@ -817,7 +817,7 @@ void FluidIO::Output_field_r(FluidVF& U, FluidSF& T1, FluidSF& T2)
 			global.io.probes.real_space.field_buffer(global.io.probes.real_space.buffer_index++) = global.time.now;
             
             for (int r=1; r<=3; r++) 
-                global.io.probes.real_space.field_buffer(global.io.probes.real_space.buffer_index++) = ((DP) global.io.probes.real_space.coords(probe,r));
+                global.io.probes.real_space.field_buffer(global.io.probes.real_space.buffer_index++) = ((Real) global.io.probes.real_space.coords(probe,r));
             
 				// Get the field now..
 			Vr = universal->Get_real_field(rx, ry, rz, U.rvf.V1r, U.rvf.V2r, U.rvf.V3r);
@@ -842,7 +842,7 @@ void FluidIO::Output_field_r(FluidVF& U, FluidVF& W)
 	if (global.time.now < global.io.time.field_r_save_next)
 		return;
 	
-	TinyVector<DP,3> Vr, Wr;
+	TinyVector<Real,3> Vr, Wr;
 	bool probe_in_me_flag;
 	int rx, ry, rz;
 	
@@ -866,7 +866,7 @@ void FluidIO::Output_field_r(FluidVF& U, FluidVF& W)
 			global.io.probes.real_space.field_buffer(global.io.probes.real_space.buffer_index++) = global.time.now;
             
             for (int r=1; r<=3; r++) 
-                global.io.probes.real_space.field_buffer(global.io.probes.real_space.buffer_index++) = ((DP) global.io.probes.real_space.coords(probe,r));
+                global.io.probes.real_space.field_buffer(global.io.probes.real_space.buffer_index++) = ((Real) global.io.probes.real_space.coords(probe,r));
             
 				// Get the field now..
 			Vr = universal->Get_real_field(rx, ry, rz, U.rvf.V1r, U.rvf.V2r, U.rvf.V3r);
@@ -890,8 +890,8 @@ void FluidIO::Output_field_r(FluidVF& U, FluidVF& W, FluidSF& T)
 	if (global.time.now < global.io.time.field_r_save_next)
 		return;
 	
-	TinyVector<DP,3> Vr, Wr;
-	DP Fr;
+	TinyVector<Real,3> Vr, Wr;
+	Real Fr;
 	int rx, ry, rz;
 	bool probe_in_me_flag;
 	
@@ -915,7 +915,7 @@ void FluidIO::Output_field_r(FluidVF& U, FluidVF& W, FluidSF& T)
 			global.io.probes.real_space.field_buffer(global.io.probes.real_space.buffer_index++) = global.time.now;
             
             for (int r=1; r<=3; r++) 
-                global.io.probes.real_space.field_buffer(global.io.probes.real_space.buffer_index++) = ((DP) global.io.probes.real_space.coords(probe,r));
+                global.io.probes.real_space.field_buffer(global.io.probes.real_space.buffer_index++) = ((Real) global.io.probes.real_space.coords(probe,r));
             
 				// Get the field now..
 			Vr = universal->Get_real_field(rx, ry, rz, U.rvf.V1r, U.rvf.V2r, U.rvf.V3r);

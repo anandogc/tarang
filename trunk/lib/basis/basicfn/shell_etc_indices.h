@@ -68,7 +68,7 @@
  *	shell(0) contains only K=0 mode. shell(1) contains (0:1], and so on..
  *
  */
-int Get_shell_index(DP kkmag, Array<DP, 1> shell_radius_array);
+int Get_shell_index(Real kkmag, Array<Real, 1> shell_radius_array);
 
 
 
@@ -89,7 +89,7 @@ int Get_shell_index(DP kkmag, Array<DP, 1> shell_radius_array);
  *			sector(nsector) = (theta(last-1):theta(last)).
  *
  */					
-int Get_sector_index(DP theta, Array<DP, 1> sector_angle_array);
+int Get_sector_index(Real theta, Array<Real, 1> sector_angle_array);
 
 
 //*********************************************************************************************
@@ -124,10 +124,10 @@ int Get_sector_index(DP theta, Array<DP, 1> sector_angle_array);
  */
 void Compute_ring_index
 (
-	DP kkmag, 
-	DP theta, 
-	Array<DP, 1> shell_radius_array, 
-	Array<DP, 1> sector_angle_array, 
+	Real kkmag, 
+	Real theta, 
+	Array<Real, 1> shell_radius_array, 
+	Array<Real, 1> sector_angle_array, 
 	int& shell_index, 
 	int& sector_index
 );
@@ -146,7 +146,7 @@ void Compute_ring_index
  *			slab(1) contains \f$ k_{||} \in [0,H(1)] \f$ (note including  \f$  k_{||}=0 \f$.
  *			slab(2) contains \f$ k_{||} \in (H(1),H(2)] \f$
  */
-int Get_slab_index(DP kkpll, DP kkperp, Array<DP,1> cylinder_kpll_array);		
+int Get_slab_index(Real kkpll, Real kkperp, Array<Real,1> cylinder_kpll_array);		
 
 
 
@@ -170,10 +170,10 @@ int Get_slab_index(DP kkpll, DP kkperp, Array<DP,1> cylinder_kpll_array);
  */
 void Compute_cylindrical_ring_index
 (
-	DP kkpll, 
-	DP kkperp, 
-	Array<DP,1> cylinder_shell_radius_array,
-	Array<DP,1> cylinder_kpll_array, 
+	Real kkpll, 
+	Real kkperp, 
+	Array<Real,1> cylinder_shell_radius_array,
+	Array<Real,1> cylinder_kpll_array, 
 	int& shell_index, 
 	int& slab_index
 );					

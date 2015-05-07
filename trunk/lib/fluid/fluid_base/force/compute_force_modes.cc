@@ -61,8 +61,8 @@ void FORCE::Compute_force_given_modes(FluidVF& U)
 	if (!global.force.modes.read_done) {
 
 		int kx, ky, kz;	
-		complx Fx_complex, Fy_complex, Fz_complex;
-		DP Fx_real, Fy_real, Fz_real;
+		Complex Fx_complex, Fy_complex, Fz_complex;
+		Real Fx_real, Fy_real, Fz_real;
 		
 		(U.Force1) = 0.0; 
 		(U.Force2) = 0.0; 
@@ -136,8 +136,8 @@ void FORCE::Compute_force_given_modes(FluidVF& U, FluidSF& T)
 	if (!global.force.modes.read_done) {
 
 		int kx, ky, kz;	
-		complx Fx_complex, Fy_complex, Fz_complex, G_complex;
-		DP Fx_real, Fy_real, Fz_real, G_real;
+		Complex Fx_complex, Fy_complex, Fz_complex, G_complex;
+		Real Fx_real, Fy_real, Fz_real, G_real;
 		
 		(U.Force1) = 0.0; 
 		(U.Force2) = 0.0; 
@@ -226,10 +226,10 @@ void FORCE::Compute_force_given_modes(FluidVF& U, FluidVF& W)
 	if (!global.force.modes.read_done) {
 		
 		int kx, ky, kz;	
-		complx Fx_complex, Fy_complex, Fz_complex;
-		complx FxW_complex, FyW_complex, FzW_complex;
-		DP Fx_real, Fy_real, Fz_real;
-		DP FxW_real, FyW_real, FzW_real;
+		Complex Fx_complex, Fy_complex, Fz_complex;
+		Complex FxW_complex, FyW_complex, FzW_complex;
+		Real Fx_real, Fy_real, Fz_real;
+		Real FxW_real, FyW_real, FzW_real;
 		
 		(U.Force1) = 0.0; 
 		(U.Force2) = 0.0; 
@@ -333,10 +333,10 @@ void FORCE::Compute_force_given_modes(FluidVF& U, FluidVF& W, FluidSF& T)
 	if  (!global.force.modes.read_done) {
 		
 		int kx, ky, kz;	
-		complx Fx_complex, Fy_complex, Fz_complex;
-		complx FxW_complex, FyW_complex, FzW_complex, G_complex;
-		DP Fx_real, Fy_real, Fz_real;
-		DP FxW_real, FyW_real, FzW_real, G_real;
+		Complex Fx_complex, Fy_complex, Fz_complex;
+		Complex FxW_complex, FyW_complex, FzW_complex, G_complex;
+		Real Fx_real, Fy_real, Fz_real;
+		Real FxW_real, FyW_real, FzW_real, G_real;
 		
 		(U.Force1) = 0.0; 
 		(U.Force2) = 0.0; 

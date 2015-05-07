@@ -59,19 +59,19 @@ void FluidIO::Init_cond_dynamo_full_velocity_field(FluidVF& U, FluidVF& W)
 // Init_cond_double_para(1,2,3) = totalEb,	kkmin, kkmax
 // Distribute totalEb among the modes in 
 	
-	DP totalEb = global.io.double_para(0);
-	DP Kmin = global.io.double_para(1);
-	DP Kmax = global.io.double_para(2);
+	Real totalEb = global.io.double_para(0);
+	Real Kmin = global.io.double_para(1);
+	Real Kmax = global.io.double_para(2);
 	
 	int total_no_modes = (4*M_PI/3)*(my_pow(Kmax,3) - my_pow(Kmin,3));
-	DP ekW = totalEb/total_no_modes;   // Energy per mode
+	Real ekW = totalEb/total_no_modes;   // Energy per mode
 	
-	DP Kmag, ampW, phase1W, phase2W, phase3W;
+	Real Kmag, ampW, phase1W, phase2W, phase3W;
 	int index, maxN3;
 	
-    for (int ly=0; ly<=global.field.maxly; ly++)
-        for (int lz=0; lz<=global.field.maxlz; lz++)
-            for (int lx=0; lx<=global.field.maxlx; lx++) {
+    for (int lx=0; lx<global.field.maxlx; lx++)
+	    for (int ly=0; ly<global.field.maxly; ly++)
+	        for (int lz=0; lz<global.field.maxlz; lz++) {
                 
 				Kmag = universal->Kmagnitude(lx, ly, lz);
 				

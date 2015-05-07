@@ -107,7 +107,7 @@ inline bool SFF_SLAB::Probe_in_me(int kx, int ky, int kz)
 	return ((lx >= 0) && (lx < local_Nx));
 }
 
-inline complx SFF_SLAB::Get_spectral_field(int kx, int ky, int kz, Array<complx,3> A)
+inline Complex SFF_SLAB::Get_spectral_field(int kx, int ky, int kz, Array<Complex,3> A)
 { 
 	int lx = Get_lx(kx);
     int ly = Get_ly(ky);
@@ -115,28 +115,28 @@ inline complx SFF_SLAB::Get_spectral_field(int kx, int ky, int kz, Array<complx,
 	if  ((lx >= 0) && (lx < local_Nx))
 		return A(lx, ly, kz);
 
-	return complx(0,0);
+	return Complex(0,0);
 }
 
-inline TinyVector<complx,3> SFF_SLAB::Get_spectral_field(int kx, int ky, int kz, Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az)
+inline TinyVector<Complex,3> SFF_SLAB::Get_spectral_field(int kx, int ky, int kz, Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az)
 {
 	
 	int lx = Get_lx(kx);
     int ly = Get_ly(ky);
 	
 	if  ((lx >= 0) && (lx < local_Nx))
-		return TinyVector<complx,3>(Ax(lx, ly, kz), Ay(lx, ly, kz), Az(lx, ly, kz));
+		return TinyVector<Complex,3>(Ax(lx, ly, kz), Ay(lx, ly, kz), Az(lx, ly, kz));
 
-	return TinyVector<complx,3>(0,0,0);
+	return TinyVector<Complex,3>(0,0,0);
 }
 
 /*
-inline void SFF_SLAB::Get_spectral_field(int kx, int ky, int kz, Array<complx,3> A,DP &field)
+inline void SFF_SLAB::Get_spectral_field(int kx, int ky, int kz, Array<Complex,3> A,Real &field)
 { 
 	cout << "MYERROR: SFF_SLAB::Get_spectral_field(); Use complex data type " << endl; 
 }
 
-inline void SFF_SLAB::Get_spectral_field(int kx, int ky, int kz, Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az, TinyVector<DP,3> &V)
+inline void SFF_SLAB::Get_spectral_field(int kx, int ky, int kz, Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az, TinyVector<Real,3> &V)
 {
 	
 	cout << "MYERROR: SFF_SLAB::Get_spectral_field(); Use complex data type " << endl;
@@ -144,7 +144,7 @@ inline void SFF_SLAB::Get_spectral_field(int kx, int ky, int kz, Array<complx,3>
 
 	// Assign..
 
-inline void SFF_SLAB::Assign_spectral_field(int kx, int ky, int kz, Array<complx,3> A, complx field)
+inline void SFF_SLAB::Assign_spectral_field(int kx, int ky, int kz, Array<Complex,3> A, Complex field)
 { 
 	int lx = Get_lx(kx);
     int ly = Get_ly(ky);
@@ -154,7 +154,7 @@ inline void SFF_SLAB::Assign_spectral_field(int kx, int ky, int kz, Array<complx
 }
 
 
-inline void SFF_SLAB::Assign_spectral_field(int kx, int ky, int kz, Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az, TinyVector<complx,3> V)
+inline void SFF_SLAB::Assign_spectral_field(int kx, int ky, int kz, Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az, TinyVector<Complex,3> V)
 {
 	
 	int lx = Get_lx(kx);
@@ -168,18 +168,18 @@ inline void SFF_SLAB::Assign_spectral_field(int kx, int ky, int kz, Array<complx
 }
 
 
-inline void SFF_SLAB::Assign_spectral_field(int kx, int ky, int kz, Array<complx,3> A,DP field)
+inline void SFF_SLAB::Assign_spectral_field(int kx, int ky, int kz, Array<Complex,3> A,Real field)
 { 
 	cout << "MYERROR: SFF_SLAB:Assign_spectral_field(); Use complex data type " << endl; 
 }
 
-inline void SFF_SLAB::Assign_spectral_field(int kx, int ky, int kz, Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az, TinyVector<DP,3> V)
+inline void SFF_SLAB::Assign_spectral_field(int kx, int ky, int kz, Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az, TinyVector<Real,3> V)
 {
 	
 	cout << "MYERROR: SFF_SLAB::Assign_spectral_field(); Use complex data type " << endl;
 }
 
-inline void SFF_SLAB::Add_spectral_field(int kx, int ky, int kz, Array<complx,3> A, complx field)
+inline void SFF_SLAB::Add_spectral_field(int kx, int ky, int kz, Array<Complex,3> A, Complex field)
 { 
 	int lx = Get_lx(kx);
     int ly = Get_ly(ky);
@@ -189,7 +189,7 @@ inline void SFF_SLAB::Add_spectral_field(int kx, int ky, int kz, Array<complx,3>
 }
 
 
-inline void SFF_SLAB::Add_spectral_field(int kx, int ky, int kz, Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az, TinyVector<complx,3> V)
+inline void SFF_SLAB::Add_spectral_field(int kx, int ky, int kz, Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az, TinyVector<Complex,3> V)
 {
 	
 	int lx = Get_lx(kx);
@@ -202,12 +202,12 @@ inline void SFF_SLAB::Add_spectral_field(int kx, int ky, int kz, Array<complx,3>
 	}
 }
 
-inline void SFF_SLAB::Add_spectral_field(int kx, int ky, int kz, Array<complx,3> A,DP field)
+inline void SFF_SLAB::Add_spectral_field(int kx, int ky, int kz, Array<Complex,3> A,Real field)
 { 
 	cout << "MYERROR: SFF_SLAB:Assign_spectral_field(); Use complex data type " << endl; 
 }
 
-inline void SFF_SLAB::Add_spectral_field(int kx, int ky, int kz, Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az, TinyVector<DP,3> V)
+inline void SFF_SLAB::Add_spectral_field(int kx, int ky, int kz, Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az, TinyVector<Real,3> V)
 {
 	
 	cout << "MYERROR: SFF_SLAB::Assign_spectral_field(); Use complex data type " << endl;
@@ -217,30 +217,30 @@ inline void SFF_SLAB::Add_spectral_field(int kx, int ky, int kz, Array<complx,3>
 	// local..
 
 
-inline complx SFF_SLAB::Get_local_spectral_field(int lx, int ly, int lz, Array<complx,3> A)
+inline Complex SFF_SLAB::Get_local_spectral_field(int lx, int ly, int lz, Array<Complex,3> A)
 { 
 	 return A(lx, ly, lz);
 }
 
-inline TinyVector<complx,3> SFF_SLAB::Get_local_spectral_field(int lx, int ly, int lz, Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az)
+inline TinyVector<Complex,3> SFF_SLAB::Get_local_spectral_field(int lx, int ly, int lz, Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az)
 {
 	
-	return TinyVector<complx,3>(Ax(lx, ly, lz), Ay(lx, ly, lz), Az(lx, ly, lz));
+	return TinyVector<Complex,3>(Ax(lx, ly, lz), Ay(lx, ly, lz), Az(lx, ly, lz));
 }
 
 /*
-inline void SFF_SLAB::Get_local_spectral_field(int lx, int ly, int lz, Array<complx,3> A,DP &field)
+inline void SFF_SLAB::Get_local_spectral_field(int lx, int ly, int lz, Array<Complex,3> A,Real &field)
 { 
 	cout << "MYERROR: SFF_SLAB::Get_local_spectral_field(); Use complex data type " << endl; 
 }
 
-inline void SFF_SLAB::Get_local_spectral_field(int lx, int ly, int lz, Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az, TinyVector<DP,3> &V)
+inline void SFF_SLAB::Get_local_spectral_field(int lx, int ly, int lz, Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az, TinyVector<Real,3> &V)
 {
 	
 	cout << "MYERROR: SFF_SLAB::Get_local_spectral_field(); Use complex data type " << endl;
 }*/
 
-inline void SFF_SLAB::Assign_local_spectral_field(int lx, int ly, int lz, Array<complx,3> A, complx field)
+inline void SFF_SLAB::Assign_local_spectral_field(int lx, int ly, int lz, Array<Complex,3> A, Complex field)
 { 
 	
 	if ((lx >= 0) && (lx < local_Nx))
@@ -248,7 +248,7 @@ inline void SFF_SLAB::Assign_local_spectral_field(int lx, int ly, int lz, Array<
 }
 
 
-inline void SFF_SLAB::Assign_local_spectral_field(int lx, int ly, int lz, Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az, TinyVector<complx,3> V)
+inline void SFF_SLAB::Assign_local_spectral_field(int lx, int ly, int lz, Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az, TinyVector<Complex,3> V)
 {
 	if ((lx >= 0) && (lx < local_Nx)) {
 		Ax(lx, ly, lz) = V(0);
@@ -257,12 +257,12 @@ inline void SFF_SLAB::Assign_local_spectral_field(int lx, int ly, int lz, Array<
 	}
 }
 
-inline void SFF_SLAB::Assign_local_spectral_field(int lx, int ly, int lz, Array<complx,3> A,DP field)
+inline void SFF_SLAB::Assign_local_spectral_field(int lx, int ly, int lz, Array<Complex,3> A,Real field)
 { 
 	cout << "MYERROR: SFF_SLAB:Assign_local_spectral_field(); Use complex data type " << endl; 
 }
 
-inline void SFF_SLAB::Assign_local_spectral_field(int lx, int ly, int lz, Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az, TinyVector<DP,3> V)
+inline void SFF_SLAB::Assign_local_spectral_field(int lx, int ly, int lz, Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az, TinyVector<Real,3> V)
 {
 	
 	cout << "MYERROR: SFF_SLAB::Assign_local_spectral_field(); Use complex data type " << endl;
@@ -270,7 +270,7 @@ inline void SFF_SLAB::Assign_local_spectral_field(int lx, int ly, int lz, Array<
 
 
 
-inline void SFF_SLAB::Add_local_spectral_field(int lx, int ly, int lz, Array<complx,3> A, complx field)
+inline void SFF_SLAB::Add_local_spectral_field(int lx, int ly, int lz, Array<Complex,3> A, Complex field)
 { 
 	
 	if ((lx >= 0) && (lx < local_Nx))
@@ -278,7 +278,7 @@ inline void SFF_SLAB::Add_local_spectral_field(int lx, int ly, int lz, Array<com
 }
 
 
-inline void SFF_SLAB::Add_local_spectral_field(int lx, int ly, int lz, Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az, TinyVector<complx,3> V)
+inline void SFF_SLAB::Add_local_spectral_field(int lx, int ly, int lz, Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az, TinyVector<Complex,3> V)
 {
 	if ((lx >= 0) && (lx < local_Nx)) {
 		Ax(lx, ly, lz) += V(0);
@@ -287,12 +287,12 @@ inline void SFF_SLAB::Add_local_spectral_field(int lx, int ly, int lz, Array<com
 	}
 }
 
-inline void SFF_SLAB::Add_local_spectral_field(int lx, int ly, int lz, Array<complx,3> A,DP field)
+inline void SFF_SLAB::Add_local_spectral_field(int lx, int ly, int lz, Array<Complex,3> A,Real field)
 { 
 	cout << "MYERROR: SFF_SLAB:Assign_local_spectral_field(); Use complex data type " << endl; 
 }
 
-inline void SFF_SLAB::Add_local_spectral_field(int lx, int ly, int lz, Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az, TinyVector<DP,3> V)
+inline void SFF_SLAB::Add_local_spectral_field(int lx, int ly, int lz, Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az, TinyVector<Real,3> V)
 {
 	
 	cout << "MYERROR: SFF_SLAB::Assign_local_spectral_field(); Use complex data type " << endl;
@@ -330,7 +330,7 @@ inline bool SFF_SLAB::Probe_in_me_real_space(int rx, int ry, int rz)
 }
 
 
-inline DP SFF_SLAB::Get_real_field(int rx, int ry, int rz, Array<DP,3> A)
+inline Real SFF_SLAB::Get_real_field(int rx, int ry, int rz, Array<Real,3> A)
 {
 	if (Probe_in_me_real_space(rx,ry,rz)) {
 		int ly = Get_ly_real_space(ry);
@@ -341,19 +341,19 @@ inline DP SFF_SLAB::Get_real_field(int rx, int ry, int rz, Array<DP,3> A)
 	return 0;
 }
 
-inline TinyVector<DP,3> SFF_SLAB::Get_real_field(int rx, int ry, int rz, Array<DP,3> Ax, Array<DP,3> Ay, Array<DP,3> Az)
+inline TinyVector<Real,3> SFF_SLAB::Get_real_field(int rx, int ry, int rz, Array<Real,3> Ax, Array<Real,3> Ay, Array<Real,3> Az)
 {
     if (Probe_in_me_real_space(rx,ry,rz)) {
 		int ly = Get_ly_real_space(ry);
 		int lz = Get_lz_real_space(rz);
 		
-		return TinyVector<DP,3>(Ax(rx, ly, lz), Ay(rx, ly, lz), Az(rx, ly, lz));
+		return TinyVector<Real,3>(Ax(rx, ly, lz), Ay(rx, ly, lz), Az(rx, ly, lz));
 	}
-	return TinyVector<DP,3>(0,0,0);
+	return TinyVector<Real,3>(0,0,0);
 }
 
 
-inline void SFF_SLAB::Assign_real_field(int rx, int ry, int rz, Array<DP,3> A, DP field)
+inline void SFF_SLAB::Assign_real_field(int rx, int ry, int rz, Array<Real,3> A, Real field)
 {	
     if (Probe_in_me_real_space(rx,ry,rz)) {
 		int ly = Get_ly_real_space(ry);
@@ -363,7 +363,7 @@ inline void SFF_SLAB::Assign_real_field(int rx, int ry, int rz, Array<DP,3> A, D
 	}
 }
 
-inline void SFF_SLAB::Assign_real_field(int rx, int ry, int rz, Array<DP,3> Ax, Array<DP,3> Ay, Array<DP,3> Az, TinyVector<DP,3> V)
+inline void SFF_SLAB::Assign_real_field(int rx, int ry, int rz, Array<Real,3> Ax, Array<Real,3> Ay, Array<Real,3> Az, TinyVector<Real,3> V)
 {
 	if (Probe_in_me_real_space(rx,ry,rz)) {
 		int ly = Get_ly_real_space(ry);
@@ -387,7 +387,7 @@ inline void SFF_SLAB::Assign_real_field(int rx, int ry, int rz, Array<DP,3> Ax, 
 ***********************************************************************************************/
 
 
-inline void SFF_SLAB::Wavenumber(int lx, int ly, int lz, TinyVector<DP,3> &K)
+inline void SFF_SLAB::Wavenumber(int lx, int ly, int lz, TinyVector<Real,3> &K)
 {
 	K = Get_kx(lx)*kfactor[1],  Get_ky(ly)*kfactor[2], Get_kz(lz)*kfactor[3];
 }
@@ -395,9 +395,9 @@ inline void SFF_SLAB::Wavenumber(int lx, int ly, int lz, TinyVector<DP,3> &K)
 
 // Complex K; The imaginary part is zero.  Written to use cross function of blitz.
 // Omega = cross(V,K).
-inline void SFF_SLAB::Wavenumber(int lx, int ly, int lz, TinyVector<complx,3> &K)
+inline void SFF_SLAB::Wavenumber(int lx, int ly, int lz, TinyVector<Complex,3> &K)
 {
-	K = complx(Get_kx(lx)*kfactor[1], 0.0), complx(Get_ky(ly)*kfactor[2], 0.0), complx(Get_kz(lz)*kfactor[3], 0.0);
+	K = Complex(Get_kx(lx)*kfactor[1], 0.0), Complex(Get_ky(ly)*kfactor[2], 0.0), Complex(Get_kz(lz)*kfactor[3], 0.0);
 }
 
 
@@ -410,7 +410,7 @@ inline void SFF_SLAB::Wavenumber(int lx, int ly, int lz, TinyVector<complx,3> &K
 
 
 ///  WAVENOACTUAL: \f$ K = \sqrt{K_x^2 + K_y^2 + K_z^2} \f$
-inline DP SFF_SLAB::Kmagnitude(int lx, int ly, int lz)
+inline Real SFF_SLAB::Kmagnitude(int lx, int ly, int lz)
 { 
 	if	(global.field.waveno_switch)
 		return sqrt( pow2(Get_kx(lx)*kfactor[1]) + pow2(Get_ky(ly)*kfactor[2]) + pow2(Get_kz(lz)*kfactor[3]) ); 
@@ -437,7 +437,7 @@ inline int SFF_SLAB::Min_radius_outside()
 inline int SFF_SLAB::Max_radius_inside() 
 {
 	int ans = 1;
-	DP Kmag;
+	Real Kmag;
 	
 	if	(global.field.waveno_switch) {
 		if (Ny > 1) {
@@ -475,7 +475,7 @@ inline int SFF_SLAB::Max_radius_inside()
  * \return The number of modes in a shell of radius. In 2D, it is quarter circle (kx, ky>= 0). 
  *			In 3D, it is quarter sphere with (kx,kz>=0).
  */
-inline DP SFF_SLAB::Approx_number_modes_in_shell(int radius)
+inline Real SFF_SLAB::Approx_number_modes_in_shell(int radius)
 {
     if (global.field.waveno_switch)
         return (4*M_PI*radius*radius)/(kfactor[1]*kfactor[2]*kfactor[3]);	
@@ -500,9 +500,9 @@ inline DP SFF_SLAB::Approx_number_modes_in_shell(int radius)
  * \param  lx, ly, lz
  * \return Multiplication factor for computing enregy spectrum etc.
  */
-inline DP SFF_SLAB::Multiplicity_factor(int lx, int ly, int lz)
+inline Real SFF_SLAB::Multiplicity_factor(int lx, int ly, int lz)
 {
-	DP factor;
+	Real factor;
 
 	int m = Get_kx(lx);
 	int ky = Get_ky(ly);
@@ -534,7 +534,7 @@ inline DP SFF_SLAB::Multiplicity_factor(int lx, int ly, int lz)
 ***********************************************************************************************/
 /// Modal energy  = \f$ E(k) =  |A(k_x, \vec{k}_{\perp})|^{2} \f$  if  \f$ (k_x > 0) \f$.  <BR>
 /// Modal energy  = \f$ E(k) =  |A(0, \vec{k}_{\perp})|^{2}/2 \f$  if  \f$ (k_x = 0) \f$.  <BR>
-inline DP SFF_SLAB::Modal_energy(int lx, int ly, int lz, Array<complx,3> A)
+inline Real SFF_SLAB::Modal_energy(int lx, int ly, int lz, Array<Complex,3> A)
 {
 	return pow2(abs(A(lx,ly,lz)))/2;	
 }
@@ -547,14 +547,14 @@ inline DP SFF_SLAB::Modal_energy(int lx, int ly, int lz, Array<complx,3> A)
 
 ***********************************************************************************************/
 
-inline DP SFF_SLAB::Get_Modal_helicity
+inline Real SFF_SLAB::Get_Modal_helicity
 (
 	int lx, int ly, int lz, 
-	Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az
+	Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az
 )
 {
 
-	TinyVector<DP,3> Vreal, Vimag, VrcrossVi, K;
+	TinyVector<Real,3> Vreal, Vimag, VrcrossVi, K;
 	
 	// -I to convert sin to Fourier basis along x axis
 	if ((global.program.sincostr_switch == "SFF") || (global.program.sincostr_switch == "S0F")) {	
@@ -585,12 +585,12 @@ inline DP SFF_SLAB::Get_Modal_helicity
 inline void SFF_SLAB::Compute_Modal_vorticity
 (
 	int lx, int ly, int lz, 
-	Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az, 
-	TinyVector<complx,3> &vorticity
+	Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az, 
+	TinyVector<Complex,3> &vorticity
 )
 {
-	TinyVector<DP,3> K;
-	TinyVector<complx,3> Vi;
+	TinyVector<Real,3> K;
+	TinyVector<Complex,3> Vi;
 	
 	// -I to convert sin to Fourier basis along x axis
 	if ((global.program.sincostr_switch == "SFF") || (global.program.sincostr_switch == "S0F"))
@@ -612,12 +612,12 @@ inline void SFF_SLAB::Compute_Modal_vorticity
 inline void SFF_SLAB::Compute_Modal_vorticity_y_component
 (
     int lx, int ly, int lz, 
-    Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az, 
-    complx &vort_y
+    Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az, 
+    Complex &vort_y
 )
 {
-	TinyVector<DP,3> K;
-	TinyVector<complx,3> Vi;
+	TinyVector<Real,3> K;
+	TinyVector<Complex,3> Vi;
 	
 	// -I to convert sin to Fourier basis along x axis
 	// We have set Vi(1) = 0 to save time.
@@ -638,7 +638,7 @@ inline void SFF_SLAB::Compute_Modal_vorticity_y_component
 
 /// 3D == Anisotropic axis along x1: for anisotropic energy spectrum and 
 ///			energy transfer calculations,  \f$ K_{||} = K_1 \f$.		
-inline DP SFF_SLAB::AnisKpll(int lx, int ly, int lz)
+inline Real SFF_SLAB::AnisKpll(int lx, int ly, int lz)
 {	
 	if (global.field.anisotropy_dirn == 1)
 		return (Get_kx(lx)*kfactor[1]); 
@@ -655,7 +655,7 @@ inline DP SFF_SLAB::AnisKpll(int lx, int ly, int lz)
 
 /// 3D == Anisotropic axis along x1: for anisotropic energy spectrum and 
 ///			energy transfer calculations,  \f$ K_\perp =\sqrt{K_2^2 + K_3^2} \f$.			
-inline DP SFF_SLAB::AnisKperp(int lx, int ly, int lz)
+inline Real SFF_SLAB::AnisKperp(int lx, int ly, int lz)
 {
 	if (global.field.anisotropy_dirn == 1)
 		return sqrt( pow2(Get_ky(ly) * kfactor[2]) + pow2(Get_kz(lz)*kfactor[3]) ); 
@@ -672,7 +672,7 @@ inline DP SFF_SLAB::AnisKperp(int lx, int ly, int lz)
 
 /// 3D == Anisotropic axis along x1: for anisotropic energy spectrum and 
 ///			energy transfer calculations,  horizontal direction 1, \f$ K_{h1} = K_2 \f$.										
-inline DP SFF_SLAB::AnisKh1(int lx, int ly, int lz)
+inline Real SFF_SLAB::AnisKh1(int lx, int ly, int lz)
 {	
 	if (global.field.anisotropy_dirn == 1)
 		return (Get_ky(ly) * kfactor[2]); 
@@ -689,7 +689,7 @@ inline DP SFF_SLAB::AnisKh1(int lx, int ly, int lz)
 
 /// 3D == Anisotropic axis along x1: for anisotropic energy spectrum and 
 ///			energy transfer calculations,  horizontal direction 2, \f$ K_{h2} = K_3 \f$.				
-inline DP SFF_SLAB::AnisKh2(int lx, int ly, int lz)
+inline Real SFF_SLAB::AnisKh2(int lx, int ly, int lz)
 {	
 	if (global.field.anisotropy_dirn == 1)
 		return (Get_kz(lz) * kfactor[3]);  
@@ -705,16 +705,16 @@ inline DP SFF_SLAB::AnisKh2(int lx, int ly, int lz)
 }
 			
 /// Cylindrical: Anis_min_Kpll
-inline DP SFF_SLAB::Anis_min_Kpll() 
+inline Real SFF_SLAB::Anis_min_Kpll() 
 { 
 	return 0.0;
 }
 				
 /// Cylindrical: Anis_max_Kpll
-inline DP SFF_SLAB::Anis_max_Kpll() 
+inline Real SFF_SLAB::Anis_max_Kpll() 
 { 
 	
-	DP maxKpll = 0.0;
+	Real maxKpll = 0.0;
 	
 
     if (global.field.anisotropy_dirn == 1)
@@ -734,7 +734,7 @@ inline DP SFF_SLAB::Anis_max_Kpll()
 /// 3D Cylindrical: Anis_max_Krho_radius_inside the wavenumber box.
 inline int SFF_SLAB::Anis_max_Krho_radius_inside() 			
 {
-	DP Kmag = 0.0;	
+	Real Kmag = 0.0;	
 
     if (global.field.anisotropy_dirn == 1)
         Kmag = min( (Ny/2)*kfactor[2], (Nz/2)*kfactor[3] ); 
@@ -749,7 +749,7 @@ inline int SFF_SLAB::Anis_max_Krho_radius_inside()
 }
 
 // Max polar angle
-inline DP SFF_SLAB::Get_max_polar_angle() 
+inline Real SFF_SLAB::Get_max_polar_angle() 
 {	
 	
 	return M_PI/2;
@@ -765,9 +765,9 @@ inline DP SFF_SLAB::Get_max_polar_angle()
  * \return \f$ \tan^{-1}(K_{\perp}/K_{||}) \f$.
  * \return \f$ \pi/2 \f$ if \f$ K_{||} = 0 \f$.
  */	
-inline DP SFF_SLAB::AnisKvect_polar_angle(int lx, int ly, int lz)
+inline Real SFF_SLAB::AnisKvect_polar_angle(int lx, int ly, int lz)
 {
-	DP kkpll, kkperp;
+	Real kkpll, kkperp;
 	
 	kkpll = AnisKpll(lx, ly, lz);
 	kkperp = AnisKperp(lx, ly, lz);
@@ -784,11 +784,11 @@ inline DP SFF_SLAB::AnisKvect_polar_angle(int lx, int ly, int lz)
  * \return \f$ \tan^{-1}(Ky}/Kx \f$.
  * \return \f$ \pi/2 \f$ if \f$ K_{||} = 0 \f$.
  */	
-inline DP SFF_SLAB::AnisKvect_azimuthal_angle(int lx, int ly, int lz)
+inline Real SFF_SLAB::AnisKvect_azimuthal_angle(int lx, int ly, int lz)
 {
 	
-	DP kkh1 = AnisKh1(lx, ly, lz);
-	DP kkh2 = AnisKh2(lx, ly, lz);
+	Real kkh1 = AnisKh1(lx, ly, lz);
+	Real kkh2 = AnisKh2(lx, ly, lz);
 	
 	return Get_azimuthal_angle(kkh1, kkh2);
 }			

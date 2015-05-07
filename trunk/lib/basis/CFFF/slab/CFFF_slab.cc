@@ -134,8 +134,8 @@ CFFF_SLAB::CFFF_SLAB()
 		array_properties.Fourier_directions = 1,1,1;
 		array_properties.Z = 1;
 
-		array_properties.datatype_complex_space = BasicIO::H5T_COMPLX;
-		array_properties.datatype_real_space = BasicIO::H5T_COMPLX;
+		array_properties.datatype_complex_space = BasicIO::H5T_Complex;
+		array_properties.datatype_real_space = BasicIO::H5T_Complex;
 
 		BasicIO::Set_H5_plans(array_properties, this);
 	}
@@ -172,7 +172,7 @@ CFFF_SLAB::CFFF_SLAB()
 	global.temp_array.Xr2.resize(shape_real_array);
 	
 	// temp arrays
-	// Being used in void ArrayOps::Get_XY_plane(Array<complx,3> A, Array<complx,2> plane_xy, int kz, string configuration)
+	// Being used in void ArrayOps::Get_XY_plane(Array<Complex,3> A, Array<Complex,2> plane_xy, int kz, string configuration)
 //	global.temp_array.plane_xy.resize(Ny, Nx);
 
 //	global.temp_array.plane_xy_inproc.resize(spectralTransform.local_Ny, Nx);

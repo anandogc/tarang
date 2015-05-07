@@ -58,10 +58,10 @@
  *
  *	@return  \f$\sum \Re(U.N_i^*(k) W.cvf.V_i(k)) \f$ outside sphere.
  */
-DP EnergyTr::Prod_out_sphere_nlinV(int sphere_index, FluidVF& U, FluidVF& W)
+Real EnergyTr::Prod_out_sphere_nlinV(int sphere_index, FluidVF& U, FluidVF& W)
 {
-	DP inner_radius = global.energy_transfer.flux.radii(sphere_index);
-	DP outer_radius = global.myconstant.INF_RADIUS;
+	Real inner_radius = global.energy_transfer.flux.radii(sphere_index);
+	Real outer_radius = global.myconstant.INF_RADIUS;
 	
 	return  ( universal->Shell_mult_single(U.nlin1, W.cvf.V1, inner_radius, outer_radius)
 			+ universal->Shell_mult_single(U.nlin2, W.cvf.V2, inner_radius, outer_radius)
@@ -70,19 +70,19 @@ DP EnergyTr::Prod_out_sphere_nlinV(int sphere_index, FluidVF& U, FluidVF& W)
 
 // FOR PASSIVE SCALAR --- OUTSIDE SPHERE
 
-DP EnergyTr::Prod_out_sphere_nlinT(int sphere_index, FluidVF& U, FluidSF& T)
+Real EnergyTr::Prod_out_sphere_nlinT(int sphere_index, FluidVF& U, FluidSF& T)
 {
-	DP inner_radius = global.energy_transfer.flux.radii(sphere_index);
-	DP outer_radius = global.myconstant.INF_RADIUS;			
+	Real inner_radius = global.energy_transfer.flux.radii(sphere_index);
+	Real outer_radius = global.myconstant.INF_RADIUS;			
 	
 	return ( universal->Shell_mult_single(U.nlin1, T.csf.F, inner_radius, outer_radius) );	
 }
 
 // Vpll to Vpll ET
-DP EnergyTr::Prod_out_sphere_nlin_Vpll(int sphere_index, FluidVF& U, FluidVF& W)
+Real EnergyTr::Prod_out_sphere_nlin_Vpll(int sphere_index, FluidVF& U, FluidVF& W)
 {
-	DP inner_radius = global.energy_transfer.flux.radii(sphere_index);
-	DP outer_radius = global.myconstant.INF_RADIUS;
+	Real inner_radius = global.energy_transfer.flux.radii(sphere_index);
+	Real outer_radius = global.myconstant.INF_RADIUS;
 	
     if (global.field.anisotropy_dirn == 1)
         return ( universal->Shell_mult_single(U.nlin1, W.cvf.V1, inner_radius, outer_radius) );
@@ -104,10 +104,10 @@ DP EnergyTr::Prod_out_sphere_nlin_Vpll(int sphere_index, FluidVF& U, FluidVF& W)
  *
  *	@return  \f$\sum \Re(N_i^*(k) V_i(k)) \f$ inside sphere.
  */
-DP EnergyTr::Prod_in_sphere_nlinV(int sphere_index, FluidVF& U, FluidVF& W)
+Real EnergyTr::Prod_in_sphere_nlinV(int sphere_index, FluidVF& U, FluidVF& W)
 {
-	DP inner_radius = 0;
-	DP outer_radius = global.energy_transfer.flux.radii(sphere_index);
+	Real inner_radius = 0;
+	Real outer_radius = global.energy_transfer.flux.radii(sphere_index);
 
 	return  ( universal->Shell_mult_single(U.nlin1, W.cvf.V1, inner_radius, outer_radius)
 			 + universal->Shell_mult_single(U.nlin2, W.cvf.V2, inner_radius, outer_radius)
@@ -116,18 +116,18 @@ DP EnergyTr::Prod_in_sphere_nlinV(int sphere_index, FluidVF& U, FluidVF& W)
 
 // FOR PASSIVE SCALAR --- INSIDE SPHERE
 
-DP EnergyTr::Prod_in_sphere_nlinT(int sphere_index, FluidVF& U, FluidSF& T)
+Real EnergyTr::Prod_in_sphere_nlinT(int sphere_index, FluidVF& U, FluidSF& T)
 {
-	DP inner_radius = 0;
-	DP outer_radius = global.energy_transfer.flux.radii(sphere_index);
+	Real inner_radius = 0;
+	Real outer_radius = global.energy_transfer.flux.radii(sphere_index);
 	
 	return ( universal->Shell_mult_single(U.nlin1, T.csf.F, inner_radius, outer_radius) );		
 }
 
-DP EnergyTr::Prod_in_sphere_nlin_Vpll(int sphere_index, FluidVF& U, FluidVF& W)
+Real EnergyTr::Prod_in_sphere_nlin_Vpll(int sphere_index, FluidVF& U, FluidVF& W)
 {
-	DP inner_radius = 0;
-	DP outer_radius = global.energy_transfer.flux.radii(sphere_index);
+	Real inner_radius = 0;
+	Real outer_radius = global.energy_transfer.flux.radii(sphere_index);
 	
     if (global.field.anisotropy_dirn == 1)
         return ( universal->Shell_mult_single(U.nlin1, W.cvf.V1, inner_radius, outer_radius) );
@@ -143,10 +143,10 @@ DP EnergyTr::Prod_in_sphere_nlin_Vpll(int sphere_index, FluidVF& U, FluidVF& W)
 
 //*********************************************************************************************
 // Helicity flux
-DP EnergyTr::Prod_out_sphere_nlin_vorticity(int sphere_index, FluidVF& U, FluidVF& W)
+Real EnergyTr::Prod_out_sphere_nlin_vorticity(int sphere_index, FluidVF& U, FluidVF& W)
 {
-	DP inner_radius = global.energy_transfer.flux.radii(sphere_index);
-	DP outer_radius = global.myconstant.INF_RADIUS;	
+	Real inner_radius = global.energy_transfer.flux.radii(sphere_index);
+	Real outer_radius = global.myconstant.INF_RADIUS;	
 	
 	return universal->Shell_mult_vorticity(U.nlin1, U.nlin2, U.nlin3, W.cvf.V1, W.cvf.V2, W.cvf.V3, inner_radius, outer_radius);
 	
@@ -154,10 +154,10 @@ DP EnergyTr::Prod_out_sphere_nlin_vorticity(int sphere_index, FluidVF& U, FluidV
 
 
 // HM Helicity flux
-DP EnergyTr::Prod_out_sphere_nlin_vector_potential(int sphere_index, FluidVF& U, FluidVF& W)
+Real EnergyTr::Prod_out_sphere_nlin_vector_potential(int sphere_index, FluidVF& U, FluidVF& W)
 {
-	DP inner_radius = global.energy_transfer.flux.radii(sphere_index);
-	DP outer_radius = global.myconstant.INF_RADIUS;	
+	Real inner_radius = global.energy_transfer.flux.radii(sphere_index);
+	Real outer_radius = global.myconstant.INF_RADIUS;	
 	
 	return universal->Shell_mult_vector_potential(U.nlin1, U.nlin2, U.nlin3, W.cvf.V1, W.cvf.V2, W.cvf.V3, inner_radius, outer_radius);	
 }

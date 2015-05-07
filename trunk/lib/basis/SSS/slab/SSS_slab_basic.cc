@@ -47,9 +47,9 @@
 
 
 
-void SSS_SLAB::Print_large_Fourier_elements(Array<complx,3> A, string array_name)
+void SSS_SLAB::Print_large_Fourier_elements(Array<Complex,3> A, string array_name)
 {
-	Array<DP,3> B=Array<DP,3>(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<Real,3> B=Array<Real,3>(reinterpret_cast<Real*>(A.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 	
 	for (int lx=0; lx<B.extent(0); lx++)
 		for (int ly=0; ly<B.extent(1); ly++)
@@ -63,16 +63,16 @@ void SSS_SLAB::Print_large_Fourier_elements(Array<complx,3> A, string array_name
 
 //**************************************************************************************
 
-void SSS_SLAB::Last_component(int kx, int ky, int kz, complx &Vx, complx &Vy, complx &Vz)
+void SSS_SLAB::Last_component(int kx, int ky, int kz, Complex &Vx, Complex &Vy, Complex &Vz)
 {}
 
-void SSS_SLAB::Last_component(int kx, int ky, int kz, DP &Vx, DP &Vy, DP &Vz)
+void SSS_SLAB::Last_component(int kx, int ky, int kz, Real &Vx, Real &Vy, Real &Vz)
 {
-	DP Kx = kx*kfactor[1];
-	DP Ky = ky*kfactor[2];
-	DP Kz = kz*kfactor[3];
+	Real Kx = kx*kfactor[1];
+	Real Ky = ky*kfactor[2];
+	Real Kz = kz*kfactor[3];
 	
-	DP dvxdx, dvydy;
+	Real dvxdx, dvydy;
 	int kysign, kzsign;
 	
 	global.program.sincostr_switch = sincostr_switch_Vx;
@@ -130,7 +130,7 @@ Dealias
  
  *****************************************************************************************/
 
-void SSS_SLAB::Dealias(Array<complx,3> A)
+void SSS_SLAB::Dealias(Array<Complex,3> A)
 {
 	Array<int,1> Ax_filter(Nx);
 	
@@ -145,7 +145,7 @@ void SSS_SLAB::Dealias(Array<complx,3> A)
 }
 
 // Data resides till outer_radius in k-space
-bool SSS_SLAB::Is_dealiasing_necessary(Array<complx,3> A, DP outer_radius)
+bool SSS_SLAB::Is_dealiasing_necessary(Array<Complex,3> A, Real outer_radius)
 {
 	int kx_max = (int) ceil(outer_radius/kfactor[1]);
 	int ky_max = (int) ceil(outer_radius/kfactor[2]);
@@ -165,17 +165,17 @@ bool SSS_SLAB::Is_dealiasing_necessary(Array<complx,3> A, DP outer_radius)
  
  ***********************************************************************************************/
 
-void SSS_SLAB::Satisfy_strong_reality_condition_in_Array(Array<complx,3> A)
+void SSS_SLAB::Satisfy_strong_reality_condition_in_Array(Array<Complex,3> A)
 {
 	return; // Do nothing
 }
 
-void SSS_SLAB::Satisfy_weak_reality_condition_in_Array(Array<complx,3> A)
+void SSS_SLAB::Satisfy_weak_reality_condition_in_Array(Array<Complex,3> A)
 {
 	return; // Do nothing
 }
 
-void SSS_SLAB::Test_reality_condition_in_Array(Array<complx,3> A)
+void SSS_SLAB::Test_reality_condition_in_Array(Array<Complex,3> A)
 {
 	return; // Do nothing
 }
@@ -188,11 +188,11 @@ void SSS_SLAB::Test_reality_condition_in_Array(Array<complx,3> A)
  * @return CFF: \f$ V_2(0,ky,kz) = V_3(0,ky,kz) = 0 \f$  because sin(0) =0 [kx =0].
  */
 
-void SSS_SLAB::Zero_modes(Array<complx,3> Bx, Array<complx,3> By, Array<complx,3> Bz)
+void SSS_SLAB::Zero_modes(Array<Complex,3> Bx, Array<Complex,3> By, Array<Complex,3> Bz)
 {
-	Array<DP,3> Ax(reinterpret_cast<DP*>(Bx.data()), Bx.shape()*shape(1,1,2), neverDeleteData);
-	Array<DP,3> Ay(reinterpret_cast<DP*>(By.data()), By.shape()*shape(1,1,2), neverDeleteData);
-	Array<DP,3> Az(reinterpret_cast<DP*>(Bz.data()), Bz.shape()*shape(1,1,2), neverDeleteData);
+	Array<Real,3> Ax(reinterpret_cast<Real*>(Bx.data()), Bx.shape()*shape(1,1,2), neverDeleteData);
+	Array<Real,3> Ay(reinterpret_cast<Real*>(By.data()), By.shape()*shape(1,1,2), neverDeleteData);
+	Array<Real,3> Az(reinterpret_cast<Real*>(Bz.data()), Bz.shape()*shape(1,1,2), neverDeleteData);
 
 	// lx = 0 reside in master node
 	global.program.sincostr_switch = sincostr_switch_Vx;
@@ -302,9 +302,9 @@ void SSS_SLAB::Zero_modes(Array<complx,3> Bx, Array<complx,3> By, Array<complx,3
  *
  * Temperature same as V_1; (see the above function).
  */    
-void SSS_SLAB::Zero_modes(Array<complx,3> F)
+void SSS_SLAB::Zero_modes(Array<Complex,3> F)
 {
-	Array<DP,3> Fr(reinterpret_cast<DP*>(F.data()), F.shape()*shape(1,1,2), neverDeleteData);
+	Array<Real,3> Fr(reinterpret_cast<Real*>(F.data()), F.shape()*shape(1,1,2), neverDeleteData);
 
 	// lx = 0 reside in master node
 	
@@ -363,13 +363,13 @@ void SSS_SLAB::Zero_modes(Array<complx,3> F)
 ***********************************************************************************************/
 
 
-void SSS_SLAB::Array_mult_ksqr(Array<complx,3> A)
+void SSS_SLAB::Array_mult_ksqr(Array<Complex,3> A)
 {
-	Array<DP,3> Ar=Array<DP,3>(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<Real,3> Ar=Array<Real,3>(reinterpret_cast<Real*>(A.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 	
-	DP Kxsqr;
-	DP Kxysqr;
-	DP Ksqr;
+	Real Kxsqr;
+	Real Kxysqr;
+	Real Ksqr;
 	
 	//#pragma omp parallel for private(Kysqr,Kyzsqr,Ksqr) 
 	for (int lx=0; lx<Ar.extent(0); lx++) {
@@ -396,14 +396,14 @@ void SSS_SLAB::Array_mult_ksqr(Array<complx,3> A)
 
 
 
-void SSS_SLAB::Array_divide_ksqr(Array<complx,3> A)
+void SSS_SLAB::Array_divide_ksqr(Array<Complex,3> A)
 {
 	
-	Array<DP,3> Ar=Array<DP,3>(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<Real,3> Ar=Array<Real,3>(reinterpret_cast<Real*>(A.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 	
-	DP Kxsqr;
-	DP Kxysqr;
-	DP Ksqr;
+	Real Kxsqr;
+	Real Kxysqr;
+	Real Ksqr;
 	
 	//#pragma omp parallel for private(Kysqr,Kyzsqr,Ksqr) 
 	for (int lx=0; lx<Ar.extent(0); lx++) {
@@ -433,14 +433,14 @@ void SSS_SLAB::Array_divide_ksqr(Array<complx,3> A)
 ***********************************************************************************************/
 
 
-void SSS_SLAB::Array_exp_ksqr(Array<complx,3> A, DP factor)
+void SSS_SLAB::Array_exp_ksqr(Array<Complex,3> A, Real factor)
 {
 	
-	Array<DP,3> Ar=Array<DP,3>(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<Real,3> Ar=Array<Real,3>(reinterpret_cast<Real*>(A.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 
-	DP Kxsqr;
-	DP Kxysqr;
-	DP Ksqr;
+	Real Kxsqr;
+	Real Kxysqr;
+	Real Ksqr;
 	
 	//#pragma omp parallel for private(Kysqr,Kyzsqr,Ksqr) 
 	for (int lx=0; lx<Ar.extent(0); lx++) {
@@ -466,15 +466,15 @@ void SSS_SLAB::Array_exp_ksqr(Array<complx,3> A, DP factor)
 
 ***********************************************************************************************/
 
-void SSS_SLAB::Array_exp_ksqr(Array<complx,3> A, DP factor, DP hyper_factor, int hyper_exponent)
+void SSS_SLAB::Array_exp_ksqr(Array<Complex,3> A, Real factor, Real hyper_factor, int hyper_exponent)
 {
 	
-	Array<DP,3> Ar=Array<DP,3>(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<Real,3> Ar=Array<Real,3>(reinterpret_cast<Real*>(A.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 
-	DP Kxsqr;
-	DP Kxysqr;
-	DP Ksqr;
-	DP Kpownm2;	// K^{q-2} where q = hyper_exponent
+	Real Kxsqr;
+	Real Kxysqr;
+	Real Ksqr;
+	Real Kpownm2;	// K^{q-2} where q = hyper_exponent
 	
 	//#pragma omp parallel for private(Kysqr,Kyzsqr,Ksqr) 
 	for (int lx=0; lx<Ar.extent(0); lx++) {
@@ -506,18 +506,18 @@ void SSS_SLAB::Array_exp_ksqr(Array<complx,3> A, DP factor, DP hyper_factor, int
 ***********************************************************************************************/
 
 
-void SSS_SLAB::Array_mult_V0_khat_sqr(Array<complx,3> A, TinyVector<DP,3> V0)
+void SSS_SLAB::Array_mult_V0_khat_sqr(Array<Complex,3> A, TinyVector<Real,3> V0)
 {
-	Array<DP,3> Ar=Array<DP,3>(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<Real,3> Ar=Array<Real,3>(reinterpret_cast<Real*>(A.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 	
-	DP Kx, Ky, Kz;
-	DP Kxsqr;    // Ky^2
-	DP Kxysqr;
-	DP Ksqr;
+	Real Kx, Ky, Kz;
+	Real Kxsqr;    // Ky^2
+	Real Kxysqr;
+	Real Ksqr;
   
-	DP V0x = V0(0);
-	DP V0y = V0(1);
-	DP V0z = V0(2);
+	Real V0x = V0(0);
+	Real V0y = V0(1);
+	Real V0z = V0(2);
 
 	for (int lx=0; lx<Ar.extent(0); lx++) {
 		Kx = Get_kx(lx)*kfactor[1];
@@ -546,16 +546,16 @@ void SSS_SLAB::Array_mult_V0_khat_sqr(Array<complx,3> A, TinyVector<DP,3> V0)
 
 // kz=0 is already filled.
 
-void SSS_SLAB::Fill_Vz(Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az)
+void SSS_SLAB::Fill_Vz(Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az)
 {
 	if (global.io.input_vx_vy_switch && global.field.incompressible) {
 		
-		Array<DP,3> Axr=Array<DP,3>(reinterpret_cast<DP*>(Ax.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
-		Array<DP,3> Ayr=Array<DP,3>(reinterpret_cast<DP*>(Ay.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
-		Array<DP,3> Azr=Array<DP,3>(reinterpret_cast<DP*>(Az.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+		Array<Real,3> Axr=Array<Real,3>(reinterpret_cast<Real*>(Ax.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+		Array<Real,3> Ayr=Array<Real,3>(reinterpret_cast<Real*>(Ay.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+		Array<Real,3> Azr=Array<Real,3>(reinterpret_cast<Real*>(Az.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 		
 		int kx, ky, kz;
-		DP vz;
+		Real vz;
 		
 		//#pragma omp parallel for
 		for (int lx=0; lx<Axr.extent(0); lx++)
@@ -572,12 +572,12 @@ void SSS_SLAB::Fill_Vz(Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> A
 	}
 }
 
-int SSS_SLAB::Read(Array<complx,3> A, BasicIO::H5_plan plan, string file_name, string dataset_name)
+int SSS_SLAB::Read(Array<Complex,3> A, BasicIO::H5_plan plan, string file_name, string dataset_name)
 {
 	return BasicIO::Read(A.data(), plan, file_name, dataset_name);
 }
 
-int SSS_SLAB::Read(Array<DP,3> Ar, BasicIO::H5_plan plan, string file_name, string dataset_name)
+int SSS_SLAB::Read(Array<Real,3> Ar, BasicIO::H5_plan plan, string file_name, string dataset_name)
 {
 	int err = BasicIO::Read(global.temp_array.X.data(), plan, file_name, dataset_name);
 	if (Ny>1)
@@ -589,12 +589,12 @@ int SSS_SLAB::Read(Array<DP,3> Ar, BasicIO::H5_plan plan, string file_name, stri
 }
 
 
-int SSS_SLAB::Write(Array<complx,3> A, BasicIO::H5_plan plan, string folder_name, string file_name, string dataset_name)
+int SSS_SLAB::Write(Array<Complex,3> A, BasicIO::H5_plan plan, string folder_name, string file_name, string dataset_name)
 {
 	return BasicIO::Write(A.data(), plan, folder_name, file_name, dataset_name);
 }
 
-int SSS_SLAB::Write(Array<DP,3> Ar, BasicIO::H5_plan plan, string folder_name, string file_name, string dataset_name)
+int SSS_SLAB::Write(Array<Real,3> Ar, BasicIO::H5_plan plan, string folder_name, string file_name, string dataset_name)
 {
 	if (Ny>1)
 		spectralTransform.Transpose(Ar, global.temp_array.X);

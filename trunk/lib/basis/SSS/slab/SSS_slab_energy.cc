@@ -51,18 +51,18 @@
 ***********************************************************************************************/
 
 
-DP SSS_SLAB::Get_local_energy_real_space(Array<DP,3> Ar)
+Real SSS_SLAB::Get_local_energy_real_space(Array<Real,3> Ar)
 {	
-	return Array_sqr(Ar)/ (DP(Nx)*DP(Ny)*DP(Nz));
+	return Array_sqr(Ar)/ (Real(Nx)*Real(Ny)*Real(Nz));
 }
 
 
-DP SSS_SLAB::Get_local_energy(Array<complx,3> A)
+Real SSS_SLAB::Get_local_energy(Array<Complex,3> A)
 {
-	Array<DP,3> Ar=Array<DP,3>(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<Real,3> Ar=Array<Real,3>(reinterpret_cast<Real*>(A.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 	
 	if (Ny > 1) {
-		DP  total = 4*Array_sqr(Ar);
+		Real  total = 4*Array_sqr(Ar);
 		
 		// subtractions |A(:, :, 0)|^2; Note that kz=2*iz and 2*iz+1 stored in iz plane
 		total -= 2* Array_sqr(Ar(Range::all(), Range::all(), 0));
@@ -85,7 +85,7 @@ DP SSS_SLAB::Get_local_energy(Array<complx,3> A)
 	}
 	
 	else if (Ny == 1) {
-		DP total = 2*Array_sqr(Ar);
+		Real total = 2*Array_sqr(Ar);
 		
 		// subtractions |A(:, :, 0)|^2
 		total -= Array_sqr(Ar(Range::all(), 0, 0));
@@ -109,19 +109,19 @@ DP SSS_SLAB::Get_local_energy(Array<complx,3> A)
 		
 ***********************************************************************************************/
 
-DP SSS_SLAB::Get_local_energy_real_space(Array<DP,3> Ar, Array<DP,3> Br)
+Real SSS_SLAB::Get_local_energy_real_space(Array<Real,3> Ar, Array<Real,3> Br)
 {
-	return mydot(Ar, Br)/ (DP(Nx)*DP(Ny)*DP(Nz));
+	return mydot(Ar, Br)/ (Real(Nx)*Real(Ny)*Real(Nz));
 }
 
-DP SSS_SLAB::Get_local_energy(Array<complx,3> A, Array<complx,3> B)
+Real SSS_SLAB::Get_local_energy(Array<Complex,3> A, Array<Complex,3> B)
 {
 
-	Array<DP,3> Ar=Array<DP,3>(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
-	Array<DP,3> Br=Array<DP,3>(reinterpret_cast<DP*>(B.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<Real,3> Ar=Array<Real,3>(reinterpret_cast<Real*>(A.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<Real,3> Br=Array<Real,3>(reinterpret_cast<Real*>(B.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 	
 	if (Ny > 1) {
-		DP  total = 4*mydot(Ar,Br);
+		Real  total = 4*mydot(Ar,Br);
 		
 		// subtractions |A(:, :, 0)|^2
 		total -= 2*mydot(Ar(Range::all(),Range::all(),0), Br(Range::all(),Range::all(),0));
@@ -144,7 +144,7 @@ DP SSS_SLAB::Get_local_energy(Array<complx,3> A, Array<complx,3> B)
 	}
 	
 	else if (Ny == 1) {
-		DP total = 2*mydot(Ar, Br);
+		Real total = 2*mydot(Ar, Br);
 		
 			// subtractions |A(:, :, 0)|^2
 		total -= mydot(Ar(Range::all(),0,0), Br(Range::all(),0,0));
@@ -175,9 +175,9 @@ DP SSS_SLAB::Get_local_energy(Array<complx,3> A, Array<complx,3> B)
 
 void SSS_SLAB::Compute_local_helicity
 (
-	Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az, 
-	DP &local_helicity1, DP &local_helicity2, 
-	DP &local_k2H1, DP &local_k2H2
+	Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az, 
+	Real &local_helicity1, Real &local_helicity2, 
+	Real &local_k2H1, Real &local_k2H2
 )
 {
 	local_helicity1 = local_helicity2 = 0;
@@ -188,9 +188,9 @@ void SSS_SLAB::Compute_local_helicity
 
 void SSS_SLAB::Compute_total_helicity
 ( 
-	Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az, 
-	DP &total_helicity1, DP &total_helicity2, 
-	DP &total_k2H1, DP &total_k2H2
+	Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az, 
+	Real &total_helicity1, Real &total_helicity2, 
+	Real &total_k2H1, Real &total_k2H2
 )
 {
     total_helicity1 = total_helicity2 = 0;
@@ -211,9 +211,9 @@ void SSS_SLAB::Compute_total_helicity
 
 void SSS_SLAB::Compute_local_shell_spectrum_helicity
 (
-	Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az, 
-	Array<DP,1> local_H1k1, Array<DP,1> local_H1k2, Array<DP,1> local_H1k3, 
-	Array<DP,1> local_H1k_count
+	Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az, 
+	Array<Real,1> local_H1k1, Array<Real,1> local_H1k2, Array<Real,1> local_H1k3, 
+	Array<Real,1> local_H1k_count
 )
 {
     local_H1k1 = 0;
@@ -225,8 +225,8 @@ void SSS_SLAB::Compute_local_shell_spectrum_helicity
 
 void SSS_SLAB::Compute_shell_spectrum_helicity
 (
-	Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az, 
-	Array<DP,1> H1k1, Array<DP,1> H1k2, Array<DP,1> H1k3
+	Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az, 
+	Array<Real,1> H1k1, Array<Real,1> H1k2, Array<Real,1> H1k3
 )	
 {
     H1k1 = 0;
@@ -242,8 +242,8 @@ void SSS_SLAB::Compute_shell_spectrum_helicity
 
 void SSS_SLAB::Compute_local_ring_spectrum_helicity
 (
-	Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az, 
-	Array<DP,2> local_H1k1, Array<DP,2> local_H1k2, Array<DP,2> local_H1k3
+	Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az, 
+	Array<Real,2> local_H1k1, Array<Real,2> local_H1k2, Array<Real,2> local_H1k3
 )												
 {
 
@@ -255,8 +255,8 @@ void SSS_SLAB::Compute_local_ring_spectrum_helicity
 
 void SSS_SLAB::Compute_ring_spectrum_helicity
 (
-	Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az, 
-	Array<DP,2> H1k1, Array<DP,2> H1k2, Array<DP,2> H1k3
+	Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az, 
+	Array<Real,2> H1k1, Array<Real,2> H1k2, Array<Real,2> H1k3
 )		
 {
 	H1k1 = 0.0;
@@ -275,8 +275,8 @@ void SSS_SLAB::Compute_ring_spectrum_helicity
 
 void SSS_SLAB::Compute_local_cylindrical_ring_spectrum_helicity
 (
-	Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az, 
-	Array<DP,2> local_H1k1,  Array<DP,2> local_H1k2
+	Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az, 
+	Array<Real,2> local_H1k1,  Array<Real,2> local_H1k2
 )
 {
 	local_H1k1 = 0.0;
@@ -287,8 +287,8 @@ void SSS_SLAB::Compute_local_cylindrical_ring_spectrum_helicity
 //
 void SSS_SLAB::Compute_cylindrical_ring_spectrum_helicity
 (
-	Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az, 
-	Array<DP,2> H1k1,  Array<DP,2> H1k2
+	Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az, 
+	Array<Real,2> H1k1,  Array<Real,2> H1k2
 )
 {
 	H1k1 = 0.0;
@@ -306,12 +306,12 @@ void SSS_SLAB::Compute_cylindrical_ring_spectrum_helicity
 
 
 //  Computes \f$ \sum  K^n |A(k)|^2/2 \f$;   k=0 excluded.
-DP SSS_SLAB::Get_local_Sn(Array<complx,3> A, DP n)
+Real SSS_SLAB::Get_local_Sn(Array<Complex,3> A, Real n)
 {
-    Array<DP,3> Ar=Array<DP,3>(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+    Array<Real,3> Ar=Array<Real,3>(reinterpret_cast<Real*>(A.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 
-    DP Sn = 0.0;
-	DP Kmag;	// Kmag = sqrt(Kx^2+Ky^2+Kz^2)
+    Real Sn = 0.0;
+	Real Kmag;	// Kmag = sqrt(Kx^2+Ky^2+Kz^2)
 	
 	int	Kmax = Min_radius_outside();
     
@@ -334,13 +334,13 @@ DP SSS_SLAB::Get_local_Sn(Array<complx,3> A, DP n)
 
 //*******
 
-DP SSS_SLAB::Get_local_Sn(Array<complx,3> A, Array<complx,3> B, DP n)
+Real SSS_SLAB::Get_local_Sn(Array<Complex,3> A, Array<Complex,3> B, Real n)
 {
-    Array<DP,3> Ar=Array<DP,3>(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
-    Array<DP,3> Br=Array<DP,3>(reinterpret_cast<DP*>(B.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+    Array<Real,3> Ar=Array<Real,3>(reinterpret_cast<Real*>(A.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+    Array<Real,3> Br=Array<Real,3>(reinterpret_cast<Real*>(B.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
     
-	DP Sn = 0.0;
-	DP Kmag;	// Kmag = sqrt(Kx^2+Ky^2+Kz^2)
+	Real Sn = 0.0;
+	Real Kmag;	// Kmag = sqrt(Kx^2+Ky^2+Kz^2)
 	
 	int	Kmax = Min_radius_outside();
 	
@@ -367,20 +367,20 @@ DP SSS_SLAB::Get_local_Sn(Array<complx,3> A, Array<complx,3> B, DP n)
 
 void SSS_SLAB::Compute_local_shell_spectrum
 (
- Array<complx,3> A,
+ Array<Complex,3> A,
  int n,
- Array<DP,1> local_Sk,
- Array<DP,1> local_Sk_count
+ Array<Real,1> local_Sk,
+ Array<Real,1> local_Sk_count
  )
 {
-    Array<DP,3> Ar=Array<DP,3>(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+    Array<Real,3> Ar=Array<Real,3>(reinterpret_cast<Real*>(A.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
     
 	local_Sk_count = 0.0;
 	local_Sk = 0.0;
 	
-	DP Kmag;
+	Real Kmag;
 	int index;
-	DP factor;
+	Real factor;
 	
     int	Kmax = Min_radius_outside();
 	
@@ -408,21 +408,21 @@ void SSS_SLAB::Compute_local_shell_spectrum
 
 void SSS_SLAB::Compute_local_shell_spectrum
 (
- Array<complx,3> A,  Array<complx,3> B,
+ Array<Complex,3> A,  Array<Complex,3> B,
  int n,
- Array<DP,1> local_Sk,
- Array<DP,1> local_Sk_count
+ Array<Real,1> local_Sk,
+ Array<Real,1> local_Sk_count
  )
 {
-	Array<DP,3> Ar=Array<DP,3>(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
-    Array<DP,3> Br=Array<DP,3>(reinterpret_cast<DP*>(B.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<Real,3> Ar=Array<Real,3>(reinterpret_cast<Real*>(A.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+    Array<Real,3> Br=Array<Real,3>(reinterpret_cast<Real*>(B.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 	
 	local_Sk_count=0;
 	local_Sk = 0.0;
 	
-	DP Kmag;
+	Real Kmag;
 	int index;
-	DP factor;
+	Real factor;
 	
 	int	Kmax = Min_radius_outside();
 	
@@ -447,18 +447,18 @@ void SSS_SLAB::Compute_local_shell_spectrum
 //*******************
 
 
-DP SSS_SLAB::Get_local_entropy(Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az)
+Real SSS_SLAB::Get_local_entropy(Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az)
 {
 	
-	Array<DP,3> Axr=Array<DP,3>(reinterpret_cast<DP*>(Ax.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
-    Array<DP,3> Ayr=Array<DP,3>(reinterpret_cast<DP*>(Ay.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
-	Array<DP,3> Azr=Array<DP,3>(reinterpret_cast<DP*>(Az.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<Real,3> Axr=Array<Real,3>(reinterpret_cast<Real*>(Ax.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+    Array<Real,3> Ayr=Array<Real,3>(reinterpret_cast<Real*>(Ay.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<Real,3> Azr=Array<Real,3>(reinterpret_cast<Real*>(Az.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 	
-	DP modal_energy, prob, local_entropy;
+	Real modal_energy, prob, local_entropy;
 	
-	DP total_energy = Get_total_energy(Ax) + Get_total_energy(Ay) + Get_total_energy(Az);
+	Real total_energy = Get_total_energy(Ax) + Get_total_energy(Ay) + Get_total_energy(Az);
 	
-	MPI_Bcast( &total_energy, 1, MPI_DP, master_id, MPI_COMM_WORLD);
+	MPI_Bcast( &total_energy, 1, MPI_Real, master_id, MPI_COMM_WORLD);
 	
 	local_entropy = 0.0;
 	
@@ -483,17 +483,17 @@ DP SSS_SLAB::Get_local_entropy(Array<complx,3> Ax, Array<complx,3> Ay, Array<com
 //
 
 
-DP SSS_SLAB::Get_local_entropy_scalar(Array<complx,3> A)
+Real SSS_SLAB::Get_local_entropy_scalar(Array<Complex,3> A)
 {
-	Array<DP,3> Ar=Array<DP,3>(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<Real,3> Ar=Array<Real,3>(reinterpret_cast<Real*>(A.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 	
-	DP modal_energy, prob;
+	Real modal_energy, prob;
 	
-	DP local_entropy = 0.0;
+	Real local_entropy = 0.0;
 	
-	DP total_energy = Get_total_energy(A);
+	Real total_energy = Get_total_energy(A);
 	
-	MPI_Bcast( &total_energy, 1, MPI_DP, master_id, MPI_COMM_WORLD);
+	MPI_Bcast( &total_energy, 1, MPI_Real, master_id, MPI_COMM_WORLD);
 	
     for (int lx=0; lx<Ar.extent(0); lx++)
 		for (int ly=0; ly<Ar.extent(1); ly++)
@@ -514,21 +514,21 @@ DP SSS_SLAB::Get_local_entropy_scalar(Array<complx,3> A)
 
 void SSS_SLAB::Compute_local_ring_spectrum
 (
- Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az,
+ Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
  int n,
- Array<DP,2> local_E1k, Array<DP,2> local_E2k, Array<DP,2> local_E3k
+ Array<Real,2> local_E1k, Array<Real,2> local_E2k, Array<Real,2> local_E3k
  )
 {
-	Array<DP,3> Axr=Array<DP,3>(reinterpret_cast<DP*>(Ax.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
-    Array<DP,3> Ayr=Array<DP,3>(reinterpret_cast<DP*>(Ay.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
-	Array<DP,3> Azr=Array<DP,3>(reinterpret_cast<DP*>(Az.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<Real,3> Axr=Array<Real,3>(reinterpret_cast<Real*>(Ax.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+    Array<Real,3> Ayr=Array<Real,3>(reinterpret_cast<Real*>(Ay.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<Real,3> Azr=Array<Real,3>(reinterpret_cast<Real*>(Az.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 	
 	local_E1k = 0.0;
 	local_E2k = 0.0;
 	local_E3k = 0.0;
 	
-	DP Kmag, theta;
-	DP factor;
+	Real Kmag, theta;
+	Real factor;
 	int shell_index, sector_index;
 	
 	int	Kmax = Max_radius_inside();
@@ -565,26 +565,26 @@ void SSS_SLAB::Compute_local_ring_spectrum
 
 void SSS_SLAB::Compute_local_ring_spectrum
 (
- Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az,
- Array<complx,3> Bx, Array<complx,3> By, Array<complx,3> Bz,
- int n, Array<DP,2> local_E1k, Array<DP,2> local_E2k, Array<DP,2> local_E3k
+ Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
+ Array<Complex,3> Bx, Array<Complex,3> By, Array<Complex,3> Bz,
+ int n, Array<Real,2> local_E1k, Array<Real,2> local_E2k, Array<Real,2> local_E3k
  )
 {
 	
-	Array<DP,3> Axr=Array<DP,3>(reinterpret_cast<DP*>(Ax.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
-    Array<DP,3> Ayr=Array<DP,3>(reinterpret_cast<DP*>(Ay.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
-	Array<DP,3> Azr=Array<DP,3>(reinterpret_cast<DP*>(Az.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<Real,3> Axr=Array<Real,3>(reinterpret_cast<Real*>(Ax.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+    Array<Real,3> Ayr=Array<Real,3>(reinterpret_cast<Real*>(Ay.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<Real,3> Azr=Array<Real,3>(reinterpret_cast<Real*>(Az.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 	
-	Array<DP,3> Bxr=Array<DP,3>(reinterpret_cast<DP*>(Bx.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
-    Array<DP,3> Byr=Array<DP,3>(reinterpret_cast<DP*>(By.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
-	Array<DP,3> Bzr=Array<DP,3>(reinterpret_cast<DP*>(Bz.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<Real,3> Bxr=Array<Real,3>(reinterpret_cast<Real*>(Bx.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+    Array<Real,3> Byr=Array<Real,3>(reinterpret_cast<Real*>(By.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<Real,3> Bzr=Array<Real,3>(reinterpret_cast<Real*>(Bz.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 	
 	local_E1k = 0.0;
 	local_E2k = 0.0;
 	local_E3k = 0.0;
 	
-	DP Kmag, theta;
-	DP factor;
+	Real Kmag, theta;
+	Real factor;
 	int shell_index, sector_index;
 	
 	int	Kmax = Max_radius_inside();
@@ -618,17 +618,17 @@ void SSS_SLAB::Compute_local_ring_spectrum
 
 void SSS_SLAB::Compute_local_ring_spectrum
 (
- Array<complx,3> F,
+ Array<Complex,3> F,
  int n,
- Array<DP,2> local_Sk
+ Array<Real,2> local_Sk
  )
 {
-	Array<DP,3> Fr=Array<DP,3>(reinterpret_cast<DP*>(F.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<Real,3> Fr=Array<Real,3>(reinterpret_cast<Real*>(F.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
    	
 	local_Sk = 0.0;
 	
-	DP Kmag, theta;
-	DP factor;
+	Real Kmag, theta;
+	Real factor;
 	int shell_index, sector_index;
 	
 	int	Kmax = Max_radius_inside();
@@ -658,19 +658,19 @@ void SSS_SLAB::Compute_local_ring_spectrum
 
 void SSS_SLAB::Compute_local_ring_spectrum
 (
- Array<complx,3> F,
- Array<complx,3> G,
+ Array<Complex,3> F,
+ Array<Complex,3> G,
  int n,
- Array<DP,2> local_Sk
+ Array<Real,2> local_Sk
  )
 {
-	Array<DP,3> Fr=Array<DP,3>(reinterpret_cast<DP*>(F.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
-	Array<DP,3> Gr=Array<DP,3>(reinterpret_cast<DP*>(G.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<Real,3> Fr=Array<Real,3>(reinterpret_cast<Real*>(F.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<Real,3> Gr=Array<Real,3>(reinterpret_cast<Real*>(G.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 	
 	local_Sk = 0.0;
 	
-	DP Kmag, theta;
-	DP factor;
+	Real Kmag, theta;
+	Real factor;
 	int shell_index, sector_index;
 	
 	int	Kmax = Max_radius_inside();
@@ -707,25 +707,25 @@ void SSS_SLAB::Compute_local_ring_spectrum
 
 void SSS_SLAB::Compute_local_cylindrical_ring_spectrum
 (
- Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az,
+ Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
  int n,
- Array<DP,2> local_S1k, Array<DP,2> local_S2k
+ Array<Real,2> local_S1k, Array<Real,2> local_S2k
  )
 {
-	Array<DP,3> Axr=Array<DP,3>(reinterpret_cast<DP*>(Ax.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
-    Array<DP,3> Ayr=Array<DP,3>(reinterpret_cast<DP*>(Ay.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
-	Array<DP,3> Azr=Array<DP,3>(reinterpret_cast<DP*>(Az.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<Real,3> Axr=Array<Real,3>(reinterpret_cast<Real*>(Ax.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+    Array<Real,3> Ayr=Array<Real,3>(reinterpret_cast<Real*>(Ay.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<Real,3> Azr=Array<Real,3>(reinterpret_cast<Real*>(Az.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 	
 	local_S1k = 0.0;  												// initialize Ek
 	local_S2k = 0.0;
 	
-	DP anisV1;
+	Real anisV1;
 	
-	DP Kmag, Kpll, Kperp;
-	DP V2sqr;
-	DP factor;
+	Real Kmag, Kpll, Kperp;
+	Real V2sqr;
+	Real factor;
 	int shell_index, slab_index;
-	TinyVector<DP,3> V;
+	TinyVector<Real,3> V;
 	
 	int	Kperp_max = Anis_max_Krho_radius_inside();
 	
@@ -762,30 +762,30 @@ void SSS_SLAB::Compute_local_cylindrical_ring_spectrum
 
 void SSS_SLAB::Compute_local_cylindrical_ring_spectrum
 (
- Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az,
- Array<complx,3> Bx, Array<complx,3> By, Array<complx,3> Bz,
+ Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
+ Array<Complex,3> Bx, Array<Complex,3> By, Array<Complex,3> Bz,
  int n,
- Array<DP,2> local_S1k, Array<DP,2> local_S2k
+ Array<Real,2> local_S1k, Array<Real,2> local_S2k
  )
 {
 	
-	Array<DP,3> Axr=Array<DP,3>(reinterpret_cast<DP*>(Ax.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
-    Array<DP,3> Ayr=Array<DP,3>(reinterpret_cast<DP*>(Ay.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
-	Array<DP,3> Azr=Array<DP,3>(reinterpret_cast<DP*>(Az.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<Real,3> Axr=Array<Real,3>(reinterpret_cast<Real*>(Ax.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+    Array<Real,3> Ayr=Array<Real,3>(reinterpret_cast<Real*>(Ay.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<Real,3> Azr=Array<Real,3>(reinterpret_cast<Real*>(Az.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 	
-	Array<DP,3> Bxr=Array<DP,3>(reinterpret_cast<DP*>(Bx.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
-    Array<DP,3> Byr=Array<DP,3>(reinterpret_cast<DP*>(By.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
-	Array<DP,3> Bzr=Array<DP,3>(reinterpret_cast<DP*>(Bz.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<Real,3> Bxr=Array<Real,3>(reinterpret_cast<Real*>(Bx.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+    Array<Real,3> Byr=Array<Real,3>(reinterpret_cast<Real*>(By.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<Real,3> Bzr=Array<Real,3>(reinterpret_cast<Real*>(Bz.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 	
 	
 	local_S1k = 0.0;  												// initialize Ek
 	local_S2k = 0.0;
 	
-	DP anisV1, anisW1;
-	TinyVector<DP,3> V, Vrho, W, Wrho;
+	Real anisV1, anisW1;
+	TinyVector<Real,3> V, Vrho, W, Wrho;
 	
-	DP Kmag, Kpll, Kperp;
-	DP factor;
+	Real Kmag, Kpll, Kperp;
+	Real factor;
 	int shell_index, slab_index;
 	
 	int	Kperp_max = Anis_max_Krho_radius_inside();
@@ -843,30 +843,30 @@ void SSS_SLAB::Compute_local_cylindrical_ring_spectrum
 
 void SSS_SLAB::Compute_local_cylindrical_ring_spectrum
 (
- Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az,
- Array<complx,3> F,
+ Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
+ Array<Complex,3> F,
  int n,
- Array<DP,2> local_S1k, Array<DP,2> local_S2k
+ Array<Real,2> local_S1k, Array<Real,2> local_S2k
  )
 {
 	
-	Array<DP,3> Axr=Array<DP,3>(reinterpret_cast<DP*>(Ax.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
-    Array<DP,3> Ayr=Array<DP,3>(reinterpret_cast<DP*>(Ay.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
-	Array<DP,3> Azr=Array<DP,3>(reinterpret_cast<DP*>(Az.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<Real,3> Axr=Array<Real,3>(reinterpret_cast<Real*>(Ax.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+    Array<Real,3> Ayr=Array<Real,3>(reinterpret_cast<Real*>(Ay.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<Real,3> Azr=Array<Real,3>(reinterpret_cast<Real*>(Az.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 	
-	Array<DP,3> Fr=Array<DP,3>(reinterpret_cast<DP*>(F.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<Real,3> Fr=Array<Real,3>(reinterpret_cast<Real*>(F.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 	
 	
 	local_S1k = 0.0;  												// initialize Ek
 	local_S2k = 0.0;
 	
-	DP anisV1, Fval;
+	Real anisV1, Fval;
 	
-	DP Kmag, Kpll, Kperp;
-	DP VTperp;
-	DP factor;
+	Real Kmag, Kpll, Kperp;
+	Real VTperp;
+	Real factor;
 	int shell_index, slab_index;
-	TinyVector<DP,3> V, Vless;
+	TinyVector<Real,3> V, Vless;
 	
 	int	Kperp_max = Anis_max_Krho_radius_inside();
 	
@@ -906,17 +906,17 @@ void SSS_SLAB::Compute_local_cylindrical_ring_spectrum
 
 void SSS_SLAB::Compute_local_cylindrical_ring_spectrum
 (
- Array<complx,3> F,
+ Array<Complex,3> F,
  int n,
- Array<DP,2> local_Sk
+ Array<Real,2> local_Sk
  )
 {
-	Array<DP,3> Fr=Array<DP,3>(reinterpret_cast<DP*>(F.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<Real,3> Fr=Array<Real,3>(reinterpret_cast<Real*>(F.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 	
 	local_Sk = 0.0;
 	
-	DP Kmag, Kperp, Kpll;
-	DP factor;
+	Real Kmag, Kperp, Kpll;
+	Real factor;
 	int shell_index, slab_index;
 	
 	int	Kperp_max = Anis_max_Krho_radius_inside();
@@ -946,19 +946,19 @@ void SSS_SLAB::Compute_local_cylindrical_ring_spectrum
 
 void SSS_SLAB::Compute_local_cylindrical_ring_spectrum
 (
- Array<complx,3> F,
- Array<complx,3> G,
+ Array<Complex,3> F,
+ Array<Complex,3> G,
  int n,
- Array<DP,2> local_Sk
+ Array<Real,2> local_Sk
  )
 {
-	Array<DP,3> Fr=Array<DP,3>(reinterpret_cast<DP*>(F.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
-	Array<DP,3> Gr=Array<DP,3>(reinterpret_cast<DP*>(G.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<Real,3> Fr=Array<Real,3>(reinterpret_cast<Real*>(F.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<Real,3> Gr=Array<Real,3>(reinterpret_cast<Real*>(G.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 	
 	local_Sk = 0.0;
 	
-	DP Kmag, Kperp, Kpll;
-	DP factor;
+	Real Kmag, Kperp, Kpll;
+	Real factor;
 	int shell_index, slab_index;
 	
 	int	Kperp_max = Anis_max_Krho_radius_inside();
@@ -993,26 +993,26 @@ void SSS_SLAB::Compute_local_cylindrical_ring_spectrum
 
 void SSS_SLAB::Compute_local_imag_shell_spectrum_B0
 (
- TinyVector<DP,3> B0,
- Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az,
- Array<complx,3> Bx, Array<complx,3> By, Array<complx,3> Bz,
- Array<DP,1> local_Sk
+ TinyVector<Real,3> B0,
+ Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
+ Array<Complex,3> Bx, Array<Complex,3> By, Array<Complex,3> Bz,
+ Array<Real,1> local_Sk
  )
 {
 	
 	/*
-	Array<DP,3> Axr=Array<DP,3>(reinterpret_cast<DP*>(Ax.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
-    Array<DP,3> Ayr=Array<DP,3>(reinterpret_cast<DP*>(Ay.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
-	Array<DP,3> Azr=Array<DP,3>(reinterpret_cast<DP*>(Az.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<Real,3> Axr=Array<Real,3>(reinterpret_cast<Real*>(Ax.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+    Array<Real,3> Ayr=Array<Real,3>(reinterpret_cast<Real*>(Ay.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<Real,3> Azr=Array<Real,3>(reinterpret_cast<Real*>(Az.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 	
-	Array<DP,3> Bxr=Array<DP,3>(reinterpret_cast<DP*>(Bx.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
-    Array<DP,3> Byr=Array<DP,3>(reinterpret_cast<DP*>(By.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
-	Array<DP,3> Bzr=Array<DP,3>(reinterpret_cast<DP*>(Bz.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<Real,3> Bxr=Array<Real,3>(reinterpret_cast<Real*>(Bx.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+    Array<Real,3> Byr=Array<Real,3>(reinterpret_cast<Real*>(By.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<Real,3> Bzr=Array<Real,3>(reinterpret_cast<Real*>(Bz.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 	
-	DP Kmag;
+	Real Kmag;
 	int shell_index;
-	TinyVector<DP,3> K;
-	TinyVector<DP,3> V, W;
+	TinyVector<Real,3> K;
+	TinyVector<Real,3> V, W;
 	
 	
 	local_Sk = 0.0;
@@ -1047,16 +1047,16 @@ void SSS_SLAB::Compute_local_imag_shell_spectrum_B0
 
 void SSS_SLAB::Compute_local_imag_ring_spectrum_B0
 (
- TinyVector<DP,3> B0,
- Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az,
- Array<complx,3> Bx, Array<complx,3> By, Array<complx,3> Bz,
- Array<DP,2> local_Sk
+ TinyVector<Real,3> B0,
+ Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
+ Array<Complex,3> Bx, Array<Complex,3> By, Array<Complex,3> Bz,
+ Array<Real,2> local_Sk
  )
 {
-/*	DP Kmag, theta;
+/*	Real Kmag, theta;
 	int shell_index, sector_index;
-	TinyVector<DP,3> K;
-	TinyVector<complx,3> V, W;
+	TinyVector<Real,3> K;
+	TinyVector<Complex,3> V, W;
 	
 	local_Sk = 0.0;
 	
@@ -1090,17 +1090,17 @@ void SSS_SLAB::Compute_local_imag_ring_spectrum_B0
 // Not for 2D
 void SSS_SLAB::Compute_local_imag_cylindrical_ring_spectrum_B0
 (
- TinyVector<DP,3> B0,
- Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az,
- Array<complx,3> Bx, Array<complx,3> By, Array<complx,3> Bz,
- Array<DP,2> local_Sk
+ TinyVector<Real,3> B0,
+ Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
+ Array<Complex,3> Bx, Array<Complex,3> By, Array<Complex,3> Bz,
+ Array<Real,2> local_Sk
  )
 {
 	/*
-	DP Kpll, Kperp;
+	Real Kpll, Kperp;
 	int shell_index, slab_index;
-	TinyVector<DP,3> K;
-	TinyVector<complx,3> V, W;
+	TinyVector<Real,3> K;
+	TinyVector<Complex,3> V, W;
 	
 	local_Sk = 0.0;
 	

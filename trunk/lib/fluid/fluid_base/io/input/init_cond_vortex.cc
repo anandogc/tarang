@@ -51,22 +51,22 @@
 
 void FluidIO::Init_cond_vortex(FluidVF& U)
 {
-/*	DP R0 = global.io.double_para(0);
-    DP r0 = global.io.double_para(1);
+/*	Real R0 = global.io.double_para(0);
+    Real r0 = global.io.double_para(1);
 
     int rx,ry,rz;
-    DP x,y,z;
-    DP phi;  // really -minus phi, according to the definition
+    Real x,y,z;
+    Real phi;  // really -minus phi, according to the definition
     
-    for (int lx=0; lx<=global.field.maxlx; lx++) {
+    for (int lx=0; lx<global.field.maxlx; lx++) {
         rx = universal->Get_rx_real_space(lx);
         x = rx*global.field.L[1]/Nx;
         
-        for (int ly=0; ly<=global.field.maxly; ly++) {
+        for (int ly=0; ly<global.field.maxly; ly++) {
             ry = universal->Get_ry_real_space(ly);
             y = ry*global.field.L[2]/Ny;
             
-            for (int lz=0; lz<=global.field.maxlz; lz++) {
+            for (int lz=0; lz<global.field.maxlz; lz++) {
                 rz = universal->Get_rz_real_space(lz);
                 z = rz*global.field.L[3]/Nz;
                 
@@ -122,14 +122,14 @@ void FluidIO::Init_cond_vortex(FluidVF& U, FluidVF& W, FluidSF& T)
 // For GP
 void FluidIO::Init_cond_vortex(FluidSF& T)
 {
-/*	DP R0 = global.io.double_para(0);
-    DP r0 = global.io.double_para(1);
-    DP A = global.io.double_para(2); */
+/*	Real R0 = global.io.double_para(0);
+    Real r0 = global.io.double_para(1);
+    Real A = global.io.double_para(2); */
     
     int rx,ry,rz;
-    DP x,y,z;
-    DP phi;
-    complx psi_r;
+    Real x,y,z;
+    Real phi;
+    Complex psi_r;
     
     /*if (!(global.field.transpose)) {
         for (int lx=0; lx<local_Nx; lx++) {
@@ -146,7 +146,7 @@ void FluidIO::Init_cond_vortex(FluidSF& T)
                     
                     phi = atan((y-R0)/(sqrt((x-M_PI)*(x-M_PI)+(z-M_PI)*(z-M_PI))-r0)); // - atan(y/(x-M_PI));
                     
-                    psi_r = complx(A*cos(phi), A*sin(phi));
+                    psi_r = Complex(A*cos(phi), A*sin(phi));
                     
                     T.rsf.Fr(lx,ly,lz) = psi_r;
                 }

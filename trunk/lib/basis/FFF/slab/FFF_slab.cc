@@ -104,15 +104,15 @@ FFF_SLAB::FFF_SLAB()
 		exit(1);
 	}
 
-	spectralTransform.Init("FFF", Nx, Ny, Nz);
+	spectralTransform.Init("FFF", Nx, Ny, Nz, 1);
 	
-	global.field.maxlx = global.field.Nx-1;
-	global.field.maxly = spectralTransform.local_Ny-1;
-	global.field.maxlz = global.field.Nz/2;
+	global.field.maxlx = spectralTransform.maxfx;
+	global.field.maxly = spectralTransform.maxfy;
+	global.field.maxlz = spectralTransform.maxfz;
 
 	if (Ny > 1) {
-		global.field.shape_complex_array = global.field.Nx,spectralTransform.local_Ny,global.field.Nz/2+1;
-		global.field.shape_real_array = spectralTransform.local_Nx, global.field.Ny, global.field.Nz+2;
+		global.field.shape_complex_array = spectralTransform.FA_shape;
+		global.field.shape_real_array = spectralTransform.RA_shape;
 		
 		BasicIO::Array_properties<3> array_properties;
 
@@ -135,8 +135,8 @@ FFF_SLAB::FFF_SLAB()
 		array_properties.Fourier_directions = 1,1,1;
 		array_properties.Z = 2;
 
-		array_properties.datatype_complex_space = BasicIO::H5T_COMPLX;
-		array_properties.datatype_real_space = BasicIO::H5T_DP;
+		array_properties.datatype_complex_space = BasicIO::H5T_Complex;
+		array_properties.datatype_real_space = BasicIO::H5T_Real;
 
 		BasicIO::Set_H5_plans(array_properties, this);
 	}
@@ -155,13 +155,13 @@ FFF_SLAB::FFF_SLAB()
 	kfactor[2]= global.field.kfactor[2];
 	kfactor[3]= global.field.kfactor[3];
 	
-	local_Nx=spectralTransform.local_Nx;
-	local_Ny=spectralTransform.local_Ny;
-	local_Nz=spectralTransform.local_Nz;
+	local_Nx=spectralTransform.maxfx;
+	local_Ny=spectralTransform.maxfy;
+	local_Nz=spectralTransform.maxfz;
 	
-	local_Nx_start=spectralTransform.local_Nx_start;
-	local_Ny_start=spectralTransform.local_Ny_start;
-	local_Nz_start=spectralTransform.local_Nz_start;
+	local_Nx_start=spectralTransform.fx_start;
+	local_Ny_start=spectralTransform.fy_start;
+	local_Nz_start=spectralTransform.fz_start;
 
 	shape_complex_array = global.field.shape_complex_array;
 	shape_real_array = global.field.shape_real_array;
@@ -174,10 +174,10 @@ FFF_SLAB::FFF_SLAB()
 	global.temp_array.Xr2.resize(shape_real_array);
 	
 	// temp arrays
-	// Being used in void ArrayOps::Get_XY_plane(Array<complx,3> A, Array<complx,2> plane_xy, int kz, string configuration)
+	// Being used in void ArrayOps::Get_XY_plane(Array<Complex,3> A, Array<Complex,2> plane_xy, int kz, string configuration)
 	global.temp_array.plane_xy.resize(Nx, Ny);
 
-	global.temp_array.plane_xy_inproc.resize(Nx,spectralTransform.local_Ny);
+	global.temp_array.plane_xy_inproc.resize(Nx,spectralTransform.maxfy);
 	
 
 }

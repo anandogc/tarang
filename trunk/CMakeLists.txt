@@ -42,14 +42,14 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.8.2)
 ######################
 
 #CMake usage:
-#CXX=mpicxx cmake [-DDP=FLOAT] [-DGROSSMANN_LOHSE=ON] [-DFIND_LIBRARIES=OFF] [-DPOSTFIX=".mic"] [-DCMAKE_BUILD_TYPE=DEBUG] [-DMMIC] [-DFFTW_PLAN=MEASURE] /path/to/CMakeLists.txt
+#CXX=mpicxx cmake [-DREAL=FLOAT] [-DGROSSMANN_LOHSE=ON] [-DFIND_LIBRARIES=OFF] [-DPOSTFIX=".mic"] [-DCMAKE_BUILD_TYPE=DEBUG] [-DMMIC] [-DFFTW_PLAN=MEASURE] /path/to/CMakeLists.txt
 
 #Example:
 #CC=mpicc CXX=mpicxx cmake ../tarang/trunk
 ############################################
 
 #Default options
-SET (DEFAULT_DP "DOUBLE")                        #FLOAT, DOUBLE
+SET (DEFAULT_REAL "DOUBLE")                      #FLOAT, DOUBLE
 SET (DEFAULT_GROSSMANN_LOHSE OFF)                #ON, OFF
 SET (DEFAULT_FIND_LIBRARIES ON)                  #ON, OFF - Try to locate packages using pkg-config when ON
 SET (DEFAULT_CMAKE_BUILD_TYPE "DISTRIBUTION")    #DISTRIBUTION, DEBUG
@@ -62,12 +62,11 @@ SET (LIBRARY_DIRS
        #/path/to/lib
     )
 
-SET (SPECTRAL_TRANSFORM_VERSION v2)
 
-#Required libraries, One of FFTW_FLOAT_LIBS or FFTW_DOUBLE_LIBS is selected depending on DP
-SET (FFTW_FLOAT_LIBS fftw3f_mpi fftw3f_omp fftw3f)
-SET (FFTW_DOUBLE_LIBS fftw3_mpi fftw3_omp fftw3)
-SET (OTHER_LIBS hdf5 yaml-cpp blitz m z papi lz4)
+#Required libraries, One of FFTW_FLOAT_LIBS or FFTW_DOUBLE_LIBS is selected depending on REAL
+SET (FFTW_FLOAT_LIBS fftw3f_mpi fftw3f)
+SET (FFTW_DOUBLE_LIBS fftw3_mpi fftw3)
+SET (OTHER_LIBS)
 
 
 #################################################
@@ -75,11 +74,13 @@ SET (OTHER_LIBS hdf5 yaml-cpp blitz m z papi lz4)
 #################################################
 
 #Set version
-SET (VERSION "2.4.0")
+SET (VERSION "2.5.0")
 
-#Set default value for DP
-IF (NOT DEFINED DP)
-    SET(DP ${DEFAULT_DP})
+SET (SPECTRAL_TRANSFORM_VERSION v2)
+
+#Set default value for REAL
+IF (NOT DEFINED REAL)
+    SET(REAL ${DEFAULT_REAL})
 ENDIF()
 
 #Set default value for GROSSMANN_LOHSE
@@ -107,7 +108,7 @@ IF (NOT VERSION)
     MESSAGE (FATAL_ERROR "VERSION can not be empty")
 ENDIF()
 
-SET (DP ${DP} CACHE STRING "DP")
+SET (REAL ${REAL} CACHE STRING "REAL")
 SET (FIND_LIBRARIES ${FIND_LIBRARIES} CACHE BOOL "FIND_LIBRARIES")
 SET (FFTW_PLAN ${FFTW_PLAN} CACHE STRING "FFTW_PLAN")
 
@@ -134,17 +135,17 @@ ENDIF()
 
 #Configure for FFTW library
 MESSAGE("")
-IF (DP MATCHES "FLOAT")
-    ADD_DEFINITIONS (-DFLOAT_DP)
-ELSEIF(DP MATCHES "DOUBLE")
-    ADD_DEFINITIONS (-DDOUBLE_DP)
+IF (REAL MATCHES "FLOAT")
+    ADD_DEFINITIONS (-DREAL_FLOAT)
+ELSEIF(REAL MATCHES "DOUBLE")
+    ADD_DEFINITIONS (-DREAL_DOUBLE)
 ELSE()
-    MESSAGE(FATAL_ERROR "DP must be FLOAT or DOUBLE")
+    MESSAGE(FATAL_ERROR "REAL must be FLOAT or DOUBLE")
 ENDIF()
 
-IF (NOT DP_DISPLAYED)
-	MESSAGE(STATUS "DP: ${DP}")
-    SET(DP_DISPLAYED TRUE CACHE BOOL "DP_DISPLAYED")
+IF (NOT REAL_DISPLAYED)
+	MESSAGE(STATUS "REAL: ${REAL}")
+    SET(REAL_DISPLAYED TRUE CACHE BOOL "REAL_DISPLAYED")
 ENDIF()
 
 #Find the required libraries
@@ -170,24 +171,24 @@ IF (NOT ALL_LIBRARIES_FOUND AND FIND_LIBRARIES)
                     OUTPUT_VARIABLE PKG_CONFIG_LOCATION)
 
     IF (PKG_CONFIG_FOUND MATCHES 0)
-	    FIND_PACKAGE(PkgConfig REQUIRED)
-
+        FIND_PACKAGE(PkgConfig REQUIRED)
+        
         PKG_CHECK_MODULES(YAML_CPP QUIET yaml-cpp)
         DISPLAY_FOUND_LIBRARY(YAML-CPP YAML_CPP "${YAML_CPP_INCLUDE_DIRS}" "Set PKG_CONFIG_PATH, e.g. $HOME/local/lib/pkgconfig") 
-
+        
         PKG_CHECK_MODULES(BLITZ QUIET blitz)
         DISPLAY_FOUND_LIBRARY(Blitz++ BLITZ "${BLITZ_INCLUDE_DIRS}" "Set PKG_CONFIG_PATH, e.g. $HOME/local/lib/pkgconfig") 
-
-        IF (DP MATCHES "FLOAT")
+        
+        IF (REAL MATCHES "FLOAT")
             PKG_CHECK_MODULES(FFTW3F QUIET fftw3f)
             DISPLAY_FOUND_LIBRARY(FFTW3F FFTW3F "${FFTW3F_INCLUDE_DIRS}" "Set PKG_CONFIG_PATH, e.g. $HOME/local/lib/pkgconfig") 
-        ELSEIF(DP MATCHES "DOUBLE")
+        ELSEIF(REAL MATCHES "DOUBLE")
             PKG_CHECK_MODULES(FFTW3 QUIET fftw3)
             DISPLAY_FOUND_LIBRARY(FFTW3 FFTW3 "${FFTW3_INCLUDE_DIRS}" "Set PKG_CONFIG_PATH, e.g. $HOME/local/lib/pkgconfig")
         ELSE()
-            MESSAGE(FATAL_ERROR "DP must be FLOAT or DOUBLE")
+            MESSAGE(FATAL_ERROR "REAL must be FLOAT or DOUBLE")
         ENDIF()
-
+        
         FIND_PACKAGE(HDF5 QUIET)
         IF (HDF5_FOUND)  
             #Find installed version of HDF5
@@ -196,19 +197,17 @@ IF (NOT ALL_LIBRARIES_FOUND AND FIND_LIBRARIES)
                             OUTPUT_STRIP_TRAILING_WHITESPACE
                             OUTPUT_VARIABLE HDF5_VERSION
                             ERROR_VARIABLE HDF5_VERSION_ERROR)
+            DISPLAY_FOUND_LIBRARY(HDF5 HDF5 "${HDF5_INCLUDE_DIRS}" "Set HDF5_ROOT, e.g. /usr/local")
+            IF (HDF5_IS_PARALLEL) #Check whether HDF5 has parallen installation or not
+                    MESSAGE(STATUS "HDF5 supports parallel IO: yes")
+            ELSE()
+                    MESSAGE(FATAL_ERROR "HDF5 supports parallel IO: no")
+            ENDIF()
         ENDIF()
-        DISPLAY_FOUND_LIBRARY(HDF5 HDF5 "${HDF5_INCLUDE_DIRS}" "Set HDF5_ROOT, e.g. /usr/local")
-    #IF (HDF5_FOUND) #Check whether HDF5 has parallen installation or not
-	#		IF (HDF5_IS_PARALLEL)
-	#			MESSAGE(STATUS "HDF5 supports parallel IO: yes")
-	#		ELSE()
-	#			MESSAGE(FATAL_ERROR "HDF5 supports parallel IO: no")
-	#		ENDIF()
-	#ENDIF()
-	ELSE()
-		MESSAGE(STATUS "Warning: pkg-config not found, libraries will not be searched for. Supply -DFIND_LIBRARIES=OFF to CMake to disable library search.")
-	ENDIF()
-       SET(ALL_LIBRARIES_FOUND TRUE CACHE BOOL "ALL_LIBRARIES_FOUND")
+    ELSE()
+        MESSAGE(STATUS "Warning: pkg-config not found, libraries will not be searched for. Supply -DFIND_LIBRARIES=OFF to CMake to disable library search.")
+    ENDIF()
+    SET(ALL_LIBRARIES_FOUND TRUE CACHE BOOL "ALL_LIBRARIES_FOUND")
 ENDIF()
 
 
@@ -242,7 +241,7 @@ ENDIF()
 INCLUDE_DIRECTORIES(
 ${CMAKE_SOURCE_DIR}/lib/global
 ${CMAKE_SOURCE_DIR}/lib/basis
-${CMAKE_SOURCE_DIR}/lib/basis/spectral_transform/${SPECTRAL_TRANSFORM_VERSION}
+${CMAKE_SOURCE_DIR}/lib/basis/spectral_transform/
 ${CMAKE_SOURCE_DIR}/lib/basis/basicfn
 ${CMAKE_SOURCE_DIR}/lib/fields
 ${CMAKE_SOURCE_DIR}/lib/fluid
@@ -272,15 +271,17 @@ ${HDF5_LIBRARY_DIRS}
 ${LIBRARY_DIRS}
 )
 
-ADD_DEFINITIONS(-DVERSION=${VERSION})
+ADD_DEFINITIONS(-DVERSION=${VERSION} ${HDF5_DEFINITIONS})
 
-IF (DP MATCHES "FLOAT")
+IF (REAL MATCHES "FLOAT")
     SET(SYSTEM_LIBRARIES ${FFTW_FLOAT_LIBS} ${FFTW3F_LIBRARIES})
-ELSEIF(DP MATCHES "DOUBLE")
+ELSEIF(REAL MATCHES "DOUBLE")
     SET(SYSTEM_LIBRARIES ${FFTW_DOUBLE_LIBS} ${FFTW3_LIBRARIES})
 ENDIF()
 
 SET(SYSTEM_LIBRARIES ${SYSTEM_LIBRARIES} ${OTHER_LIBS} ${HDF5_LIBRARIES} ${FFTW3_LIBRARIES} ${BLITZ_LIBRARIES} ${YAML_CPP_LIBRARIES})
+
+#MESSAGE(STATUS "SYSTEM_LIBRARIES = ${SYSTEM_LIBRARIES}")
 
 
 #Build type
@@ -296,9 +297,13 @@ ENDIF ()
 MESSAGE(STATUS "Source Folder: ${TARANG_SOURCE_DIR}")
 MESSAGE("")
 
-SET(CMAKE_CXX_FLAGS_DISTRIBUTION "-O3 -fopenmp")
+SET (CONFIGURE_OPTIONS '"CXX=${CMAKE_CXX_COMPILER} cmake -DREAL=${REAL} -DGROSSMANN_LOHSE=${GROSSMANN_LOHSE} -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} -DFIND_LIBRARIES=${FIND_LIBRARIES} -DFFTW_PLAN=${FFTW_PLAN} ${TARANG_SOURCE_DIR}"')
+SET(CMAKE_CXX_FLAGS "-DCONFIGURE_OPTIONS=${CONFIGURE_OPTIONS}")
 
-SET(CMAKE_CXX_FLAGS_DEBUG "-g")
+
+SET(CMAKE_CXX_FLAGS_DISTRIBUTION "-O3")
+
+SET(CMAKE_CXX_FLAGS_DEBUG "-g -O0")
 
 ADD_SUBDIRECTORY(lib)
 ADD_SUBDIRECTORY(src)

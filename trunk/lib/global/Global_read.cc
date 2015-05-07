@@ -56,7 +56,7 @@ void operator >> (const YAML::Node& node, vector<complex<T> >& vec) {
 	stringstream ss;
 	complex<T> c;
 	
-	string complx_str="";
+	string Complex_str="";
 	bool real=false;
 	bool imag=false;
 	bool separator=false;
@@ -83,21 +83,21 @@ void operator >> (const YAML::Node& node, vector<complex<T> >& vec) {
 				break;
 			case ')':
 				if (imag)
-					complx_str+=")";
+					Complex_str+=")";
 				else
 					cerr<<"para.yaml: "<<str<<" is not a complex number";
 				imag=false;
 				real=false;
 				separator=false;
-				ss<<complx_str;
+				ss<<Complex_str;
 				ss>>c;
 				vec.push_back(c);
-				complx_str="";
+				Complex_str="";
 				ss.flush();
 				break;
 		}
 		if ((real || imag) && (str[i] != ' '))
-			complx_str+=str[i];
+			Complex_str+=str[i];
 	}
 }
 
@@ -127,7 +127,7 @@ void operator >> (const YAML::Node& node, Array<complex<T>,1 >& bl_arr) {
 	stringstream ss;
 	complex<T> c;
 	
-	string complx_str="";
+	string Complex_str="";
 	bool real=false;
 	bool imag=false;
 	bool separator=false;
@@ -154,21 +154,21 @@ void operator >> (const YAML::Node& node, Array<complex<T>,1 >& bl_arr) {
 				break;
 			case ')':
 				if (imag)
-					complx_str+=")";
+					Complex_str+=")";
 				else
 					cerr<<"para.yaml: "<<str<<" is not a complex number";
 				imag=false;
 				real=false;
 				separator=false;
-				ss<<complx_str;
+				ss<<Complex_str;
 				ss>>c;
 				vec.push_back(c);
-				complx_str="";
+				Complex_str="";
 				ss.flush();
 				break;
 		}
 		if ((real || imag) && (str[i] != ' '))
-			complx_str+=str[i];
+			Complex_str+=str[i];
 	}
 	
 	bl_arr.resize(vec.size());
@@ -196,52 +196,59 @@ void Global::Assign_if_input_provided(const YAML::Node& node, const  string para
 void Global::Parse(int argc, char** argv, bool parse_para)
 {
 	mpi.master=(mpi.my_id==mpi.master_id);
+	mpi.num_p_rows=1;
+	mpi.num_p_cols=mpi.numprocs;
 
 	int opt = 0;
 	int longIndex = 0;
 
-	const char *optString = "vhn:";
+	const char *optString = "vhr:";
 
 	const struct option longOpts[] = {
 		{ "version", no_argument, NULL, 'v' },
 		{ "help", no_argument, NULL, 'h' },
-		{ "num_cols", required_argument, NULL, 'n' },
+		{ "num_rows", required_argument, NULL, 'r' },
 		{ NULL, no_argument, NULL, 0 }
 	};
 
 	bool stop=false;
+	bool help_message_printed=false;
+
+	stringstream help_message;
+	help_message << "Usage: mpirun -np num_procs " << argv[0] << "  [-v,-version] [-h,-help] [-r,-num_rows <num_row_procs>] [/path/to/data]";
 
 	while( (opt = getopt_long_only(argc, argv, optString, longOpts, &longIndex )) != -1 ) {
 		switch( opt ) {
 			case 'v':
 				if (mpi.master)
-					cout << "tarang " << program.version << endl;
+					cout << "Compiled with:\n" << CONFIGURE_OPTIONS << "\ntarang " << program.version << endl;
 				stop=true;
+				help_message_printed=true;
 				break;
 				
 			case 'h':
 				if (mpi.master)
-					cout << "Usage: mpirun -np num_procs " << argv[0] << "  [-v,-version] [-h,-help] [-n,-num_cols <num_col_procs>] [/path/to/data]" << endl;
+					cout << help_message.str() << endl;
 				stop=true;
 				break;
 				
-			case 'n':
-				mpi.num_p_cols=atoi(optarg);
-				if (mpi.num_p_cols>0){
-					if (mpi.numprocs%mpi.num_p_cols==0){
-						mpi.num_p_rows = mpi.numprocs/mpi.num_p_cols;
+			case 'r':
+				mpi.num_p_rows=atoi(optarg);
+				if (mpi.num_p_rows>0){
+					if (mpi.numprocs%mpi.num_p_rows==0){
+						mpi.num_p_cols = mpi.numprocs/mpi.num_p_rows;
 					
 					}
 					else{
 						if (mpi.master)
-							cerr << "mpi.numprocs(="<<mpi.numprocs<<") must be divisible by mpi.num_p_cols(="<<mpi.num_p_cols<<")." << endl;
+							cerr << "mpi.numprocs(="<<mpi.numprocs<<") must be divisible by mpi.num_p_rows(="<<mpi.num_p_rows<<")." << endl;
 						stop=true;
 					}
 
 				}
 				else{
 					if (mpi.master)
-						cerr << "num_p_cols must be greater than 0." << endl;
+						cerr << "num_p_rows must be greater than 0." << endl;
 					stop=true;
 				}
 				break;
@@ -254,9 +261,9 @@ void Global::Parse(int argc, char** argv, bool parse_para)
 		}
 	}
 
-	if (optind>=argc && parse_para) {
+	if (optind>=argc && parse_para && !help_message_printed) {
 		if (mpi.master)
-			cout << "Usage: mpirun -np num_procs " << argv[0] << "  [-v,-version] [-h,-help] [-n,-num_cols <num_col_procs>] [/path/to/data]" << endl;
+			cout << help_message.str() << endl;
 		stop=true;
 	}
 
@@ -333,16 +340,16 @@ void Global::Read()
 	if (Input_provided(para, "PHYSICS")){
 		Assign_if_input_provided<string>(para["PHYSICS"], "Pr_option", PHYSICS.Pr_option, string("PRLARGE"));
 		Assign_if_input_provided<string>(para["PHYSICS"], "Uscaling", PHYSICS.Uscaling, string("USMALL"));
-		Assign_if_input_provided<DP>(para["PHYSICS"], "Rayleigh", PHYSICS.Rayleigh, 2000.0);
-		Assign_if_input_provided<DP>(para["PHYSICS"], "Prandtl", PHYSICS.Prandtl, 1.0);
+		Assign_if_input_provided<Real>(para["PHYSICS"], "Rayleigh", PHYSICS.Rayleigh, 2000.0);
+		Assign_if_input_provided<Real>(para["PHYSICS"], "Prandtl", PHYSICS.Prandtl, 1.0);
 		Assign_if_input_provided<int>(para["PHYSICS"], "temperature_grad", PHYSICS.temperature_grad, 1);
-		Assign_if_input_provided<DP>(para["PHYSICS"], "Chandrasekhar", PHYSICS.Chandrasekhar, 0.0);
-		Assign_if_input_provided<DP>(para["PHYSICS"], "Prandtl_mag", PHYSICS.Prandtl_mag, 1.0);
-		Assign_if_input_provided<DP>(para["PHYSICS"], "Prandtl_c", PHYSICS.Prandtl_c, 1.0);
-		Assign_if_input_provided<DP>(para["PHYSICS"], "Reynolds", PHYSICS.Reynolds, 1.0);
-		Assign_if_input_provided<DP>(para["PHYSICS"], "Reynolds_mag", PHYSICS.Reynolds_mag, 1.0);
-		Assign_if_input_provided<DP>(para["PHYSICS"], "Peclet", PHYSICS.Peclet, 1.0);
-		Assign_if_input_provided<DP>(para["PHYSICS"], "Peclet_c", PHYSICS.Peclet_c, 1.0);
+		Assign_if_input_provided<Real>(para["PHYSICS"], "Chandrasekhar", PHYSICS.Chandrasekhar, 0.0);
+		Assign_if_input_provided<Real>(para["PHYSICS"], "Prandtl_mag", PHYSICS.Prandtl_mag, 1.0);
+		Assign_if_input_provided<Real>(para["PHYSICS"], "Prandtl_c", PHYSICS.Prandtl_c, 1.0);
+		Assign_if_input_provided<Real>(para["PHYSICS"], "Reynolds", PHYSICS.Reynolds, 1.0);
+		Assign_if_input_provided<Real>(para["PHYSICS"], "Reynolds_mag", PHYSICS.Reynolds_mag, 1.0);
+		Assign_if_input_provided<Real>(para["PHYSICS"], "Peclet", PHYSICS.Peclet, 1.0);
+		Assign_if_input_provided<Real>(para["PHYSICS"], "Peclet_c", PHYSICS.Peclet_c, 1.0);
 		
 	//  if ( (PHYSICS.temperature_grad != 1) && (PHYSICS.temperature_grad != -1) )
 	//      Show_error("PHYSICS.temperature_grad can be either +1 or -1");
@@ -439,26 +446,26 @@ void Global::Read()
 	// force coord and modes
 	if (program.basis_type == "SSS") {
 		Array<int, 1> blitz_int_temp_array;
-		Array<DP, 1> blitz_DP_temp_array;
+		Array<Real, 1> blitz_Real_temp_array;
 		force.modes.field_array_real.resize(force.modes.number,force.modes.number_components);
 		for (int i=0; i<force.modes.number; i++) {
 			para["force"]["modes"][i]["coord"]>>blitz_int_temp_array;
-			para["force"]["modes"][i]["mode"]>>blitz_DP_temp_array;
+			para["force"]["modes"][i]["mode"]>>blitz_Real_temp_array;
 			
 			force.modes.coords(i, Range::all()) = blitz_int_temp_array;
-			force.modes.field_array_real(i, Range::all()) = blitz_DP_temp_array;
+			force.modes.field_array_real(i, Range::all()) = blitz_Real_temp_array;
 		}
 	}
 	else {
 		Array<int, 1> blitz_int_temp_array;
-		Array<complx, 1> blitz_complx_temp_array;
+		Array<Complex, 1> blitz_Complex_temp_array;
 		force.modes.field_array_complex.resize(force.modes.number,force.modes.number_components);
 		for (int i=0; i<force.modes.number; i++) {
 			para["force"]["modes"][i]["coord"]>>blitz_int_temp_array;
-			para["force"]["modes"][i]["mode"]>>blitz_complx_temp_array;
+			para["force"]["modes"][i]["mode"]>>blitz_Complex_temp_array;
 			
 			force.modes.coords(i, Range::all()) = blitz_int_temp_array;
-			force.modes.field_array_complex(i, Range::all()) = blitz_complx_temp_array;
+			force.modes.field_array_complex(i, Range::all()) = blitz_Complex_temp_array;
 			}
 		}
 	
@@ -478,7 +485,7 @@ void Global::Read()
 		para["io"]["N_in_reduced"] >> io.N_in_reduced;
 	}
 	
-	if ( (io.input_field_procedure==2) && (Input_provided(para["io"],"N_out_reduced") ) ) {
+	if (Input_provided(para["io"],"N_out_reduced") ) {
 		io.N_out_reduced.resize(3);
 		para["io"]["N_out_reduced"] >> io.N_out_reduced;
 	}
@@ -495,31 +502,31 @@ void Global::Read()
 		
 		if  (program.basis_type == "SSS") {
 			Array<int, 1> blitz_int_temp_array;
-			Array<DP, 1> blitz_DP_temp_array;
+			Array<Real, 1> blitz_Real_temp_array;
 			
 			io.init_cond_modes.field_array_real.resize(io.init_cond_modes.number,io.init_cond_modes.number_components);
 			for (int i=0; i<io.init_cond_modes.number; i++) {
 				para["io"]["init_cond_modes"][i]["coord"]>>blitz_int_temp_array;
-				para["io"]["init_cond_modes"][i]["mode"]>>blitz_DP_temp_array;
+				para["io"]["init_cond_modes"][i]["mode"]>>blitz_Real_temp_array;
 				
 				io.init_cond_modes.coords(i,0) = 0;
 				io.init_cond_modes.coords(i, Range(1,3)) = blitz_int_temp_array;
-				io.init_cond_modes.field_array_real(i, Range::all()) = blitz_DP_temp_array;
+				io.init_cond_modes.field_array_real(i, Range::all()) = blitz_Real_temp_array;
 			}
 		}
 		else {
 			Array<int, 1> blitz_int_temp_array;
-			Array<complx, 1> blitz_complx_temp_array;
+			Array<Complex, 1> blitz_Complex_temp_array;
 			
 			io.init_cond_modes.field_array_complex.resize(io.init_cond_modes.number,io.init_cond_modes.number_components);
 			for (int i=0; i<io.init_cond_modes.number; i++)
 			{
 				para["io"]["init_cond_modes"][i]["coord"]>>blitz_int_temp_array;
-				para["io"]["init_cond_modes"][i]["mode"]>>blitz_complx_temp_array;
+				para["io"]["init_cond_modes"][i]["mode"]>>blitz_Complex_temp_array;
 				
 				io.init_cond_modes.coords(i,0) = 0;
 				io.init_cond_modes.coords(i, Range(1,3)) = blitz_int_temp_array;
-				io.init_cond_modes.field_array_complex(i, Range::all()) = blitz_complx_temp_array;
+				io.init_cond_modes.field_array_complex(i, Range::all()) = blitz_Complex_temp_array;
 			}
 		}
 	}

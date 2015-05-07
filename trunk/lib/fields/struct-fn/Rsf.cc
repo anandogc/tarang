@@ -59,14 +59,14 @@ RSF::RSF()
 		
 		int q_range = global.structure_fn.qmax - global.structure_fn.qmin;
 		
-		RS_St = new Array<DP,2>(global.structure_fn.array_size+1, q_range+1);
+		RS_St = new Array<Real,2>(global.structure_fn.array_size+1, q_range+1);
 		
-		RS_St_count = new Array<DP,1>(global.structure_fn.array_size+1);
+		RS_St_count = new Array<Real,1>(global.structure_fn.array_size+1);
 		
 		// Contains averaged over all procs in master proc.
-		RS_St_final = new Array<DP,2>(global.structure_fn.array_size+1, q_range+1);
+		RS_St_final = new Array<Real,2>(global.structure_fn.array_size+1, q_range+1);
 		
-		RS_St_count_final = new Array<DP,1>(global.structure_fn.array_size+1);
+		RS_St_count_final = new Array<Real,1>(global.structure_fn.array_size+1);
 		
 		// To optimize, we take max distance to be N[i]/RS_rmax_div_st_fn_r_max,
 		/*	if (RS_structure_fn_approx_switch == 0)
@@ -92,9 +92,9 @@ RSF::RSF()
 	
 
 #ifdef TRANSPOSE
-	Fr = new Array<complx,3>(local_N2, Nrs[1], Nrs[3]/2+1); 
+	Fr = new Array<Complex,3>(local_N2, Nrs[1], Nrs[3]/2+1); 
 #else    
-    Fr = new Array<complx,3>(local_N1, Nrs[2], Nrs[3]/2+1);  
+    Fr = new Array<Complex,3>(local_N1, Nrs[2], Nrs[3]/2+1);  
 #endif	
 
     *Fr = 0.0;   // initialize
@@ -121,7 +121,7 @@ void RSF::RS_Forward_transform()
    
 **********************************************************************************************/
 
-void RSF::RS_Forward_transform_transpose_order(Array<complx,3> F)
+void RSF::RS_Forward_transform_transpose_order(Array<Complex,3> F)
 {
 	global.temp_array.Xr = *Fr;
 	
@@ -148,7 +148,7 @@ void RSF::RS_Inverse_transform()
    
 **********************************************************************************************/
 
-void RSF::RS_Inverse_transform_transpose_order(Array<complx,3> F)
+void RSF::RS_Inverse_transform_transpose_order(Array<Complex,3> F)
 {
 	global.temp_array.X = F;
 	

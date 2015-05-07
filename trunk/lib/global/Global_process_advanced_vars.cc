@@ -43,6 +43,9 @@
 
 void Global::Process_advanced_vars()
 {
+	mpi.MPI_COMM_ROW = spectralTransform.Get_communicator("ROW");
+	mpi.MPI_COMM_COL = spectralTransform.Get_communicator("COL");
+
 	// Time
 	time.now = time.init;
 	
@@ -81,11 +84,11 @@ void Global::Process_advanced_vars()
 	//## commented during testing
 	
 	
-	DP max_theta = universal->Get_max_polar_angle();
-	DP dtheta;
-	DP Kpll_min = 0.0;
-	DP Kpll_max = universal->Anis_max_Kpll();
-	DP dKpll;
+	Real max_theta = universal->Get_max_polar_angle();
+	Real dtheta;
+	Real Kpll_min = 0.0;
+	Real Kpll_max = universal->Anis_max_Kpll();
+	Real dKpll;
 
 	int min_radius_outside = universal->Min_radius_outside();
 	int max_radius_inside =  universal->Max_radius_inside();
@@ -145,7 +148,7 @@ void Global::Process_advanced_vars()
 				energy_transfer.flux.radii(energy_transfer.flux.no_spheres) = INF_RADIUS;
 				
 				if (energy_transfer.flux.no_spheres > 6) {
-					DP s = log2(max_radius_inside/16.0) / (energy_transfer.flux.no_spheres - 5);
+					Real s = log2(max_radius_inside/16.0) / (energy_transfer.flux.no_spheres - 5);
 					for (int i=4; i<=(energy_transfer.flux.no_spheres-3); i++) 
 						energy_transfer.flux.radii(i) = 8*pow(2, s*(i-3));
 				}
@@ -168,7 +171,7 @@ void Global::Process_advanced_vars()
 				energy_transfer.shell_to_shell.radii(energy_transfer.shell_to_shell.no_shells) = INF_RADIUS;
 				
 				if (energy_transfer.shell_to_shell.no_shells > 6) {
-					DP s = log2(max_radius_inside/16.0) / (energy_transfer.shell_to_shell.no_shells - 5);
+					Real s = log2(max_radius_inside/16.0) / (energy_transfer.shell_to_shell.no_shells - 5);
 					for (int i=4; i<=(energy_transfer.shell_to_shell.no_shells-3); i++) 
 						energy_transfer.shell_to_shell.radii(i) = 8*pow(2, s*(i-3));
 				}
@@ -192,7 +195,7 @@ void Global::Process_advanced_vars()
 				energy_transfer.ring_to_ring.radii(energy_transfer.ring_to_ring.no_shells) = INF_RADIUS;
 				
 				if (energy_transfer.ring_to_ring.no_shells > 5) {
-					DP s = log2(max_radius_inside/16.0) / (energy_transfer.ring_to_ring.no_shells - 4);
+					Real s = log2(max_radius_inside/16.0) / (energy_transfer.ring_to_ring.no_shells - 4);
 					for (int i=3; i<=(energy_transfer.ring_to_ring.no_shells-3); i++) 
 						energy_transfer.ring_to_ring.radii(i) = 8*pow(2, s*(i-2));
 				}
@@ -232,7 +235,7 @@ void Global::Process_advanced_vars()
 				energy_transfer.cylindrical_ring_to_ring.radii(energy_transfer.cylindrical_ring_to_ring.no_shells) = INF_RADIUS;
 				
 				if (energy_transfer.cylindrical_ring_to_ring.no_shells > 5) {
-					DP s = log2(max_cylinder_radius_inside/16.0) / (energy_transfer.cylindrical_ring_to_ring.no_shells - 4);
+					Real s = log2(max_cylinder_radius_inside/16.0) / (energy_transfer.cylindrical_ring_to_ring.no_shells - 4);
 					
 					for (int i=3; i<=(energy_transfer.cylindrical_ring_to_ring.no_shells-3); i++) 
 						energy_transfer.cylindrical_ring_to_ring.radii(i) = 8*pow(2, s*(i-2));

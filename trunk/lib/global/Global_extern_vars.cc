@@ -69,7 +69,7 @@ string sincostr_switch_divergence;
 
 //field
 int N[4];
-vector<DP> kfactor;
+vector<Real> kfactor;
 
 //mpi
 int num_p_cols;
@@ -155,21 +155,21 @@ int real_arraydim_2;
 int real_arraydim_3;*/
 
 //Constants
-complx I;		
+Complex I;		
 
 /// minusI = -sqrt(-1).			
-complx  minusI;
+Complex  minusI;
 
 /// minus2I = -2*sqrt(-1).			
-complx  minus2I;
+Complex  minus2I;
 
-DP  MYEPS;
-DP  MYEPS2;
+Real  MYEPS;
+Real  MYEPS2;
 
 int MY_MAX_INT;
 // cut off while reading diagnostic_procedure() array from input file and similar ops
 
 /// Infinite radius.. All the modes outside -- for flux and shelltr calc
-DP INF_RADIUS; 
-DP INF_TIME;
+Real INF_RADIUS; 
+Real INF_TIME;
 

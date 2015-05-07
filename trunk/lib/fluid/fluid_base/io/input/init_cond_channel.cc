@@ -52,13 +52,13 @@
 void  FluidIO::Init_cond_channel_flow(FluidVF& U)
 {
  /*   int rx;
-    DP x;
+    Real x;
 	
 	U.cvf.V1 = 0.0;
 	U.cvf.V2 = 0.0;
 	U.cvf.V3 = 0.0;
     
-	for (int lx=0; lx<=global.field.maxlx; lx++) {
+	for (int lx=0; lx<global.field.maxlx; lx++) {
         rx = universal->Get_rx_real_space(lx);
         x = cos((Nx-rx)*M_PI/Nx);  // theta = (Nx-rx)*pi/Nx
 		real(U.rvf.V2r(Range::all(),Range(0,Nz/2-1),lx)) = 1-x*x;

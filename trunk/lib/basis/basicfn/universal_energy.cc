@@ -48,51 +48,51 @@
 ***********************************************************************************************/
 
 
-DP Universal::Get_total_energy_real_space(Array<DP,3> Ar)
+Real Universal::Get_total_energy_real_space(Array<Real,3> Ar)
 {
 	
-	DP local_total = Get_local_energy_real_space(Ar);
+	Real local_energy = Get_local_energy_real_space(Ar);
+	Real total_energy=0;
+
+	MPI_Reduce(&local_energy, &total_energy, 1, MPI_Real, MPI_SUM, master_id, MPI_COMM_WORLD);
 	
-	DP total=0;
-	MPI_Reduce(&local_total, &total, 1, MPI_DP, MPI_SUM, master_id, MPI_COMM_WORLD);
-	
-	return total;
+	return total_energy;
 }
 
 
 
-DP Universal::Get_total_energy(Array<complx,3> A)
+Real Universal::Get_total_energy(Array<Complex,3> A)
 {
-	DP local_total = Get_local_energy(A);
+	Real local_energy = Get_local_energy(A);
+	Real total_energy=0;
+
+	MPI_Reduce(&local_energy, &total_energy, 1, MPI_Real, MPI_SUM, master_id, MPI_COMM_WORLD);
 	
-	DP total=0;
-	MPI_Reduce(&local_total, &total, 1, MPI_DP, MPI_SUM, master_id, MPI_COMM_WORLD);
-	
-	return total;
+	return total_energy;
 }
 
-DP Universal::Get_total_energy_real_space(Array<DP,3> Ar, Array<DP,3> Br)
+Real Universal::Get_total_energy_real_space(Array<Real,3> Ar, Array<Real,3> Br)
 {
 	
-	DP local_total = Get_local_energy_real_space(Ar, Br);
+	Real local_energy = Get_local_energy_real_space(Ar, Br);
+	Real total_energy=0;
+
+	MPI_Reduce(&local_energy, &total_energy, 1, MPI_Real, MPI_SUM, master_id, MPI_COMM_WORLD);
 	
-	DP total=0;
-	MPI_Reduce(&local_total, &total, 1, MPI_DP, MPI_SUM, master_id, MPI_COMM_WORLD);
-	
-	return total;
+	return total_energy;
 	
 }
 
 
-DP Universal::Get_total_energy(Array<complx,3> A, Array<complx,3> B)
+Real Universal::Get_total_energy(Array<Complex,3> A, Array<Complex,3> B)
 {
 	
-	DP local_total = Get_local_energy(A, B);
+	Real local_energy = Get_local_energy(A, B);
+	Real total_energy=0;
+
+	MPI_Reduce(&local_energy, &total_energy, 1, MPI_Real, MPI_SUM, master_id, MPI_COMM_WORLD);
 	
-	DP total=0;
-	MPI_Reduce(&local_total, &total, 1, MPI_DP, MPI_SUM, master_id, MPI_COMM_WORLD);
-	
-	return total;
+	return total_energy;
 	
 }
 
@@ -104,80 +104,80 @@ DP Universal::Get_total_energy(Array<complx,3> A, Array<complx,3> B)
 
 
 //  Computes \f$ \sum  K^n |A(k)|^2/2 \f$;   k=0 excluded.
-DP Universal::Get_local_Sn(Array<complx,3> A, DP n)
+Real Universal::Get_local_Sn(Array<Complex,3> A, Real n)
 {
-	DP Sn = 0.0;
-	DP Kmag;	// Kmag = sqrt(Kx^2+Ky^2+Kz^2)
+	Real Sn = 0.0;
+	Real Kmag;	// Kmag = sqrt(Kx^2+Ky^2+Kz^2)
 	
 	int	Kmax = Min_radius_outside();
 	
-	for (int lx=0; lx<A.extent(0); lx++)
-        for (int ly=0; ly<A.extent(1); ly++)
-            for (int lz=0; lz<A.extent(2); lz++) {
-				Kmag = Kmagnitude(lx, ly, lz);
+	for (int lx=0; lx<maxlx; lx++)
+		for (int ly=0; ly<maxly; ly++)
+			for (int lz=0; lz<maxlz; lz++) {
+				Kmag = Kmagnitude(lx,ly,lz);
 				
 				if (Kmag <= Kmax)
-					Sn += Multiplicity_factor(lx,ly,lz) * my_pow(Kmag,n)* Vsqr(A(lx,ly,lz));
+					Sn += Multiplicity_factor(lx,ly,lz)*my_pow(Kmag,n)*Vsqr(A(lx,ly,lz));
 			}
 	
 	// The above sum adds for k=0 mode for n=0 since my_pow(0,0) = 1.
 	// Subtract the contribution from the origin only for n=0.
-	if ((my_id == master_id) && (n==0))
-		Sn -= Multiplicity_factor(0, 0, 0) * pow2(abs(A(0,0,0)));
+	if (master && (n==0))
+		Sn -= Multiplicity_factor(0,0,0)*pow2(abs(A(0,0,0)));
 	
 	return Sn;
 }
 
 //
 
-DP Universal::Get_total_Sn(Array<complx,3> A, DP n)
+Real Universal::Get_total_Sn(Array<Complex,3> A, Real n)
 {
-	DP local_total;
-	local_total = Get_local_Sn(A, n);
+	Real local_Sn;
+	local_Sn = Get_local_Sn(A, n);
 	
-	DP total=0;
-	MPI_Reduce(&local_total, &total, 1, MPI_DP, MPI_SUM, master_id, MPI_COMM_WORLD);
+	Real total_Sn=0;
+	MPI_Reduce(&local_Sn, &total_Sn, 1, MPI_Real, MPI_SUM, master_id, MPI_COMM_WORLD);
 	
-	return total;
+	return total_Sn;
 }
 
 //**********************************************************************************************
 //  Computes \f$ \sum  K^n |A(k)|^2/2 \f$;   k=0 excluded.
-DP Universal::Get_local_Sn(Array<complx,3> A, Array<complx,3> B, DP n)
+Real Universal::Get_local_Sn(Array<Complex,3> A, Array<Complex,3> B, Real n)
 {
-	DP Sn = 0.0;
-	DP Kmag;	// Kmag = sqrt(Kx^2+Ky^2+Kz^2)
+	Real Sn = 0.0;
+	Real Kmag;	// Kmag = sqrt(Kx^2+Ky^2+Kz^2)
 	
 	int	Kmax = Min_radius_outside();
 	
-	for (int lx=0; lx<A.extent(0); lx++)
-        for (int ly=0; ly<A.extent(1); ly++)
-            for (int lz=0; lz<A.extent(2); lz++) {
-				Kmag = Kmagnitude(lx, ly, lz);
+	for (int lx=0; lx<maxlx; lx++)
+		for (int ly=0; ly<maxly; ly++)
+			for (int lz=0; lz<maxlz; lz++) {
+				Kmag = Kmagnitude(lx,ly,lz);
 				
 				if (Kmag <= Kmax)
-					Sn += Multiplicity_factor(lx,ly,lz) *my_pow(Kmag,n)* real_cprod(A(lx,ly,lz), B(lx,ly,lz));
+					Sn += Multiplicity_factor(lx,ly,lz)*my_pow(Kmag,n)*real_cprod(A(lx,ly,lz), B(lx,ly,lz));
 			}
 	
 	// The above sum adds for k=0 mode for n=0 since my_pow(0,0) = 1.
 	// Subtract the contribution from the origin only for n=0.
-	if ((my_id == master_id) && (n==0))
-		Sn -= Multiplicity_factor(0, 0, 0) * real(A(0,0,0)*B(0,0,0));
+	if (master && (n==0))
+		Sn -= Multiplicity_factor(0,0,0) * real(A(0,0,0)*B(0,0,0));
 	
 	return Sn;
 }
 
 //
 
-DP Universal::Get_total_Sn(Array<complx,3> A, Array<complx,3> B, DP n)
+Real Universal::Get_total_Sn(Array<Complex,3> A, Array<Complex,3> B, Real n)
 {
-	DP local_total;
-	local_total = Get_local_Sn(A, B, n);
+	Real local_Sn;
+	local_Sn = Get_local_Sn(A, B, n);
 	
-	DP total=0;
-	MPI_Reduce(&local_total, &total, 1, MPI_DP, MPI_SUM, master_id, MPI_COMM_WORLD);
+	Real total_Sn=0;
+	MPI_Reduce(&local_Sn, &total_Sn, 1, MPI_Real, MPI_SUM, master_id, MPI_COMM_WORLD);
 	
-	return total;
+	return total_Sn;
 }
 
 
@@ -197,70 +197,70 @@ DP Universal::Get_total_Sn(Array<complx,3> A, Array<complx,3> B, DP n)
 
 void Universal::Compute_local_shell_spectrum
 (
- Array<complx,3> A,
+ Array<Complex,3> A,
  int n,
- Array<DP,1> local_Sk,
- Array<DP,1> local_Sk_count
+ Array<Real,1> local_Sk,
+ Array<Real,1> local_Sk_count
  )
 {
 	local_Sk_count = 0.0;
 	local_Sk = 0.0;
 	
-	DP Kmag;
+	Real Kmag;
 	int index;
-	DP factor;
+	Real factor;
 	
-    int	Kmax = Min_radius_outside();
+	int	Kmax = Min_radius_outside();
 	
-    for (int lx=0; lx<A.extent(0); lx++)
-        for (int ly=0; ly<A.extent(1); ly++)
-            for (int lz=0; lz<A.extent(2); lz++) {
-                Kmag = Kmagnitude(lx, ly, lz);
-                index = (int) ceil(Kmag);
-                
-                if (index <= Kmax) {
-                    factor = Multiplicity_factor(lx,ly,lz);
+	for (int lx=0; lx<maxlx; lx++)
+		for (int ly=0; ly<maxly; ly++)
+			for (int lz=0; lz<maxlz; lz++) {
+				Kmag = Kmagnitude(lx,ly,lz);
+				index = (int) ceil(Kmag);
+				
+				if (index <= Kmax) {
+					factor = Multiplicity_factor(lx,ly,lz);
 					
-                    local_Sk(index) += factor* my_pow(Kmag,n)* Vsqr(A(lx,ly,lz));
-                    local_Sk_count(index) += 2*factor;
-                    // Mult by 2 because factor is offset by 2 in Multiply_factor
-                }
-            }
+					local_Sk(index) += factor*my_pow(Kmag,n)*Vsqr(A(lx,ly,lz));
+					local_Sk_count(index) += 2*factor;
+					// Mult by 2 because factor is offset by 2 in Multiply_factor
+				}
+			}
 }
 
 
 void Universal::Compute_shell_spectrum
 (
- Array<complx,3> A,
+ Array<Complex,3> A,
  int n,
- Array<DP,1> Sk
+ Array<Real,1> Sk
  )
 {
-	static Array<DP,1> local_Sk(Sk.length());
-	static Array<DP,1> local_Sk_count(Sk.length());
+	static Array<Real,1> local_Sk(Sk.shape());
+	static Array<Real,1> local_Sk_count(Sk.shape());
 	
 	local_Sk_count = 0.0;
 	local_Sk = 0.0;
 	
 	Compute_local_shell_spectrum(A, n, local_Sk, local_Sk_count);
 	
-	static Array<DP,1> Sk_count(Sk.length());
+	static Array<Real,1> Sk_count(Sk.shape());
 	
 	int data_size = Sk.size();
 	
-	MPI_Reduce(reinterpret_cast<DP*>(local_Sk.data()), reinterpret_cast<DP*>(Sk.data()), data_size, MPI_DP, MPI_SUM, master_id, MPI_COMM_WORLD);
+	MPI_Reduce(reinterpret_cast<Real*>(local_Sk.data()), reinterpret_cast<Real*>(Sk.data()), data_size, MPI_Real, MPI_SUM, master_id, MPI_COMM_WORLD);
 	
-	MPI_Reduce(reinterpret_cast<DP*>(local_Sk_count.data()), reinterpret_cast<DP*>(Sk_count.data()), data_size, MPI_DP, MPI_SUM, master_id, MPI_COMM_WORLD);
+	MPI_Reduce(reinterpret_cast<Real*>(local_Sk_count.data()), reinterpret_cast<Real*>(Sk_count.data()), data_size, MPI_Real, MPI_SUM, master_id, MPI_COMM_WORLD);
 	
 	// For semi-filled shells
 	
-	if (my_id == master_id)  {
+	if (master)  {
 		int Kmax_inside = Max_radius_inside();
 		int	Kmax = Min_radius_outside();
 		
 		for (int index = Kmax_inside+1; index <= Kmax; index++)
 			if (Sk_count(index) >= 1)
-				Sk(index) = Sk(index) * Approx_number_modes_in_shell(index)/ Sk_count(index);
+				Sk(index) = Sk(index)*Approx_number_modes_in_shell(index)/Sk_count(index);
 	}
 }
 
@@ -272,29 +272,29 @@ void Universal::Compute_shell_spectrum
 
 void Universal::Compute_local_shell_spectrum
 (
- Array<complx,3> A,  Array<complx,3> B,
+ Array<Complex,3> A,  Array<Complex,3> B,
  int n,
- Array<DP,1> local_Sk,
- Array<DP,1> local_Sk_count
+ Array<Real,1> local_Sk,
+ Array<Real,1> local_Sk_count
  )
 {
 	local_Sk_count=0;
 	local_Sk = 0.0;
 	
-	DP Kmag;
+	Real Kmag;
 	int index;
-	DP factor;
+	Real factor;
 	
 	int	Kmax = Min_radius_outside();
 	
-	for (int lx=0; lx<A.extent(0); lx++)
-        for (int ly=0; ly<A.extent(1); ly++)
-            for (int lz=0; lz<A.extent(2); lz++) {
-				Kmag = Kmagnitude(lx, ly, lz);
+	for (int lx=0; lx<maxlx; lx++)
+		for (int ly=0; ly<maxly; ly++)
+			for (int lz=0; lz<maxlz; lz++) {
+				Kmag = Kmagnitude(lx,ly,lz);
 				index = (int) ceil(Kmag);
 				
 				if (index <= Kmax) {
-					factor = Multiplicity_factor(lx, ly, lz);
+					factor = Multiplicity_factor(lx,ly,lz);
 					
 					local_Sk(index) += factor* my_pow(Kmag,n)*real_cprod(A(lx,ly,lz),B(lx,ly,lz));
 					
@@ -308,35 +308,35 @@ void Universal::Compute_local_shell_spectrum
 //
 void Universal::Compute_shell_spectrum
 (
- Array<complx,3> A, Array<complx,3> B,
+ Array<Complex,3> A, Array<Complex,3> B,
  int n,
- Array<DP,1> Sk
+ Array<Real,1> Sk
  )
 {
-	static Array<DP,1> local_Sk(Sk.length());
-	static Array<DP,1> local_Sk_count(Sk.length());
+	static Array<Real,1> local_Sk(Sk.shape());
+	static Array<Real,1> local_Sk_count(Sk.shape());
 	
 	local_Sk_count = 0.0;
 	local_Sk = 0.0;
 	Compute_local_shell_spectrum(A, B, n, local_Sk, local_Sk_count);
 	
-	static Array<DP,1> Sk_count(Sk.length());
+	static Array<Real,1> Sk_count(Sk.shape());
 	
 	int data_size = Sk.size();
 	
-	MPI_Reduce(reinterpret_cast<DP*>(local_Sk.data()), reinterpret_cast<DP*>(Sk.data()), data_size, MPI_DP, MPI_SUM, master_id, MPI_COMM_WORLD);
+	MPI_Reduce(reinterpret_cast<Real*>(local_Sk.data()), reinterpret_cast<Real*>(Sk.data()), data_size, MPI_Real, MPI_SUM, master_id, MPI_COMM_WORLD);
 	
-	MPI_Reduce(reinterpret_cast<DP*>(local_Sk_count.data()), reinterpret_cast<DP*>(Sk_count.data()), data_size, MPI_DP, MPI_SUM, master_id, MPI_COMM_WORLD);
+	MPI_Reduce(reinterpret_cast<Real*>(local_Sk_count.data()), reinterpret_cast<Real*>(Sk_count.data()), data_size, MPI_Real, MPI_SUM, master_id, MPI_COMM_WORLD);
 	
 	// For semi-filled shells
 	
-	if (my_id == master_id) {
+	if (master) {
 		int Kmax_inside = Max_radius_inside();
 		int	Kmax = Min_radius_outside();
 		
 		for (int index =  Kmax_inside+1; index <= Kmax; index++)
 			if (Sk_count(index) >= 1)
-				Sk(index) = Sk(index) *Approx_number_modes_in_shell(index)/ Sk_count(index);
+				Sk(index) = Sk(index)*Approx_number_modes_in_shell(index)/Sk_count(index);
 	} 
 }
 
@@ -351,42 +351,42 @@ void Universal::Compute_shell_spectrum
 
 
 
-DP Universal::Get_local_entropy(Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az)
+Real Universal::Get_local_entropy(Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az)
 {
 	
-	DP modal_energy, prob, local_entropy;
+	Real modal_energy, prob, local_entropy;
 	
-	DP total_energy = Get_total_energy(Ax) + Get_total_energy(Ay) + Get_total_energy(Az);
+	Real total_energy = Get_total_energy(Ax) + Get_total_energy(Ay) + Get_total_energy(Az);
 	
-	MPI_Bcast( &total_energy, 1, MPI_DP, master_id, MPI_COMM_WORLD);
+	MPI_Bcast( &total_energy, 1, MPI_Real, master_id, MPI_COMM_WORLD);
 	
 	local_entropy = 0.0;
 	
-    for (int lx=0; lx<Ax.extent(0); lx++)
-        for (int ly=0; ly<Ax.extent(1); ly++)
-            for (int lz=0; lz<Ax.extent(2); lz++) {
-                
+	for (int lx=0; lx<maxlx; lx++)
+		for (int ly=0; ly<maxly; ly++)
+			for (int lz=0; lz<maxlz; lz++) {
+				
 				modal_energy = Multiplicity_factor(lx,ly,lz)* Vsqr(Ax(lx,ly,lz),Ay(lx,ly,lz),Az(lx,ly,lz));
 				
 				prob = modal_energy/ total_energy;
 				
 				if (prob > MYEPS)
-					local_entropy += (-prob * log(prob)/log(2.0));
+					local_entropy += (-prob * log(prob)/log(TWO));
 			}
 	
 	return local_entropy;
 }
 
 
-DP Universal::Get_entropy(Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az)
+Real Universal::Get_entropy(Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az)
 {
 	
-	DP local_entropy = Get_local_entropy(Ax, Ay, Az);
+	Real local_entropy = Get_local_entropy(Ax, Ay, Az);
 	
-	DP entropy;
-	MPI_Reduce(&local_entropy, &entropy, 1, MPI_DP, MPI_SUM, master_id, MPI_COMM_WORLD);
+	Real entropy;
+	MPI_Reduce(&local_entropy, &entropy, 1, MPI_Real, MPI_SUM, master_id, MPI_COMM_WORLD);
 	
-	if (my_id == master_id)
+	if (master)
 		return entropy;
 	
 	else
@@ -399,26 +399,26 @@ DP Universal::Get_entropy(Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3
 //
 
 
-DP Universal::Get_local_entropy_scalar(Array<complx,3> A)
+Real Universal::Get_local_entropy_scalar(Array<Complex,3> A)
 {
 	
-	DP modal_energy, prob;
+	Real modal_energy, prob;
 	
-	DP local_entropy = 0.0;
+	Real local_entropy = 0.0;
 	
-	DP total_energy = Get_total_energy(A);
+	Real total_energy = Get_total_energy(A);
 	
-	MPI_Bcast( &total_energy, 1, MPI_DP, master_id, MPI_COMM_WORLD);
+	MPI_Bcast( &total_energy, 1, MPI_Real, master_id, MPI_COMM_WORLD);
 	
-	for (int lx=0; lx<A.extent(0); lx++)
-        for (int ly=0; ly<A.extent(1); ly++)
-            for (int lz=0; lz<A.extent(2); lz++) {
+	for (int lx=0; lx<maxlx; lx++)
+		for (int ly=0; ly<maxly; ly++)
+			for (int lz=0; lz<maxlz; lz++) {
 				modal_energy = Multiplicity_factor(lx,ly,lz)* Vsqr(A(lx,ly,lz));
 				
 				prob = modal_energy / total_energy;
 				
 				if (prob > MYEPS)
-					local_entropy += (-prob*log(prob)/log(2.0));
+					local_entropy += (-prob*log(prob)/log(TWO));
 			}
 	
 	return local_entropy;
@@ -426,15 +426,15 @@ DP Universal::Get_local_entropy_scalar(Array<complx,3> A)
 }
 
 
-DP Universal::Get_entropy_scalar(Array<complx,3> A)
+Real Universal::Get_entropy_scalar(Array<Complex,3> A)
 {
 	
-	DP local_entropy = Get_local_entropy_scalar(A);
+	Real local_entropy = Get_local_entropy_scalar(A);
 	
-	DP entropy;
-	MPI_Reduce(&local_entropy, &entropy, 1, MPI_DP, MPI_SUM, master_id, MPI_COMM_WORLD);
+	Real entropy;
+	MPI_Reduce(&local_entropy, &entropy, 1, MPI_Real, MPI_SUM, master_id, MPI_COMM_WORLD);
 	
-	if (my_id == master_id)
+	if (master)
 		return entropy;
 	
 	else
@@ -456,38 +456,38 @@ DP Universal::Get_entropy_scalar(Array<complx,3> A)
 
 void Universal::Compute_local_ring_spectrum
 (
- Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az,
+ Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
  int n,
- Array<DP,2> local_E1k, Array<DP,2> local_E2k, Array<DP,2> local_E3k
+ Array<Real,2> local_E1k, Array<Real,2> local_E2k, Array<Real,2> local_E3k
  )
 {
 	local_E1k = 0.0;
 	local_E2k = 0.0;
 	local_E3k = 0.0;
 	
-	DP Kmag, theta;
-	DP factor;
+	Real Kmag, theta;
+	Real factor;
 	int shell_index, sector_index;
 	
 	int	Kmax = Max_radius_inside();
 	
-	for (int lx=0; lx<Ax.extent(0); lx++)
-        for (int ly=0; ly<Ax.extent(1); ly++)
-            for (int lz=0; lz<Ax.extent(2); lz++) {
+	for (int lx=0; lx<maxlx; lx++)
+		for (int ly=0; ly<maxly; ly++)
+			for (int lz=0; lz<maxlz; lz++) {
 				
-				Kmag = Kmagnitude(lx, ly, lz);
+				Kmag = Kmagnitude(lx,ly,lz);
 				shell_index = (int) ceil(Kmag);
 				
 				if ((Kmag > MYEPS) && (shell_index <= Kmax)) {
 					
-					theta = AnisKvect_polar_angle(lx, ly, lz);
+					theta = AnisKvect_polar_angle(lx,ly,lz);
 					
 					sector_index = Get_sector_index(theta, global.spectrum.ring.sector_angles);
 					
 					factor = Multiplicity_factor(lx,ly,lz);
-					local_E1k(shell_index, sector_index) += factor*my_pow(Kmag,n)* Vsqr(Ax(lx,ly,lz));
-					local_E2k(shell_index, sector_index) += factor*my_pow(Kmag,n)* Vsqr(Ay(lx,ly,lz));
-					local_E3k(shell_index, sector_index) += factor*my_pow(Kmag,n)* Vsqr(Az(lx,ly,lz));
+					local_E1k(shell_index, sector_index) += factor*my_pow(Kmag,n)*Vsqr(Ax(lx,ly,lz));
+					local_E2k(shell_index, sector_index) += factor*my_pow(Kmag,n)*Vsqr(Ay(lx,ly,lz));
+					local_E3k(shell_index, sector_index) += factor*my_pow(Kmag,n)*Vsqr(Az(lx,ly,lz));
 				}
 			}
 	
@@ -498,25 +498,25 @@ void Universal::Compute_local_ring_spectrum
 
 void Universal::Compute_ring_spectrum
 (
- Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az,
+ Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
  int n,
- Array<DP,2> E1k, Array<DP,2> E2k, Array<DP,2> E3k
+ Array<Real,2> E1k, Array<Real,2> E2k, Array<Real,2> E3k
  )
 {
 	
-	static Array<DP,2> local_E1k( (E1k.length())(0), (E1k.length())(1));
-	static Array<DP,2> local_E2k( (E1k.length())(0), (E1k.length())(1));
-	static Array<DP,2> local_E3k( (E1k.length())(0), (E1k.length())(1));
+	static Array<Real,2> local_E1k(E1k.shape());
+	static Array<Real,2> local_E2k(E1k.shape());
+	static Array<Real,2> local_E3k(E1k.shape());
 	
 	Compute_local_ring_spectrum(Ax, Ay, Az, n,local_E1k, local_E2k, local_E3k);
 	
-	int data_size = (E1k.length())(0) * (E1k.length())(1);
+	int data_size = E1k.size();
 	
-	MPI_Reduce(reinterpret_cast<DP*>(local_E1k.data()), reinterpret_cast<DP*>(E1k.data()), data_size, MPI_DP, MPI_SUM, master_id, MPI_COMM_WORLD);
+	MPI_Reduce(reinterpret_cast<Real*>(local_E1k.data()), reinterpret_cast<Real*>(E1k.data()), data_size, MPI_Real, MPI_SUM, master_id, MPI_COMM_WORLD);
 	
-	MPI_Reduce(reinterpret_cast<DP*>(local_E2k.data()), reinterpret_cast<DP*>(E2k.data()), data_size, MPI_DP, MPI_SUM, master_id, MPI_COMM_WORLD);
+	MPI_Reduce(reinterpret_cast<Real*>(local_E2k.data()), reinterpret_cast<Real*>(E2k.data()), data_size, MPI_Real, MPI_SUM, master_id, MPI_COMM_WORLD);
 	
-	MPI_Reduce(reinterpret_cast<DP*>(local_E3k.data()), reinterpret_cast<DP*>(E3k.data()), data_size, MPI_DP, MPI_SUM, master_id, MPI_COMM_WORLD);
+	MPI_Reduce(reinterpret_cast<Real*>(local_E3k.data()), reinterpret_cast<Real*>(E3k.data()), data_size, MPI_Real, MPI_SUM, master_id, MPI_COMM_WORLD);
 	
 }
 
@@ -530,9 +530,9 @@ void Universal::Compute_ring_spectrum
 
 void Universal::Compute_local_ring_spectrum
 (
- Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az,
- Array<complx,3> Bx, Array<complx,3> By, Array<complx,3> Bz,
- int n, Array<DP,2> local_E1k, Array<DP,2> local_E2k, Array<DP,2> local_E3k
+ Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
+ Array<Complex,3> Bx, Array<Complex,3> By, Array<Complex,3> Bz,
+ int n, Array<Real,2> local_E1k, Array<Real,2> local_E2k, Array<Real,2> local_E3k
  )
 {
 	
@@ -540,25 +540,25 @@ void Universal::Compute_local_ring_spectrum
 	local_E2k = 0.0;
 	local_E3k = 0.0;
 	
-	DP Kmag, theta;
-	DP factor;
+	Real Kmag, theta;
+	Real factor;
 	int shell_index, sector_index;
 	
 	int	Kmax = Max_radius_inside();
 	
-	for (int lx=0; lx<Ax.extent(0); lx++)
-        for (int ly=0; ly<Ax.extent(1); ly++)
-            for (int lz=0; lz<Ax.extent(2); lz++) {
+	for (int lx=0; lx<maxlx; lx++)
+		for (int ly=0; ly<maxly; ly++)
+			for (int lz=0; lz<maxlz; lz++) {
 				
-				Kmag = Kmagnitude(lx, ly, lz);
+				Kmag = Kmagnitude(lx,ly,lz);
 				shell_index = (int) ceil(Kmag);
 				
 				if ((Kmag > MYEPS) && (shell_index <= Kmax)) {
-					theta = AnisKvect_polar_angle(lx, ly, lz);
+					theta = AnisKvect_polar_angle(lx,ly,lz);
 					
 					sector_index = Get_sector_index(theta, global.spectrum.ring.sector_angles);
 					
-					factor = Multiplicity_factor(lx, ly, lz);
+					factor = Multiplicity_factor(lx,ly,lz);
 					local_E1k(shell_index, sector_index) += factor*my_pow(Kmag,n)* real_cprod(Ax(lx,ly,lz), Bx(lx,ly,lz));
 					local_E2k(shell_index, sector_index) += factor*my_pow(Kmag,n)* real_cprod(Ay(lx,ly,lz), By(lx,ly,lz));
 					local_E3k(shell_index, sector_index) += factor*my_pow(Kmag,n)* real_cprod(Az(lx,ly,lz), Bz(lx,ly,lz));
@@ -571,25 +571,25 @@ void Universal::Compute_local_ring_spectrum
 
 void Universal::Compute_ring_spectrum
 (
- Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az,
- Array<complx,3> Bx, Array<complx,3> By, Array<complx,3> Bz,
- int n, Array<DP,2> E1k, Array<DP,2> E2k, Array<DP,2> E3k
+ Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
+ Array<Complex,3> Bx, Array<Complex,3> By, Array<Complex,3> Bz,
+ int n, Array<Real,2> E1k, Array<Real,2> E2k, Array<Real,2> E3k
  )
 {
 	
-	static Array<DP,2> local_E1k( (E1k.length())(0), (E1k.length())(1));
-	static Array<DP,2> local_E2k( (E1k.length())(0), (E1k.length())(1));
-	static Array<DP,2> local_E3k( (E1k.length())(0), (E1k.length())(1));
+	static Array<Real,2> local_E1k(E1k.shape());
+	static Array<Real,2> local_E2k(E1k.shape());
+	static Array<Real,2> local_E3k(E1k.shape());
 	
 	Compute_local_ring_spectrum(Ax, Ay, Az, Bx, By, Bz, n, local_E1k, local_E2k, local_E3k);
 	
-	int data_size = (E1k.length())(0) * (E1k.length())(1);
+	int data_size = E1k.size();
 	
-	MPI_Reduce(reinterpret_cast<DP*>(local_E1k.data()), reinterpret_cast<DP*>(E1k.data()), data_size, MPI_DP, MPI_SUM, master_id, MPI_COMM_WORLD);
+	MPI_Reduce(reinterpret_cast<Real*>(local_E1k.data()), reinterpret_cast<Real*>(E1k.data()), data_size, MPI_Real, MPI_SUM, master_id, MPI_COMM_WORLD);
 	
-	MPI_Reduce(reinterpret_cast<DP*>(local_E2k.data()), reinterpret_cast<DP*>(E2k.data()), data_size, MPI_DP, MPI_SUM, master_id, MPI_COMM_WORLD);
+	MPI_Reduce(reinterpret_cast<Real*>(local_E2k.data()), reinterpret_cast<Real*>(E2k.data()), data_size, MPI_Real, MPI_SUM, master_id, MPI_COMM_WORLD);
 	
-	MPI_Reduce(reinterpret_cast<DP*>(local_E3k.data()), reinterpret_cast<DP*>(E3k.data()), data_size, MPI_DP, MPI_SUM, master_id, MPI_COMM_WORLD);
+	MPI_Reduce(reinterpret_cast<Real*>(local_E3k.data()), reinterpret_cast<Real*>(E3k.data()), data_size, MPI_Real, MPI_SUM, master_id, MPI_COMM_WORLD);
 	
 }
 
@@ -600,32 +600,32 @@ void Universal::Compute_ring_spectrum
 
 void Universal::Compute_local_ring_spectrum
 (
- Array<complx,3> F,
+ Array<Complex,3> F,
  int n,
- Array<DP,2> local_Sk
+ Array<Real,2> local_Sk
  )
 {
 	
 	local_Sk = 0.0;
 	
-	DP Kmag, theta;
-	DP factor;
+	Real Kmag, theta;
+	Real factor;
 	int shell_index, sector_index;
 	
 	int	Kmax = Max_radius_inside();
 	
-	for (int lx=0; lx<F.extent(0); lx++)
-        for (int ly=0; ly<F.extent(1); ly++)
-            for (int lz=0; lz<F.extent(2); lz++) {
-				Kmag = Kmagnitude(lx, ly, lz);
+	for (int lx=0; lx<maxlx; lx++)
+		for (int ly=0; ly<maxly; ly++)
+			for (int lz=0; lz<maxlz; lz++) {
+				Kmag = Kmagnitude(lx,ly,lz);
 				shell_index = (int) ceil(Kmag);
 				
 				if ((Kmag > MYEPS) && (shell_index <= Kmax)) {
-					theta = AnisKvect_polar_angle(lx, ly, lz);
+					theta = AnisKvect_polar_angle(lx,ly,lz);
 					
 					sector_index = Get_sector_index(theta, global.spectrum.ring.sector_angles);
 					
-					factor = Multiplicity_factor(lx, ly, lz);
+					factor = Multiplicity_factor(lx,ly,lz);
 					
 					local_Sk(shell_index, sector_index) +=  factor*my_pow(Kmag,n)* Vsqr(F(lx,ly,lz));
 				}
@@ -636,19 +636,19 @@ void Universal::Compute_local_ring_spectrum
 
 void Universal::Compute_ring_spectrum
 (
- Array<complx,3> F,
+ Array<Complex,3> F,
  int n,
- Array<DP,2> Sk
+ Array<Real,2> Sk
  )
 {
 	
-	static Array<DP,2> local_Sk( (Sk.length())(0), (Sk.length())(1));
+	static Array<Real,2> local_Sk(Sk.shape());
 	
 	Compute_local_ring_spectrum(F, n, local_Sk);
 	
-	int data_size = (Sk.length())(0) * (Sk.length())(1);
+	int data_size = Sk.size();
 	
-	MPI_Reduce(reinterpret_cast<DP*>(local_Sk.data()),reinterpret_cast<DP*>(Sk.data()), data_size, MPI_DP, MPI_SUM, master_id, MPI_COMM_WORLD);
+	MPI_Reduce(reinterpret_cast<Real*>(local_Sk.data()),reinterpret_cast<Real*>(Sk.data()), data_size, MPI_Real, MPI_SUM, master_id, MPI_COMM_WORLD);
 	
 }
 
@@ -659,33 +659,33 @@ void Universal::Compute_ring_spectrum
 
 void Universal::Compute_local_ring_spectrum
 (
- Array<complx,3> F,
- Array<complx,3> G,
+ Array<Complex,3> F,
+ Array<Complex,3> G,
  int n,
- Array<DP,2> local_Sk
+ Array<Real,2> local_Sk
  )
 {
 	
 	local_Sk = 0.0;
 	
-	DP Kmag, theta;
-	DP factor;
+	Real Kmag, theta;
+	Real factor;
 	int shell_index, sector_index;
 	
 	int	Kmax = Max_radius_inside();
 	
-	for (int lx=0; lx<F.extent(0); lx++)
-        for (int ly=0; ly<F.extent(1); ly++)
-            for (int lz=0; lz<F.extent(2); lz++) {
-				Kmag = Kmagnitude(lx, ly, lz);
+	for (int lx=0; lx<maxlx; lx++)
+		for (int ly=0; ly<maxly; ly++)
+			for (int lz=0; lz<maxlz; lz++) {
+				Kmag = Kmagnitude(lx,ly,lz);
 				shell_index = (int) ceil(Kmag);
 				
 				if ((Kmag > MYEPS) && (shell_index <= Kmax)) {
-					theta = AnisKvect_polar_angle(lx, ly, lz);
+					theta = AnisKvect_polar_angle(lx,ly,lz);
 					
 					sector_index = Get_sector_index(theta, global.spectrum.ring.sector_angles);
 					
-					factor = Multiplicity_factor(lx, ly, lz);
+					factor = Multiplicity_factor(lx,ly,lz);
 					
 					local_Sk(shell_index, sector_index) +=  factor*my_pow(Kmag,n)*real_cprod(F(lx,ly,lz),G(lx,ly,lz));
 				}
@@ -697,20 +697,20 @@ void Universal::Compute_local_ring_spectrum
 
 void Universal::Compute_ring_spectrum
 (
- Array<complx,3> F,
- Array<complx,3> G,
+ Array<Complex,3> F,
+ Array<Complex,3> G,
  int n,
- Array<DP,2> Sk
+ Array<Real,2> Sk
  )
 {
 	
-	static Array<DP,2> local_Sk( (Sk.length())(0), (Sk.length())(1));
+	static Array<Real,2> local_Sk(Sk.shape());
 	
 	Compute_local_ring_spectrum(F, G, n, local_Sk);
 	
-	int data_size = (Sk.length())(0) * (Sk.length())(1);
+	int data_size = Sk.size();
 	
-	MPI_Reduce(reinterpret_cast<DP*>(local_Sk.data()), reinterpret_cast<DP*>(Sk.data()), data_size, MPI_DP, MPI_SUM, master_id, MPI_COMM_WORLD);
+	MPI_Reduce(reinterpret_cast<Real*>(local_Sk.data()), reinterpret_cast<Real*>(Sk.data()), data_size, MPI_Real, MPI_SUM, master_id, MPI_COMM_WORLD);
 	
 }
 
@@ -727,41 +727,41 @@ void Universal::Compute_ring_spectrum
 
 void Universal::Compute_local_cylindrical_ring_spectrum
 (
- Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az,
+ Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
  int n,
- Array<DP,2> local_S1k, Array<DP,2> local_S2k
+ Array<Real,2> local_S1k, Array<Real,2> local_S2k
  )
 {
 	
 	local_S1k = 0.0;  												// initialize Ek
 	local_S2k = 0.0;
 	
-	complx anisV1;
+	Complex anisV1;
 	
-	DP Kmag, Kpll, Kperp;
-	DP V2sqr;
-	DP factor;
+	Real Kmag, Kpll, Kperp;
+	Real V2sqr;
+	Real factor;
 	int shell_index, slab_index;
-	TinyVector<complx,3> V;
+	TinyVector<Complex,3> V;
 	
 	int	Kperp_max = Anis_max_Krho_radius_inside();
 	
-	for (int lx=0; lx<Ax.extent(0); lx++)
-        for (int ly=0; ly<Ax.extent(1); ly++)
-            for (int lz=0; lz<Ax.extent(2); lz++) {
+	for (int lx=0; lx<maxlx; lx++)
+		for (int ly=0; ly<maxly; ly++)
+			for (int lz=0; lz<maxlz; lz++) {
 				
 				V = Ax(lx,ly,lz), Ay(lx,ly,lz), Az(lx,ly,lz);
-				Kmag = Kmagnitude(lx, ly, lz);
+				Kmag = Kmagnitude(lx,ly,lz);
 				
-				Kperp = AnisKperp(lx, ly, lz);
+				Kperp = AnisKperp(lx,ly,lz);
 				shell_index = (int) ceil(Kperp);
 				
 				if (shell_index <= Kperp_max) {
-					Kpll = AnisKpll(lx, ly, lz);
+					Kpll = AnisKpll(lx,ly,lz);
 					
 					slab_index = Get_slab_index(Kpll, Kperp, global.spectrum.cylindrical_ring.kpll_array);
 					
-					factor = Multiplicity_factor(lx, ly, lz);
+					factor = Multiplicity_factor(lx,ly,lz);
 					
 					anisV1 = V(global.field.anisotropy_dirn-1);
 					
@@ -778,22 +778,22 @@ void Universal::Compute_local_cylindrical_ring_spectrum
 //
 void Universal::Compute_cylindrical_ring_spectrum
 (
- Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az,
+ Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
  int n,
- Array<DP,2> S1k, Array<DP,2> S2k
+ Array<Real,2> S1k, Array<Real,2> S2k
  )
 {
 	
-	static Array<DP,2> local_S1k( (S1k.length())(0), (S1k.length())(1));
-	static Array<DP,2> local_S2k( (S1k.length())(0), (S1k.length())(1));
+	static Array<Real,2> local_S1k(S1k.shape());
+	static Array<Real,2> local_S2k(S1k.shape());
 	
 	Compute_local_cylindrical_ring_spectrum(Ax, Ay, Az, n, local_S1k, local_S2k);
 	
-	int data_size = (S1k.length())(0) * (S1k.length())(1);
+	int data_size = S1k.size();
 	
-	MPI_Reduce(reinterpret_cast<DP*>(local_S1k.data()), reinterpret_cast<DP*>(S1k.data()), data_size, MPI_DP, MPI_SUM, master_id, MPI_COMM_WORLD);
+	MPI_Reduce(reinterpret_cast<Real*>(local_S1k.data()), reinterpret_cast<Real*>(S1k.data()), data_size, MPI_Real, MPI_SUM, master_id, MPI_COMM_WORLD);
 	
-	MPI_Reduce(reinterpret_cast<DP*>(local_S2k.data()), reinterpret_cast<DP*>(S2k.data()), data_size, MPI_DP, MPI_SUM, master_id, MPI_COMM_WORLD);
+	MPI_Reduce(reinterpret_cast<Real*>(local_S2k.data()), reinterpret_cast<Real*>(S2k.data()), data_size, MPI_Real, MPI_SUM, master_id, MPI_COMM_WORLD);
 	
 }
 
@@ -801,61 +801,61 @@ void Universal::Compute_cylindrical_ring_spectrum
 
 void Universal::Compute_local_cylindrical_ring_spectrum
 (
- Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az,
- Array<complx,3> Bx, Array<complx,3> By, Array<complx,3> Bz,
+ Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
+ Array<Complex,3> Bx, Array<Complex,3> By, Array<Complex,3> Bz,
  int n,
- Array<DP,2> local_S1k, Array<DP,2> local_S2k
+ Array<Real,2> local_S1k, Array<Real,2> local_S2k
  )
 {
 	local_S1k = 0.0;  												// initialize Ek
 	local_S2k = 0.0;
 	
-	complx anisV1, anisW1;
-	TinyVector<complx,3> V, Vrho, W, Wrho;
+	Complex anisV1, anisW1;
+	TinyVector<Complex,3> V, Vrho, W, Wrho;
 	
-	DP Kmag, Kpll, Kperp;
-	DP factor;
+	Real Kmag, Kpll, Kperp;
+	Real factor;
 	int shell_index, slab_index;
 	
 	int	Kperp_max = Anis_max_Krho_radius_inside();
 	
-	for (int lx=0; lx<Ax.extent(0); lx++)
-        for (int ly=0; ly<Ax.extent(1); ly++)
-            for (int lz=0; lz<Ax.extent(2); lz++) {
+	for (int lx=0; lx<maxlx; lx++)
+		for (int ly=0; ly<maxly; ly++)
+			for (int lz=0; lz<maxlz; lz++) {
 				
-				Kmag = Kmagnitude(lx, ly, lz);
-				Kperp = AnisKperp(lx, ly, lz);
+				Kmag = Kmagnitude(lx,ly,lz);
+				Kperp = AnisKperp(lx,ly,lz);
 				shell_index = (int) ceil(Kperp);
 				
 				if (shell_index <= Kperp_max) {
 					V = Ax(lx,ly,lz), Ay(lx,ly,lz), Az(lx,ly,lz);
 					W = Bx(lx,ly,lz), By(lx,ly,lz), Bz(lx,ly,lz);
 					
-					Kpll = AnisKpll(lx, ly, lz);
+					Kpll = AnisKpll(lx,ly,lz);
 					
 					slab_index = Get_slab_index(Kpll, Kperp, global.spectrum.cylindrical_ring.kpll_array);
 					
-					factor = Multiplicity_factor(lx, ly, lz);
+					factor = Multiplicity_factor(lx,ly,lz);
 					
 					if (global.field.anisotropy_dirn == 1) {
 						anisV1 = V(0); anisW1 = W(0);
 						
-						Vrho = complx(0.0,0.0), V(1), V(2);
-						Wrho = complx(0.0,0.0), W(1), W(2);
+						Vrho = Complex(0.0,0.0), V(1), V(2);
+						Wrho = Complex(0.0,0.0), W(1), W(2);
 					}
 					
 					if (global.field.anisotropy_dirn == 2) {
 						anisV1 = V(1); anisW1 = W(1);
 						
-						Vrho = V(0), complx(0.0,0.0), V(2);
-						Wrho = W(0), complx(0.0,0.0), W(2);
+						Vrho = V(0), Complex(0.0,0.0), V(2);
+						Wrho = W(0), Complex(0.0,0.0), W(2);
 					}
 					
 					if (global.field.anisotropy_dirn == 3) {
 						anisV1 = V(2); anisW1 = W(2);
 						
-						Vrho = V(0), V(1), complx(0.0,0.0);
-						Wrho = W(0), W(1), complx(0.0,0.0);
+						Vrho = V(0), V(1), Complex(0.0,0.0);
+						Wrho = W(0), W(1), Complex(0.0,0.0);
 					}
 					
 					local_S1k(shell_index, slab_index) += factor*my_pow(Kmag,n)* real_cprod(anisV1, anisW1);
@@ -871,23 +871,23 @@ void Universal::Compute_local_cylindrical_ring_spectrum
 //
 void Universal::Compute_cylindrical_ring_spectrum
 (
- Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az,
- Array<complx,3> Bx, Array<complx,3> By, Array<complx,3> Bz,
+ Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
+ Array<Complex,3> Bx, Array<Complex,3> By, Array<Complex,3> Bz,
  int n,
- Array<DP,2> S1k, Array<DP,2> S2k
+ Array<Real,2> S1k, Array<Real,2> S2k
  )
 {
 	
-	static Array<DP,2> local_S1k( (S1k.length())(0), (S1k.length())(1));
-	static Array<DP,2> local_S2k( (S1k.length())(0), (S1k.length())(1));
+	static Array<Real,2> local_S1k(S1k.shape());
+	static Array<Real,2> local_S2k(S1k.shape());
 	
 	Compute_local_cylindrical_ring_spectrum(Ax, Ay, Az, Bx, By, Bz, n, local_S1k, local_S2k);
 	
-	int data_size = (S1k.length())(0) * (S1k.length())(1);
+	int data_size = S1k.size();
 	
-	MPI_Reduce(reinterpret_cast<DP*>(local_S1k.data()), reinterpret_cast<DP*>(S1k.data()), data_size, MPI_DP, MPI_SUM, master_id, MPI_COMM_WORLD);
+	MPI_Reduce(reinterpret_cast<Real*>(local_S1k.data()), reinterpret_cast<Real*>(S1k.data()), data_size, MPI_Real, MPI_SUM, master_id, MPI_COMM_WORLD);
 	
-	MPI_Reduce(reinterpret_cast<DP*>(local_S2k.data()), reinterpret_cast<DP*>(S2k.data()), data_size, MPI_DP, MPI_SUM, master_id, MPI_COMM_WORLD);
+	MPI_Reduce(reinterpret_cast<Real*>(local_S2k.data()), reinterpret_cast<Real*>(S2k.data()), data_size, MPI_Real, MPI_SUM, master_id, MPI_COMM_WORLD);
 	
 }
 
@@ -896,42 +896,42 @@ void Universal::Compute_cylindrical_ring_spectrum
 
 void Universal::Compute_local_cylindrical_ring_spectrum
 (
- Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az,
- Array<complx,3> F,
+ Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
+ Array<Complex,3> F,
  int n,
- Array<DP,2> local_S1k, Array<DP,2> local_S2k
+ Array<Real,2> local_S1k, Array<Real,2> local_S2k
  )
 {
 	local_S1k = 0.0;  												// initialize Ek
 	local_S2k = 0.0;
 	
-	complx anisV1, Fval;
+	Complex anisV1, Fval;
 	
-	DP Kmag, Kpll, Kperp;
-	DP VTperp;
-	DP factor;
+	Real Kmag, Kpll, Kperp;
+	Real VTperp;
+	Real factor;
 	int shell_index, slab_index;
-	TinyVector<complx,3> V, Vless;
+	TinyVector<Complex,3> V, Vless;
 	
 	int	Kperp_max = Anis_max_Krho_radius_inside();
 	
-	for (int lx=0; lx<Ax.extent(0); lx++)
-        for (int ly=0; ly<Ax.extent(1); ly++)
-            for (int lz=0; lz<Ax.extent(2); lz++) {
+	for (int lx=0; lx<maxlx; lx++)
+		for (int ly=0; ly<maxly; ly++)
+			for (int lz=0; lz<maxlz; lz++) {
 				
 				V = Ax(lx,ly,lz), Ay(lx,ly,lz), Az(lx,ly,lz);
 				Fval = F(lx,ly,lz);
-				Kmag = Kmagnitude(lx, ly, lz);
+				Kmag = Kmagnitude(lx,ly,lz);
 				
-				Kperp = AnisKperp(lx, ly, lz);
+				Kperp = AnisKperp(lx,ly,lz);
 				shell_index = (int) ceil(Kperp);
 				
 				if (shell_index <= Kperp_max) {
-					Kpll = AnisKpll(lx, ly, lz);
+					Kpll = AnisKpll(lx,ly,lz);
 					
 					slab_index = Get_slab_index(Kpll, Kperp, global.spectrum.cylindrical_ring.kpll_array);
 					
-					factor = Multiplicity_factor(lx, ly, lz);
+					factor = Multiplicity_factor(lx,ly,lz);
 					
 					anisV1 = V(global.field.anisotropy_dirn-1);
 					Vless = V - anisV1;
@@ -952,23 +952,23 @@ void Universal::Compute_local_cylindrical_ring_spectrum
 //
 void Universal::Compute_cylindrical_ring_spectrum
 (
- Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az,
- Array<complx,3> F,
+ Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
+ Array<Complex,3> F,
  int n,
- Array<DP,2> S1k, Array<DP,2> S2k
+ Array<Real,2> S1k, Array<Real,2> S2k
  )
 {
 	
-	static Array<DP,2> local_S1k( (S1k.length())(0), (S1k.length())(1));
-	static Array<DP,2> local_S2k( (S1k.length())(0), (S1k.length())(1));
+	static Array<Real,2> local_S1k(S1k.shape());
+	static Array<Real,2> local_S2k(S1k.shape());
 	
 	Compute_local_cylindrical_ring_spectrum(Ax, Ay, Az, F, n, local_S1k, local_S2k);
 	
 	int data_size = S1k.size();
 	
-	MPI_Reduce(reinterpret_cast<DP*>(local_S1k.data()), reinterpret_cast<DP*>(S1k.data()), data_size, MPI_DP, MPI_SUM, master_id, MPI_COMM_WORLD);
+	MPI_Reduce(reinterpret_cast<Real*>(local_S1k.data()), reinterpret_cast<Real*>(S1k.data()), data_size, MPI_Real, MPI_SUM, master_id, MPI_COMM_WORLD);
 	
-	MPI_Reduce(reinterpret_cast<DP*>(local_S2k.data()), reinterpret_cast<DP*>(S2k.data()), data_size, MPI_DP, MPI_SUM, master_id, MPI_COMM_WORLD);
+	MPI_Reduce(reinterpret_cast<Real*>(local_S2k.data()), reinterpret_cast<Real*>(S2k.data()), data_size, MPI_Real, MPI_SUM, master_id, MPI_COMM_WORLD);
 	
 }
 
@@ -979,34 +979,34 @@ void Universal::Compute_cylindrical_ring_spectrum
 
 void Universal::Compute_local_cylindrical_ring_spectrum
 (
- Array<complx,3> F,
+ Array<Complex,3> F,
  int n,
- Array<DP,2> local_Sk
+ Array<Real,2> local_Sk
  )
 {
 	
 	local_Sk = 0.0;
 	
-	DP Kmag, Kperp, Kpll;
-	DP factor;
+	Real Kmag, Kperp, Kpll;
+	Real factor;
 	int shell_index, slab_index;
 	
 	int	Kperp_max = Anis_max_Krho_radius_inside();
 	
-	for (int lx=0; lx<F.extent(0); lx++)
-        for (int ly=0; ly<F.extent(1); ly++)
-            for (int lz=0; lz<F.extent(2); lz++) {
-				Kmag = Kmagnitude(lx, ly, lz);
+	for (int lx=0; lx<maxlx; lx++)
+		for (int ly=0; ly<maxly; ly++)
+			for (int lz=0; lz<maxlz; lz++) {
+				Kmag = Kmagnitude(lx,ly,lz);
 				
-				Kperp = AnisKperp(lx, ly, lz);
+				Kperp = AnisKperp(lx,ly,lz);
 				shell_index = (int) ceil(Kperp);
 				
 				if (shell_index <= Kperp_max) {
-					Kpll = AnisKpll(lx, ly, lz);
+					Kpll = AnisKpll(lx,ly,lz);
 					
 					slab_index = Get_slab_index(Kpll, Kperp, global.spectrum.cylindrical_ring.kpll_array);
 					
-					factor = Multiplicity_factor(lx, ly, lz);
+					factor = Multiplicity_factor(lx,ly,lz);
 					
 					local_Sk(shell_index, slab_index) += factor*my_pow(Kmag,n)* Vsqr(F(lx,ly,lz));
 				}
@@ -1018,19 +1018,19 @@ void Universal::Compute_local_cylindrical_ring_spectrum
 //
 void Universal::Compute_cylindrical_ring_spectrum
 (
- Array<complx,3> F,
+ Array<Complex,3> F,
  int n,
- Array<DP,2> Sk
+ Array<Real,2> Sk
  )
 {
 	
-	static Array<DP,2> local_Sk( (Sk.length())(0), (Sk.length())(1));
+	static Array<Real,2> local_Sk(Sk.shape());
 	
 	Compute_local_cylindrical_ring_spectrum(F, n, local_Sk);
 	
-	int data_size = (Sk.length())(0) * (Sk.length())(1);
+	int data_size = Sk.size();
 	
-	MPI_Reduce(reinterpret_cast<DP*>(local_Sk.data()), reinterpret_cast<DP*>(Sk.data()), data_size, MPI_DP, MPI_SUM, master_id, MPI_COMM_WORLD);
+	MPI_Reduce(reinterpret_cast<Real*>(local_Sk.data()), reinterpret_cast<Real*>(Sk.data()), data_size, MPI_Real, MPI_SUM, master_id, MPI_COMM_WORLD);
 	
 }
 
@@ -1039,35 +1039,35 @@ void Universal::Compute_cylindrical_ring_spectrum
 
 void Universal::Compute_local_cylindrical_ring_spectrum
 (
- Array<complx,3> F,
- Array<complx,3> G,
+ Array<Complex,3> F,
+ Array<Complex,3> G,
  int n,
- Array<DP,2> local_Sk
+ Array<Real,2> local_Sk
  )
 {
 	
 	local_Sk = 0.0;
 	
-	DP Kmag, Kperp, Kpll;
-	DP factor;
+	Real Kmag, Kperp, Kpll;
+	Real factor;
 	int shell_index, slab_index;
 	
 	int	Kperp_max = Anis_max_Krho_radius_inside();
 	
-	for (int lx=0; lx<F.extent(0); lx++)
-        for (int ly=0; ly<F.extent(1); ly++)
-            for (int lz=0; lz<F.extent(2); lz++) {
-				Kmag = Kmagnitude(lx, ly, lz);
+	for (int lx=0; lx<maxlx; lx++)
+		for (int ly=0; ly<maxly; ly++)
+			for (int lz=0; lz<maxlz; lz++) {
+				Kmag = Kmagnitude(lx,ly,lz);
 				
-				Kperp = AnisKperp(lx, ly, lz);
+				Kperp = AnisKperp(lx,ly,lz);
 				shell_index = (int) ceil(Kperp);
 				
 				if (shell_index <= Kperp_max) {
-					Kpll = AnisKpll(lx, ly, lz);
+					Kpll = AnisKpll(lx,ly,lz);
 					
 					slab_index = Get_slab_index(Kpll, Kperp, global.spectrum.cylindrical_ring.kpll_array);
 					
-					factor = Multiplicity_factor(lx, ly, lz);
+					factor = Multiplicity_factor(lx,ly,lz);
 					
 					local_Sk(shell_index, slab_index) += factor*my_pow(Kmag,n)*real_cprod(F(lx,ly,lz),G(lx,ly,lz));
 				}
@@ -1079,19 +1079,19 @@ void Universal::Compute_local_cylindrical_ring_spectrum
 //
 void Universal::Compute_cylindrical_ring_spectrum
 (
- Array<complx,3> F,
- Array<complx,3> G,
+ Array<Complex,3> F,
+ Array<Complex,3> G,
  int n,
- Array<DP,2> Sk
+ Array<Real,2> Sk
  )
 {
-	static Array<DP,2> local_Sk( (Sk.length())(0), (Sk.length())(1));
+	static Array<Real,2> local_Sk(Sk.shape());
 	
 	Compute_local_cylindrical_ring_spectrum(F, G, n, local_Sk);
 	
-	int data_size = (Sk.length())(0) * (Sk.length())(1);
+	int data_size = Sk.size();
 	
-	MPI_Reduce(reinterpret_cast<DP*>(local_Sk.data()), reinterpret_cast<DP*>(Sk.data()), data_size, MPI_DP, MPI_SUM, master_id, MPI_COMM_WORLD);
+	MPI_Reduce(reinterpret_cast<Real*>(local_Sk.data()), reinterpret_cast<Real*>(Sk.data()), data_size, MPI_Real, MPI_SUM, master_id, MPI_COMM_WORLD);
 	
 }
 
@@ -1104,31 +1104,31 @@ void Universal::Compute_cylindrical_ring_spectrum
 
 void Universal::Compute_local_imag_shell_spectrum_B0
 (
- TinyVector<DP,3> B0,
- Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az,
- Array<complx,3> Bx, Array<complx,3> By, Array<complx,3> Bz,
- Array<DP,1> local_Sk
+ TinyVector<Real,3> B0,
+ Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
+ Array<Complex,3> Bx, Array<Complex,3> By, Array<Complex,3> Bz,
+ Array<Real,1> local_Sk
  )
 {
-	DP Kmag;
+	Real Kmag;
 	int shell_index;
-	TinyVector<DP,3> K;
-	TinyVector<complx,3> V, W;
+	TinyVector<Real,3> K;
+	TinyVector<Complex,3> V, W;
 	
 	
 	local_Sk = 0.0;
 	
 	int	Kmax = Min_radius_outside();
 	
-	for (int lx=0; lx<Ax.extent(0); lx++)
-        for (int ly=0; ly<Ax.extent(1); ly++)
-            for (int lz=0; lz<Ax.extent(2); lz++) {
-				Kmag = Kmagnitude(lx, ly, lz);
+	for (int lx=0; lx<maxlx; lx++)
+		for (int ly=0; ly<maxly; ly++)
+			for (int lz=0; lz<maxlz; lz++) {
+				Kmag = Kmagnitude(lx,ly,lz);
 				
 				shell_index = (int) ceil(Kmag);
 				
 				if (shell_index <= Kmax) {
-					Wavenumber(lx, ly, lz, K);
+					Wavenumber(lx,ly,lz, K);
 					V = Ax(lx,ly,lz), Ay(lx,ly,lz), Az(lx,ly,lz);
 					W = Bx(lx,ly,lz), By(lx,ly,lz), Bz(lx,ly,lz);
 					
@@ -1145,14 +1145,14 @@ void Universal::Compute_local_imag_shell_spectrum_B0
 //
 void Universal::Compute_imag_shell_spectrum_B0
 (
- TinyVector<DP,3> B0,
- Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az,
- Array<complx,3> Bx, Array<complx,3> By, Array<complx,3> Bz,
- Array<DP,1> Sk
+ TinyVector<Real,3> B0,
+ Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
+ Array<Complex,3> Bx, Array<Complex,3> By, Array<Complex,3> Bz,
+ Array<Real,1> Sk
  )
 {
 	
-	static Array<DP,1> local_Sk(Sk.length());
+	static Array<Real,1> local_Sk(Sk.shape());
 	
 	local_Sk = 0.0;
 	
@@ -1160,7 +1160,7 @@ void Universal::Compute_imag_shell_spectrum_B0
 	
 	int data_size = Sk.size();
 	
-	MPI_Reduce(reinterpret_cast<DP*>(local_Sk.data()), reinterpret_cast<DP*>(Sk.data()), data_size, MPI_DP, MPI_SUM, master_id, MPI_COMM_WORLD);
+	MPI_Reduce(reinterpret_cast<Real*>(local_Sk.data()), reinterpret_cast<Real*>(Sk.data()), data_size, MPI_Real, MPI_SUM, master_id, MPI_COMM_WORLD);
 	
 }
 
@@ -1168,33 +1168,33 @@ void Universal::Compute_imag_shell_spectrum_B0
 
 void Universal::Compute_local_imag_ring_spectrum_B0
 (
- TinyVector<DP,3> B0,
- Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az,
- Array<complx,3> Bx, Array<complx,3> By, Array<complx,3> Bz,
- Array<DP,2> local_Sk
+ TinyVector<Real,3> B0,
+ Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
+ Array<Complex,3> Bx, Array<Complex,3> By, Array<Complex,3> Bz,
+ Array<Real,2> local_Sk
  )
 {
-	DP Kmag, theta;
+	Real Kmag, theta;
 	int shell_index, sector_index;
-	TinyVector<DP,3> K;
-	TinyVector<complx,3> V, W;
+	TinyVector<Real,3> K;
+	TinyVector<Complex,3> V, W;
 	
 	local_Sk = 0.0;
 	
 	int	Kmax = Max_radius_inside();
 	
-	for (int lx=0; lx<Ax.extent(0); lx++)
-        for (int ly=0; ly<Ax.extent(1); ly++)
-            for (int lz=0; lz<Ax.extent(2); lz++) {
-				Kmag = Kmagnitude(lx, ly, lz);
+	for (int lx=0; lx<maxlx; lx++)
+		for (int ly=0; ly<maxly; ly++)
+			for (int lz=0; lz<maxlz; lz++) {
+				Kmag = Kmagnitude(lx,ly,lz);
 				shell_index = (int) ceil(Kmag);
 				
 				if ((Kmag > MYEPS) && (shell_index <= Kmax)) {
-					theta = AnisKvect_polar_angle(lx, ly, lz);
+					theta = AnisKvect_polar_angle(lx,ly,lz);
 					
 					sector_index = Get_sector_index(theta, global.spectrum.ring.sector_angles);
 					
-					Wavenumber(lx, ly, lz, K);
+					Wavenumber(lx,ly,lz, K);
 					V = Ax(lx,ly,lz), Ay(lx,ly,lz), Az(lx,ly,lz);
 					W = Bx(lx,ly,lz), By(lx,ly,lz), Bz(lx,ly,lz);
 					
@@ -1208,14 +1208,14 @@ void Universal::Compute_local_imag_ring_spectrum_B0
 //
 void Universal::Compute_imag_ring_spectrum_B0
 (
- TinyVector<DP,3> B0,
- Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az,
- Array<complx,3> Bx, Array<complx,3> By, Array<complx,3> Bz,
- Array<DP,2> Sk
+ TinyVector<Real,3> B0,
+ Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
+ Array<Complex,3> Bx, Array<Complex,3> By, Array<Complex,3> Bz,
+ Array<Real,2> Sk
  )
 {
 	
-	static Array<DP,2> local_Sk( (Sk.length())(0), (Sk.length())(1));
+	static Array<Real,2> local_Sk(Sk.shape());
 	
 	local_Sk = 0.0;
 	
@@ -1223,7 +1223,7 @@ void Universal::Compute_imag_ring_spectrum_B0
 	
 	int data_size = Sk.size();
 	
-	MPI_Reduce(reinterpret_cast<DP*>(local_Sk.data()), reinterpret_cast<DP*>(Sk.data()), data_size, MPI_DP, MPI_SUM, master_id, MPI_COMM_WORLD);
+	MPI_Reduce(reinterpret_cast<Real*>(local_Sk.data()), reinterpret_cast<Real*>(Sk.data()), data_size, MPI_Real, MPI_SUM, master_id, MPI_COMM_WORLD);
 	
 }
 
@@ -1233,39 +1233,39 @@ void Universal::Compute_imag_ring_spectrum_B0
 // Not for 2D
 void Universal::Compute_local_imag_cylindrical_ring_spectrum_B0
 (
- TinyVector<DP,3> B0,
- Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az,
- Array<complx,3> Bx, Array<complx,3> By, Array<complx,3> Bz,
- Array<DP,2> local_Sk
+ TinyVector<Real,3> B0,
+ Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
+ Array<Complex,3> Bx, Array<Complex,3> By, Array<Complex,3> Bz,
+ Array<Real,2> local_Sk
  )
 {
 	
-	DP Kpll, Kperp;
+	Real Kpll, Kperp;
 	int shell_index, slab_index;
-	TinyVector<DP,3> K;
-	TinyVector<complx,3> V, W;
+	TinyVector<Real,3> K;
+	TinyVector<Complex,3> V, W;
 	
 	local_Sk = 0.0;
 	
 	int	Kperp_max = Anis_max_Krho_radius_inside();
 	
-	for (int lx=0; lx<Ax.extent(0); lx++)
-        for (int ly=0; ly<Ax.extent(1); ly++)
-            for (int lz=0; lz<Ax.extent(2); lz++) {
-				Kpll = AnisKpll(lx, ly, lz);
+	for (int lx=0; lx<maxlx; lx++)
+		for (int ly=0; ly<maxly; ly++)
+			for (int lz=0; lz<maxlz; lz++) {
+				Kpll = AnisKpll(lx,ly,lz);
 				
-				Kperp = AnisKperp(lx, ly, lz);
+				Kperp = AnisKperp(lx,ly,lz);
 				
 				shell_index = (int) ceil(Kperp);
 				
 				if (shell_index <= Kperp_max) {
 					slab_index = Get_slab_index(Kpll, Kperp, global.spectrum.cylindrical_ring.kpll_array);
 					
-					Wavenumber(lx, ly, lz, K);
+					Wavenumber(lx,ly,lz, K);
 					V = Ax(lx,ly,lz), Ay(lx,ly,lz), Az(lx,ly,lz);
 					W = Bx(lx,ly,lz), By(lx,ly,lz), Bz(lx,ly,lz);
 					
-					local_Sk(shell_index, slab_index) +=  2* Multiplicity_factor(lx, ly, lz)* dot(B0,K)* mydot_imag(V,W);
+					local_Sk(shell_index, slab_index) +=  2* Multiplicity_factor(lx,ly,lz)* dot(B0,K)* mydot_imag(V,W);
 					
 				}
 			}
@@ -1276,14 +1276,14 @@ void Universal::Compute_local_imag_cylindrical_ring_spectrum_B0
 //
 void Universal::Compute_imag_cylindrical_ring_spectrum_B0
 (
- TinyVector<DP,3> B0,
- Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az,
- Array<complx,3> Bx, Array<complx,3> By, Array<complx,3> Bz,
- Array<DP,2> Sk
+ TinyVector<Real,3> B0,
+ Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
+ Array<Complex,3> Bx, Array<Complex,3> By, Array<Complex,3> Bz,
+ Array<Real,2> Sk
  )
 {
 	
-	static Array<DP,2> local_Sk( (Sk.length())(0), (Sk.length())(1));
+	static Array<Real,2> local_Sk(Sk.shape());
 	
 	local_Sk = 0.0;
 	
@@ -1291,7 +1291,7 @@ void Universal::Compute_imag_cylindrical_ring_spectrum_B0
 	
 	int data_size = Sk.size();
 	
-	MPI_Reduce(reinterpret_cast<DP*>(local_Sk.data()), reinterpret_cast<DP*>(Sk.data()), data_size, MPI_DP, MPI_SUM, master_id, MPI_COMM_WORLD);
+	MPI_Reduce(reinterpret_cast<Real*>(local_Sk.data()), reinterpret_cast<Real*>(Sk.data()), data_size, MPI_Real, MPI_SUM, master_id, MPI_COMM_WORLD);
 	
 }
 

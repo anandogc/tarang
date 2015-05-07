@@ -96,7 +96,7 @@ void Compute_rhs_fluid_gpu()
  * @note For hyperviscosity:  \f$ \exp(-K^2*\nu*dt) \f$ is replaced by
  *					 $ \exp(-K^2*\nu*dt - K^4*\nu_h dt) \f$
  */
-void Single_time_step(DP a, DP b, DP c)
+void Single_time_step(Real a, Real b, Real c)
 {	
 	
 	if ((abs(a) < MYEPS) && (abs(b) < MYEPS))
@@ -151,7 +151,7 @@ void Compute_force_TO_rhs_fluid_gpu()
  
  ***********************************************************************************************/
 
-void Add_U_nlin_factor_dt(DP factor)
+void Add_U_nlin_factor_dt(Real factor)
 {
 	if (abs(factor) > MYEPS2) {
 		U_V1_gpu += (Tdt_gpu)*(U_nlin1_gpu);
@@ -172,7 +172,7 @@ void Add_U_nlin_factor_dt(DP factor)
  * @return when hyper_dissipation_switch == 1,
  *			\f$ V(k) = V(k) * \exp(-\nu K^2 dt) + \exp(-\nu_h)  K^4 dt) \f$
  */
-void Mult_U_exp_ksqr_dt(DP a)
+void Mult_U_exp_ksqr_dt(Real a)
 {
 	if (abs(a) > MYEPS) {
 		if (!hyper_dissipation_switch_gpu) {
@@ -205,7 +205,7 @@ void Mult_U_exp_ksqr_dt(DP a)
  *			\f$ N(k) = N(k) * \exp(-\nu K^2 dt) + \exp(-\nu_h)  K^4 dt) \f$
  */
 
-void Mult_U_nlin_exp_ksqr_dt(DP a)
+void Mult_U_nlin_exp_ksqr_dt(Real a)
 {
 	if (abs(a) > MYEPS) {
 		if (!hyper_dissipation_switch_gpu) {
@@ -236,9 +236,9 @@ void Compute_pressure_gpu()
 
 
 
-void Compute_divergence_U_nlin(Array<complx,3> div)
+void Compute_divergence_U_nlin(Array<Complex,3> div)
 {
-    DP total_abs_div;  // not reqd for this function.
+    Real total_abs_div;  // not reqd for this function.
     Compute_divergence(U_nlin1_gpu, U_nlin2_gpu, U_nlin3_gpu, div, "nlin", total_abs_div, false);
     // PS: global.temp_array.X is used in Compute_divergence_field.. so
     // be careful.
@@ -256,7 +256,7 @@ void Compute_divergence_U_nlin(Array<complx,3> div)
  *
  *  @return  \f$ *F = \mathcal{F}(D_i V_i) \f$.
  */
-void Compute_divergence_U(Array<complx,3> div, DP &total_abs_div, bool print_switch)
+void Compute_divergence_U(Array<Complex,3> div, Real &total_abs_div, bool print_switch)
 {
     Compute_divergence(U_V1_gpu, U_V2_gpu, U_V3_gpu, div, "field", total_abs_div, print_switch);
     // PS: global.temp_array.X is used in Compute_divergence_field.. so

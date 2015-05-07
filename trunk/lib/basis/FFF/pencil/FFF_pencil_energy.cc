@@ -48,62 +48,68 @@
 ***********************************************************************************************/
 
 
-DP FFF_PENCIL::Get_local_energy_real_space(Array<DP,3> Ar)
+Real FFF_PENCIL::Get_local_energy_real_space(Array<Real,3> Ar)
 {
 	
-	return Array_sqr(Ar)/(DP(Nx)*DP(Ny)*DP(Nz));
+	return Array_sqr(Ar)/(TWO*Real(Nx)*Real(Ny)*Real(Nz));
 }
 
 
 
-DP FFF_PENCIL::Get_local_energy(Array<complx,3> A)
+Real FFF_PENCIL::Get_local_energy(Array<Complex,3> A)
 {
 
-	DP total = Array_sqr(A);
+	Real local_energy = Array_sqr(A);
+
+	if (my_z_pcoord == 0)
+		local_energy -= Array_sqr(A(Range::all(),Range::all(),0))/2;
+	
+	return local_energy;
+	
+}
+
+
+Real FFF_PENCIL::Get_local_energy_real_space(Array<Real,3> Ar, Array<Real,3> Br)
+{
+	return mydot(Ar, Br) / (Real(Nx)*Real(Ny)*Real(Nz));
+}
+
+Real FFF_PENCIL::Get_local_energy(Array<Complex,3> A, Array<Complex,3> B)
+{
+
+	Real local_energy = mydot(A, B);
 	
 	if (my_z_pcoord == 0)
-		total -= Array_sqr(A(Range::all(),Range::all(),0))/2;
+		local_energy -= mydot(A(Range::all(),Range::all(),0), B(Range::all(),Range::all(),0))/2;
 	
-	return total;
-	
+	return local_energy;
 }
 
 
-DP FFF_PENCIL::Get_local_energy_real_space(Array<DP,3> Ar, Array<DP,3> Br)
-{
-	return mydot(Ar, Br) / (DP(Nx)*DP(Ny)*DP(Nz));
-}
+/**********************************************************************************************
 
-DP FFF_PENCIL::Get_local_energy(Array<complx,3> A, Array<complx,3> B)
-{
+	Compute Helicity1 = K . (Vr x Vi)
+	Helicity2 = K. (Vr x Vi)/K^2
+	Multiplication factor = 1 for kz>0 because of energy spectrum details.
+ 
+	not for 2D
 
-	DP total = mydot(A, B);
-	
-	if (my_z_pcoord == 0)
-		total -= mydot(A(Range::all(),Range::all(),0), B(Range::all(),Range::all(),0))/2;
-	
-	return total;
-}
-
-
-
-
+***********************************************************************************************/
 
 
 void FFF_PENCIL::Compute_local_helicity
 (
-	Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az, 
-	DP &local_helicity1, DP &local_helicity2, 
-	DP &local_k2H1, DP &local_k2H2
+	Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az, 
+	Real &local_helicity1, Real &local_helicity2, 
+	Real &local_k2H1, Real &local_k2H2
 )
 {
-	TinyVector<DP,3> Vreal, Vimag, VrcrossVi;
-	TinyVector<DP,3> K;
-	DP modal_helicity, Kmag, Ksqr, factor;
+	TinyVector<Real,3> Vreal, Vimag, VrcrossVi, K;
+	Real modal_helicity, Kmag, Ksqr;
 	
 	
 	local_helicity1 = local_helicity2 = 0.0;
-	local_k2H1 =  0.0;
+	local_k2H1 = 0.0;
 	
 	int	Kmax = Min_radius_outside();
 	
@@ -113,11 +119,10 @@ void FFF_PENCIL::Compute_local_helicity
 				Kmag = Kmagnitude(lx,ly,lz);
 				
 				if (Kmag <= Kmax) {
-					factor = 2*Multiplicity_factor(lx,ly,lz);
 					// factor multiplied by 2 because of the defn  Hk = K . (Vr x Vi).
 					// recall the defn of energy spectrum that contains 1/2.
 					
-					modal_helicity = factor* Get_Modal_helicity(lx,ly,lz, Ax,Ay,Az);
+					modal_helicity = 2*Multiplicity_factor(lx,ly,lz)*Get_Modal_helicity(lx,ly,lz, Ax,Ay,Az);
 					local_helicity1 += modal_helicity;
 					
 					Ksqr = pow2(Kmag);
@@ -126,34 +131,33 @@ void FFF_PENCIL::Compute_local_helicity
 						
 					local_k2H1 += Ksqr * modal_helicity;
 				}	
-			}	
+			}
 			
 	local_k2H1 *= 2.0;
-	local_k2H2 = 2.0 * local_helicity1;		
+	local_k2H2 = 2.0 * local_helicity1;
 }
 
 //
 
-
 void FFF_PENCIL::Compute_total_helicity
 (
-	Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az, 
-	DP& total_helicity1, DP& total_helicity2, 
-	DP& total_k2H1, DP& total_k2H2
+	Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az, 
+	Real &total_helicity1, Real &total_helicity2, 
+	Real &total_k2H1, Real &total_k2H2
 )
 {
-	DP local_helicity1, local_helicity2;
-	DP local_k2H1, local_k2H2;
+	Real local_helicity1, local_helicity2;
+	Real local_k2H1, local_k2H2;
 	
-	Compute_local_helicity(Ax, Ay, Az,local_helicity1, local_helicity2,local_k2H1, local_k2H2);
-									
-	MPI_Reduce(&local_helicity1, &total_helicity1, 1, MPI_DP, MPI_SUM, master_id, MPI_COMM_WORLD);
+	Compute_local_helicity(Ax,Ay,Az, local_helicity1,local_helicity2, local_k2H1,local_k2H2);
+	
+	MPI_Reduce(&local_helicity1,&total_helicity1, 1,MPI_Real,MPI_SUM,master_id,MPI_COMM_WORLD);
 								
-	MPI_Reduce(&local_helicity2, &total_helicity2, 1, MPI_DP, MPI_SUM, master_id, MPI_COMM_WORLD);
+	MPI_Reduce(&local_helicity2,&total_helicity2, 1,MPI_Real,MPI_SUM,master_id,MPI_COMM_WORLD);
 								
-	MPI_Reduce(&local_k2H1, &total_k2H1, 1, MPI_DP, MPI_SUM, master_id, MPI_COMM_WORLD);
+	MPI_Reduce(&local_k2H1,&total_k2H1, 1,MPI_Real,MPI_SUM,master_id,MPI_COMM_WORLD);
 									
-	MPI_Reduce(&local_k2H2, &total_k2H2, 1, MPI_DP, MPI_SUM, master_id, MPI_COMM_WORLD);
+	MPI_Reduce(&local_k2H2,&total_k2H2, 1,MPI_Real,MPI_SUM,master_id,MPI_COMM_WORLD);
 }
 
 
@@ -162,18 +166,16 @@ void FFF_PENCIL::Compute_total_helicity
 	Compute helicity spectrum
 	Helicity1 = K . (Vr x Vi)
 	Helicity2 = K. (Vr x Vi)/K^2
- 
+
 	Not for 2D
-
 ***********************************************************************************************/
-
 
 void FFF_PENCIL::Compute_local_shell_spectrum_helicity
 (
-	Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az, 
-	Array<DP,1> local_H1k1, Array<DP,1> local_H1k2, Array<DP,1> local_H1k3, 
-	Array<DP,1> local_H1k_count
-)												
+	Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az, 
+	Array<Real,1> local_H1k1, Array<Real,1> local_H1k2, Array<Real,1> local_H1k3, 
+	Array<Real,1> local_H1k_count
+)
 {
 
 	local_H1k_count = 0.0;
@@ -181,10 +183,10 @@ void FFF_PENCIL::Compute_local_shell_spectrum_helicity
 	local_H1k2 = 0.0;
 	local_H1k3 = 0.0;
 	
-	TinyVector<DP,3> Vreal, Vimag, VrcrossVi, K;
-	DP Kmag;															
+	TinyVector<Real,3> Vreal, Vimag, VrcrossVi, K;
+	Real Kmag;															
 	int index;
-	DP factor;
+	Real factor;
 	
 	int	Kmax = Min_radius_outside();
 	
@@ -212,27 +214,25 @@ void FFF_PENCIL::Compute_local_shell_spectrum_helicity
 					local_H1k2(index) += factor* (K(1)*VrcrossVi(1));
 					local_H1k3(index) += factor* (K(2)*VrcrossVi(2));
 					
-					local_H1k_count(index) = local_H1k_count(index) + 2*factor;
+					local_H1k_count(index) += 2*factor;
 				}	
-			} 
+			}
 
 }
 
 
-
-
 void FFF_PENCIL::Compute_shell_spectrum_helicity
 (
-	Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az, 
-	Array<DP,1> H1k1, Array<DP,1> H1k2, Array<DP,1> H1k3 
+	Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az, 
+	Array<Real,1> H1k1, Array<Real,1> H1k2, Array<Real,1> H1k3
 )	
 {
 
-	static Array<DP,1> local_H1k1(H1k1.shape());
-	static Array<DP,1> local_H1k2(H1k1.shape());
-	static Array<DP,1> local_H1k3(H1k1.shape());
+	static Array<Real,1> local_H1k1(H1k1.shape());
+	static Array<Real,1> local_H1k2(H1k1.shape());
+	static Array<Real,1> local_H1k3(H1k1.shape());
 	
-	static Array<DP,1> local_H1k_count(H1k1.shape());
+	static Array<Real,1> local_H1k_count(H1k1.shape());
 	
 	local_H1k1 = 0.0;
 	local_H1k2 = 0.0;
@@ -241,18 +241,18 @@ void FFF_PENCIL::Compute_shell_spectrum_helicity
 	local_H1k_count = 0.0; 
 		
 	
-	Compute_local_shell_spectrum_helicity(Ax, Ay, Az, local_H1k1, local_H1k2, local_H1k3, local_H1k_count);
+	Compute_local_shell_spectrum_helicity(Ax,Ay,Az, local_H1k1,local_H1k2,local_H1k3, local_H1k_count);
 	
-	static Array<DP,1> H1k1_count(H1k1.shape());	
+	static Array<Real,1> H1k1_count(H1k1.shape());	
 	int data_size = H1k1.size();
 				
-	MPI_Reduce(reinterpret_cast<DP*>(local_H1k1.data()), reinterpret_cast<DP*>(H1k1.data()), data_size, MPI_DP, MPI_SUM, master_id, MPI_COMM_WORLD);
+	MPI_Reduce(reinterpret_cast<Real*>(local_H1k1.data()), reinterpret_cast<Real*>(H1k1.data()), data_size, MPI_Real, MPI_SUM, master_id, MPI_COMM_WORLD);
 					
-	MPI_Reduce(reinterpret_cast<DP*>(local_H1k2.data()), reinterpret_cast<DP*>(H1k2.data()), data_size, MPI_DP, MPI_SUM, master_id, MPI_COMM_WORLD);
+	MPI_Reduce(reinterpret_cast<Real*>(local_H1k2.data()), reinterpret_cast<Real*>(H1k2.data()), data_size, MPI_Real, MPI_SUM, master_id, MPI_COMM_WORLD);
 	
-	MPI_Reduce(reinterpret_cast<DP*>(local_H1k3.data()), reinterpret_cast<DP*>(H1k3.data()), data_size, MPI_DP, MPI_SUM, master_id, MPI_COMM_WORLD);								  								  
+	MPI_Reduce(reinterpret_cast<Real*>(local_H1k3.data()), reinterpret_cast<Real*>(H1k3.data()), data_size, MPI_Real, MPI_SUM, master_id, MPI_COMM_WORLD);								  								  
 					
-	MPI_Reduce(reinterpret_cast<DP*>(local_H1k_count.data()), reinterpret_cast<DP*>(H1k1_count.data()), data_size, MPI_DP, MPI_SUM, master_id, MPI_COMM_WORLD); 
+	MPI_Reduce(reinterpret_cast<Real*>(local_H1k_count.data()), reinterpret_cast<Real*>(H1k1_count.data()), data_size, MPI_Real, MPI_SUM, master_id, MPI_COMM_WORLD); 
 
 	// The shells near the edges do not complete half sphere, so normalize the shells.
 	
@@ -262,56 +262,52 @@ void FFF_PENCIL::Compute_shell_spectrum_helicity
 
 		for (int index = Kmax_inside+1; index <= Kmax; index++) 
 			if (H1k1_count(index) >= 1) {
-				
-				H1k1(index) = H1k1(index) * Approx_number_modes_in_shell(index)/H1k1_count(index); 
+				H1k1(index) = H1k1(index)*Approx_number_modes_in_shell(index)/H1k1_count(index); 
 										
-				H1k2(index) = H1k2(index) * Approx_number_modes_in_shell(index)/H1k1_count(index); 
+				H1k2(index) = H1k2(index)*Approx_number_modes_in_shell(index)/H1k1_count(index); 
 										
-				H1k3(index) = H1k3(index) * Approx_number_modes_in_shell(index)/H1k1_count(index); 
-			}
+				H1k3(index) = H1k3(index)*Approx_number_modes_in_shell(index)/H1k1_count(index); 
+			}	
 			
 	}
-	
 }
-
 
 //*********************************************************************************************
 
 // Not for 2D
 void FFF_PENCIL::Compute_local_ring_spectrum_helicity
 ( 
-	Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az, 
-	 Array<DP,2> local_H1k1, Array<DP,2> local_H1k2, Array<DP,2> local_H1k3
-)												
+	Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
+	Array<Real,2> local_H1k1, Array<Real,2> local_H1k2, Array<Real,2> local_H1k3
+)
 {
 
 	local_H1k1 = 0.0;
 	local_H1k2 = 0.0;
 	local_H1k3 = 0.0;
 
-	TinyVector<DP,3> Vreal, Vimag, VrcrossVi, K;
+	TinyVector<Real,3> Vreal, Vimag, VrcrossVi, K;
 	
-	DP Kmag, theta;														
-	DP modal_helicity;
-	DP factor;
+	Real Kmag, theta;
+	Real modal_helicity;
+	Real factor;
 	int shell_index, sector_index;
 	
 
 	int	Kmax = Max_radius_inside();
-		
-	for (int lx=0; lx<maxlx; lx++) 
+	
+    for (int lx=0; lx<maxlx; lx++)
 		for (int ly=0; ly<maxly; ly++)
-			for (int lz=0; lz<maxlz; lz++) {
-			
+	        for (int lz=0; lz<maxlz; lz++) {
 				Kmag = Kmagnitude(lx,ly,lz);
 				shell_index = (int) ceil(Kmag);
 				
 				if ((Kmag > MYEPS) && (shell_index <= Kmax)) {
-					theta = AnisKvect_polar_angle(lx,ly,lz); 
+					theta = AnisKvect_polar_angle(lx,ly,lz);
 					
 					sector_index = Get_sector_index(theta, global.spectrum.ring.sector_angles);
-									
-					factor = 2*Multiplicity_factor(lx,ly,lz); 
+					
+					factor = 2*Multiplicity_factor(lx,ly,lz);
 					// factor multiplied by 2 because of the defn  Hk = K . (Vr x Vi).
 					// recall the defn of energy spectrum that contains 1/2.
 					
@@ -325,8 +321,9 @@ void FFF_PENCIL::Compute_local_ring_spectrum_helicity
 					local_H1k1(shell_index, sector_index) += factor* (K(0)*VrcrossVi(0));
 					local_H1k2(shell_index, sector_index) += factor* (K(1)*VrcrossVi(1));
 					local_H1k3(shell_index, sector_index) += factor* (K(2)*VrcrossVi(2));
-				}	
-			} 
+				}
+			}
+
 }
 
 //
@@ -334,21 +331,21 @@ void FFF_PENCIL::Compute_local_ring_spectrum_helicity
 
 void FFF_PENCIL::Compute_ring_spectrum_helicity
 (
- Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az,
- Array<DP,2> H1k1, Array<DP,2> H1k2, Array<DP,2> H1k3
+ Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
+ Array<Real,2> H1k1, Array<Real,2> H1k2, Array<Real,2> H1k3
  )
 {
-	static Array<DP,2> local_H1k1(H1k1.shape());
-	static Array<DP,2> local_H1k2(H1k1.shape());
-	static Array<DP,2> local_H1k3(H1k1.shape());
+	static Array<Real,2> local_H1k1(H1k1.shape());
+	static Array<Real,2> local_H1k2(H1k1.shape());
+	static Array<Real,2> local_H1k3(H1k1.shape());
 	
-	Compute_local_ring_spectrum_helicity(Ax, Ay, Az, local_H1k1, local_H1k2, local_H1k3);
+	Compute_local_ring_spectrum_helicity(Ax,Ay,Az, local_H1k1,local_H1k2,local_H1k3);
 	
 	int data_size = H1k1.size();
 	
-	MPI_Reduce(reinterpret_cast<DP*>(local_H1k1.data()), reinterpret_cast<DP*>(H1k1.data()), data_size, MPI_DP, MPI_SUM, master_id, MPI_COMM_WORLD);
-	MPI_Reduce(reinterpret_cast<DP*>(local_H1k2.data()), reinterpret_cast<DP*>(H1k2.data()), data_size, MPI_DP, MPI_SUM, master_id, MPI_COMM_WORLD);
-	MPI_Reduce(reinterpret_cast<DP*>(local_H1k3.data()), reinterpret_cast<DP*>(H1k3.data()), data_size, MPI_DP, MPI_SUM, master_id, MPI_COMM_WORLD);
+	MPI_Reduce(reinterpret_cast<Real*>(local_H1k1.data()), reinterpret_cast<Real*>(H1k1.data()), data_size, MPI_Real, MPI_SUM, master_id, MPI_COMM_WORLD);
+	MPI_Reduce(reinterpret_cast<Real*>(local_H1k2.data()), reinterpret_cast<Real*>(H1k2.data()), data_size, MPI_Real, MPI_SUM, master_id, MPI_COMM_WORLD);
+	MPI_Reduce(reinterpret_cast<Real*>(local_H1k3.data()), reinterpret_cast<Real*>(H1k3.data()), data_size, MPI_Real, MPI_SUM, master_id, MPI_COMM_WORLD);
 	
 }
 
@@ -366,27 +363,27 @@ void FFF_PENCIL::Compute_ring_spectrum_helicity
 
 void FFF_PENCIL::Compute_local_cylindrical_ring_spectrum_helicity
 (
- Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az,
- Array<DP,2> local_H1k1,  Array<DP,2> local_H1k2
+ Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
+ Array<Real,2> local_H1k1,  Array<Real,2> local_H1k2
  )
 {
 	
 	local_H1k1 = 0.0;
 	local_H1k2 = 0.0;
 	
-	TinyVector<DP,3> Vreal, Vimag, VrcrossVi, K;
+	TinyVector<Real,3> Vreal, Vimag, VrcrossVi, K;
 	
-	DP Kmag, Kpll, Kperp;
-	DP modal_helicity;
-	DP factor;
+	Real Kmag, Kpll, Kperp;
+	Real modal_helicity;
+	Real factor;
 	
 	int shell_index, slab_index;
 	
 	int	Kperp_max = Anis_max_Krho_radius_inside();
 	
-	for (int lx=0; lx<maxlx; lx++)
+    for (int lx=0; lx<maxlx; lx++)
 		for (int ly=0; ly<maxly; ly++)
-			for (int lz=0; lz<maxlz; lz++) {
+	        for (int lz=0; lz<maxlz; lz++) {
 				Kmag = Kmagnitude(lx,ly,lz);
 				
 				Kperp = AnisKperp(lx,ly,lz);
@@ -430,19 +427,19 @@ void FFF_PENCIL::Compute_local_cylindrical_ring_spectrum_helicity
 //
 void FFF_PENCIL::Compute_cylindrical_ring_spectrum_helicity
 (
- Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az,
- Array<DP,2> H1k1,  Array<DP,2> H1k2
+ Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
+ Array<Real,2> H1k1,  Array<Real,2> H1k2
  )
 {
-	static Array<DP,2> local_H1k1(H1k1.shape());
-	static Array<DP,2> local_H1k2(H1k1.shape());
+	static Array<Real,2> local_H1k1(H1k1.shape());
+	static Array<Real,2> local_H1k2(H1k1.shape());
 	
 	Compute_local_cylindrical_ring_spectrum_helicity(Ax, Ay, Az, local_H1k1, local_H1k2);
 	
 	int data_size = H1k1.size();
 	
-	MPI_Reduce(reinterpret_cast<DP*>(local_H1k1.data()), reinterpret_cast<DP*>(H1k1.data()), data_size, MPI_DP, MPI_SUM, master_id, MPI_COMM_WORLD);
-	MPI_Reduce(reinterpret_cast<DP*>(local_H1k2.data()), reinterpret_cast<DP*>(H1k2.data()), data_size, MPI_DP, MPI_SUM, master_id, MPI_COMM_WORLD);
+	MPI_Reduce(reinterpret_cast<Real*>(local_H1k1.data()), reinterpret_cast<Real*>(H1k1.data()), data_size, MPI_Real, MPI_SUM, master_id, MPI_COMM_WORLD);
+	MPI_Reduce(reinterpret_cast<Real*>(local_H1k2.data()), reinterpret_cast<Real*>(H1k2.data()), data_size, MPI_Real, MPI_SUM, master_id, MPI_COMM_WORLD);
 }
 //*****************************  End of four_energy.cc ****************************************	
 

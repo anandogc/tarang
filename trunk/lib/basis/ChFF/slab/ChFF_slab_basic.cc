@@ -47,24 +47,24 @@ comment
  
 ***********************************************************************************************/
 
-void ChFF_SLAB::Last_component(int kx, int ky, int kz, DP& dvxdx, DP& Vy, DP& Vz)
+void ChFF_SLAB::Last_component(int kx, int ky, int kz, Real& dvxdx, Real& Vy, Real& Vz)
 {
 }
 
-void ChFF_SLAB::Last_component(int kx, int ky, int kz, complx& dvxdx, complx& Vy, complx& Vz)
+void ChFF_SLAB::Last_component(int kx, int ky, int kz, Complex& dvxdx, Complex& Vy, Complex& Vz)
 {
-	DP Kx = kx*kfactor[1];
-	DP Ky = ky*kfactor[2];
-	DP Kz = kz*kfactor[3];
+	Real Kx = kx*kfactor[1];
+	Real Ky = ky*kfactor[2];
+	Real Kz = kz*kfactor[3];
 	
 	if (kz != 0)
-		Vz = (dvxdx + complx(0,Ky)*Vy)/complx(0,-Kz);
+		Vz = (dvxdx + Complex(0,Ky)*Vy)/Complex(0,-Kz);
 	// works for both 2D (Ky=0) and 3D.
 	
 	else {
 		if (ky != 0) { // 3D: input fields are (Vx, Vz); compute Vy
 			Vz = Vy;
-			Vy = dvxdx/complx(0,-Ky);
+			Vy = dvxdx/Complex(0,-Ky);
 		}
 		else if (abs(dvxdx) > MYEPS) {	// k = (kx,0,0); input fields are (Vy, Vz)
 			cerr << "MyERROR: Initcond with modes: u^(1)(kx,0,0) is nonzero!! " << endl;
@@ -78,7 +78,7 @@ Dealias
  
  ***********************************************************************************************/
 
-void ChFF_SLAB::Dealias(Array<complx,3> A)
+void ChFF_SLAB::Dealias(Array<Complex,3> A)
 {
 	Array<int,1> Ay_filter(Ny);
 	
@@ -93,7 +93,7 @@ void ChFF_SLAB::Dealias(Array<complx,3> A)
 }
 
 // Data resides till outer_radius in k-space
-bool ChFF_SLAB::Is_dealiasing_necessary(Array<complx,3> A, DP outer_radius)
+bool ChFF_SLAB::Is_dealiasing_necessary(Array<Complex,3> A, Real outer_radius)
 {
 	int kx_max = (int) ceil(outer_radius/kfactor[1]);
 	int ky_max = (int) ceil(outer_radius/kfactor[2]);
@@ -115,7 +115,7 @@ f(m, -ky, 0) = conj(f(m, ky, 0))- do for kz=N[3]/2
  
  ***********************************************************************************************/
 
-void ChFF_SLAB::Satisfy_strong_reality_condition_in_Array(Array<complx,3> A)
+void ChFF_SLAB::Satisfy_strong_reality_condition_in_Array(Array<Complex,3> A)
 {
 	int array_index_minus_ky;
 	
@@ -136,14 +136,14 @@ void ChFF_SLAB::Satisfy_strong_reality_condition_in_Array(Array<complx,3> A)
 	A(Range::all(),Nz/2,Range::all()) = 0.0;
 }
 
-void ChFF_SLAB::Satisfy_weak_reality_condition_in_Array(Array<complx,3> A)
+void ChFF_SLAB::Satisfy_weak_reality_condition_in_Array(Array<Complex,3> A)
 {
 	// for kz=Nz/2;
 	A(Range::all(),Nz/2,Range::all()) = 0.0;
 }
 
 
-void ChFF_SLAB::Test_reality_condition_in_Array(Array<complx,3> A)
+void ChFF_SLAB::Test_reality_condition_in_Array(Array<Complex,3> A)
 {
 	int array_index_minus_ky;
 	

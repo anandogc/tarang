@@ -51,18 +51,18 @@
 void FORCE::Compute_force_MRBC(FluidVF& U, FluidSF& T1, FluidSF& T2)
 {
 	/*int rx, ry, rz;
-	DP x, Dxyz, Mxyz, Bxyz;
+	Real x, Dxyz, Mxyz, Bxyz;
 	bool is_real_part= true;	
 	
 	T1.Inverse_transform();
 	T2.Inverse_transform();
 	
-	for (int lx=0; lx<=global.field.maxlx; lx++) {
+	for (int lx=0; lx<global.field.maxlx; lx++) {
 		rx = universal->Get_rx_real_space(lx);
 		x = rx*global.field.L[1]/Nx;
 		
-		for (int ly=0; ly<=global.field.maxly; ly++)
-			for (int lz=0; lz<=global.field.maxlz; lz++) {
+		for (int ly=0; ly<global.field.maxly; ly++)
+			for (int lz=0; lz<global.field.maxlz; lz++) {
 				ry = universal->Get_ry_real_space(ly);
 				universal->Get_rz_real_space(lz, rz, is_real_part);
 					// even rz
@@ -89,7 +89,7 @@ void FORCE::Compute_force_MRBC(FluidVF& U, FluidSF& T1, FluidSF& T2)
 	
 	// For the temperature field
 
-	T1.Force =  complex<DP>(global.MRBC.RaD/global.MRBC.RaM, 0)*(U.cvf.V1); 
+	T1.Force =  complex<Real>(global.MRBC.RaD/global.MRBC.RaM, 0)*(U.cvf.V1); 
 	T2.Force =  (U.cvf.V1); 
 	 */
 	

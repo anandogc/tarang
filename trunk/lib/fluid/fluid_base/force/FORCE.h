@@ -49,8 +49,8 @@ class FORCE
 public: 
 	ifstream force_field_in_file;
 	
-	Array<DP,3> temp1;
-	Array<complx,3> temp2;
+	Array<Real,3> temp1;
+	Array<Complex,3> temp2;
 	
 public:
 	void Compute_force(FluidVF& U);
@@ -70,21 +70,21 @@ public:
 	
 	void Compute_force_pressure_grad(FluidVF& U);
 	
-	void Const_energy_supply_alpha_beta(FluidVF& U, int lx, int ly, int lz, DP alpha, DP beta, bool add_flag);
-	void Const_energy_alpha_beta(FluidVF& U, int lx, int ly, int lz, DP alpha, DP beta, bool add_flag);
+	void Const_energy_supply_alpha_beta(FluidVF& U, int lx, int ly, int lz, Real alpha, Real beta, bool add_flag);
+	void Const_energy_alpha_beta(FluidVF& U, int lx, int ly, int lz, Real alpha, Real beta, bool add_flag);
 	
-	void Const_energy_supply_alpha(FluidSF& T, int lx, int ly, int lz, DP alpha, bool add_flag);
-	void Const_energy_alpha(FluidSF& T, int lx, int ly, int lz, DP alpha, bool add_flag);
+	void Const_energy_supply_alpha(FluidSF& T, int lx, int ly, int lz, Real alpha, bool add_flag);
+	void Const_energy_alpha(FluidSF& T, int lx, int ly, int lz, Real alpha, bool add_flag);
 	
-	void Force_energy_helicity_supply_or_level_basic(FluidVF& U, string force_type, DP inner_radius, DP outer_radius, DP para1, DP para2, bool add_flag);
-	void Force_energy_helicity_supply_or_level_basic(FluidSF& T, string force_type, DP inner_radius, DP outer_radius, DP para, bool add_flag);
-	void Force_energy_helicity_supply_or_level_basic_assign(FluidVF& U, string force_type, DP inner_radius, DP outer_radius, DP para1, DP para2);
-	void Force_energy_helicity_supply_or_level_basic_add(FluidVF& U, string force_type, DP inner_radius, DP outer_radius, DP para1, DP para2);
-	void Force_energy_helicity_supply_or_level_basic_assign(FluidSF& T, string force_type, DP inner_radius, DP outer_radius, DP para);
-	void Force_energy_helicity_supply_or_level_basic_add(FluidSF& T, string force_type, DP inner_radius, DP outer_radius, DP para);
+	void Force_energy_helicity_supply_or_level_basic(FluidVF& U, string force_type, Real inner_radius, Real outer_radius, Real para1, Real para2, bool add_flag);
+	void Force_energy_helicity_supply_or_level_basic(FluidSF& T, string force_type, Real inner_radius, Real outer_radius, Real para, bool add_flag);
+	void Force_energy_helicity_supply_or_level_basic_assign(FluidVF& U, string force_type, Real inner_radius, Real outer_radius, Real para1, Real para2);
+	void Force_energy_helicity_supply_or_level_basic_add(FluidVF& U, string force_type, Real inner_radius, Real outer_radius, Real para1, Real para2);
+	void Force_energy_helicity_supply_or_level_basic_assign(FluidSF& T, string force_type, Real inner_radius, Real outer_radius, Real para);
+	void Force_energy_helicity_supply_or_level_basic_add(FluidSF& T, string force_type, Real inner_radius, Real outer_radius, Real para);
 
-	void Force_energy_helicity_supply_or_level(FluidVF& U, string force_type, DP inner_radius, DP outer_radius, DP para1, DP para2);
-	void Force_energy_helicity_supply_or_level(FluidSF& T, string force_type, DP inner_radius, DP outer_radius, DP para);
+	void Force_energy_helicity_supply_or_level(FluidVF& U, string force_type, Real inner_radius, Real outer_radius, Real para1, Real para2);
+	void Force_energy_helicity_supply_or_level(FluidSF& T, string force_type, Real inner_radius, Real outer_radius, Real para);
 	
 	void Compute_force_const_energy_helicity_supply(FluidVF& U);
 	void Compute_force_const_energy_helicity_supply(FluidVF& U, FluidSF& T);
@@ -96,21 +96,21 @@ public:
 	void Compute_force_const_energy_helicity(FluidVF& U, FluidVF& W);						
 	void Compute_force_const_energy_helicity(FluidVF& U, FluidVF& W, FluidSF& T);
 	
-	void Add_complex_conj_force(FluidVF& U, int kx, int ky, int kz, complx Fx, complx Fy, complx Fz);
-	void Add_complex_conj_force(FluidSF& T, int kx, int ky, int kz, complx localG);
-	void Assign_force_and_comp_conj(FluidVF& U, int kx, int ky, int kz, complx Fx, complx Fy, complx Fz);
-	void Assign_force_and_comp_conj(FluidSF& T, int kx, int ky, int kz, complx localG);
-	void Assign_force(FluidVF& U, int kx, int ky, int kz, DP Fx, DP Fy, DP Fz);
-	void Assign_force(FluidSF& T, int kx, int ky, int kz, DP localG);
+	void Add_complex_conj_force(FluidVF& U, int kx, int ky, int kz, Complex Fx, Complex Fy, Complex Fz);
+	void Add_complex_conj_force(FluidSF& T, int kx, int ky, int kz, Complex localG);
+	void Assign_force_and_comp_conj(FluidVF& U, int kx, int ky, int kz, Complex Fx, Complex Fy, Complex Fz);
+	void Assign_force_and_comp_conj(FluidSF& T, int kx, int ky, int kz, Complex localG);
+	void Assign_force(FluidVF& U, int kx, int ky, int kz, Real Fx, Real Fy, Real Fz);
+	void Assign_force(FluidSF& T, int kx, int ky, int kz, Real localG);
 	
 	void Compute_force_given_modes(FluidVF& U);
 	void Compute_force_given_modes(FluidVF& U, FluidSF& T);
 	void Compute_force_given_modes(FluidVF& U, FluidVF& W);
 	void Compute_force_given_modes(FluidVF& U, FluidVF& W, FluidSF& T);
 	
-	void Setup_Taylor_Green_force_field(FluidVF& U, int k0, DP amp);								
-	void Setup_ABC_force_field(FluidVF& U, int k0, DP amp, DP A, DP B, DP C);
-	void Setup_SIX_MODE_force_field(FluidVF& U, int k0, DP amp101, DP amp011, DP amp112, DP h);
+	void Setup_Taylor_Green_force_field(FluidVF& U, int k0, Real amp);								
+	void Setup_ABC_force_field(FluidVF& U, int k0, Real amp, Real A, Real B, Real C);
+	void Setup_SIX_MODE_force_field(FluidVF& U, int k0, Real amp101, Real amp011, Real amp112, Real h);
 	
 	
 	void Compute_force_Taylor_Green(FluidVF& U);
@@ -137,11 +137,11 @@ public:
 	
 	void Compute_force_DYNAMO_SIX_MODE(FluidVF& U, FluidVF& W);
 	
-	void Compute_force_Coriolis_basic_assign(FluidVF& U, int rotation_direction, DP two_omega);
-	void Compute_force_Coriolis_basic_assign(FluidVF& U, DP two_omega1, DP two_omega2, DP two_omega3);
+	void Compute_force_Coriolis_basic_assign(FluidVF& U, int rotation_direction, Real two_omega);
+	void Compute_force_Coriolis_basic_assign(FluidVF& U, Real two_omega1, Real two_omega2, Real two_omega3);
 
-	void Compute_force_Coriolis_basic_add(FluidVF& U, int rotation_direction, DP two_omega);
-	void Compute_force_Coriolis_basic_add(FluidVF& U, DP two_omega1, DP two_omega2, DP two_omega3);
+	void Compute_force_Coriolis_basic_add(FluidVF& U, int rotation_direction, Real two_omega);
+	void Compute_force_Coriolis_basic_add(FluidVF& U, Real two_omega1, Real two_omega2, Real two_omega3);
 
 	
 	void Compute_force_Coriolis(FluidVF& U);
@@ -150,43 +150,43 @@ public:
 	void Compute_force_Coriolis(FluidVF& U, FluidVF& W, FluidSF& T);
 	
 	void Compute_force_Ekman_friction(FluidVF& U);
-	void Compute_force_Ekman_friction_basic_assign(FluidVF& U, DP alpha);
-	void Compute_force_Ekman_friction_basic_add(FluidVF& U, DP alpha);
+	void Compute_force_Ekman_friction_basic_assign(FluidVF& U, Real alpha);
+	void Compute_force_Ekman_friction_basic_add(FluidVF& U, Real alpha);
 	void Compute_force_Ekman_friction_const_energy_supply(FluidVF& U);
 	
-	void Compute_force_Keplerian_basic_assign(FluidVF& U, DP omega_keplerian, DP q_keplerian);
-	void Compute_force_Keplerian_basic_add(FluidVF& U, DP omega_keplerian, DP q_keplerian);
+	void Compute_force_Keplerian_basic_assign(FluidVF& U, Real omega_keplerian, Real q_keplerian);
+	void Compute_force_Keplerian_basic_add(FluidVF& U, Real omega_keplerian, Real q_keplerian);
 	void Compute_force_Keplerian(FluidVF& U);
 	void Compute_force_Keplerian_SB(FluidVF& U);
 	
-	void Compute_force_Keplerian_basic_assign(FluidVF& U, FluidVF& W, DP omega_keplerian, DP q_keplerian);
-	void Compute_force_Keplerian_basic_add(FluidVF& U, FluidVF& W, DP omega_keplerian, DP q_keplerian);
+	void Compute_force_Keplerian_basic_assign(FluidVF& U, FluidVF& W, Real omega_keplerian, Real q_keplerian);
+	void Compute_force_Keplerian_basic_add(FluidVF& U, FluidVF& W, Real omega_keplerian, Real q_keplerian);
 	void Compute_force_Keplerian(FluidVF& U, FluidVF& W);
 	void Compute_force_Keplerian_SB(FluidVF& U, FluidVF& W);
 	
 	
-	void Compute_force_Liquid_metal_basic_assign(FluidVF& U, DP B0x, DP B0y, DP B0z);
-	void Compute_force_Liquid_metal_basic_add(FluidVF& U, DP B0x, DP B0y, DP B0z);
+	void Compute_force_Liquid_metal_basic_assign(FluidVF& U, Real B0x, Real B0y, Real B0z);
+	void Compute_force_Liquid_metal_basic_add(FluidVF& U, Real B0x, Real B0y, Real B0z);
 	void Compute_force_Liquid_metal(FluidVF& U);
 	void Compute_force_Liquid_metal(FluidVF& U, FluidSF& T);
 	void Compute_force_Liquid_metal_const_energy_supply(FluidVF& U);
 	
-	void Compute_force_Kolmogorov_flow_basic_assign(FluidVF& U, DP k0, DP force_amp, DP Rh);
-	void Compute_force_Kolmogorov_flow_basic_add(FluidVF& U, DP k0, DP force_amp, DP Rh);
+	void Compute_force_Kolmogorov_flow_basic_assign(FluidVF& U, Real k0, Real force_amp, Real Rh);
+	void Compute_force_Kolmogorov_flow_basic_add(FluidVF& U, Real k0, Real force_amp, Real Rh);
 	void Compute_force_Kolmogorov_flow(FluidVF& U);
 
 	void Compute_force_stratified_random(FluidVF& U, FluidSF& T);
 
-	void Model_force_spectrum(DP force_spectrum_amplitude, DP force_spectrum_exponent, Array<DP,1> Sk);
-	void Put_force_amp_phase_comp_conj(FluidVF U, int lx, int ly, int lz,  DP amp, DP phase1, DP phase2, DP phase3, bool add_flag);
-	void Put_force_amp_phase_comp_conj(FluidSF& T, int lx, int ly, int lz, DP amp, DP phase, bool add_flag);
+	void Model_force_spectrum(Real force_spectrum_amplitude, Real force_spectrum_exponent, Array<Real,1> Sk);
+	void Put_force_amp_phase_comp_conj(FluidVF U, int lx, int ly, int lz,  Real amp, Real phase1, Real phase2, Real phase3, bool add_flag);
+	void Put_force_amp_phase_comp_conj(FluidSF& T, int lx, int ly, int lz, Real amp, Real phase, bool add_flag);
 	
-	void Compute_force_using_random_energy_helicity_spectrum_basic(FluidVF& U, DP inner_radius, DP outer_radius, DP force_spectrum_amplitude, DP force_spectrum_exponent, DP hk_by_kek, bool add_flag);
-	void Compute_force_using_random_energy_helicity_spectrum_basic_assign(FluidVF& U, DP inner_radius, DP outer_radius, DP force_spectrum_amplitude, DP force_spectrum_exponent, DP hk_by_kek);
-	void Compute_force_using_random_energy_helicity_spectrum_basic_add(FluidVF& U, DP inner_radius, DP outer_radius, DP force_spectrum_amplitude, DP force_spectrum_exponent, DP hk_by_kek);
-	void Compute_force_using_random_energy_spectrum_basic(FluidSF& T, DP inner_radius, DP outer_radius, DP force_spectrum_amplitude, DP force_spectrum_exponent, bool add_flag);
-	void Compute_force_using_random_energy_spectrum_basic_assign(FluidSF& T, DP inner_radius, DP outer_radius, DP force_spectrum_amplitude, DP force_spectrum_exponent);
-	void Compute_force_using_random_energy_spectrum_basic_add(FluidSF& T, DP inner_radius, DP outer_radius, DP force_spectrum_amplitude, DP force_spectrum_exponent);
+	void Compute_force_using_random_energy_helicity_spectrum_basic(FluidVF& U, Real inner_radius, Real outer_radius, Real force_spectrum_amplitude, Real force_spectrum_exponent, Real hk_by_kek, bool add_flag);
+	void Compute_force_using_random_energy_helicity_spectrum_basic_assign(FluidVF& U, Real inner_radius, Real outer_radius, Real force_spectrum_amplitude, Real force_spectrum_exponent, Real hk_by_kek);
+	void Compute_force_using_random_energy_helicity_spectrum_basic_add(FluidVF& U, Real inner_radius, Real outer_radius, Real force_spectrum_amplitude, Real force_spectrum_exponent, Real hk_by_kek);
+	void Compute_force_using_random_energy_spectrum_basic(FluidSF& T, Real inner_radius, Real outer_radius, Real force_spectrum_amplitude, Real force_spectrum_exponent, bool add_flag);
+	void Compute_force_using_random_energy_spectrum_basic_assign(FluidSF& T, Real inner_radius, Real outer_radius, Real force_spectrum_amplitude, Real force_spectrum_exponent);
+	void Compute_force_using_random_energy_spectrum_basic_add(FluidSF& T, Real inner_radius, Real outer_radius, Real force_spectrum_amplitude, Real force_spectrum_exponent);
 	
 	void  Compute_force_using_random_energy_helicity_spectrum(FluidVF& U);
 	void  Compute_force_using_random_energy_helicity_spectrum(FluidVF& U, FluidSF& T);

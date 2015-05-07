@@ -103,7 +103,7 @@ void FluidIO::Output_global_real_space_RBC(FluidVF& U, FluidSF& T)
 {
 	if ( (global.time.now >= global.io.time.global_save_next) && (basis_type.find("Ch") != string::npos) ) {
 	
-		static DP nusselt_no;
+		static Real nusselt_no;
 		
 		if (!global.io.real_space_field_available) {
 			U.Inverse_transform();	// Vir = Inv_transform(Vi)

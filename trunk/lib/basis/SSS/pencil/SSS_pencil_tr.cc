@@ -40,7 +40,7 @@
 //*********************************************************************************************
 
 // Ar: yxz, A: xyz
-void SSS_PENCIL::Forward_transform(Array<DP,3> Ar, Array<complx,3> A)
+void SSS_PENCIL::Forward_transform(Array<Real,3> Ar, Array<Complex,3> A)
 {
 	spectralTransform.Forward_transform(global.program.sincostr_switch,Ar,A);
 }
@@ -49,7 +49,7 @@ void SSS_PENCIL::Forward_transform(Array<DP,3> Ar, Array<complx,3> A)
 //*********************************************************************************************
 
 
-void SSS_PENCIL::Inverse_transform(Array<complx,3> A, Array<DP,3> Ar)
+void SSS_PENCIL::Inverse_transform(Array<Complex,3> A, Array<Real,3> Ar)
 {
 	
 	global.temp_array.X_transform = A;	
@@ -65,15 +65,15 @@ void SSS_PENCIL::Inverse_transform(Array<complx,3> A, Array<DP,3> Ar)
 
 ***********************************************************************************************/
 
-void  SSS_PENCIL::Xderiv(Array<complx,3> A, Array<complx,3> B)
+void  SSS_PENCIL::Xderiv(Array<Complex,3> A, Array<Complex,3> B)
 {	
-	Array<DP,3> Ar=Array<DP,3>(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
-	Array<DP,3> Br=Array<DP,3>(reinterpret_cast<DP*>(B.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<Real,3> Ar=Array<Real,3>(reinterpret_cast<Real*>(A.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<Real,3> Br=Array<Real,3>(reinterpret_cast<Real*>(B.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 	
-	DP Kx;
+	Real Kx;
 
 
-	for (int lx = 0; lx < local_Nx; lx++) 	{
+	for (int lx = 0; lx < maxlx; lx++) 	{
 		Kx = Get_kx(lx)*kfactor[1];
 		
         if (global.program.sincostr_switch[0] == 'S')
@@ -85,15 +85,15 @@ void  SSS_PENCIL::Xderiv(Array<complx,3> A, Array<complx,3> B)
 	}
 }
 
-void  SSS_PENCIL::Add_Xderiv(Array<complx,3> A, Array<complx,3> B)
+void  SSS_PENCIL::Add_Xderiv(Array<Complex,3> A, Array<Complex,3> B)
 {
 	
-	Array<DP,3> Ar=Array<DP,3>(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
-	Array<DP,3> Br=Array<DP,3>(reinterpret_cast<DP*>(B.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<Real,3> Ar=Array<Real,3>(reinterpret_cast<Real*>(A.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<Real,3> Br=Array<Real,3>(reinterpret_cast<Real*>(B.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 	
-	DP Kx;
+	Real Kx;
 	
-	for (int lx = 0; lx < local_Nx; lx++) 	{
+	for (int lx = 0; lx < maxlx; lx++) 	{
 		Kx = Get_kx(lx)*kfactor[1];
 		
         if (global.program.sincostr_switch[0] == 'S')
@@ -105,9 +105,9 @@ void  SSS_PENCIL::Add_Xderiv(Array<complx,3> A, Array<complx,3> B)
 	}
 }
 
-void  SSS_PENCIL::Xderiv(Array<DP,3> A, Array<DP,3> B)
+void  SSS_PENCIL::Xderiv(Array<Real,3> A, Array<Real,3> B)
 {
-	cerr << "SSS_PENCIL::Xderiv(Array<DP,3> A, Array<DP,3> B) is not defined for this basis. "<<endl;
+	cerr << "SSS_PENCIL::Xderiv(Array<Real,3> A, Array<Real,3> B) is not defined for this basis. "<<endl;
 }
 /**********************************************************************************************
 
@@ -117,14 +117,14 @@ void  SSS_PENCIL::Xderiv(Array<DP,3> A, Array<DP,3> B)
 
 // Note: In the first half- ky=i2;
 // In the second half- i2=0:Ny/-1; fftw-index=(Ny/2 +1+i2); FT-index=fftw-index-N=(i2+1-Ny/2)
-void SSS_PENCIL::Yderiv(Array<complx,3> A, Array<complx,3> B)
+void SSS_PENCIL::Yderiv(Array<Complex,3> A, Array<Complex,3> B)
 {
-    Array<DP,3> Ar=Array<DP,3>(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
-	Array<DP,3> Br=Array<DP,3>(reinterpret_cast<DP*>(B.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+    Array<Real,3> Ar=Array<Real,3>(reinterpret_cast<Real*>(A.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<Real,3> Br=Array<Real,3>(reinterpret_cast<Real*>(B.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 	
-	DP Ky;
+	Real Ky;
 	
-	for (int ly=0; ly<local_Ny; ly++)  	{
+	for (int ly=0; ly<maxly; ly++)  	{
 		Ky = Get_ky(ly)*kfactor[2];
         
         if (global.program.sincostr_switch[1] == 'S')
@@ -135,14 +135,14 @@ void SSS_PENCIL::Yderiv(Array<complx,3> A, Array<complx,3> B)
 	}
 }
 
-void SSS_PENCIL::Add_Yderiv(Array<complx,3> A, Array<complx,3> B)
+void SSS_PENCIL::Add_Yderiv(Array<Complex,3> A, Array<Complex,3> B)
 {
-    Array<DP,3> Ar=Array<DP,3>(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
-	Array<DP,3> Br=Array<DP,3>(reinterpret_cast<DP*>(B.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+    Array<Real,3> Ar=Array<Real,3>(reinterpret_cast<Real*>(A.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<Real,3> Br=Array<Real,3>(reinterpret_cast<Real*>(B.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 	
-	DP Ky;
+	Real Ky;
 	
-	for (int ly=0; ly<local_Ny; ly++)  	{
+	for (int ly=0; ly<maxly; ly++)  	{
 		Ky = Get_ky(ly)*kfactor[2];
         
         if (global.program.sincostr_switch[1] == 'S')
@@ -160,15 +160,15 @@ void SSS_PENCIL::Add_Yderiv(Array<complx,3> A, Array<complx,3> B)
 ***********************************************************************************************/
 
 
-void SSS_PENCIL::Zderiv(Array<complx,3> A, Array<complx,3> B)
+void SSS_PENCIL::Zderiv(Array<Complex,3> A, Array<Complex,3> B)
 {
-	DP Kz;
+	Real Kz;
 	
-    Array<DP,3> Ar=Array<DP,3>(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
-	Array<DP,3> Br=Array<DP,3>(reinterpret_cast<DP*>(B.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+    Array<Real,3> Ar=Array<Real,3>(reinterpret_cast<Real*>(A.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<Real,3> Br=Array<Real,3>(reinterpret_cast<Real*>(B.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 	
-	for (int lz=0; lz<local_Nz; lz++) {
-		Kz = lz*kfactor[3];
+	for (int lz=0; lz<2*maxlz; lz++) {
+		Kz = Get_kz(lz)*kfactor[3];
 		
 		if (global.program.sincostr_switch[2] == 'S')
 			Br(Range::all(),Range::all(),lz) = Kz*Ar(Range::all(),Range::all(),lz);
@@ -181,15 +181,15 @@ void SSS_PENCIL::Zderiv(Array<complx,3> A, Array<complx,3> B)
 
 
 
-void SSS_PENCIL::Add_Zderiv(Array<complx,3> A, Array<complx,3> B)
+void SSS_PENCIL::Add_Zderiv(Array<Complex,3> A, Array<Complex,3> B)
 {
-	DP Kz;
+	Real Kz;
 	
-    Array<DP,3> Ar=Array<DP,3>(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
-	Array<DP,3> Br=Array<DP,3>(reinterpret_cast<DP*>(B.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+    Array<Real,3> Ar=Array<Real,3>(reinterpret_cast<Real*>(A.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<Real,3> Br=Array<Real,3>(reinterpret_cast<Real*>(B.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 	
-	for (int lz=0; lz<local_Nz; lz++) {
-		Kz = lz*kfactor[3];
+	for (int lz=0; lz<2*maxlz; lz++) {
+		Kz = Get_kz(lz)*kfactor[3];
 		
 		if (global.program.sincostr_switch[2] == 'S')
 			Br(Range::all(),Range::all(),lz) += Kz*Ar(Range::all(),Range::all(),lz);
@@ -207,22 +207,25 @@ void SSS_PENCIL::Add_Zderiv(Array<complx,3> A, Array<complx,3> B)
  
  ***********************************************************************************************/
 
-void SSS_PENCIL::Laplacian(DP factor, Array<complx,3> A, Array<complx,3> B)
+void SSS_PENCIL::Laplacian(Real factor, Array<Complex,3> A, Array<Complex,3> B)
 {
 	
-	Array<DP,3> Ar(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
-	Array<DP,3> Br(reinterpret_cast<DP*>(B.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<Real,3> Ar(reinterpret_cast<Real*>(A.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<Real,3> Br(reinterpret_cast<Real*>(B.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 	
-	DP Ksqr;
+	Real Kxsqr;    // Kx^2
+	Real Kxysqr;
+	Real Ksqr;
 	
-	for (int lx=0; lx<local_Nx; lx++) {
-		Ksqr = my_pow(Get_kx(lx)*kfactor[1],2);
-	
-		for (int ly=0; ly<local_Ny; ly++) {
-			Ksqr += my_pow(Get_ky(ly)*kfactor[2],2);
+	for (int lx=0; lx<maxlx; lx++) {
+		Kxsqr = my_pow(Get_kx(lx)*kfactor[1],2);
+		
+		for (int ly=0; ly<maxly; ly++) {
+			Kxysqr = Kxsqr + my_pow(Get_ky(ly)*kfactor[2],2);
 			
-	        for (int lz=0; lz<local_Nz; lz++) {
-				Ksqr += my_pow(lz*kfactor[3],2);
+			for (int lz=0; lz<maxlz; lz++) {
+				Ksqr = Kxysqr + my_pow(Get_kz(lz)*kfactor[3],2);
+
 				Br(lx,ly,lz) = (-factor*Ksqr)*Ar(lx,ly,lz);
 			}
 		}
@@ -236,24 +239,26 @@ void SSS_PENCIL::Laplacian(DP factor, Array<complx,3> A, Array<complx,3> B)
  
  ***********************************************************************************************/
 
-void SSS_PENCIL::Subtract_Laplacian(DP factor, Array<complx,3> A, Array<complx,3> B)
+void SSS_PENCIL::Subtract_Laplacian(Real factor, Array<Complex,3> A, Array<Complex,3> B)
 {
 	
-	Array<DP,3> Ar(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
-	Array<DP,3> Br(reinterpret_cast<DP*>(B.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<Real,3> Ar(reinterpret_cast<Real*>(A.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<Real,3> Br(reinterpret_cast<Real*>(B.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 	
-	DP Ksqr, Ksqr_factor;
+	Real Kxsqr;    // Kx^2
+	Real Kxysqr;
+	Real Ksqr;
 	
-	for (int lx=0; lx<local_Nx; lx++) {
-		Ksqr = my_pow(Get_kx(lx)*kfactor[1],2);
-	
-		for (int ly=0; ly<local_Ny; ly++) {
-			Ksqr += my_pow(Get_ky(ly)*kfactor[2],2);
+	for (int lx=0; lx<maxlx; lx++) {
+		Kxsqr = my_pow(Get_kx(lx)*kfactor[1],2);
+		
+		for (int ly=0; ly<maxly; ly++) {
+			Kxysqr = Kxsqr + my_pow(Get_ky(ly)*kfactor[2],2);
 			
-	        for (int lz=0; lz<local_Nz; lz++) {
-				Ksqr_factor = factor*(Ksqr+my_pow(lz*kfactor[3],2));
+			for (int lz=0; lz<maxlz; lz++) {
+				Ksqr = Kxysqr + my_pow(Get_kz(lz)*kfactor[3],2);
 
-				Br(lx,ly,lz) += Ksqr_factor*Ar(lx,ly,lz);
+				Br(lx,ly,lz) += (factor*Ksqr)*Ar(lx,ly,lz);
 			}
 		}
 	}

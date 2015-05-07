@@ -107,98 +107,98 @@ public:
 
 
 	//! for energy transfer to be passed Shell_mult_all
-	Array<DP,1>  temp_shell_tr;				
+	Array<Real,1>  temp_shell_tr;				
 	
 	//! for energy transfer to be passed Shell_mult_all
-	Array<DP,2>  temp_ring_tr;					
+	Array<Real,2>  temp_ring_tr;					
 	
 	//! for energy transfer to be passed Shell_mult_all
-	Array<DP,2>  temp_cylindrical_ring_tr;
+	Array<Real,2>  temp_cylindrical_ring_tr;
 
 	// S(k,p,q) calculations
 	
 /*	int				no_of_Skpq_triads;
 	
 	Array<int,2>	*triad_array;					// grid index e.g., 1,2,...
-	Array<DP,1>		*Sself_array;
-	Array<DP,1>		*S_to_VF_array;
-	Array<DP,1>		*S_SF_array; */
+	Array<Real,1>		*Sself_array;
+	Array<Real,1>		*S_to_VF_array;
+	Array<Real,1>		*S_SF_array; */
 
 	// For FLUIDS
 	// Fluid fluxes
-	Array<DP,1> flux_self;	
-	Array<DP,1> flux_hk;
+	Array<Real,1> flux_self;	
+	Array<Real,1> flux_hk;
 
 	
 	// Isotropic shell-to-shell
-	Array<DP,2>  shelltoshell_self;
-	Array<DP,2>  shelltoshell_hk;
+	Array<Real,2>  shelltoshell_self;
+	Array<Real,2>  shelltoshell_hk;
 	
 	// Ring to ring
-	Array<DP,4>  ring_to_ring_self;
+	Array<Real,4>  ring_to_ring_self;
 	
 	// Cylinderical ring to ring
-	Array<DP,4>  cylindrical_ring_to_ring_self;
+	Array<Real,4>  cylindrical_ring_to_ring_self;
 	
 	
 	// FOR A SCALAR
 	// flux
-	Array<DP,1>  flux_SF;						//  T< to T>
+	Array<Real,1>  flux_SF;						//  T< to T>
 	
 	// shell-to-shell
-	Array<DP,2>  shelltoshell_SF;				// theta->theta
+	Array<Real,2>  shelltoshell_SF;				// theta->theta
 	
 	// Ring to ring
-	Array<DP,4>  ring_to_ring_SF;				// theta->theta
+	Array<Real,4>  ring_to_ring_SF;				// theta->theta
 	
 	// Cylinderical ring to ring
-	Array<DP,4>  cylindrical_ring_to_ring_SF;				// theta->theta
+	Array<Real,4>  cylindrical_ring_to_ring_SF;				// theta->theta
 	
 	
 	// FOR MHD
 	// fluxes
-	Array<DP,1>  flux_VF_Win_Wout;				// from Win to Wout
-	Array<DP,1>  flux_VF_Uin_Win;				// from Uin to Win
-	Array<DP,1>  flux_VF_Uin_Wout;				// from Uin to Wout
-	Array<DP,1>  flux_VF_Win_Uout;				// from Win to Uout
-	Array<DP,1>  flux_VF_Uout_Wout;			// from Wout to Uout
-	Array<DP,1>  flux_Elsasser_plus;			// From Zplus_in to Zplus_out
-	Array<DP,1>  flux_Elsasser_minus;			// From minus_in to Zplus_minus
+	Array<Real,1>  flux_VF_Win_Wout;				// from Win to Wout
+	Array<Real,1>  flux_VF_Uin_Win;				// from Uin to Win
+	Array<Real,1>  flux_VF_Uin_Wout;				// from Uin to Wout
+	Array<Real,1>  flux_VF_Win_Uout;				// from Win to Uout
+	Array<Real,1>  flux_VF_Uout_Wout;			// from Wout to Uout
+	Array<Real,1>  flux_Elsasser_plus;			// From Zplus_in to Zplus_out
+	Array<Real,1>  flux_Elsasser_minus;			// From minus_in to Zplus_minus
 	
-	Array<DP,1>  flux_Whk;
+	Array<Real,1>  flux_Whk;
 	
 	// shell-to-shell
-	Array<DP,2>  shelltoshell_VF_WtoW;			// from W to W
-	Array<DP,2>  shelltoshell_VF_UtoW;			// from U to W
-	Array<DP,2>  shelltoshell_Elsasser_plus;	// from Zplus to Zplus
-	Array<DP,2>  shelltoshell_Elsasser_minus;	// from Zminus to Zminus
+	Array<Real,2>  shelltoshell_VF_WtoW;			// from W to W
+	Array<Real,2>  shelltoshell_VF_UtoW;			// from U to W
+	Array<Real,2>  shelltoshell_Elsasser_plus;	// from Zplus to Zplus
+	Array<Real,2>  shelltoshell_Elsasser_minus;	// from Zminus to Zminus
 	
-	Array<DP,2>  shelltoshell_Whk;
+	Array<Real,2>  shelltoshell_Whk;
 	
   
 	// Ring to ring
-	Array<DP,4>  ring_to_ring_VF_WtoW;			// from W to W
-	Array<DP,4>  ring_to_ring_VF_UtoW;			// from U to W
-	Array<DP,4>  ring_to_ring_Elsasser_plus;	// from Zplus to Zplus
-	Array<DP,4>  ring_to_ring_Elsasser_minus;	// from Zminus to Zminus
+	Array<Real,4>  ring_to_ring_VF_WtoW;			// from W to W
+	Array<Real,4>  ring_to_ring_VF_UtoW;			// from U to W
+	Array<Real,4>  ring_to_ring_Elsasser_plus;	// from Zplus to Zplus
+	Array<Real,4>  ring_to_ring_Elsasser_minus;	// from Zminus to Zminus
 	
 	// Cylinderical ring to ring
-	Array<DP,4>  cylindrical_ring_to_ring_VF_WtoW;		// from W to W
-	Array<DP,4>  cylindrical_ring_to_ring_VF_UtoW;		// from U to W
-	Array<DP,4>  cylindrical_ring_to_ring_Elsasser_plus;	// from Zplus to Zplus
-	Array<DP,4>  cylindrical_ring_to_ring_Elsasser_minus;	// from Zminus to Zminus
+	Array<Real,4>  cylindrical_ring_to_ring_VF_WtoW;		// from W to W
+	Array<Real,4>  cylindrical_ring_to_ring_VF_UtoW;		// from U to W
+	Array<Real,4>  cylindrical_ring_to_ring_Elsasser_plus;	// from Zplus to Zplus
+	Array<Real,4>  cylindrical_ring_to_ring_Elsasser_minus;	// from Zminus to Zminus
 	
 	// B0 effect
 	//! Energy transfer from b to u due to B0.
 	//! \f$ \sum (\vec{B0} \cdot \vec{K}) \Im(\vec{u}(\vec{K'}) \vec{b}^*(\vec{K})) \f$
-	Array<DP,1>	energy_tr_shell_B0;
-	Array<DP,2>	energy_tr_ring_B0;
-	Array<DP,2>	energy_tr_cylindrical_ring_B0;	
+	Array<Real,1>	energy_tr_shell_B0;
+	Array<Real,2>	energy_tr_ring_B0;
+	Array<Real,2>	energy_tr_cylindrical_ring_B0;	
 	
 	// Force*V  or Force*T
-	Array<DP,1> sphere_force_x_field;
-	Array<DP,2> ring_force_x_field;
-	Array<DP,2> cylindrical_ring_force_x_field;
+	Array<Real,1> sphere_force_x_field;
+	Array<Real,2> ring_force_x_field;
+	Array<Real,2> cylindrical_ring_force_x_field;
 	
 public:
 	EnergyTr();
@@ -292,16 +292,16 @@ public:
 	void Fill_cylindrical_ring(int cylindrical_shell_from_index, int slab_from_index, FluidSF& T);
     void Fill_cylindrical_ring_Vpll(int cylindrical_shell_from_index, int slab_from_index, FluidVF& U);
 	
-	DP Prod_out_sphere_nlinV(int sphere_index,FluidVF& U, FluidVF& W);
-	DP Prod_out_sphere_nlinT(int sphere_index, FluidVF& U, FluidSF& T);
-    DP Prod_out_sphere_nlin_Vpll(int sphere_index, FluidVF& U, FluidVF& W);
+	Real Prod_out_sphere_nlinV(int sphere_index,FluidVF& U, FluidVF& W);
+	Real Prod_out_sphere_nlinT(int sphere_index, FluidVF& U, FluidSF& T);
+    Real Prod_out_sphere_nlin_Vpll(int sphere_index, FluidVF& U, FluidVF& W);
 	
-	DP Prod_in_sphere_nlinV(int sphere_index, FluidVF& U, FluidVF& W);
-	DP Prod_in_sphere_nlinT(int sphere_index, FluidVF& U, FluidSF& T);
-	DP Prod_in_sphere_nlin_Vpll(int sphere_index, FluidVF& U, FluidVF& W);
+	Real Prod_in_sphere_nlinV(int sphere_index, FluidVF& U, FluidVF& W);
+	Real Prod_in_sphere_nlinT(int sphere_index, FluidVF& U, FluidSF& T);
+	Real Prod_in_sphere_nlin_Vpll(int sphere_index, FluidVF& U, FluidVF& W);
 	
-	DP Prod_out_sphere_nlin_vorticity(int sphere_index, FluidVF& U, FluidVF& W);
-	DP Prod_out_sphere_nlin_vector_potential(int sphere_index, FluidVF& U, FluidVF& W);
+	Real Prod_out_sphere_nlin_vorticity(int sphere_index, FluidVF& U, FluidVF& W);
+	Real Prod_out_sphere_nlin_vector_potential(int sphere_index, FluidVF& U, FluidVF& W);
 };
 
 #endif

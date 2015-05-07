@@ -49,64 +49,64 @@ void Inverse_transform()
 {
 }
 
-void Xderiv(Array<complx,3> A, Array<complx,3> B)
+void Xderiv(Array<Complex,3> A, Array<Complex,3> B)
 {
 	
 }
 
-void Add_Xderiv(Array<complx,3> A, Array<complx,3> B)
-{
-	
-}
-
-
-void Yderiv(Array<complx,3> A, Array<complx,3> B)
-{
-	
-}
-
-void Add_Yderiv(Array<complx,3> A, Array<complx,3> B)
+void Add_Xderiv(Array<Complex,3> A, Array<Complex,3> B)
 {
 	
 }
 
 
-void Zderiv(Array<complx,3> A, Array<complx,3> B)
+void Yderiv(Array<Complex,3> A, Array<Complex,3> B)
 {
 	
 }
 
-void Add_Zderiv(Array<complx,3> A, Array<complx,3> B)
+void Add_Yderiv(Array<Complex,3> A, Array<Complex,3> B)
 {
 	
 }
 
-void Real_space_multiply_gpu(Array<complx,3> A, Array<complx,3> B, Array<complx,3> C)
+
+void Zderiv(Array<Complex,3> A, Array<Complex,3> B)
 {
 	
 }
 
-void Print_large_Fourier_elements(Array<complx,3> A, string array_name)
+void Add_Zderiv(Array<Complex,3> A, Array<Complex,3> B)
 {
 	
 }
 
-void Array_divide_ksqr(Array<complx,3> A)
+void Real_space_multiply_gpu(Array<Complex,3> A, Array<Complex,3> B, Array<Complex,3> C)
 {
 	
 }
 
-void Array_exp_ksqr(Array<complx,3> A, DP factor)
+void Print_large_Fourier_elements(Array<Complex,3> A, string array_name)
 {
 	
 }
 
-void Array_exp_ksqr(Array<complx,3> A, DP factor, DP hyper_factor, int hyper_exponent)
+void Array_divide_ksqr(Array<Complex,3> A)
 {
 	
 }
 
-void Compute_divergence(Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az, Array<complx,3> div, string field_or_nlin, DP &total_abs_div, bool print_switch)
+void Array_exp_ksqr(Array<Complex,3> A, Real factor)
+{
+	
+}
+
+void Array_exp_ksqr(Array<Complex,3> A, Real factor, Real hyper_factor, int hyper_exponent)
+{
+	
+}
+
+void Compute_divergence(Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az, Array<Complex,3> div, string field_or_nlin, Real &total_abs_div, bool print_switch)
 {
 	
 }

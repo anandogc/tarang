@@ -25,7 +25,7 @@
 
 //******************************************************************************************
 
-void process_mem_usage(DP& vm_usage, DP& resident_set)
+void process_mem_usage(Real& vm_usage, Real& resident_set)
 {
 //	using std::ios_base;
 //	using std::ifstream;

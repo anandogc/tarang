@@ -38,7 +38,7 @@
 
 #include "FluidIO.h"
 
-extern Uniform<DP> SPECrand;
+extern Uniform<Real> SPECrand;
 
 
 //******************************************************************************
@@ -50,16 +50,16 @@ extern Uniform<DP> SPECrand;
  *	@param phase1, phase2, phase3	Phases
  *
  */
-void FluidIO::Put_vector_amp_phase_comp_conj(FluidVF U, int lx, int ly, int lz,  DP amp, DP phase1, DP phase2, DP phase3)
+void FluidIO::Put_vector_amp_phase_comp_conj(FluidVF U, int lx, int ly, int lz,  Real amp, Real phase1, Real phase2, Real phase3)
 {
-	complx uperp1, uperp2;
-	complx vpll, vh1, vh2;
-	DP theta = 0;
-	DP phi = 0;
-	DP kkmag, kkperp;
+	Complex uperp1, uperp2;
+	Complex vpll, vh1, vh2;
+	Real theta = 0;
+	Real phi = 0;
+	Real kkmag, kkperp;
 	
-	TinyVector<complx,3> VFour, Vlocal_complex;
-	TinyVector<DP,3> Vlocal_real;
+	TinyVector<Complex,3> VFour, Vlocal_complex;
+	TinyVector<Real,3> Vlocal_real;
 
 	if (Ny >1) {
 		uperp1 = amp * exp(I * phase1) * cos(phase3);
@@ -142,13 +142,13 @@ void FluidIO::Put_vector_amp_phase_comp_conj(FluidVF U, int lx, int ly, int lz, 
  *	@param amp  Amplitude of the vector.
  *
  */
-void FluidIO::Put_scalar_amp_phase_comp_conj(FluidSF& T, int lx, int ly, int lz, DP amp, DP phase)
+void FluidIO::Put_scalar_amp_phase_comp_conj(FluidSF& T, int lx, int ly, int lz, Real amp, Real phase)
 {
 	
-	DP Glocal_real;
-	complx Glocal_complex;
+	Real Glocal_real;
+	Complex Glocal_complex;
 	
-	complx G_Four = amp * exp(I * phase);
+	Complex G_Four = amp * exp(I * phase);
 	
 	if (basis_type == "FFF" || basis_type == "FFFW") {
 		Glocal_complex = G_Four;

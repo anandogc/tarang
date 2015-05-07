@@ -56,13 +56,13 @@ class PlainCVF
 	public:
 	 
 	//!  \f$ V_x(N_1, N_2, N_3/2+1) \f$.
-	Array<complx,3> V1;							
+	Array<Complex,3> V1;							
 	
 	//!  \f$ V_y(N_1, N_2, N_3/2+1) \f$.
-	Array<complx,3> V2;							
+	Array<Complex,3> V2;							
 	
 	//!  \f$ V_z(N_1, N_2, N_3/2+1) \f$.
-	Array<complx,3> V3;																
+	Array<Complex,3> V3;																
 								
 	
 //*********************************************************************************************

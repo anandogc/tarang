@@ -46,7 +46,7 @@
  
  ***********************************************************************************************/
 
-void ArrayOps::Real_space_multiply(Array<DP,3> A, Array<DP,3> B, Array<DP,3> C)
+void ArrayOps::Real_space_multiply(Array<Real,3> A, Array<Real,3> B, Array<Real,3> C)
 {
 	C = A * B;
 	
@@ -62,7 +62,7 @@ void ArrayOps::Real_space_multiply(Array<DP,3> A, Array<DP,3> B, Array<DP,3> C)
   //  cout << "A,B,C = " << A.data() << " " << B.data() << " " << C.data() << endl;
 }
 
-void ArrayOps::Real_space_divide(Array<DP,3> A, Array<DP,3> B, Array<DP,3> C)
+void ArrayOps::Real_space_divide(Array<Real,3> A, Array<Real,3> B, Array<Real,3> C)
 {
 
 	C = A / B;

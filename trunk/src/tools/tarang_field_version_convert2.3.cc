@@ -78,8 +78,8 @@ int main(int argc, char** argv)
 
 	int local_Ny=Ny/numprocs;
 
-    Array<complx,3> A(local_Ny,Nz/2+1,Nx);
-    Array<complx,3> B(Nx,local_Ny,Nz/2+1);
+    Array<Complex,3> A(local_Ny,Nz/2+1,Nx);
+    Array<Complex,3> B(Nx,local_Ny,Nz/2+1);
 
 
  	//Configure tarang 2.3 input
@@ -99,8 +99,8 @@ int main(int argc, char** argv)
 	array_properties.Fourier_directions = 1,1,1;
 	array_properties.Z = 1;
 
-	array_properties.datatype_complex_space = BasicIO::H5T_COMPLX;
-	array_properties.datatype_real_space = BasicIO::H5T_DP;
+	array_properties.datatype_complex_space = BasicIO::H5T_Complex;
+	array_properties.datatype_real_space = BasicIO::H5T_Real;
 	
 	BasicIO::Set_H5_plans(array_properties, &tarang_2p3);
 
@@ -120,8 +120,8 @@ int main(int argc, char** argv)
 	array_properties.Fourier_directions = 1,1,1;
 	array_properties.Z = 2;
 
-	array_properties.datatype_complex_space = BasicIO::H5T_COMPLX;
-	array_properties.datatype_real_space = BasicIO::H5T_DP;
+	array_properties.datatype_complex_space = BasicIO::H5T_Complex;
+	array_properties.datatype_real_space = BasicIO::H5T_Real;
 
 	BasicIO::Set_H5_plans(array_properties, &tarang_2p4);
 

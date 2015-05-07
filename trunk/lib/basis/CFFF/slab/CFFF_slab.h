@@ -45,8 +45,6 @@
 #include "universal.h"
 #include "ArrayOps.h"
 
-using namespace blitz;
-
 //*********************************************************************************************	
 
 
@@ -55,11 +53,11 @@ class CFFF_SLAB:public Universal
 public:
 	CFFF_SLAB();
 	#include "universal_fn_names.h"
-	void Array_exp_ksqr(Array<complx,3> A, DP factor);
+	void Array_exp_ksqr(Array<Complex,3> A, Real factor);
 	
-	void Array_exp_ksqr(Array<complx,3> A, DP factor, DP hyper_factor, int hyper_exponent);
+	void Array_exp_ksqr(Array<Complex,3> A, Real factor, Real hyper_factor, int hyper_exponent);
 	
-	void Compute_divergence(Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az, Array<complx,3> div, string field_or_nlin, DP &total_abs_div, bool print_switch);
+	void Compute_divergence(Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az, Array<Complex,3> div, string field_or_nlin, Real &total_abs_div, bool print_switch);
 };
 
 #endif

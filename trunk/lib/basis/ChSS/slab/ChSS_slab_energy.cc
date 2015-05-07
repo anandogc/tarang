@@ -47,11 +47,11 @@
  
  ***********************************************************************************************/
 
-DP ChSS_SLAB::Get_local_energy_real_space(Array<DP,3> Ar)
+Real ChSS_SLAB::Get_local_energy_real_space(Array<Real,3> Ar)
 {
     int rx;
-    DP factor,x;
-    DP sum = 0.0;
+    Real factor,x;
+    Real sum = 0.0;
 
 	for (int ly=0; ly<Ar.extent(0); ly++)
         for (int lz=0; lz<Ar.extent(1); lz++)
@@ -61,15 +61,15 @@ DP ChSS_SLAB::Get_local_energy_real_space(Array<DP,3> Ar)
                 sum += my_pow(Ar(ly,lx,lz),2)*factor;
             }
 	
-	return sum*(M_PI/(2* DP(Nx) * DP(Ny) * DP(Nz)));
+	return sum*(M_PI/(2* Real(Nx) * Real(Ny) * Real(Nz)));
 }
 
 
-DP ChSS_SLAB::Get_local_energy_real_space(Array<DP,3> Ar, Array<DP,3> Br)
+Real ChSS_SLAB::Get_local_energy_real_space(Array<Real,3> Ar, Array<Real,3> Br)
 {
     int rx;
-    DP factor,x;
-    DP sum = 0.0;
+    Real factor,x;
+    Real sum = 0.0;
     
 	for (int ly=0; ly<Ar.extent(0); ly++)
         for (int lz=0; lz<Ar.extent(1); lz++)
@@ -79,13 +79,13 @@ DP ChSS_SLAB::Get_local_energy_real_space(Array<DP,3> Ar, Array<DP,3> Br)
                 sum += factor*Ar(ly,lz,lx)*Br(ly,lz,lx);
             }
 	
-	return sum*(M_PI/(2* DP(Nx) * DP(Ny) * DP(Nz)));
+	return sum*(M_PI/(2* Real(Nx) * Real(Ny) * Real(Nz)));
 }
 
-DP ChSS_SLAB::Get_local_energy(Array<complx,3> A)  
+Real ChSS_SLAB::Get_local_energy(Array<Complex,3> A)  
 {
 	if (Ny > 1) {
-		DP  total = 4*Array_sqr(A);
+		Real  total = 4*Array_sqr(A);
 		
 		// subtractions |A(:, :, 0)|^2; Note that kz=2*iz and 2*iz+1 stored in iz plane
 		total -= 2* sum(sqr(real(A(Range::all(), 0, Range::all()))));
@@ -108,7 +108,7 @@ DP ChSS_SLAB::Get_local_energy(Array<complx,3> A)
 	}
 	
 	else if (Ny == 1) {
-		DP total = 2*Array_sqr(A);
+		Real total = 2*Array_sqr(A);
 		
 		// subtractions |A(:, :, 0)|^2
 		total -= sum(sqr(real(A(0, 0, Range::all()))));
@@ -134,10 +134,10 @@ DP ChSS_SLAB::Get_local_energy(Array<complx,3> A)
 ***********************************************************************************************/
 
 
-DP ChSS_SLAB::Get_local_energy(Array<complx,3> A, Array<complx,3> B)
+Real ChSS_SLAB::Get_local_energy(Array<Complex,3> A, Array<Complex,3> B)
 {
 	if (Ny > 1) {
-		DP  total = 4*mydot(A,B);
+		Real  total = 4*mydot(A,B);
 		
 		// subtractions |A(:, :, 0)|^2
 		total -= 2*sum(real(A(Range::all(), 0, Range::all())) * real(B(Range::all(), 0, Range::all())));
@@ -160,7 +160,7 @@ DP ChSS_SLAB::Get_local_energy(Array<complx,3> A, Array<complx,3> B)
 	}
 	
 	else if (Ny == 1) {
-		DP total = 2*mydot(A, B);
+		Real total = 2*mydot(A, B);
 		
 		// subtractions |A(:, :, 0)|^2
 		total -= sum(real(A(0,0,Range::all())) * real(B(0,0,Range::all())));
@@ -179,33 +179,33 @@ DP ChSS_SLAB::Get_local_energy(Array<complx,3> A, Array<complx,3> B)
 
 void ChSS_SLAB::Compute_local_helicity
 (
- Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az,
- DP &local_helicity1, DP &local_helicity2,
- DP &local_H1k1, DP &local_H1k2
+ Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
+ Real &local_helicity1, Real &local_helicity2,
+ Real &local_H1k1, Real &local_H1k2
 )
 {}
 
 void ChSS_SLAB::Compute_total_helicity
 (
- Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az,
- DP &total_helicity1, DP &total_helicity2,
- DP &total_H1k1, DP &total_H1k2
+ Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
+ Real &total_helicity1, Real &total_helicity2,
+ Real &total_H1k1, Real &total_H1k2
  )
 {}
 
 void ChSS_SLAB::Compute_local_shell_spectrum_helicity
 (
- Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az,
- Array<DP,1> local_H1k1, Array<DP,1> local_H1k2, Array<DP,1> local_H1k3,
- Array<DP,1> local_H1k_count
+ Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
+ Array<Real,1> local_H1k1, Array<Real,1> local_H1k2, Array<Real,1> local_H1k3,
+ Array<Real,1> local_H1k_count
  )
 {}
 
 
 void ChSS_SLAB::Compute_shell_spectrum_helicity
 (
- Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az,
- Array<DP,1> H1k1, Array<DP,1> H1k2, Array<DP,1> H1k3
+ Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
+ Array<Real,1> H1k1, Array<Real,1> H1k2, Array<Real,1> H1k3
  )
 {}
 
@@ -214,8 +214,8 @@ void ChSS_SLAB::Compute_shell_spectrum_helicity
 // Not for 2D
 void ChSS_SLAB::Compute_local_ring_spectrum_helicity
 (
- Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az,
- Array<DP,2> local_H1k1, Array<DP,2> local_H1k2, Array<DP,2> local_H1k3
+ Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
+ Array<Real,2> local_H1k1, Array<Real,2> local_H1k2, Array<Real,2> local_H1k3
  )
 {}
 
@@ -224,8 +224,8 @@ void ChSS_SLAB::Compute_local_ring_spectrum_helicity
 
 void ChSS_SLAB::Compute_ring_spectrum_helicity
 (
- Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az,
-Array<DP,2> H1k1, Array<DP,2> H1k2, Array<DP,2> H1k3
+ Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
+Array<Real,2> H1k1, Array<Real,2> H1k2, Array<Real,2> H1k3
  )
 {}
 
@@ -234,8 +234,8 @@ Array<DP,2> H1k1, Array<DP,2> H1k2, Array<DP,2> H1k3
 
 void ChSS_SLAB::Compute_local_cylindrical_ring_spectrum_helicity
 (
- Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az,
-  Array<DP,2> local_H1k1,  Array<DP,2> local_H1k2
+ Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
+  Array<Real,2> local_H1k1,  Array<Real,2> local_H1k2
  )
 {}
 
@@ -243,8 +243,8 @@ void ChSS_SLAB::Compute_local_cylindrical_ring_spectrum_helicity
 //
 void ChSS_SLAB::Compute_cylindrical_ring_spectrum_helicity
 (
- Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az,
- Array<DP,2> H1k1,  Array<DP,2> H1k2
+ Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
+ Array<Real,2> H1k1,  Array<Real,2> H1k2
  )
 {}
 

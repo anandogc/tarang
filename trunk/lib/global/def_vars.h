@@ -85,14 +85,13 @@ using namespace blitz ;
 //*********************************************************************************************
 // DEF vars  
 
-// Defining FLOAT_DP: switch for setting float
 
-#if defined(FLOAT_DP)
+#if defined(REAL_FLOAT)
 
-#define DP 								float
-#define MPI_DP							MPI_FLOAT
-#define H5T_DP 							H5T_FLOAT	 // for HDF5
-#define H5T_COMPLX						H5T_COMPLEX_FLOAT
+#define Real 								float
+#define MPI_Real							MPI_FLOAT
+#define H5T_Real 							H5T_FLOAT	 // for HDF5
+#define H5T_Complex							H5T_COMPLEX_FLOAT
 
 #define ZERO 0.0f
 #define ONE 1.0f
@@ -111,12 +110,12 @@ const float MY_PI=3.141592653589793238f;
 
 const int MY_PRECISION = 6;
 
-#elif defined(DOUBLE_DP)
+#elif defined(REAL_DOUBLE)
 
-#define DP								double
-#define MPI_DP							MPI_DOUBLE
-#define H5T_DP 							H5T_DOUBLE   // for HDF5
-#define H5T_COMPLX						H5T_COMPLEX_DOUBLE
+#define Real								double
+#define MPI_Real							MPI_DOUBLE
+#define H5T_Real 							H5T_DOUBLE   // for HDF5
+#define H5T_Complex							H5T_COMPLEX_DOUBLE
 
 #define ZERO 0.0
 #define ONE 1.0
@@ -137,8 +136,8 @@ const int MY_PRECISION = 12;
 
 #endif
 
-#ifndef complx
-#define complx  complex<DP>
+#ifndef Complex
+#define Complex  complex<Real>
 #endif
 
 // Switches for FFTW plans 
@@ -157,21 +156,7 @@ const int MY_PRECISION = 12;
 #endif
 
 
-//*********************************************************************************************
-
-// Constant declarations
-/// I = sqrt(-1).
-
-//----------------------------HDF5 related stuffs--------------------------------------------
-
-	// #include <hdf5.h>
-#include <stdarg.h>
-
-
-//The sieve_buf_size should be equal a multiple of the disk block size
-#define SIEVE_BUF_SIZE  262144
-
-//-----------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------
   
 //Convert any data type to string
 template <class T>

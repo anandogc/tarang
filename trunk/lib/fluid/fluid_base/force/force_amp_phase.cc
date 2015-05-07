@@ -38,7 +38,7 @@
 
 #include "FORCE.h"
 
-extern Uniform<DP> SPECrand;
+extern Uniform<Real> SPECrand;
 
 
 //******************************************************************************
@@ -50,16 +50,16 @@ extern Uniform<DP> SPECrand;
  *	@param phase1, phase2, phase3	Phases
  *
  */
-void FORCE::Put_force_amp_phase_comp_conj(FluidVF U, int lx, int ly, int lz,  DP amp, DP phase1, DP phase2, DP phase3, bool add_flag)
+void FORCE::Put_force_amp_phase_comp_conj(FluidVF U, int lx, int ly, int lz,  Real amp, Real phase1, Real phase2, Real phase3, bool add_flag)
 {
-	complx fperp1, fperp2;
-	complx fpll, fh1, fh2;
-	DP theta = 0;
-	DP phi = 0;
-	DP kkmag, kkperp;
+	Complex fperp1, fperp2;
+	Complex fpll, fh1, fh2;
+	Real theta = 0;
+	Real phi = 0;
+	Real kkmag, kkperp;
 	
-	TinyVector<complx,3> F_FOUR, Flocal_complex;
-	TinyVector<DP,3> Flocal_real;
+	TinyVector<Complex,3> F_FOUR, Flocal_complex;
+	TinyVector<Real,3> Flocal_real;
 
 	if (Ny >1) {
 		fperp1 = amp * exp(I * phase1) * cos(phase3);
@@ -154,13 +154,13 @@ void FORCE::Put_force_amp_phase_comp_conj(FluidVF U, int lx, int ly, int lz,  DP
  *	@param amp  Amplitude of the vector.
  *
  */
-void FORCE::Put_force_amp_phase_comp_conj(FluidSF& T, int lx, int ly, int lz, DP amp, DP phase, bool add_flag)
+void FORCE::Put_force_amp_phase_comp_conj(FluidSF& T, int lx, int ly, int lz, Real amp, Real phase, bool add_flag)
 {
 	
-	DP Glocal_real;
-	complx Glocal_complex;
+	Real Glocal_real;
+	Complex Glocal_complex;
 	
-	complx G_Four = amp * exp(I * phase);
+	Complex G_Four = amp * exp(I * phase);
 	
 	if (basis_type == "FFF" || basis_type == "FFFW") {
 		Glocal_complex = G_Four;

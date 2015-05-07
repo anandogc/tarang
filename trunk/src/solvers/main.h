@@ -54,7 +54,7 @@ int IMHDastro_main();
 
 int GP_main();
 
-void process_mem_usage(DP& vm_usage, DP& resident_set);	
+void process_mem_usage(Real& vm_usage, Real& resident_set);	
 //********************************** End of main.h ********************************************
 
 

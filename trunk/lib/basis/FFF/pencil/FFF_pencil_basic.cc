@@ -45,28 +45,29 @@
  COmment
  
  ***********************************************************************************************/
-void FFF_PENCIL::Last_component(int kx, int ky, int kz, DP &Vx, DP &Vy, DP &Vz)
+void FFF_PENCIL::Last_component(int kx, int ky, int kz, Real &Vx, Real &Vy, Real &Vz)
 {}
 
-void FFF_PENCIL::Last_component(int kx, int ky, int kz, complx &Vx, complx &Vy, complx &Vz)
+void FFF_PENCIL::Last_component(int kx, int ky, int kz, Complex &Vx, Complex &Vy, Complex &Vz)
 {
-	DP Kx = kx*kfactor[1];
-	DP Ky = ky*kfactor[2];
-	DP Kz = kz*kfactor[3];
+	Real Kx = kx*kfactor[1];
+	Real Ky = ky*kfactor[2];
+	Real Kz = kz*kfactor[3];
 	
-	if (kz != 0) 
-		Vz = (complx(0,Kx)*Vx + complx(0,Ky)*Vy)/complx(0,-Kz);
+	if (kz != 0) {
+		Vz = (Complex(0,Kx)*Vx + Complex(0,Ky)*Vy)/Complex(0,-Kz);
 		// works for both 2D (Ky=0) and 3D.
+	}
 	
 	else {
 		if (ky != 0) { // 3D: input fields are (Vx, Vz); compute Vy
 			Vz = Vy;
-			Vy = (complx(0,Kx)*Vx)/complx(0,-Ky); 
+			Vy = (Complex(0,Kx)*Vx)/Complex(0,-Ky); 
 		}
 		else {	// k = (kx,0,0); input fields are (Vy, Vz); Vx=0
 			Vz = Vy;
 			Vy = Vx;
-			Vx = complx(0,0);
+			Vx = Complex(0,0);
 		}
 	}
 }
@@ -83,14 +84,14 @@ Dealias
  
  ***********************************************************************************************/
 
-void FFF_PENCIL::Dealias(Array<complx,3> A)
+void FFF_PENCIL::Dealias(Array<Complex,3> A)
 {
-	Assign_sub_array(Range(Nx/3+1,2*Nx/3-1), Range(Ny/3+1,2*Ny/3-1), Range(Nz/3+1,Nz/2), A, complx(0,0));
+	Assign_sub_array(Range(Nx/3+1,2*Nx/3-1), Range(Ny/3+1,2*Ny/3-1), Range(Nz/3+1,Nz/2), A, Complex(0,0));
 }
 
 
 // Data resides till outer_radius in k-space
-bool FFF_PENCIL::Is_dealiasing_necessary(Array<complx,3> A, DP outer_radius)
+bool FFF_PENCIL::Is_dealiasing_necessary(Array<Complex,3> A, Real outer_radius)
 {
 	int kx_max = (int) ceil(outer_radius/kfactor[1]);
 	int ky_max = (int) ceil(outer_radius/kfactor[2]);
@@ -114,27 +115,51 @@ bool FFF_PENCIL::Is_dealiasing_necessary(Array<complx,3> A, DP outer_radius)
  
  ***********************************************************************************************/
 
-void FFF_PENCIL::Satisfy_strong_reality_condition_in_Array(Array<complx,3> A)
+
+void FFF_PENCIL::Get_XY_plane(Array<Complex,3> A, Array<Complex,2> plane_xy, int kz)
+{
+	if (num_y_procs == 1) {
+		plane_xy= A(Range::all(),Range::all(),kz);
+	}
+	
+	else if (num_y_procs > 1) {
+		int lz = Get_lz(kz);
+		
+		global.temp_array.plane_xy_inproc = A(Range::all(), Range::all(), lz);
+
+		int data_size = 2*maxly*Nx;
+		int full_data_size = 2*Ny*Nx;
+	
+		MPI_Gather(reinterpret_cast<Real*>(global.temp_array.plane_xy_inproc.data()), data_size, MPI_Real, reinterpret_cast<Real*>(plane_xy.data()), 1, MPI_Vector_resized_y_plane_block, 0, global.mpi.MPI_COMM_ROW);
+		
+		MPI_Bcast(reinterpret_cast<Real*>(global.temp_array.plane_xy.data()), full_data_size, MPI_Real, 0, global.mpi.MPI_COMM_ROW);
+	}
+}
+
+void FFF_PENCIL::Satisfy_strong_reality_condition_in_Array(Array<Complex,3> A)
 {
 	int array_index_minus_kx, array_index_minus_ky;
 	
 	// For a given (minuskx, minusky), locate (kx,ky) and then subst.
 	// A(minuskx, minusky, 0) = conj(A(kx,ky,0))
 	if (my_z_pcoord == 0) {
+		Get_XY_plane(A, global.temp_array.plane_xy, 0);
+
+		#pragma ivdep
 		for (int lx=Nx/2+1; lx<Nx; lx++)  {
 			array_index_minus_kx = -Get_kx(lx);         // kx<0; minuskx = -Get_kx(lx) > 0
 
 			for (int ly=0; ly<maxly; ly++) {
 				if (Get_ky(ly) != Ny/2) {  // Do not apply for ky=Ny/2
 			
-				array_index_minus_ky =  Get_iy(-Get_ky(ly));  // minusky = -Get_ky(ly);
-				
+					array_index_minus_ky =  Get_iy(-Get_ky(ly));  // minusky = -Get_ky(ly);
+					
 
-				A(lx,ly,0) = conj(global.temp_array.plane_xy(array_index_minus_ky,array_index_minus_kx));
+					A(lx,ly,0) = conj(global.temp_array.plane_xy(array_index_minus_kx,array_index_minus_ky));
 				}
 				// for (ky=0,kz=0) line
-				if (Get_ky(ly) < 0)
-					A(0,ly,0) = conj(global.temp_array.plane_xy(array_index_minus_ky,0));
+				if (Get_ky(ly) == 0)
+					A(0,ly,0) = conj(global.temp_array.plane_xy(0,array_index_minus_ky));
 			}
 		}
 	}
@@ -145,14 +170,14 @@ void FFF_PENCIL::Satisfy_strong_reality_condition_in_Array(Array<complx,3> A)
 	
 }
 
-void FFF_PENCIL::Satisfy_weak_reality_condition_in_Array(Array<complx,3> A)
+void FFF_PENCIL::Satisfy_weak_reality_condition_in_Array(Array<Complex,3> A)
 {
 	// for kz=Nz/2
 	if (my_z_pcoord == num_z_procs-1)
 		 A(Range::all(),Range::all(),maxlz-1) = 0.0;
 }
 
-void FFF_PENCIL::Test_reality_condition_in_Array(Array<complx,3> A)
+void FFF_PENCIL::Test_reality_condition_in_Array(Array<Complex,3> A)
 {
 	int array_index_minus_kx, array_index_minus_ky;
 	
@@ -167,15 +192,15 @@ void FFF_PENCIL::Test_reality_condition_in_Array(Array<complx,3> A)
 			for (int ly=0; ly<maxly; ly++) {
 				if (Get_ky(ly) != Ny/2) {  // Do not apply for ky=Ny/2
 				
-				array_index_minus_ky =  Get_iy(-Get_ky(ly));  // minusky = -Get_ky(ly);
-				
+					array_index_minus_ky =  Get_iy(-Get_ky(ly));  // minusky = -Get_ky(ly);
 					
-					if (abs(A(lx,ly,0)-conj(global.temp_array.plane_xy(array_index_minus_ky,array_index_minus_kx))) > MYEPS2)
-						cout << "Reality condition voilated for (kx,ky,kz)=(" <<array_index_minus_kx <<  "," << Get_ky(ly) << "," << 0 << ")" << endl;
+						
+					if (abs(A(lx,ly,0)-conj(global.temp_array.plane_xy(array_index_minus_kx,array_index_minus_ky))) > MYEPS2)
+							cout << "Reality condition voilated for (kx,ky,kz)=(" << Get_kx(lx) <<  "," << Get_ky(ly) << "," << 0 << ")" << endl;
 				}
 				// for (ky=0,kz=0) line
 				if (Get_ky(ly) < 0)
-					if (abs(A(0,ly,0)-conj(global.temp_array.plane_xy(array_index_minus_ky,array_index_minus_kx))) > MYEPS2)
+					if (abs(A(0,ly,0)-conj(global.temp_array.plane_xy(array_index_minus_kx,array_index_minus_ky))) > MYEPS2)
 						cout << "Reality condition voilated for (kx,ky,kz)=(" << 0 <<  "," << Get_ky(ly) << "," << 0 << ")" << endl;
 			}
 		}
@@ -192,7 +217,7 @@ void FFF_PENCIL::Test_reality_condition_in_Array(Array<complx,3> A)
 }
 
 
-void FFF_PENCIL::Assign_sub_array(Range x_range, Range y_range, Range z_range, Array<complx,3> A, complx value)
+void FFF_PENCIL::Assign_sub_array(Range x_range, Range y_range, Range z_range, Array<Complex,3> A, Complex value)
 {
 	static Array<int,1> y_filter(Ny);
 	static Array<int,1> z_filter(Nz/2+1);
@@ -218,62 +243,33 @@ void FFF_PENCIL::Assign_sub_array(Range x_range, Range y_range, Range z_range, A
 		A(x_range, y_apply, z_apply) = value;
 }
 
-void FFF_PENCIL::Get_XY_plane(Array<complx,3> A, Array<complx,2> plane_xy, int kz)
+int FFF_PENCIL::Read(Array<Complex,3> A, BasicIO::H5_plan plan, string file_name, string dataset_name)
 {
-	if (num_y_procs == 1) {
-		plane_xy= A(Range::all(),Range::all(),kz);
-		cout << "one proc" << endl;
-	}
-	
-	else if (num_y_procs > 1) {
-		int lz = universal->Get_lz(kz);
-		
-		global.temp_array.plane_xy_inproc = A(Range::all(), Range::all(), lz);
-
-		int data_size = 2*maxly*Nx;
-		int full_data_size = 2*Ny*Nx;
-	
-		MPI_Gather(reinterpret_cast<DP*>(global.temp_array.plane_xy_inproc.data()), data_size, MPI_DP, reinterpret_cast<DP*>(plane_xy.data()), 1, MPI_Vector_resized_y_plane_block, 0, global.mpi.MPI_COMM_ROW);
-		
-		MPI_Bcast(reinterpret_cast<DP*>(global.temp_array.plane_xy.data()), full_data_size, MPI_DP, 0, global.mpi.MPI_COMM_ROW);
-
-/*		if (c>77) {
-			for (int i=0; i<num_y_procs; i++) {
-				cout << "my_y_pcoord, i  = " << my_y_pcoord << " " << i << endl;
-				if (my_y_pcoord==i) {
-					cout << "my_y_pcoord = " << my_y_pcoord << endl;
-					cout << global.temp_array.plane_xy_inproc << endl;
-					cout << global.temp_array.plane_xy << endl;
-				}
-				MPI_Barrier(global.mpi.MPI_COMM_ROW);
-			}
-		}*/
-	}
-}
-
-
-int FFF_PENCIL::Read(Array<complx,3> A, BasicIO::H5_plan plan, string file_name, string dataset_name)
-{
-	int err = BasicIO::Read(global.temp_array.Xr.data(), plan, file_name, dataset_name);
+	int err = BasicIO::Read(global.temp_array.Xr_slab.data(), plan, file_name, dataset_name);
+	spectralTransform.To_pencil(global.temp_array.Xr_slab, global.temp_array.Xr);
 	spectralTransform.Transpose(global.temp_array.Xr, A);
 	return err;
 }
 
-int FFF_PENCIL::Read(Array<DP,3> Ar, BasicIO::H5_plan plan, string file_name, string dataset_name)
+int FFF_PENCIL::Read(Array<Real,3> Ar, BasicIO::H5_plan plan, string file_name, string dataset_name)
 {
-	return BasicIO::Read(Ar.data(), plan, file_name, dataset_name);
+	int err = BasicIO::Read(global.temp_array.Xr_slab.data(), plan, file_name, dataset_name);
+	spectralTransform.To_pencil(global.temp_array.Xr_slab, Ar);
+	return err;
 }
 
 
-int FFF_PENCIL::Write(Array<complx,3> A, BasicIO::H5_plan plan, string folder_name, string file_name, string dataset_name)
+int FFF_PENCIL::Write(Array<Complex,3> A, BasicIO::H5_plan plan, string folder_name, string file_name, string dataset_name)
 {
 	spectralTransform.Transpose(A, global.temp_array.Xr);
-	return BasicIO::Write(global.temp_array.Xr.data(), plan, folder_name, file_name, dataset_name);
+	spectralTransform.To_slab(global.temp_array.Xr, global.temp_array.Xr_slab);
+	return BasicIO::Write(global.temp_array.Xr_slab.data(), plan, folder_name, file_name, dataset_name);
 }
 
-int FFF_PENCIL::Write(Array<DP,3> Ar, BasicIO::H5_plan plan, string folder_name, string file_name, string dataset_name)
+int FFF_PENCIL::Write(Array<Real,3> Ar, BasicIO::H5_plan plan, string folder_name, string file_name, string dataset_name)
 {
-	return BasicIO::Write(Ar.data(), plan, folder_name, file_name, dataset_name);  
+	spectralTransform.To_slab(Ar, global.temp_array.Xr_slab);
+	return BasicIO::Write(global.temp_array.Xr_slab.data(), plan, folder_name, file_name, dataset_name);  
 }
 
 

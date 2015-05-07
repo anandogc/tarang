@@ -94,13 +94,13 @@ class RVF
 
 public:
 	//!  \f$ V_x(local_N1, N_2, N_3/2+1) \f$.
-	Array<complx,3> *V1r;	
+	Array<Complex,3> *V1r;	
 	
 	//!  \f$ V_y(local_N1, N_2, N_3/2+1) \f$.
-	Array<complx,3> *V2r;			
+	Array<Complex,3> *V2r;			
 	
 	//!  \f$ V_z(local_N1, N_2, N_3/2+1) \f$.
-	Array<complx,3> *V3r;		
+	Array<Complex,3> *V3r;		
 	
 
 	
@@ -121,11 +121,11 @@ public:
 	 *  m=0:  for \f$ \Delta u_{||} \f$
 	 *  m=1:  for \f$ \Delta u_{\perp} \f$
 	 */
-	Array<DP,3> *RV_St;
-	Array<DP,1> *RV_St_count;
+	Array<Real,3> *RV_St;
+	Array<Real,1> *RV_St_count;
 	
-	Array<DP,3> *RV_St_final;
-	Array<DP,1> *RV_St_count_final;
+	Array<Real,3> *RV_St_final;
+	Array<Real,1> *RV_St_count_final;
 	
 	
 	
@@ -149,7 +149,7 @@ public:
 	 *  @return FOUR: FOURIER transform
 	 *  @return SCFT: SFT(V1r) -> V1r; CFT(V2r) -> V2r; CFT(V3r) -> V3r;
 	 */
-	void RV_Forward_transform(Array<complx,3> temp_r);
+	void RV_Forward_transform(Array<Complex,3> temp_r);
 	
 	//
 	//
@@ -164,7 +164,7 @@ public:
 	 */	
 	void RV_Forward_transform_transpose_order
 	(
-		Array<complx,3> V1, Array<complx,3> V2, Array<complx,3> V3
+		Array<Complex,3> V1, Array<Complex,3> V2, Array<Complex,3> V3
 	);
 		
 	//*****************************************************************************************
@@ -196,7 +196,7 @@ public:
 	 */																
 	void RV_Inverse_transform_transpose_order
 	(
-		Array<complx,3> V1, Array<complx,3> V2, Array<complx,3> V3
+		Array<Complex,3> V1, Array<Complex,3> V2, Array<Complex,3> V3
 	);
 												
 	//*****************************************************************************************
@@ -209,15 +209,15 @@ public:
 	void Compute_dSt
 	(
 		 TinyVector<int,3> j1, TinyVector<int,3> j2,
-		 TinyVector<DP,3> V1, TinyVector<DP,3> V2
+		 TinyVector<Real,3> V1, TinyVector<Real,3> V2
 	);
 	
 	void Compute_structure_function_unit
 	(
 		 int otherproc, 
-		 Array<complx,3> otherV1,
-		 Array<complx,3> otherV2,
-		 Array<complx,3> otherV3
+		 Array<Complex,3> otherV1,
+		 Array<Complex,3> otherV2,
+		 Array<Complex,3> otherV3
 	);
 	
 	void Compute_local_structure_function();
@@ -234,9 +234,9 @@ public:
 	(
 		 int pll_index,
 		 int otherproc, 
-		 Array<complx,2> otherprocV1,
-		 Array<complx,2> otherprocV2,
-		 Array<complx,2> otherprocV3
+		 Array<Complex,2> otherprocV1,
+		 Array<Complex,2> otherprocV2,
+		 Array<Complex,2> otherprocV3
 	);
 	 
 	
@@ -244,9 +244,9 @@ public:
 	(
 		 int pll_index,
 		 int otherproc, 
-		 Array<DP,2> otherprocV1,
-		 Array<DP,2> otherprocV2,
-		 Array<DP,2> otherprocV3,
+		 Array<Real,2> otherprocV1,
+		 Array<Real,2> otherprocV2,
+		 Array<Real,2> otherprocV3,
 		 int imag_switch
 	);
 	 
@@ -274,7 +274,7 @@ public:
 	void RV_input(ifstream& file_in);
 	
 	//void RV_Output_hdf5(DataSet* dataset1, DataSet* dataset2, DataSet* dataset3,
-	//	       	 Array<complx,3> temp_array);
+	//	       	 Array<Complex,3> temp_array);
 	
 };
 

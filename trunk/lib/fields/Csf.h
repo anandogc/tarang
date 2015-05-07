@@ -76,13 +76,13 @@ private:
 public:
 
 	//!  Total energy of Csf.													
-	DP		total_energy;						
+	Real		total_energy;						
 	
 	//!  Total dissipation rate of Csf (without \f$ \kappa \f$).
-	DP		total_k2energy;					
+	Real		total_k2energy;					
 	
 	//!  Entropy of Csf
-	DP		entropy;																				
+	Real		entropy;																				
 	
 												
 //*********************************************************************************************					
@@ -156,7 +156,7 @@ public:
 	/// Compute total energy and dissipation of F.
 	void Compute_total_energy();
 	void Compute_total_k2energy();
-	void Compute_total_kn_energy(int n, DP &result);
+	void Compute_total_kn_energy(int n, Real &result);
 	
 	/// Compute entropy of F.
 	void Compute_entropy();
@@ -165,7 +165,7 @@ public:
 	//*****************************************************************************************	
 	
 	/// 3D: Return modal energy for grid index (i1,i2,i3).
-	DP Modal_energy(int i1, int i2, int i3);
+	Real Modal_energy(int i1, int i2, int i3);
 	
 	//*****************************************************************************************	
 	

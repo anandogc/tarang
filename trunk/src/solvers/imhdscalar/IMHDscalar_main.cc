@@ -71,11 +71,11 @@ int IMHDscalar_main()
         fluidIO_incompress.Read_init_cond(U, B, T);
 		
 		if (master) {
-			B.cvf.V1(0,0,0) = complx(1.0,0.0);
+			B.cvf.V1(0,0,0) = Complex(1.0,0.0);
 		}
 		
         
-        DP total_abs_div;
+        Real total_abs_div;
         U.Compute_divergence_field(global.temp_array.X2, total_abs_div, true);
         // true mean print nonzero div modes
         if (total_abs_div > MYEPS2) {

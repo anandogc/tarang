@@ -61,7 +61,7 @@ using namespace blitz;
  * 
  *	@param	TinyVector<int,2> j1, j2		Grid index of the two points
  *
- *	@return TinyVector<DP,2> dr			dr vector between the two point.
+ *	@return TinyVector<Real,2> dr			dr vector between the two point.
  *  @note	For periodic direction: dr(i)=(j2(i)-j1(i))*xfactor(i) 
  *				if diff <= N[i]/2;
  *				Otherwise dr(i) =(j2(i)-j1(i)-N[i]/2)*xfactor(i) 
@@ -71,8 +71,8 @@ void Compute_dr
 	string basis_type,
 	int N[], 
 	TinyVector<int,3> j1, TinyVector<int,3> j2, 
-	TinyVector<DP,3> &dr,
-	DP xfactor[]
+	TinyVector<Real,3> &dr,
+	Real xfactor[]
 );
 
 
@@ -103,7 +103,7 @@ void Compute_dr
 (
 	string basis_type,
 	int N[], 
-	Array<complx,3> F	
+	Array<Complex,3> F	
 ); */
 
 

@@ -49,7 +49,7 @@
 #include "FORCE.h"
 
 
-extern Uniform<DP> SPECrand;
+extern Uniform<Real> SPECrand;
 
 //*********************************************************************************************
 
@@ -63,9 +63,9 @@ extern Uniform<DP> SPECrand;
  */
 
 // force spectrum F(k) = A k^{-e} saved in U.cvf.shell_ek;  hk_by_kek=h_F(k)/(k F(k))  
-void  FORCE::Compute_force_using_random_energy_helicity_spectrum_basic(FluidVF& U, DP inner_radius, DP outer_radius, DP force_spectrum_amplitude, DP force_spectrum_exponent, DP hk_by_kek, bool add_flag)
+void  FORCE::Compute_force_using_random_energy_helicity_spectrum_basic(FluidVF& U, Real inner_radius, Real outer_radius, Real force_spectrum_amplitude, Real force_spectrum_exponent, Real hk_by_kek, bool add_flag)
 {
-	DP Kmag, ek, amp, phase1, phase2, phase3;
+	Real Kmag, ek, amp, phase1, phase2, phase3;
 	int index;
     
 	Model_force_spectrum(force_spectrum_amplitude, force_spectrum_exponent, Correlation::shell_ek);
@@ -127,22 +127,22 @@ void  FORCE::Compute_force_using_random_energy_helicity_spectrum_basic(FluidVF& 
 			}
 }
 
-void  FORCE::Compute_force_using_random_energy_helicity_spectrum_basic_assign(FluidVF& U, DP inner_radius, DP outer_radius, DP force_spectrum_amplitude, DP force_spectrum_exponent, DP hk_by_kek)
+void  FORCE::Compute_force_using_random_energy_helicity_spectrum_basic_assign(FluidVF& U, Real inner_radius, Real outer_radius, Real force_spectrum_amplitude, Real force_spectrum_exponent, Real hk_by_kek)
 {
 	Compute_force_using_random_energy_helicity_spectrum_basic(U, inner_radius, outer_radius, force_spectrum_amplitude, force_spectrum_exponent, hk_by_kek, false);
 }
 
 
-void  FORCE::Compute_force_using_random_energy_helicity_spectrum_basic_add(FluidVF& U, DP inner_radius, DP outer_radius, DP force_spectrum_amplitude, DP force_spectrum_exponent, DP hk_by_kek)
+void  FORCE::Compute_force_using_random_energy_helicity_spectrum_basic_add(FluidVF& U, Real inner_radius, Real outer_radius, Real force_spectrum_amplitude, Real force_spectrum_exponent, Real hk_by_kek)
 {
 	Compute_force_using_random_energy_helicity_spectrum_basic(U, inner_radius, outer_radius, force_spectrum_amplitude, force_spectrum_exponent, hk_by_kek, true);
 }
 
 //*********************************************************************************************
 
-void  FORCE::Compute_force_using_random_energy_spectrum_basic(FluidSF& T, DP inner_radius, DP outer_radius, DP force_spectrum_amplitude, DP force_spectrum_exponent, bool add_flag)
+void  FORCE::Compute_force_using_random_energy_spectrum_basic(FluidSF& T, Real inner_radius, Real outer_radius, Real force_spectrum_amplitude, Real force_spectrum_exponent, bool add_flag)
 {
-	DP Kmag, ek, amp, phase;
+	Real Kmag, ek, amp, phase;
 	int index;
 	
 	Model_force_spectrum(force_spectrum_amplitude, force_spectrum_exponent, Correlation::shell_ek);
@@ -193,12 +193,12 @@ void  FORCE::Compute_force_using_random_energy_spectrum_basic(FluidSF& T, DP inn
 }
 
 
-void  FORCE::Compute_force_using_random_energy_spectrum_basic_assign(FluidSF& T, DP inner_radius, DP outer_radius, DP force_spectrum_amplitude, DP force_spectrum_exponent)
+void  FORCE::Compute_force_using_random_energy_spectrum_basic_assign(FluidSF& T, Real inner_radius, Real outer_radius, Real force_spectrum_amplitude, Real force_spectrum_exponent)
 {
 	Compute_force_using_random_energy_spectrum_basic(T, inner_radius, outer_radius, force_spectrum_amplitude, force_spectrum_exponent, false);
 }
 
-void  FORCE::Compute_force_using_random_energy_spectrum_basic_add(FluidSF& T, DP inner_radius, DP outer_radius, DP force_spectrum_amplitude, DP force_spectrum_exponent)
+void  FORCE::Compute_force_using_random_energy_spectrum_basic_add(FluidSF& T, Real inner_radius, Real outer_radius, Real force_spectrum_amplitude, Real force_spectrum_exponent)
 {
 	Compute_force_using_random_energy_spectrum_basic(T, inner_radius, outer_radius, force_spectrum_amplitude, force_spectrum_exponent, true);
 }
@@ -208,11 +208,11 @@ void  FORCE::Compute_force_using_random_energy_spectrum_basic_add(FluidSF& T, DP
 
 void  FORCE::Compute_force_using_random_energy_helicity_spectrum(FluidVF& U) 
 {
-	DP inner_radius = global.force.double_para(0);
-	DP outer_radius = global.force.double_para(1);
-	DP force_spectrum_amplitude = global.force.double_para(2);
-	DP force_spectrum_exponent = global.force.double_para(3);
-	DP hk_by_kek = global.force.double_para(4);
+	Real inner_radius = global.force.double_para(0);
+	Real outer_radius = global.force.double_para(1);
+	Real force_spectrum_amplitude = global.force.double_para(2);
+	Real force_spectrum_exponent = global.force.double_para(3);
+	Real hk_by_kek = global.force.double_para(4);
     
     Compute_force_using_random_energy_helicity_spectrum_basic_assign(U, inner_radius, outer_radius, force_spectrum_amplitude, force_spectrum_exponent, hk_by_kek);
 }
@@ -229,13 +229,13 @@ void  FORCE::Compute_force_using_random_energy_helicity_spectrum(FluidVF& U)
 
 void  FORCE::Compute_force_using_random_energy_helicity_spectrum(FluidVF& U, FluidSF& T)
 {    
-	DP inner_radius = global.force.double_para(0);
-	DP outer_radius = global.force.double_para(1);
-    DP force_spectrum_amplitude = global.force.double_para(2);
-	DP force_spectrum_exponent = global.force.double_para(3);
-	DP hk_by_kek = global.force.double_para(4);
-	DP Tforce_spectrum_amplitude = global.force.double_para(5);
-	DP Tforce_spectrum_exponent = global.force.double_para(6);
+	Real inner_radius = global.force.double_para(0);
+	Real outer_radius = global.force.double_para(1);
+    Real force_spectrum_amplitude = global.force.double_para(2);
+	Real force_spectrum_exponent = global.force.double_para(3);
+	Real hk_by_kek = global.force.double_para(4);
+	Real Tforce_spectrum_amplitude = global.force.double_para(5);
+	Real Tforce_spectrum_exponent = global.force.double_para(6);
 	
 	Compute_force_using_random_energy_helicity_spectrum_basic_assign(U, inner_radius, outer_radius, force_spectrum_amplitude, force_spectrum_exponent, hk_by_kek);
 	Compute_force_using_random_energy_spectrum_basic_assign(T, inner_radius, outer_radius, Tforce_spectrum_amplitude, Tforce_spectrum_exponent);
@@ -255,14 +255,14 @@ void  FORCE::Compute_force_using_random_energy_helicity_spectrum(FluidVF& U, Flu
  */
 void  FORCE::Compute_force_using_random_energy_helicity_spectrum(FluidVF& U, FluidVF& W)
 {
-	DP inner_radius = global.force.double_para(0);
-	DP outer_radius = global.force.double_para(1);
-	DP force_spectrum_amplitude = global.force.double_para(2);
-	DP force_spectrum_exponent = global.force.double_para(3);
-	DP hk_by_kek = global.force.double_para(4);
-	DP Wforce_spectrum_amplitude = global.force.double_para(5);
-	DP Wforce_spectrum_exponent = global.force.double_para(6);
-	DP Whk_by_kek = global.force.double_para(7);
+	Real inner_radius = global.force.double_para(0);
+	Real outer_radius = global.force.double_para(1);
+	Real force_spectrum_amplitude = global.force.double_para(2);
+	Real force_spectrum_exponent = global.force.double_para(3);
+	Real hk_by_kek = global.force.double_para(4);
+	Real Wforce_spectrum_amplitude = global.force.double_para(5);
+	Real Wforce_spectrum_exponent = global.force.double_para(6);
+	Real Whk_by_kek = global.force.double_para(7);
     
     Compute_force_using_random_energy_helicity_spectrum_basic_assign(U, inner_radius, outer_radius, force_spectrum_amplitude, force_spectrum_exponent, hk_by_kek);
 	
@@ -285,18 +285,18 @@ void  FORCE::Compute_force_using_random_energy_helicity_spectrum(FluidVF& U, Flu
  */
 void  FORCE::Compute_force_using_random_energy_helicity_spectrum(FluidVF& U, FluidVF& W, FluidSF& T)
 {
-	DP inner_radius = global.force.double_para(0);
-	DP outer_radius = global.force.double_para(1);
-	DP force_spectrum_amplitude = global.force.double_para(2);
-	DP force_spectrum_exponent = global.force.double_para(3);
-	DP hk_by_kek = global.force.double_para(4);
+	Real inner_radius = global.force.double_para(0);
+	Real outer_radius = global.force.double_para(1);
+	Real force_spectrum_amplitude = global.force.double_para(2);
+	Real force_spectrum_exponent = global.force.double_para(3);
+	Real hk_by_kek = global.force.double_para(4);
 	
-	DP Wforce_spectrum_amplitude = global.force.double_para(5);
-	DP Wforce_spectrum_exponent = global.force.double_para(6);
-	DP Whk_by_kek = global.force.double_para(7);
+	Real Wforce_spectrum_amplitude = global.force.double_para(5);
+	Real Wforce_spectrum_exponent = global.force.double_para(6);
+	Real Whk_by_kek = global.force.double_para(7);
 	
-	DP Tforce_spectrum_amplitude = global.force.double_para(8);
-	DP Tforce_spectrum_exponent = global.force.double_para(9);
+	Real Tforce_spectrum_amplitude = global.force.double_para(8);
+	Real Tforce_spectrum_exponent = global.force.double_para(9);
     
     Compute_force_using_random_energy_helicity_spectrum_basic_assign(U, inner_radius, outer_radius, force_spectrum_amplitude, force_spectrum_exponent, hk_by_kek);
 	

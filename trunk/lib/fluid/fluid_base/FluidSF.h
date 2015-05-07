@@ -46,16 +46,16 @@ public:
 	CSF csf;
 	RSF rsf;
 
-    DP diffusion_coefficient;
-    DP hyper_diffusion_coefficient;
+    Real diffusion_coefficient;
+    Real hyper_diffusion_coefficient;
     int hyper_diffusion_exponent;
 
 	bool hyper_diffusion_switch;	
 	//!   \f$ nlin(local_{N1}, N_2, N_3/2+1) \f$.
-	Array<complx,3> nlin;						
+	Array<Complex,3> nlin;						
 	
 	//!  Force \f$ F_x(local_{N1}, N_2, N_3/2+1) \f$.
-	Array<complx,3> Force;	
+	Array<Complex,3> Force;	
 	bool force_switch;
 	
 public:
@@ -67,8 +67,8 @@ public:
 	 */
 	FluidSF
 	(
-		DP diffusion_coefficient, 
-		DP hyper_diffusion_coefficient, 
+		Real diffusion_coefficient, 
+		Real hyper_diffusion_coefficient, 
 		int hyper_diffusion_exponent,
 		bool force_switch,
 		string field_name
@@ -93,24 +93,24 @@ public:
     
     void Dealias_force_field();
 	
-	void Mult_field_exp_ksqr_dt(DP a);
-	void Mult_nlin_exp_ksqr_dt(DP a);
+	void Mult_field_exp_ksqr_dt(Real a);
+	void Mult_nlin_exp_ksqr_dt(Real a);
 	
-	void Add_nlin_factor_dt(DP factor);
-	void Add_field_nlin_factor_dt(PlainCSF& W, DP factor);
-	void Add_complex_conj(int kx, int ky, int kz, complx localG);
+	void Add_nlin_factor_dt(Real factor);
+	void Add_field_nlin_factor_dt(PlainCSF& W, Real factor);
+	void Add_complex_conj(int kx, int ky, int kz, Complex localG);
 	
-	DP Get_Tk(int kx, int ky, int kz);
+	Real Get_Tk(int kx, int ky, int kz);
     
-    DP Get_dt();
+    Real Get_dt();
     
 
 //Added during compilation
 //================================================================================
-	void Assign_field_and_comp_conj(int kx, int ky, int kz, complx localG);
-	void Assign_random_complex_scalar(int kx, int ky, int kz, DP rand_range);
-	void Assign_random_real_scalar(int kx, int ky, int kz, DP rand_range);
-	void Assign_field(int kx, int ky, int kz, DP localG);
+	void Assign_field_and_comp_conj(int kx, int ky, int kz, Complex localG);
+	void Assign_random_complex_scalar(int kx, int ky, int kz, Real rand_range);
+	void Assign_random_real_scalar(int kx, int ky, int kz, Real rand_range);
+	void Assign_field(int kx, int ky, int kz, Real localG);
 //================================================================================
 };
 	

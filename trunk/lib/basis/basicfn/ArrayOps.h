@@ -62,12 +62,12 @@ public:
 
 	static void Real_space_multiply
 	(
-		Array<DP,3> A, Array<DP,3> B, Array<DP,3> C
+		Array<Real,3> A, Array<Real,3> B, Array<Real,3> C
 	);
 
 	static void Real_space_divide
 	(
-		Array<DP,3> A, Array<DP,3> B, Array<DP,3> C
+		Array<Real,3> A, Array<Real,3> B, Array<Real,3> C
 	);
 
 	template<class T, int rank>

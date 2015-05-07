@@ -46,7 +46,7 @@
 //*********************************************************************************************
 
 
-int Get_shell_index(DP kkmag, Array<DP, 1> shell_radius_array)
+int Get_shell_index(Real kkmag, Array<Real, 1> shell_radius_array)
 {
 	
 	return first(shell_radius_array >= kkmag);
@@ -55,7 +55,7 @@ int Get_shell_index(DP kkmag, Array<DP, 1> shell_radius_array)
 //
 //*********************************************************************************************
 
-int Get_sector_index(DP theta, Array<DP, 1> sector_angle_array)
+int Get_sector_index(Real theta, Array<Real, 1> sector_angle_array)
 {
 	int index;
 	
@@ -70,10 +70,10 @@ int Get_sector_index(DP theta, Array<DP, 1> sector_angle_array)
 
 void Compute_ring_index
 (
-	DP kkmag, 
-	DP theta, 
-	Array<DP, 1> shell_radius_array, 
-	Array<DP, 1> sector_angle_array, 
+	Real kkmag, 
+	Real theta, 
+	Array<Real, 1> shell_radius_array, 
+	Array<Real, 1> sector_angle_array, 
 	int& shell_index, 
 	int& sector_index
 )
@@ -90,7 +90,7 @@ void Compute_ring_index
 //
 //*********************************************************************************************
 
-int Get_slab_index(DP kkpll, DP kkperp, Array<DP,1> cylinder_kpll_array)
+int Get_slab_index(Real kkpll, Real kkperp, Array<Real,1> cylinder_kpll_array)
 {
 	
 	return (abs(kkpll) < MYEPS) ? 1 : first(cylinder_kpll_array >= abs(kkpll));
@@ -102,10 +102,10 @@ int Get_slab_index(DP kkpll, DP kkperp, Array<DP,1> cylinder_kpll_array)
 
 void Compute_cylindrical_ring_index
 (
-	DP kkpll, 
-	DP kkperp, 
-	Array<DP,1> cylinder_shell_radius_array,
-	Array<DP,1> cylinder_kpll_array, 
+	Real kkpll, 
+	Real kkperp, 
+	Array<Real,1> cylinder_shell_radius_array,
+	Array<Real,1> cylinder_kpll_array, 
 	int& shell_index, 
 	int& slab_index
 )	

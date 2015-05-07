@@ -125,11 +125,11 @@ public:
 	void Read_init_cond(FluidVF& U, FluidSF& T1, FluidSF& T2);
     void Read_init_cond(FluidSF& T);
 
-	void Setup_Taylor_Green_field(FluidVF& U, int k0, DP amp);
-	void Setup_ABC_field(FluidVF& U, int k0, DP amp, DP A, DP B, DP C);
-	void Setup_SIX_MODE_field(FluidVF& U, int k0, DP amp101, DP amp011, DP amp112, DP h);
-	void Model_initial_using_shell_spectrum_Pope(DP dissipation_coefficient, DP epsilon, Array<DP,1> Sk);
-	void Model_initial_using_shell_spectrum_Corrsin(DP a, Array<DP,1> Sk);
+	void Setup_Taylor_Green_field(FluidVF& U, int k0, Real amp);
+	void Setup_ABC_field(FluidVF& U, int k0, Real amp, Real A, Real B, Real C);
+	void Setup_SIX_MODE_field(FluidVF& U, int k0, Real amp101, Real amp011, Real amp112, Real h);
+	void Model_initial_using_shell_spectrum_Pope(Real dissipation_coefficient, Real epsilon, Array<Real,1> Sk);
+	void Model_initial_using_shell_spectrum_Corrsin(Real a, Array<Real,1> Sk);
 	
 	void Init_cond_Taylor_Green(FluidVF& U);
 	void Init_cond_Taylor_Green(FluidVF& U, FluidSF& T);
@@ -149,12 +149,12 @@ public:
 	
 	void Init_cond_DYNAMO_SIX_MODE(FluidVF& U, FluidVF& W);
 	
-	void Put_vector_amp_phase_comp_conj(FluidVF U, int lx, int ly, int lz,  DP amp, DP phase1, DP phase2, DP phase3);
+	void Put_vector_amp_phase_comp_conj(FluidVF U, int lx, int ly, int lz,  Real amp, Real phase1, Real phase2, Real phase3);
 	
-	void Put_scalar_amp_phase_comp_conj(FluidSF& T, int lx, int ly, int lz, DP amp, DP phase);
+	void Put_scalar_amp_phase_comp_conj(FluidSF& T, int lx, int ly, int lz, Real amp, Real phase);
 	
-	void Initialize_using_energy_helicity_spectrum(FluidVF& U, DP spectrum_amp, DP hk_by_kek);
-	void Initialize_using_energy_helicity_spectrum(FluidSF& T, DP spectrum_amp);
+	void Initialize_using_energy_helicity_spectrum(FluidVF& U, Real spectrum_amp, Real hk_by_kek);
+	void Initialize_using_energy_helicity_spectrum(FluidSF& T, Real spectrum_amp);
 	
 	void Init_cond_energy_helicity_spectrum(FluidVF& U);
 	void Init_cond_energy_helicity_spectrum(FluidVF& U, FluidSF& T);
@@ -297,17 +297,17 @@ public:
 
 	//Interprets the given array as 2d and prints the fastest(last) index in a row
 	template <int N_rank>
-	void Print_array(ofstream& file, string label, Array<DP,N_rank> B)
+	void Print_array(ofstream& file, string label, Array<Real,N_rank> B)
 	{
 		if (master){
 			
-			Array<DP,N_rank> A(B.shape());
+			Array<Real,N_rank> A(B.shape());
 			A=B;
 			
 			int dim1=A.extent(A.rank()-1);	//extent of last index
 			int dim2=A.size()/dim1;
 
-			std::ostream_iterator<DP> file_it (file,"\t");
+			std::ostream_iterator<Real> file_it (file,"\t");
 
 			file << "%%" << label << "\n";
 
@@ -320,11 +320,11 @@ public:
 	
 	//Interprets the given array as 2d and prints the fastest(last) index in a row
 	template <int N_rank>
-	void Print_array(ofstream& file, string label, Array<DP,N_rank> B1, Array<DP,N_rank> B2)
+	void Print_array(ofstream& file, string label, Array<Real,N_rank> B1, Array<Real,N_rank> B2)
 	{
 		if (master){
-			Array<DP,N_rank> A1(B1.shape());
-			Array<DP,N_rank> A2(B2.shape());
+			Array<Real,N_rank> A1(B1.shape());
+			Array<Real,N_rank> A2(B2.shape());
 			
 			A1=B1;
 			A2=B2;
@@ -332,7 +332,7 @@ public:
 			int dim1=A1.extent(A1.rank()-1);	//extent of last index
 			int dim2=A1.size()/dim1;
 
-			std::ostream_iterator<DP> file_it (file,"\t");
+			std::ostream_iterator<Real> file_it (file,"\t");
 
 			file << "%%" << label << "\n";
 
@@ -351,12 +351,12 @@ public:
 	}
 
 	template <int N_rank>
-	void Print_array(ofstream& file, string label, Array<DP,N_rank> B1, Array<DP,N_rank> B2, Array<DP,N_rank> B3)
+	void Print_array(ofstream& file, string label, Array<Real,N_rank> B1, Array<Real,N_rank> B2, Array<Real,N_rank> B3)
 	{
 		if (master){
-			Array<DP,N_rank> A1(B1.shape());
-			Array<DP,N_rank> A2(B2.shape());
-			Array<DP,N_rank> A3(B3.shape());
+			Array<Real,N_rank> A1(B1.shape());
+			Array<Real,N_rank> A2(B2.shape());
+			Array<Real,N_rank> A3(B3.shape());
 			
 			A1=B1;
 			A2=B2;
@@ -365,7 +365,7 @@ public:
 			int dim1=A1.extent(A1.rank()-1);	//extent of last index (num cols)
 			int dim2=A1.size()/dim1;			//num rows
 
-			std::ostream_iterator<DP> file_it (file,"\t");
+			std::ostream_iterator<Real> file_it (file,"\t");
 
 			file << "%%" << label << "\n";
 

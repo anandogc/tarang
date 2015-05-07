@@ -36,36 +36,36 @@
 
 #include "Correlation.h"
 
-Array<DP,1> Correlation::shell_ek;
-Array<DP,1> Correlation::shell_dissk;
+Array<Real,1> Correlation::shell_ek;
+Array<Real,1> Correlation::shell_dissk;
 
-Array<DP,1> Correlation::shell_ek1;
-Array<DP,1> Correlation::shell_ek2;
-Array<DP,1> Correlation::shell_ek3;
+Array<Real,1> Correlation::shell_ek1;
+Array<Real,1> Correlation::shell_ek2;
+Array<Real,1> Correlation::shell_ek3;
 
-Array<DP,1> Correlation::shell_dissk1;
-Array<DP,1> Correlation::shell_dissk2;
-Array<DP,1> Correlation::shell_dissk3;
+Array<Real,1> Correlation::shell_dissk1;
+Array<Real,1> Correlation::shell_dissk2;
+Array<Real,1> Correlation::shell_dissk3;
 
-Array<DP,2> Correlation::ring_ek;
-Array<DP,2> Correlation::ring_dissk;
+Array<Real,2> Correlation::ring_ek;
+Array<Real,2> Correlation::ring_dissk;
 
-Array<DP,2> Correlation::ring_ek1;
-Array<DP,2> Correlation::ring_ek2;
-Array<DP,2> Correlation::ring_ek3;
+Array<Real,2> Correlation::ring_ek1;
+Array<Real,2> Correlation::ring_ek2;
+Array<Real,2> Correlation::ring_ek3;
 
-Array<DP,2> Correlation::ring_dissk1;
-Array<DP,2> Correlation::ring_dissk2;
-Array<DP,2> Correlation::ring_dissk3;
+Array<Real,2> Correlation::ring_dissk1;
+Array<Real,2> Correlation::ring_dissk2;
+Array<Real,2> Correlation::ring_dissk3;
 
-Array<DP,2> Correlation::cylindrical_ring_ek;
-Array<DP,2> Correlation::cylindrical_ring_dissk;
+Array<Real,2> Correlation::cylindrical_ring_ek;
+Array<Real,2> Correlation::cylindrical_ring_dissk;
 
-Array<DP,2> Correlation::cylindrical_ring_ek1;
-Array<DP,2> Correlation::cylindrical_ring_ek2;
+Array<Real,2> Correlation::cylindrical_ring_ek1;
+Array<Real,2> Correlation::cylindrical_ring_ek2;
 
-Array<DP,2> Correlation::cylindrical_ring_dissk1;
-Array<DP,2> Correlation::cylindrical_ring_dissk2;
+Array<Real,2> Correlation::cylindrical_ring_dissk1;
+Array<Real,2> Correlation::cylindrical_ring_dissk2;
 
 
 void Correlation::Initialize()
@@ -119,7 +119,7 @@ void Correlation::Initialize()
  * @return \f$ Nu = 1 + \sum u_z T \f$
  * @return For Pr=0, Nu = 1, but the function returns \f$ Nu = \sum u_z T \f$
  */
-DP Correlation::Get_Nusselt_no(FluidVF& U, FluidSF& T)
+Real Correlation::Get_Nusselt_no(FluidVF& U, FluidSF& T)
 {
     if (!(basis_type.find("Ch") != string::npos)) {
         // Actually Nu = 1 for Pr=0.  Here we just report the product W*theta.
@@ -200,7 +200,7 @@ DP Correlation::Get_Nusselt_no(FluidVF& U, FluidSF& T)
  *
  * @return \f$ Hc = \sum V.W/2 \f$ <BR>
  */
-DP Correlation::Get_cross_helicity(FluidVF& U, FluidVF& W)
+Real Correlation::Get_cross_helicity(FluidVF& U, FluidVF& W)
 {
 	return (universal->Get_total_energy(U.cvf.V1, W.cvf.V1)
 			+ universal->Get_total_energy(U.cvf.V2, W.cvf.V2)

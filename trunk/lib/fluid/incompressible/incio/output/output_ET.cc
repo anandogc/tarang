@@ -311,7 +311,7 @@ void FluidIO_incompress::Output_shell_to_shell(FluidVF& U, FluidVF& W, Pressure&
     }
 	
 	
-	DP B0mag = W.Get_mag_V0();
+	Real B0mag = W.Get_mag_V0();
 	
 	if (B0mag > MYEPS) {
 		energyTr->Compute_shell_ET_B0(U, W);
@@ -345,7 +345,7 @@ void FluidIO_incompress::Output_shell_to_shell(FluidVF& U, FluidVF& W, FluidSF& 
 	Print_array(shell_to_shell_file, "shell_to_shell: shelltoshell_Elsasser_minus ", energyTr->shelltoshell_Elsasser_minus(ra1,ra2));
 	Print_array(shell_to_shell_file, "shell_to_shell: T2T ", energyTr->shelltoshell_SF(ra1,ra2));
 	
-	DP B0mag = W.Get_mag_V0();
+	Real B0mag = W.Get_mag_V0();
 	
 	if (B0mag > MYEPS) {
 		energyTr->Compute_shell_ET_B0(U, W);
@@ -484,7 +484,7 @@ void FluidIO_incompress::Output_ring_to_ring(FluidVF& U, FluidVF& W, Pressure& P
 		Print_array(ring_to_ring_file, "sum(Fw.w)", energyTr->ring_force_x_field(ra1,ra2));
 		
 		
-		DP B0mag = W.Get_mag_V0();
+		Real B0mag = W.Get_mag_V0();
 		
 		if (B0mag > MYEPS) {
 			energyTr->Compute_ring_ET_B0(U, W);
@@ -542,7 +542,7 @@ void FluidIO_incompress::Output_ring_to_ring(FluidVF& U, FluidVF& W, FluidSF& T,
 		Print_array(ring_to_ring_file, "sum(FT.T)", energyTr->ring_force_x_field(ra1,ra2));
 		
 		
-		DP B0mag = W.Get_mag_V0();
+		Real B0mag = W.Get_mag_V0();
 		
 		if (B0mag > MYEPS) {
 			energyTr->Compute_ring_ET_B0(U, W);

@@ -60,10 +60,10 @@ using namespace blitz;
 //******************************************************************************
 
 /// return \f$ |\vec{r}_2 - \vec{r}_1| \f$ for 2D.
-inline DP Get_abs_dr
+inline Real Get_abs_dr
 (
-	TinyVector<DP,2> r1, 
-	TinyVector<DP,2> r2
+	TinyVector<Real,2> r1, 
+	TinyVector<Real,2> r2
 ) 
 {
 	return sqrt(pow2(r2(0)-r1(0)) + pow2(r2(1)-r1(1)));
@@ -71,11 +71,11 @@ inline DP Get_abs_dr
 
 
 /// return \f$ |\vec{r}_2 - \vec{r}_1| \f$ for 3D.
-inline DP Get_abs_dr
+inline Real Get_abs_dr
 (	
-	TinyVector<DP,3> r1, 
-	TinyVector<DP,3> r2, 
-	TinyVector<DP,3> r3
+	TinyVector<Real,3> r1, 
+	TinyVector<Real,3> r2, 
+	TinyVector<Real,3> r3
 ) 
 {
 	return sqrt(pow2(r2(0)-r1(0)) + pow2(r2(1)-r1(1)) + pow2(r2(2)-r1(2)));
@@ -90,18 +90,18 @@ inline DP Get_abs_dr
  *
  *	@return  min of max(r) along the three axis.
  */
-inline DP Max_radius_inside_real_space(string basis_type, int N[], DP Delta_x[])
+inline Real Max_radius_inside_real_space(string basis_type, int N[], Real Delta_x[])
 {
 	if (N[2] > 1) // 3D case
 		if (basis_type == "FOUR")	{
-			DP xmag = min( (N[1]/2)*Delta_x[1], (N[2]/2)*Delta_x[2] );  
+			Real xmag = min( (N[1]/2)*Delta_x[1], (N[2]/2)*Delta_x[2] );  
 			xmag = min(xmag, (N[3]/2)*Delta_x[3]);
 			
 			return xmag;	
 		}
 		
 		else if (basis_type == "SCFT")	{
-			DP xmag = min( (N[1]-1)*Delta_x[1], (N[2]/2)*Delta_x[2] );  
+			Real xmag = min( (N[1]-1)*Delta_x[1], (N[2]/2)*Delta_x[2] );  
 			xmag = min(xmag, (N[3]/2)*Delta_x[3]);
 			
 			return xmag;	
@@ -124,7 +124,7 @@ inline DP Max_radius_inside_real_space(string basis_type, int N[], DP Delta_x[])
 
 //******************************************************************************
 
-inline DP Min_radius_outside_real_space(string basis_type, int N[], DP Delta_x[])
+inline Real Min_radius_outside_real_space(string basis_type, int N[], Real Delta_x[])
 {
 	if (basis_type == "FOUR")
 		return  sqrt( pow2((N[1]/2)*Delta_x[1]) + pow2((N[2]/2)*Delta_x[2]) 

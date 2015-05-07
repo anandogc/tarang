@@ -51,6 +51,26 @@
 
 class BasicIO
 {
+
+	private:
+		static int num_p_rows;
+		static int num_p_cols;
+
+		static int my_row_id;
+		static int my_col_id;
+
+		static MPI_Comm MPI_COMM_ROW;
+		static MPI_Comm MPI_COMM_COL;
+
+		// define an info object to store MPI-IO information 
+		static MPI_Info FILE_INFO_TEMPLATE;
+		static hid_t acc_template;
+		
+		static ofstream LOG_file;
+
+		static bool frequent;
+
+
 	public:
 
 	static hid_t H5T_FLOAT;
@@ -98,18 +118,9 @@ class BasicIO
 	static string data_in_folder, data_out_folder;
 	static string LOG_filename;
 
-	private:
-		// define an info object to store MPI-IO information 
-		static MPI_Info FILE_INFO_TEMPLATE;
-		static hid_t acc_template;
-		
-		static ofstream LOG_file;
-
-		static bool frequent;
-
 	public:
 
-		static void Initialize(string data_base_folder);
+		static void Initialize(string data_base_folder, int num_p_rows, int num_p_cols);
 		static void Finalize();
 		static void Log(string message);
 		static void Begin_frequent();

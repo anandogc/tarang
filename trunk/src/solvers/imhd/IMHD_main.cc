@@ -61,7 +61,7 @@ int IMHD_main()
 
         fluidIO_incompress.Read_init_cond(U, B);
         
-        DP total_abs_div;
+        Real total_abs_div;
         U.Compute_divergence_field(global.temp_array.X2, total_abs_div, true);
         // true mean print nonzero div modes
         if (total_abs_div > MYEPS2) {

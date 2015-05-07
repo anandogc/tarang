@@ -47,38 +47,38 @@ comment
  
 ***********************************************************************************************/
 
-void ChSF_SLAB::Last_component(int kx, int ky, int kz, DP& dvxdx, DP& Vy, DP& Vz)
+void ChSF_SLAB::Last_component(int kx, int ky, int kz, Real& dvxdx, Real& Vy, Real& Vz)
 {
 }
 
-void ChSF_SLAB::Last_component(int kx, int ky, int kz,  complx &dvxdx, complx &Vy, complx &Vz)
+void ChSF_SLAB::Last_component(int kx, int ky, int kz,  Complex &dvxdx, Complex &Vy, Complex &Vz)
 {
-	DP Kx = kx*kfactor[1];
-	DP Ky = ky*kfactor[2];
-	DP Kz = kz*kfactor[3];
+	Real Kx = kx*kfactor[1];
+	Real Ky = ky*kfactor[2];
+	Real Kz = kz*kfactor[3];
 	
-	complx dvydy;
+	Complex dvydy;
 	int kysign;
 	
 	global.program.sincostr_switch = sincostr_switch_Vy;
 	if (global.program.sincostr_switch[1] == 'S') {
-		dvydy = complx(Ky,0)*Vy;
+		dvydy = Complex(Ky,0)*Vy;
 		kysign = 1;
 	}
 	else if (global.program.sincostr_switch[1] == 'C') {
-		dvydy = -complx(Ky,0)*Vy;
+		dvydy = -Complex(Ky,0)*Vy;
 		kysign = -1;
 	}
 
 	
 	if (kz != 0)
-		Vz = (dvxdx+dvydy)/complx(0,-Kz);
+		Vz = (dvxdx+dvydy)/Complex(0,-Kz);
 		// works for both 2D (Ky=0) and 3D.
 	
 	else {
 		if (ky != 0) { // 3D: input fields are (Vx, Vz); compute Vy
 			Vz = Vy;
-			Vy = dvxdx/complx(0,-Ky*kysign); 
+			Vy = dvxdx/Complex(0,-Ky*kysign); 
 		}
 		else if (abs(dvxdx) > MYEPS) {	// k = (kx,0,0); input fields are (Vy, Vz)
 			cerr << "MyERROR: Initcond with modes: u^(1)(kx,0,0) is nonzero!! " << endl;
@@ -92,7 +92,7 @@ Dealias
  
  ***********************************************************************************************/
 
-void ChSF_SLAB::Dealias(Array<complx,3> A)
+void ChSF_SLAB::Dealias(Array<Complex,3> A)
 {
 	Array<int,1> Ay_filter(Ny);
 	
@@ -107,7 +107,7 @@ void ChSF_SLAB::Dealias(Array<complx,3> A)
 }
 
 // Data resides till outer_radius in k-space
-bool ChSF_SLAB::Is_dealiasing_necessary(Array<complx,3> A, DP outer_radius)
+bool ChSF_SLAB::Is_dealiasing_necessary(Array<Complex,3> A, Real outer_radius)
 {
 	int kx_max = (int) ceil(outer_radius/kfactor[1]);
 	int ky_max = (int) ceil(outer_radius/kfactor[2]);
@@ -129,18 +129,18 @@ f(m, -ky, 0) = conj(f(m, ky, 0))- do for kz=N[3]/2
  
  ***********************************************************************************************/
 
-void ChSF_SLAB::Satisfy_strong_reality_condition_in_Array(Array<complx,3> A)
+void ChSF_SLAB::Satisfy_strong_reality_condition_in_Array(Array<Complex,3> A)
 {
 	return;
 }
 
-void ChSF_SLAB::Satisfy_weak_reality_condition_in_Array(Array<complx,3> A)
+void ChSF_SLAB::Satisfy_weak_reality_condition_in_Array(Array<Complex,3> A)
 {
 	return;
 }
 
 
-void ChSF_SLAB::Test_reality_condition_in_Array(Array<complx,3> A)
+void ChSF_SLAB::Test_reality_condition_in_Array(Array<Complex,3> A)
 {
 	return;
 }

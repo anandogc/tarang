@@ -201,7 +201,7 @@ void Nlin_incompress::Compute_nlin_RBC(FluidVF& U, FluidSF& T)
 #ifdef GROSSMANN_LOHSE	
 		if (!global.io.output_nlin_magnitude_done && global.time.now >= global.io.time.global_save_next) {
 
-            DP visc1, visc2, visc3, Tvisc;
+            Real visc1, visc2, visc3, Tvisc;
             universal->Laplacian(1.0, U.cvf.V1, global.temp_array.X);
             visc1 = (-U.dissipation_coefficient)* sum(abs(global.temp_array.X));
             
@@ -218,34 +218,34 @@ void Nlin_incompress::Compute_nlin_RBC(FluidVF& U, FluidSF& T)
             
             
             
-            DP U_nlin1_local = sum(sqr(abs(U.nlin1)));
-            DP U_nlin2_local = sum(sqr(abs(U.nlin2)));
-            DP U_nlin3_local = sum(sqr(abs(U.nlin3)));
+            Real U_nlin1_local = sum(sqr(abs(U.nlin1)));
+            Real U_nlin2_local = sum(sqr(abs(U.nlin2)));
+            Real U_nlin3_local = sum(sqr(abs(U.nlin3)));
        
-            DP U_nlin1_total;
-            DP U_nlin2_total;
-            DP U_nlin3_total;
+            Real U_nlin1_total;
+            Real U_nlin2_total;
+            Real U_nlin3_total;
             
-            DP T_nlin_local = sum(sqr(abs(T.nlin)));
-            DP T_nlin_total;
+            Real T_nlin_local = sum(sqr(abs(T.nlin)));
+            Real T_nlin_total;
             
-            DP visc1_total;
-            DP visc2_total;
-            DP visc3_total;
+            Real visc1_total;
+            Real visc2_total;
+            Real visc3_total;
             
-            DP Tvisc_total;
+            Real Tvisc_total;
               
-			MPI_Reduce(&U_nlin1_local, &U_nlin1_total, 1, MPI_DP, MPI_SUM, 0, MPI_COMM_WORLD);
-			MPI_Reduce(&U_nlin2_local, &U_nlin2_total, 1, MPI_DP, MPI_SUM, 0, MPI_COMM_WORLD);
-			MPI_Reduce(&U_nlin3_local, &U_nlin3_total, 1, MPI_DP, MPI_SUM, 0, MPI_COMM_WORLD);
+			MPI_Reduce(&U_nlin1_local, &U_nlin1_total, 1, MPI_Real, MPI_SUM, 0, MPI_COMM_WORLD);
+			MPI_Reduce(&U_nlin2_local, &U_nlin2_total, 1, MPI_Real, MPI_SUM, 0, MPI_COMM_WORLD);
+			MPI_Reduce(&U_nlin3_local, &U_nlin3_total, 1, MPI_Real, MPI_SUM, 0, MPI_COMM_WORLD);
 			
-			MPI_Reduce(&T_nlin_local, &T_nlin_total, 1, MPI_DP, MPI_SUM, 0, MPI_COMM_WORLD);
+			MPI_Reduce(&T_nlin_local, &T_nlin_total, 1, MPI_Real, MPI_SUM, 0, MPI_COMM_WORLD);
 			
-			MPI_Reduce(&visc1, &visc1_total, 1, MPI_DP, MPI_SUM, 0, MPI_COMM_WORLD);
-			MPI_Reduce(&visc2, &visc2_total, 1, MPI_DP, MPI_SUM, 0, MPI_COMM_WORLD);
-			MPI_Reduce(&visc3, &visc3_total, 1, MPI_DP, MPI_SUM, 0, MPI_COMM_WORLD);
+			MPI_Reduce(&visc1, &visc1_total, 1, MPI_Real, MPI_SUM, 0, MPI_COMM_WORLD);
+			MPI_Reduce(&visc2, &visc2_total, 1, MPI_Real, MPI_SUM, 0, MPI_COMM_WORLD);
+			MPI_Reduce(&visc3, &visc3_total, 1, MPI_Real, MPI_SUM, 0, MPI_COMM_WORLD);
 			
-			MPI_Reduce(&Tvisc, &Tvisc_total, 1, MPI_DP, MPI_SUM, 0, MPI_COMM_WORLD);
+			MPI_Reduce(&Tvisc, &Tvisc_total, 1, MPI_Real, MPI_SUM, 0, MPI_COMM_WORLD);
 			
 			U_nlin1_total = sqrt(U_nlin1_total);
 			U_nlin2_total = sqrt(U_nlin2_total);
@@ -307,7 +307,7 @@ void Nlin_incompress::Compute_nlin_RBC(FluidVF& U, FluidSF& T)
 #ifdef GROSSMANN_LOHSE         
 		if (!global.io.output_nlin_magnitude_done && global.time.now >= global.io.time.global_save_next) {
 			         
-			DP visc1, visc2, visc3, Tvisc;
+			Real visc1, visc2, visc3, Tvisc;
             universal->Laplacian(1.0, U.cvf.V1, global.temp_array.X);
             visc1 = (-U.dissipation_coefficient)* sum(abs(global.temp_array.X));
             
@@ -325,36 +325,36 @@ void Nlin_incompress::Compute_nlin_RBC(FluidVF& U, FluidSF& T)
             
             //cout << my_id << " " << global.time.now << " " << sum(abs(T.csf.F)) << endl;
             
-			DP U_nlin1_local = sum(sqr(abs(U.nlin1)));
-            DP U_nlin2_local = sum(sqr(abs(U.nlin2)));
-            DP U_nlin3_local = sum(sqr(abs(U.nlin3)));
+			Real U_nlin1_local = sum(sqr(abs(U.nlin1)));
+            Real U_nlin2_local = sum(sqr(abs(U.nlin2)));
+            Real U_nlin3_local = sum(sqr(abs(U.nlin3)));
        
-            DP U_nlin1_total;
-            DP U_nlin2_total;
-            DP U_nlin3_total;
+            Real U_nlin1_total;
+            Real U_nlin2_total;
+            Real U_nlin3_total;
             
-            DP T_nlin_local = sum(sqr(abs(T.nlin)));
-            DP T_nlin_total;
+            Real T_nlin_local = sum(sqr(abs(T.nlin)));
+            Real T_nlin_total;
             
-            DP visc1_total;
-            DP visc2_total;
-            DP visc3_total;
+            Real visc1_total;
+            Real visc2_total;
+            Real visc3_total;
             
-            DP Tvisc_total;
+            Real Tvisc_total;
             
-			MPI_Reduce(&U_nlin1_local, &U_nlin1_total, 1, MPI_DP, MPI_SUM, 0, MPI_COMM_WORLD);
-			MPI_Reduce(&U_nlin2_local, &U_nlin2_total, 1, MPI_DP, MPI_SUM, 0, MPI_COMM_WORLD);
-			MPI_Reduce(&U_nlin3_local, &U_nlin3_total, 1, MPI_DP, MPI_SUM, 0, MPI_COMM_WORLD);
+			MPI_Reduce(&U_nlin1_local, &U_nlin1_total, 1, MPI_Real, MPI_SUM, 0, MPI_COMM_WORLD);
+			MPI_Reduce(&U_nlin2_local, &U_nlin2_total, 1, MPI_Real, MPI_SUM, 0, MPI_COMM_WORLD);
+			MPI_Reduce(&U_nlin3_local, &U_nlin3_total, 1, MPI_Real, MPI_SUM, 0, MPI_COMM_WORLD);
 			
-			MPI_Reduce(&T_nlin_local, &T_nlin_total, 1, MPI_DP, MPI_SUM, 0, MPI_COMM_WORLD);
+			MPI_Reduce(&T_nlin_local, &T_nlin_total, 1, MPI_Real, MPI_SUM, 0, MPI_COMM_WORLD);
 			
 			
 			
-			MPI_Reduce(&visc1, &visc1_total, 1, MPI_DP, MPI_SUM, 0, MPI_COMM_WORLD);
-			MPI_Reduce(&visc2, &visc2_total, 1, MPI_DP, MPI_SUM, 0, MPI_COMM_WORLD);
-			MPI_Reduce(&visc3, &visc3_total, 1, MPI_DP, MPI_SUM, 0, MPI_COMM_WORLD);
+			MPI_Reduce(&visc1, &visc1_total, 1, MPI_Real, MPI_SUM, 0, MPI_COMM_WORLD);
+			MPI_Reduce(&visc2, &visc2_total, 1, MPI_Real, MPI_SUM, 0, MPI_COMM_WORLD);
+			MPI_Reduce(&visc3, &visc3_total, 1, MPI_Real, MPI_SUM, 0, MPI_COMM_WORLD);
 			
-			MPI_Reduce(&Tvisc, &Tvisc_total, 1, MPI_DP, MPI_SUM, 0, MPI_COMM_WORLD);
+			MPI_Reduce(&Tvisc, &Tvisc_total, 1, MPI_Real, MPI_SUM, 0, MPI_COMM_WORLD);
 			
 			U_nlin1_total = sqrt(U_nlin1_total);
 			U_nlin2_total = sqrt(U_nlin2_total);

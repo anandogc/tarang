@@ -100,7 +100,7 @@ ChFF_SLAB::ChFF_SLAB()
     for (int i=1; i<=3; i++)
         global.field.L[i] *= global.field.twobyL1;
     
-    DP kfactor_1 = global.field.kfactor[1];
+    Real kfactor_1 = global.field.kfactor[1];
     for (int i=1; i<=3; i++)
         global.field.kfactor[i] *= 1.0/kfactor_1;
     
@@ -167,8 +167,8 @@ ChFF_SLAB::ChFF_SLAB()
 		array_properties.Fourier_directions = 1,1,0;
 		array_properties.Z = 1;
 	
-		array_properties.datatype_complex_space = BasicIO::H5T_COMPLX;
-		array_properties.datatype_real_space = BasicIO::H5T_DP;
+		array_properties.datatype_complex_space = BasicIO::H5T_Complex;
+		array_properties.datatype_real_space = BasicIO::H5T_Real;
 
 		BasicIO::Set_H5_plans(array_properties, this);
 	}
@@ -196,8 +196,8 @@ ChFF_SLAB::ChFF_SLAB()
 		array_properties.Fourier_directions = 1,0;
 		array_properties.Z = 0;
 	
-		array_properties.datatype_complex_space = BasicIO::H5T_COMPLX;
-		array_properties.datatype_real_space = BasicIO::H5T_DP;
+		array_properties.datatype_complex_space = BasicIO::H5T_Complex;
+		array_properties.datatype_real_space = BasicIO::H5T_Real;
 
 		BasicIO::Set_H5_plans(array_properties, this);
 	}
@@ -243,7 +243,7 @@ ChFF_SLAB::ChFF_SLAB()
 	global.temp_array.Xreal.resize(local_Ny, local_Nz, Nx);
 	global.temp_array.influence_matrix.resize(local_Ny,local_Nz,2,2);
 
-	// Being used in void ArrayOps::Get_XY_plane(Array<complx,3> A, Array<complx,2> plane_xy, int kz, string configuration)
+	// Being used in void ArrayOps::Get_XY_plane(Array<Complex,3> A, Array<Complex,2> plane_xy, int kz, string configuration)
 	global.temp_array.plane_xy.resize(Ny, Nx);
     global.temp_array.plane_xy_inproc.resize(spectralTransform.local_Ny, Nx);
 }

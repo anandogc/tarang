@@ -52,16 +52,16 @@ void FORCE::Compute_force_RBC_basic_assign(FluidVF& U, FluidSF& T)
 {
 	
 	if (global.program.basis_type == "ChFF") { // box size (2,Ly,Lz)
-		U.Force1 =  DP(0.125)*(global.PHYSICS.Rayleigh*global.PHYSICS.Prandtl)*(T.csf.F);
+		U.Force1 =  Real(0.125)*(global.PHYSICS.Rayleigh*global.PHYSICS.Prandtl)*(T.csf.F);
         U.Force2 = ZERO;
         U.Force3 = ZERO;
-        T.Force = DP(0.5)*(U.cvf.V1); 
+        T.Force = Real(0.5)*(U.cvf.V1); 
 		
         // For the velocity field
 		if (global.PHYSICS.Pr_option == "PRLARGE") {
 			
 			if (global.PHYSICS.Uscaling == "USMALL")
-				U.Force1 = (DP (0.125*global.PHYSICS.Rayleigh*global.PHYSICS.Prandtl))*(T.csf.F);	// (u.grad)u-Ra*Pr*theta
+				U.Force1 = (Real (0.125*global.PHYSICS.Rayleigh*global.PHYSICS.Prandtl))*(T.csf.F);	// (u.grad)u-Ra*Pr*theta
 			
 			else if (global.PHYSICS.Uscaling  == "ULARGE")
 				U.Force1 =  T.csf.F;					// (u.grad)u-theta
@@ -95,7 +95,7 @@ void FORCE::Compute_force_RBC_basic_assign(FluidVF& U, FluidSF& T)
 			// globalvar_temperature_grad = +1 for RB, and -1 for stratified flows
 			
 			else if (global.PHYSICS.Pr_option == "PRSMALL") {
-				T.Force =  (DP (1/(TWO*global.PHYSICS.Prandtl)))*(U.cvf.V1);
+				T.Force =  (Real (1/(TWO*global.PHYSICS.Prandtl)))*(U.cvf.V1);
 			}
 			//F(T) =  globalvar_temperature_grad * ux(k)/Pr
 			
@@ -151,7 +151,7 @@ void FORCE::Compute_force_RBC_basic_assign(FluidVF& U, FluidSF& T)
 					T.Force =  (U.cvf.V1);
 			
 			if (global.PHYSICS.temperature_grad != 1)  // for stratififed flows
-				T.Force = (DP (global.PHYSICS.temperature_grad))*T.Force;
+				T.Force = (Real (global.PHYSICS.temperature_grad))*T.Force;
 		}
 	}
  
@@ -165,7 +165,7 @@ void FORCE::Compute_force_RBC_basic_add(FluidVF& U, FluidSF& T)
 		if (global.PHYSICS.Pr_option == "PRLARGE") {
 			
 			if (global.PHYSICS.Uscaling == "USMALL")
-				U.Force1 += (DP (0.125*global.PHYSICS.Rayleigh*global.PHYSICS.Prandtl))*(T.csf.F);	// (u.grad)u-Ra*Pr*theta
+				U.Force1 += (Real (0.125*global.PHYSICS.Rayleigh*global.PHYSICS.Prandtl))*(T.csf.F);	// (u.grad)u-Ra*Pr*theta
 			
 			else if (global.PHYSICS.Uscaling  == "ULARGE")
 				U.Force1 +=  T.csf.F;					// (u.grad)u-theta
@@ -195,7 +195,7 @@ void FORCE::Compute_force_RBC_basic_add(FluidVF& U, FluidSF& T)
 			// globalvar_temperature_grad = +1 for RB, and -1 for stratified flows
 			
 			else if (global.PHYSICS.Pr_option == "PRSMALL") {
-				T.Force +=  (DP (1/(2*global.PHYSICS.Prandtl)))*(U.cvf.V1);
+				T.Force +=  (Real (1/(2*global.PHYSICS.Prandtl)))*(U.cvf.V1);
 			}
 			//F(T) =  globalvar_temperature_grad * ux(k)/Pr
 			
@@ -203,7 +203,7 @@ void FORCE::Compute_force_RBC_basic_add(FluidVF& U, FluidSF& T)
                 T.Force +=   (U.cvf.V1)/TWO;
 			
 			if (global.PHYSICS.temperature_grad != 1)
-				T.Force += (DP (global.PHYSICS.temperature_grad))*T.Force;
+				T.Force += (Real (global.PHYSICS.temperature_grad))*T.Force;
 		}
     }
     
@@ -254,7 +254,7 @@ void FORCE::Compute_force_RBC_basic_add(FluidVF& U, FluidSF& T)
 					T.Force +=  (U.cvf.V1);
 			
 			if (global.PHYSICS.temperature_grad != 1)  // for stratififed flows
-				T.Force += (DP (global.PHYSICS.temperature_grad))*T.Force;
+				T.Force += (Real (global.PHYSICS.temperature_grad))*T.Force;
 		}
 	}
 			
@@ -295,15 +295,15 @@ void FORCE::Compute_force_RBC_rotation(FluidVF& U, FluidSF& T)
 	
 	if (omega_components == 1) {
 		int rotation_direction = global.force.int_para(1);
-		DP two_omega =  2*global.force.double_para(0);
+		Real two_omega =  2*global.force.double_para(0);
 		
 		Compute_force_Coriolis_basic_add(U, rotation_direction, two_omega);
 	}
 	
 	else if (omega_components == 3) {
-		DP two_omega1 = 2*global.force.double_para(0);
-		DP two_omega2 = 2*global.force.double_para(1);
-		DP two_omega3 = 2*global.force.double_para(2);
+		Real two_omega1 = 2*global.force.double_para(0);
+		Real two_omega2 = 2*global.force.double_para(1);
+		Real two_omega3 = 2*global.force.double_para(2);
 		
 		Compute_force_Coriolis_basic_add(U, two_omega1, two_omega2, two_omega3);
 	}
@@ -325,13 +325,13 @@ void FORCE::Compute_force_stratified_random(FluidVF& U, FluidSF& T)
 	U.Force3 = 0.0;
 	T.Force = 0.0;
 	
-	DP inner_radius =  global.force.double_para(0);
-	DP outer_radius = global.force.double_para(1);
-    DP force_spectrum_amplitude = global.force.double_para(2);
-    DP force_spectrum_exponent = global.force.double_para(3);
-    DP hk_by_kek = global.force.double_para(4);
-	DP Tforce_spectrum_amplitude = global.force.double_para(5);
-	DP Tforce_spectrum_exponent = global.force.double_para(6);
+	Real inner_radius =  global.force.double_para(0);
+	Real outer_radius = global.force.double_para(1);
+    Real force_spectrum_amplitude = global.force.double_para(2);
+    Real force_spectrum_exponent = global.force.double_para(3);
+    Real hk_by_kek = global.force.double_para(4);
+	Real Tforce_spectrum_amplitude = global.force.double_para(5);
+	Real Tforce_spectrum_exponent = global.force.double_para(6);
 
     //Compute_force_RBC(U, T); //For startified
 

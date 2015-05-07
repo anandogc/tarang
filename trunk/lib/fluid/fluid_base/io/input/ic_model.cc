@@ -52,7 +52,7 @@
  *	@param amp  
  *
  */
-void FluidIO::Setup_Taylor_Green_field(FluidVF& U, int k0, DP amp)
+void FluidIO::Setup_Taylor_Green_field(FluidVF& U, int k0, Real amp)
 {
 	U.cvf.V1 = 0.0; 
 	U.cvf.V2 = 0.0;  
@@ -73,23 +73,23 @@ void FluidIO::Setup_Taylor_Green_field(FluidVF& U, int k0, DP amp)
 	// CHOOSE SFF type
 	else if (basis_type == "SFF") {
 
-		universal->Assign_spectral_field(k0, k0, k0, U.cvf.V1, complx(amp/8, 0.0));
-		universal->Assign_spectral_field(k0, -k0, k0, U.cvf.V1, complx(amp/8, 0.0));
+		universal->Assign_spectral_field(k0, k0, k0, U.cvf.V1, Complex(amp/8, 0.0));
+		universal->Assign_spectral_field(k0, -k0, k0, U.cvf.V1, Complex(amp/8, 0.0));
 		
-		universal->Assign_spectral_field(k0, k0, k0, U.cvf.V2, complx(0, amp/8));
-		universal->Assign_spectral_field(k0, -k0, k0, U.cvf.V2, complx(0, -amp/8));
+		universal->Assign_spectral_field(k0, k0, k0, U.cvf.V2, Complex(0, amp/8));
+		universal->Assign_spectral_field(k0, -k0, k0, U.cvf.V2, Complex(0, -amp/8));
 	}
 	
 	else if (basis_type == "FFF" || basis_type == "FFFW") {
-		universal->Assign_spectral_field(k0, k0, k0, U.cvf.V1, complx(0, -amp/8));
-		universal->Assign_spectral_field(k0, -k0, k0, U.cvf.V1, complx(0, -amp/8));
-		universal->Assign_spectral_field(-k0, k0, k0, U.cvf.V1, complx(0, amp/8));
-		universal->Assign_spectral_field(-k0, -k0, k0, U.cvf.V1, complx(0, amp/8));
+		universal->Assign_spectral_field(k0, k0, k0, U.cvf.V1, Complex(0, -amp/8));
+		universal->Assign_spectral_field(k0, -k0, k0, U.cvf.V1, Complex(0, -amp/8));
+		universal->Assign_spectral_field(-k0, k0, k0, U.cvf.V1, Complex(0, amp/8));
+		universal->Assign_spectral_field(-k0, -k0, k0, U.cvf.V1, Complex(0, amp/8));
 		
-		universal->Assign_spectral_field(k0, k0, k0, U.cvf.V2, complx(0, amp/8));
-		universal->Assign_spectral_field(-k0, k0, k0, U.cvf.V2, complx(0, amp/8));
-		universal->Assign_spectral_field(k0, -k0, k0, U.cvf.V2, complx(0, -amp/8));
-		universal->Assign_spectral_field(-k0, -k0, k0, U.cvf.V2, complx(0, -amp/8));
+		universal->Assign_spectral_field(k0, k0, k0, U.cvf.V2, Complex(0, amp/8));
+		universal->Assign_spectral_field(-k0, k0, k0, U.cvf.V2, Complex(0, amp/8));
+		universal->Assign_spectral_field(k0, -k0, k0, U.cvf.V2, Complex(0, -amp/8));
+		universal->Assign_spectral_field(-k0, -k0, k0, U.cvf.V2, Complex(0, -amp/8));
 	}
 }
 
@@ -107,7 +107,7 @@ void FluidIO::Setup_Taylor_Green_field(FluidVF& U, int k0, DP amp)
  */
 
 
-void FluidIO::Setup_ABC_field(FluidVF& U, int k0, DP amp, DP A, DP B, DP C)
+void FluidIO::Setup_ABC_field(FluidVF& U, int k0, Real amp, Real A, Real B, Real C)
 {
 
 	U.cvf.V1 = 0.0; 
@@ -115,17 +115,17 @@ void FluidIO::Setup_ABC_field(FluidVF& U, int k0, DP amp, DP A, DP B, DP C)
 	U.cvf.V3 = 0.0;			
 	
 	if (basis_type == "FFF" || basis_type == "FFFW") {
-		universal->Assign_spectral_field(0, k0, 0, U.cvf.V1, complx(amp*B/2, 0));
-		universal->Assign_spectral_field(0, -k0, 0, U.cvf.V1, complx(amp*B/2, 0));
-		universal->Assign_spectral_field(0, 0, k0, U.cvf.V1, complx(0, -amp*C));
+		universal->Assign_spectral_field(0, k0, 0, U.cvf.V1, Complex(amp*B/2, 0));
+		universal->Assign_spectral_field(0, -k0, 0, U.cvf.V1, Complex(amp*B/2, 0));
+		universal->Assign_spectral_field(0, 0, k0, U.cvf.V1, Complex(0, -amp*C));
 		
-		universal->Assign_spectral_field(k0, 0, 0, U.cvf.V2, complx(0, -amp*A/2));
-		universal->Assign_spectral_field(-k0, 0, 0, U.cvf.V2, complx(0, amp*A/2));
-		universal->Assign_spectral_field(0, 0, k0, U.cvf.V2, complx(amp*C, 0));
+		universal->Assign_spectral_field(k0, 0, 0, U.cvf.V2, Complex(0, -amp*A/2));
+		universal->Assign_spectral_field(-k0, 0, 0, U.cvf.V2, Complex(0, amp*A/2));
+		universal->Assign_spectral_field(0, 0, k0, U.cvf.V2, Complex(amp*C, 0));
 		
-		universal->Assign_spectral_field(k0, 0, 0, U.cvf.V3, complx(amp*A/2, 0));
-		universal->Assign_spectral_field(-k0, 0, 0, U.cvf.V3, complx(amp*A/2, 0));
-		universal->Assign_spectral_field(0, k0, 0, U.cvf.V3, complx(0, -amp*B));
+		universal->Assign_spectral_field(k0, 0, 0, U.cvf.V3, Complex(amp*A/2, 0));
+		universal->Assign_spectral_field(-k0, 0, 0, U.cvf.V3, Complex(amp*A/2, 0));
+		universal->Assign_spectral_field(0, k0, 0, U.cvf.V3, Complex(0, -amp*B));
 	}
 	
 	else {
@@ -139,7 +139,7 @@ void FluidIO::Setup_ABC_field(FluidVF& U, int k0, DP amp, DP A, DP B, DP C)
 //*********************************************************************************************
 
 	// WORK ON IT...
-void FluidIO::Setup_SIX_MODE_field(FluidVF& U, int k0, DP amp101, DP amp011, DP amp112, DP h)
+void FluidIO::Setup_SIX_MODE_field(FluidVF& U, int k0, Real amp101, Real amp011, Real amp112, Real h)
 {
 /*
 	V1 = 0.0; 
@@ -153,14 +153,14 @@ void FluidIO::Setup_SIX_MODE_field(FluidVF& U, int k0, DP amp101, DP amp011, DP 
 		int ly_k0 = Get_ly3D(k0);
 		int ly_minus_k0 = Get_ly3D(-k0);
 		
-		DP factor1 = 2.0/sqrt(2+h*h) * amp101;
-		DP factor2 = 2.0/sqrt(2+h*h) * amp011;
-		DP factor3 = 4.0/sqrt(6+10*h*h) * amp112;
+		Real factor1 = 2.0/sqrt(2+h*h) * amp101;
+		Real factor2 = 2.0/sqrt(2+h*h) * amp011;
+		Real factor3 = 4.0/sqrt(6+10*h*h) * amp112;
 		
 		if (my_id == master_id)  
 		{
-			(V1)(0, ly_k0, k0) = complx(-h*(factor2/4), 0.0);
-			(V1)(0, ly_minus_k0, k0) = complx(h*(factor2/4), 0.0);
+			(V1)(0, ly_k0, k0) = Complex(-h*(factor2/4), 0.0);
+			(V1)(0, ly_minus_k0, k0) = Complex(h*(factor2/4), 0.0);
 			
 			(V2)(0, ly_k0, k0)  = (I) * (factor2/4);
 			(V2)(0, ly_minus_k0, k0) = (-I) * (factor2/4);
@@ -172,35 +172,35 @@ void FluidIO::Setup_SIX_MODE_field(FluidVF& U, int k0, DP amp101, DP amp011, DP 
 		if ( (lx_k0 >= 0) && (lx_k0 < local_N1) )
 		{
 			(V1)(lx_k0, 0, k0)  = I * (factor1/4);
-			(V2)(lx_k0, 0, k0)  = complx(-h*(factor1/4), 0.0);
+			(V2)(lx_k0, 0, k0)  = Complex(-h*(factor1/4), 0.0);
 			(V3)(lx_k0, 0, k0)  =  (-I) * (factor1/4);
 			
 			(V1)(lx_k0, ly_k0, 2*k0)  = I * (factor3/8);
 			(V1)(lx_k0, ly_minus_k0, 2*k0) = I * (factor3/8);
 			
-			(V2)(lx_k0, ly_k0, 2*k0)  = I * (factor3/8) + complx(h*factor3/4, 0.0);
-			(V2)(lx_k0, ly_minus_k0, 2*k0) = (-I) * (factor3/8) + complx(h*factor3/4, 0.0);
+			(V2)(lx_k0, ly_k0, 2*k0)  = I * (factor3/8) + Complex(h*factor3/4, 0.0);
+			(V2)(lx_k0, ly_minus_k0, 2*k0) = (-I) * (factor3/8) + Complex(h*factor3/4, 0.0);
 			
-			(V3)(lx_k0, ly_k0, 2*k0)  = (-I) * (factor3/8) - complx(h*factor3/8, 0.0);
-			(V3)(lx_k0, ly_minus_k0, 2*k0) = (-I) * (factor3/8) + complx(h*factor3/8, 0.0);
+			(V3)(lx_k0, ly_k0, 2*k0)  = (-I) * (factor3/8) - Complex(h*factor3/8, 0.0);
+			(V3)(lx_k0, ly_minus_k0, 2*k0) = (-I) * (factor3/8) + Complex(h*factor3/8, 0.0);
 		}
 		
 		if ( (lx_minus_k0 >= 0) && (lx_minus_k0 < local_N1) ) 
 		{
 			(V1)(lx_minus_k0, 0, k0)  = -I * (factor1/4);
-			(V2)(lx_minus_k0, 0, k0)  = complx(h*(factor1/4), 0.0);
+			(V2)(lx_minus_k0, 0, k0)  = Complex(h*(factor1/4), 0.0);
 			(V3)(lx_minus_k0, 0, k0)  =  (-I) * (factor1/4);
 			
 			(V1)(lx_minus_k0, ly_k0, 2*k0)  = (-I) * (factor3/8);
 			(V1)(lx_minus_k0, ly_minus_k0, 2*k0) = (-I) * (factor3/8);	
 					
-			(V2)(lx_minus_k0, ly_k0, 2*k0)  = I * (factor3/8) - complx(h*factor3/4, 0.0);
+			(V2)(lx_minus_k0, ly_k0, 2*k0)  = I * (factor3/8) - Complex(h*factor3/4, 0.0);
 			(V2)(lx_minus_k0, ly_minus_k0, 2*k0) = (-I) * (factor3/8) 
-													- complx(h*factor3/4, 0.0);
+													- Complex(h*factor3/4, 0.0);
 			
-			(V3)(lx_minus_k0, ly_k0, 2*k0)  = (-I) * (factor3/8) + complx(h*factor3/8, 0.0);
+			(V3)(lx_minus_k0, ly_k0, 2*k0)  = (-I) * (factor3/8) + Complex(h*factor3/8, 0.0);
 			(V3)(lx_minus_k0, ly_minus_k0, 2*k0) = (-I) * (factor3/8) 
-													- complx(h*factor3/8, 0.0);
+													- Complex(h*factor3/8, 0.0);
 		}	
 		
 	}
@@ -230,54 +230,54 @@ void FluidIO::Setup_SIX_MODE_field(FluidVF& U, int k0, DP amp101, DP amp011, DP 
  ***********************************************************************************************/
 
 
-void FluidIO::Model_initial_using_shell_spectrum_Pope(DP dissipation_coefficient, DP epsilon, Array<DP,1> Sk)
+void FluidIO::Model_initial_using_shell_spectrum_Pope(Real dissipation_coefficient, Real epsilon, Array<Real,1> Sk)
 {
 	
-	DP k;	// radius
-	DP L;	// size of the box
-	DP fL, feta, fL_arg, feta_arg;
-	DP p0=2;
-	DP cL = 6.78;
-	DP ceta = 0.40;
-	DP beta = 5.2;
-	DP Kolmogrov_const = 1.5;
+	Real k;	// radius
+	Real L;	// size of the box
+	Real fL, feta, fL_arg, feta_arg;
+	Real p0=2;
+	Real cL = 6.78;
+	Real ceta = 0.40;
+	Real beta = 5.2;
+	Real Kolmogrov_const = 1.5;
 	
 	Sk = 0.0;
 	
 	if (N[2] > 1) 
-		L =  pow(global.field.L[1]*global.field.L[2]*global.field.L[3], (DP) 1./3);  
+		L =  pow(global.field.L[1]*global.field.L[2]*global.field.L[3], (Real) 1./3);  
 	else if (N[2] == 1)
 		L =  sqrt(global.field.L[1]*global.field.L[3]);
 		
-	DP eta = 0.42*pow(my_pow(dissipation_coefficient,3)/epsilon, (DP) 1./4);
+	Real eta = 0.42*pow(my_pow(dissipation_coefficient,3)/epsilon, (Real) 1./4);
 	// Kolmogrov's length.. The factor 0.42 to make Pi(k)-> 0 as k-> infty.
 	// Verma's on LM
 	
 	Sk(0) = 0.0;
 	for (int i=1; i < (Sk.length())(0); i++) {
-		k = ((DP) i);
+		k = ((Real) i);
 		fL_arg = k*L/sqrt(my_pow(k*L,2)+cL*cL);
-		fL = pow(fL_arg, (DP) 5.0/3+p0);
-		feta_arg = pow( my_pow(k*eta,4) + my_pow(ceta,4), (DP) 1.0/4) - ceta;
+		fL = pow(fL_arg, (Real) 5.0/3+p0);
+		feta_arg = pow( my_pow(k*eta,4) + my_pow(ceta,4), (Real) 1.0/4) - ceta;
 		feta = exp(-beta *feta_arg);
 		
-		Sk(i) = Kolmogrov_const*pow(epsilon, (DP) 1.0/3)*pow(k, (DP) -5.0/3)*fL*feta;
+		Sk(i) = Kolmogrov_const*pow(epsilon, (Real) 1.0/3)*pow(k, (Real) -5.0/3)*fL*feta;
 	}
 }
 
 
-void FluidIO::Model_initial_using_shell_spectrum_Corrsin(DP a, Array<DP,1> Sk)
+void FluidIO::Model_initial_using_shell_spectrum_Corrsin(Real a, Array<Real,1> Sk)
 {
-	DP q = 1.5;
-	DP b = 0.02;
-	DP c = 1+2.8/12;
-	DP k;	// radius
+	Real q = 1.5;
+	Real b = 0.02;
+	Real c = 1+2.8/12;
+	Real k;	// radius
 
 	Sk = 0.0;
 
 	for (int i=0; i < (Sk.length())(0); i++) {
 		k = 1.0*i;
-		Sk(i) = a * my_pow(k,4) * exp(- b * pow(k, (DP) 1.1)) /pow( (my_pow(k,4)+my_pow(q,4)), (DP) c);
+		Sk(i) = a * my_pow(k,4) * exp(- b * pow(k, (Real) 1.1)) /pow( (my_pow(k,4)+my_pow(q,4)), (Real) c);
     }	
 }
 

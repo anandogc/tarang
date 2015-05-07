@@ -53,7 +53,7 @@ void FluidIO::Init_cond_Taylor_Green(FluidVF& U)
 {
 	
 	int k0 = int(global.io.double_para(0));
-	DP amp = global.io.double_para(1);
+	Real amp = global.io.double_para(1);
 	
 	Setup_Taylor_Green_field(U, k0, amp);
 }
@@ -106,8 +106,8 @@ void FluidIO::Init_cond_Taylor_Green(FluidVF& U, FluidVF& W)
 {
 
 	int k0 = int(global.io.double_para(0));
-	DP amp = global.io.double_para(1);
-	DP ampW = global.io.double_para(2);
+	Real amp = global.io.double_para(1);
+	Real ampW = global.io.double_para(2);
 	
 	Setup_Taylor_Green_field(U, k0, amp);
 	Setup_Taylor_Green_field(W, k0, ampW);		

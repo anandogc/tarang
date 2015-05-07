@@ -40,7 +40,7 @@
 //*********************************************************************************************
 
 // Ar: yxz, A: xyz
-void FFF_PENCIL::Forward_transform(Array<DP,3> Ar, Array<complx,3> A)
+void FFF_PENCIL::Forward_transform(Array<Real,3> Ar, Array<Complex,3> A)
 {
 	if (Ny>1)
 		spectralTransform.Forward_transform(Ar,A);
@@ -53,7 +53,7 @@ void FFF_PENCIL::Forward_transform(Array<DP,3> Ar, Array<complx,3> A)
 //*********************************************************************************************
 
 
-void FFF_PENCIL::Inverse_transform(Array<complx,3> A, Array<DP,3> Ar)
+void FFF_PENCIL::Inverse_transform(Array<Complex,3> A, Array<Real,3> Ar)
 {
 	if (Ny>1)
 		spectralTransform.Inverse_transform(Ar,A);
@@ -63,30 +63,30 @@ void FFF_PENCIL::Inverse_transform(Array<complx,3> A, Array<DP,3> Ar)
 
 //*********************************************************************************************
 
-void FFF_PENCIL::Xderiv(Array<complx,3> A, Array<complx,3> B)
+void FFF_PENCIL::Xderiv(Array<Complex,3> A, Array<Complex,3> B)
 {
-	DP Kx;
+	Real Kx;
 	
 	for (int lx=0; lx<Nx; lx++) {
 		Kx = Get_kx(lx)*kfactor[1];
 		
-		B(lx,Range::all(),Range::all()) = complex<DP>(0, Kx)* (A(lx,Range::all(),Range::all())); 	
+		B(lx,Range::all(),Range::all()) = complex<Real>(0, Kx)* (A(lx,Range::all(),Range::all())); 	
 	}
 }
 
 
-void FFF_PENCIL::Add_Xderiv(Array<complx,3> A, Array<complx,3> B)
+void FFF_PENCIL::Add_Xderiv(Array<Complex,3> A, Array<Complex,3> B)
 {
-	DP Kx;
+	Real Kx;
 	
 	for (int lx=0; lx<Nx; lx++) {
 		Kx = Get_kx(lx)*kfactor[1];
 		
-		B(lx,Range::all(),Range::all()) += complex<DP>(0, Kx)* (A(lx,Range::all(),Range::all()));
+		B(lx,Range::all(),Range::all()) += complex<Real>(0, Kx)* (A(lx,Range::all(),Range::all()));
 	}
 }
 
-void  FFF_PENCIL::Xderiv(Array<DP,3> A, Array<DP,3> B)
+void  FFF_PENCIL::Xderiv(Array<Real,3> A, Array<Real,3> B)
 {
 	cerr << "This is not defined for this basis. "<<endl;
 }
@@ -94,49 +94,49 @@ void  FFF_PENCIL::Xderiv(Array<DP,3> A, Array<DP,3> B)
 //*********************************************************************************************
 
 
-void FFF_PENCIL::Yderiv(Array<complx,3> A, Array<complx,3> B)
+void FFF_PENCIL::Yderiv(Array<Complex,3> A, Array<Complex,3> B)
 {
-	DP Ky;
+	Real Ky;
     
 	for (int ly=0; ly<local_Ny; ly++) {
 		Ky = Get_ky(ly)*kfactor[2];
 		
-		B(Range::all(),ly,Range::all()) = complx(0, Ky)* (A(Range::all(),ly,Range::all()));
+		B(Range::all(),ly,Range::all()) = Complex(0, Ky)* (A(Range::all(),ly,Range::all()));
 	}
 }
 
 
-void FFF_PENCIL::Add_Yderiv(Array<complx,3> A, Array<complx,3> B)
+void FFF_PENCIL::Add_Yderiv(Array<Complex,3> A, Array<Complex,3> B)
 {
-	DP Ky;
+	Real Ky;
     
 	for (int ly=0; ly<local_Ny; ly++) {
 		Ky = Get_ky(ly)*kfactor[2];
 		
-		B(Range::all(),ly,Range::all()) += complx(0, Ky)* (A(Range::all(),ly,Range::all()));
+		B(Range::all(),ly,Range::all()) += Complex(0, Ky)* (A(Range::all(),ly,Range::all()));
 	}
 }
 
 //*********************************************************************************************
 
 
-void FFF_PENCIL::Zderiv(Array<complx,3> A, Array<complx,3> B)
+void FFF_PENCIL::Zderiv(Array<Complex,3> A, Array<Complex,3> B)
 {
-	DP Kz;
+	Real Kz;
     
     for (int lz=0; lz<local_Nz; lz++) {
 		Kz = Get_kz(lz)*kfactor[3];
-		B(Range::all(),Range::all(),lz) = complx(0, Kz)*(A(Range::all(),Range::all())),lz;  	
+		B(Range::all(),Range::all(),lz) = Complex(0, Kz)*(A(Range::all(),Range::all())),lz;  	
 	}
 }
 
-void FFF_PENCIL::Add_Zderiv(Array<complx,3> A, Array<complx,3> B)
+void FFF_PENCIL::Add_Zderiv(Array<Complex,3> A, Array<Complex,3> B)
 {
-	DP Kz;
+	Real Kz;
     
     for (int lz=0; lz<local_Nz; lz++) {
 		Kz = Get_kz(lz)*kfactor[3];
-		B(Range::all(),Range::all(),lz) += complx(0, Kz)*(A(Range::all(),Range::all())),lz;  	
+		B(Range::all(),Range::all(),lz) += Complex(0, Kz)*(A(Range::all(),Range::all())),lz;  	
 	}
 }
 
@@ -147,10 +147,10 @@ void FFF_PENCIL::Add_Zderiv(Array<complx,3> A, Array<complx,3> B)
  
  ***********************************************************************************************/
 
-void FFF_PENCIL::Laplacian(DP factor, Array<complx,3> A, Array<complx,3> B)
+void FFF_PENCIL::Laplacian(Real factor, Array<Complex,3> A, Array<Complex,3> B)
 {
 	
-	DP Ksqr;
+	Real Ksqr;
 
     for (int lx=0; lx<A.extent(0); lx++) {
 		Ksqr +=  my_pow(Get_kx(lx)*kfactor[1],2);
@@ -176,10 +176,10 @@ void FFF_PENCIL::Laplacian(DP factor, Array<complx,3> A, Array<complx,3> B)
  
  ***********************************************************************************************/
 
-void FFF_PENCIL::Subtract_Laplacian(DP factor, Array<complx,3> A, Array<complx,3> B)
+void FFF_PENCIL::Subtract_Laplacian(Real factor, Array<Complex,3> A, Array<Complex,3> B)
 {
 	
-	DP Ksqr, Ksqr_factor;
+	Real Ksqr, Ksqr_factor;
 	
 	for (int lx=0; lx<A.extent(0); lx++) {
 		Ksqr +=  my_pow(Get_kx(lx)*kfactor[1],2);

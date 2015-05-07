@@ -46,7 +46,7 @@
 
 Global::mpi::mpi():master_id(0){}
 
-#ifdef FLOAT_DP
+#ifdef FLOAT_Real
 Global::io::io():output_precision(6){}
 #else
 Global::io::io():output_precision(12){}
@@ -56,14 +56,14 @@ Global::program::program():
     version(STR(VERSION)){}
 
 Global::myconstant::myconstant():
-    I(complx(0,1.0)),
-    minusI(complx(0,-1.0)),
-    minus2I(complx(0,-2.0)),
+    I(Complex(0,1.0)),
+    minusI(Complex(0,-1.0)),
+    minus2I(Complex(0,-2.0)),
     MYEPS(1E-15),
     MYEPS2(1E-5),
 	MY_MAX_INT(numeric_limits<int>::infinity()),
-    INF_RADIUS(numeric_limits<DP>::infinity()),
-    INF_TIME(numeric_limits<DP>::infinity()),
+    INF_RADIUS(numeric_limits<Real>::infinity()),
+    INF_TIME(numeric_limits<Real>::infinity()),
     MAX_NO_GLOB_BUFFER_PACKETS(1),
     MAX_NO_PROBE_PACKETS(5) {} 
 
@@ -409,12 +409,12 @@ Global::Global()
     real_probe_packet_size_table["KEPLERIAN"]=10;
 }
 
-void Global::io::Dump_buffer(ofstream& file, Array<DP,1> buffer, unsigned long& buffer_index, unsigned long packet_size){
+void Global::io::Dump_buffer(ofstream& file, Array<Real,1> buffer, unsigned long& buffer_index, unsigned long packet_size){
 	unsigned long num_packets=buffer_index/packet_size;
 	unsigned long i=0;
 	
 	for (i=0; i<num_packets; i++){
-		copy(buffer.data()+i*packet_size, buffer.data()+(i+1)*packet_size, ostream_iterator<DP>(file, "\t"));
+		copy(buffer.data()+i*packet_size, buffer.data()+(i+1)*packet_size, ostream_iterator<Real>(file, "\t"));
 		file << '\n';
 	}
 	

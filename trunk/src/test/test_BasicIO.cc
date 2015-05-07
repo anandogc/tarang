@@ -46,7 +46,7 @@ SpectralTransform spectralTransform;
 Universal *universal;
 Global global;
 
-Uniform<DP> SPECrand;
+Uniform<Real> SPECrand;
 
 int main(int argc, char** argv)
 {
@@ -123,16 +123,16 @@ int main(int argc, char** argv)
 
 
 
-	BasicIO::H5_plan cube = BasicIO::Set_plan(3, my_id, numprocs, filter, filter, BasicIO::H5T_COMPLX);
+	BasicIO::H5_plan cube = BasicIO::Set_plan(3, my_id, numprocs, filter, filter, BasicIO::H5T_Complex);
 
-	Array<complx,3> A(filter[0].size()/global.mpi.numprocs, filter[1].size(), filter[2].size());
+	Array<Complex,3> A(filter[0].size()/global.mpi.numprocs, filter[1].size(), filter[2].size());
 	A=0;
 	int index=0;
 	for (int i=0; i<A.extent(0); i++)
 		for (int j=0; j<A.extent(1); j++)
 			for (int k=0; k<A.extent(2); k++){
 				index+=2;
-				A(i,j,k) = complx(index, index+1);
+				A(i,j,k) = Complex(index, index+1);
 			}
 
 	cout << A << endl;

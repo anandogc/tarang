@@ -24,5 +24,19 @@
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, U
 #
 
+########################################
+#test_spectral_transform
+########################################
 
-ADD_SUBDIRECTORY(${SPECTRAL_TRANSFORM_VERSION})
+ADD_EXECUTABLE(test_spectral_transform
+	main
+	)
+	
+TARGET_LINK_LIBRARIES(test_spectral_transform spectral_transform ${SYSTEM_LIBRARIES})
+
+
+ADD_CUSTOM_COMMAND(TARGET test_spectral_transform
+                   POST_BUILD
+                   COMMAND mv -f test_spectral_transform ${PROJECT_BINARY_DIR}
+                   COMMENT "moving test_spectral_transform executable to PROJECT_BINARY_DIR" )
+########################################

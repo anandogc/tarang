@@ -47,21 +47,21 @@
 
 
 
-DP SSS_PENCIL::Local_shell_mult_single
+Real SSS_PENCIL::Local_shell_mult_single
 ( 
-	Array<complx,3> A, Array<complx,3> B, 
-	DP inner_radius, DP outer_radius
+	Array<Complex,3> A, Array<Complex,3> B, 
+	Real inner_radius, Real outer_radius
 )
 {
-	Array<DP,3> Ar=Array<DP,3>(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
-    Array<DP,3> Br=Array<DP,3>(reinterpret_cast<DP*>(B.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<Real,3> Ar=Array<Real,3>(reinterpret_cast<Real*>(A.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+    Array<Real,3> Br=Array<Real,3>(reinterpret_cast<Real*>(B.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 	
-	DP Kmag;
-	DP local_result = 0.0;
+	Real Kmag;
+	Real local_result = 0.0;
 	
-    for (int lx=0; lx<local_Nx; lx++)
-		for (int ly=0; ly<local_Ny; ly++)
-	        for (int lz=0; lz<local_Nz; lz++) {
+    for (int lx=0; lx<maxlx; lx++)
+		for (int ly=0; ly<maxly; ly++)
+	        for (int lz=0; lz<2*maxlz; lz++) {
 				Kmag = Kmagnitude(lx, ly, lz);
 				
 				if ( (Kmag > inner_radius) && (Kmag <= outer_radius) ) 
@@ -78,24 +78,24 @@ DP SSS_PENCIL::Local_shell_mult_single
 
 void SSS_PENCIL::Local_shell_mult_all
 ( 
-	Array<complx,3> A, Array<complx,3> B, 
-	Array<DP, 1> shell_radius_array,
-	Array<DP,1> local_result
+	Array<Complex,3> A, Array<Complex,3> B, 
+	Array<Real, 1> shell_radius_array,
+	Array<Real,1> local_result
 )
 {
-	Array<DP,3> Ar=Array<DP,3>(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
-    Array<DP,3> Br=Array<DP,3>(reinterpret_cast<DP*>(B.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<Real,3> Ar=Array<Real,3>(reinterpret_cast<Real*>(A.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+    Array<Real,3> Br=Array<Real,3>(reinterpret_cast<Real*>(B.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 	
-	DP Kmag;
+	Real Kmag;
 	int shell_index;
 	
 	local_result = 0.0;
 	 
 	 int	Kmax_inside = Max_radius_inside();
 	
-    for (int lx=0; lx<local_Nx; lx++)
-		for (int ly=0; ly<local_Ny; ly++)
-	        for (int lz=0; lz<local_Nz; lz++) {
+    for (int lx=0; lx<maxlx; lx++)
+		for (int ly=0; ly<maxly; ly++)
+	        for (int lz=0; lz<2*maxlz; lz++) {
 				Kmag = Kmagnitude(lx, ly, lz);
 				
 				if (Kmag <= Kmax_inside) {
@@ -113,31 +113,31 @@ void SSS_PENCIL::Local_shell_mult_all
 
 void SSS_PENCIL::Local_shell_mult_all
 (	 
-	Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az,
-	Array<complx,3> Bx, Array<complx,3> By, Array<complx,3> Bz,
-	Array<DP, 1> shell_radius_array,
-	Array<DP,1> local_result
+	Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
+	Array<Complex,3> Bx, Array<Complex,3> By, Array<Complex,3> Bz,
+	Array<Real, 1> shell_radius_array,
+	Array<Real,1> local_result
 )
 {
-	Array<DP,3> Axr=Array<DP,3>(reinterpret_cast<DP*>(Ax.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
-    Array<DP,3> Ayr=Array<DP,3>(reinterpret_cast<DP*>(Ay.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
-	Array<DP,3> Azr=Array<DP,3>(reinterpret_cast<DP*>(Az.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<Real,3> Axr=Array<Real,3>(reinterpret_cast<Real*>(Ax.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+    Array<Real,3> Ayr=Array<Real,3>(reinterpret_cast<Real*>(Ay.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<Real,3> Azr=Array<Real,3>(reinterpret_cast<Real*>(Az.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 	
-	Array<DP,3> Bxr=Array<DP,3>(reinterpret_cast<DP*>(Bx.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
-    Array<DP,3> Byr=Array<DP,3>(reinterpret_cast<DP*>(By.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
-	Array<DP,3> Bzr=Array<DP,3>(reinterpret_cast<DP*>(Bz.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<Real,3> Bxr=Array<Real,3>(reinterpret_cast<Real*>(Bx.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+    Array<Real,3> Byr=Array<Real,3>(reinterpret_cast<Real*>(By.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<Real,3> Bzr=Array<Real,3>(reinterpret_cast<Real*>(Bz.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 	
-	DP Kmag;
+	Real Kmag;
 	int shell_index;
-	DP AdotB;
+	Real AdotB;
 	
 	local_result = 0.0;
 	
 	int	Kmax_inside = Max_radius_inside();
 	
-    for (int lx=0; lx<local_Nx; lx++)
-		for (int ly=0; ly<local_Ny; ly++)
-	        for (int lz=0; lz<local_Nz; lz++) {
+    for (int lx=0; lx<maxlx; lx++)
+		for (int ly=0; ly<maxly; ly++)
+	        for (int lz=0; lz<2*maxlz; lz++) {
 				Kmag = Kmagnitude(lx, ly, lz);
 				
 				if (Kmag <= Kmax_inside) {
@@ -162,23 +162,23 @@ void SSS_PENCIL::Local_shell_mult_all
 
 void SSS_PENCIL::Local_ring_mult_all
 ( 
-	Array<complx,3> A, Array<complx,3> B, 
-	Array<DP,2> local_result
+	Array<Complex,3> A, Array<Complex,3> B, 
+	Array<Real,2> local_result
 )
 {
-	Array<DP,3> Ar=Array<DP,3>(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
-    Array<DP,3> Br=Array<DP,3>(reinterpret_cast<DP*>(B.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<Real,3> Ar=Array<Real,3>(reinterpret_cast<Real*>(A.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+    Array<Real,3> Br=Array<Real,3>(reinterpret_cast<Real*>(B.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 	
-	DP Kmag, theta;
+	Real Kmag, theta;
 	int shell_index, sector_index;
 	
 	local_result = 0.0;
 	
 	int	Kmax_inside = Max_radius_inside();
 	
-    for (int lx=0; lx<local_Nx; lx++)
-		for (int ly=0; ly<local_Ny; ly++)
-	        for (int lz=0; lz<local_Nz; lz++) {
+    for (int lx=0; lx<maxlx; lx++)
+		for (int ly=0; ly<maxly; ly++)
+	        for (int lz=0; lz<2*maxlz; lz++) {
 				Kmag = Kmagnitude(lx, ly, lz);
 				
 				if ((Kmag <= Kmax_inside) && (Kmag > MYEPS)) {
@@ -198,30 +198,30 @@ void SSS_PENCIL::Local_ring_mult_all
 
 void SSS_PENCIL::Local_ring_mult_all
 (
-	Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az,
-	Array<complx,3> Bx, Array<complx,3> By, Array<complx,3> Bz, 
-	Array<DP,2> local_result
+	Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
+	Array<Complex,3> Bx, Array<Complex,3> By, Array<Complex,3> Bz, 
+	Array<Real,2> local_result
 )
 {
-	Array<DP,3> Axr=Array<DP,3>(reinterpret_cast<DP*>(Ax.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
-    Array<DP,3> Ayr=Array<DP,3>(reinterpret_cast<DP*>(Ay.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
-	Array<DP,3> Azr=Array<DP,3>(reinterpret_cast<DP*>(Az.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<Real,3> Axr=Array<Real,3>(reinterpret_cast<Real*>(Ax.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+    Array<Real,3> Ayr=Array<Real,3>(reinterpret_cast<Real*>(Ay.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<Real,3> Azr=Array<Real,3>(reinterpret_cast<Real*>(Az.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 	
-	Array<DP,3> Bxr=Array<DP,3>(reinterpret_cast<DP*>(Bx.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
-    Array<DP,3> Byr=Array<DP,3>(reinterpret_cast<DP*>(By.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
-	Array<DP,3> Bzr=Array<DP,3>(reinterpret_cast<DP*>(Bz.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<Real,3> Bxr=Array<Real,3>(reinterpret_cast<Real*>(Bx.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+    Array<Real,3> Byr=Array<Real,3>(reinterpret_cast<Real*>(By.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<Real,3> Bzr=Array<Real,3>(reinterpret_cast<Real*>(Bz.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 	
-	DP Kmag, theta;
+	Real Kmag, theta;
 	int shell_index, sector_index;
-	DP AdotB;
+	Real AdotB;
 	
 	local_result = 0.0;
 	
 	int	Kmax_inside = Max_radius_inside();
 	
-    for (int lx=0; lx<local_Nx; lx++)
-		for (int ly=0; ly<local_Ny; ly++)
-	        for (int lz=0; lz<local_Nz; lz++) {
+    for (int lx=0; lx<maxlx; lx++)
+		for (int ly=0; ly<maxly; ly++)
+	        for (int lz=0; lz<2*maxlz; lz++) {
 				Kmag = Kmagnitude(lx, ly, lz);
 				
 				if ((Kmag <= Kmax_inside) && (Kmag > MYEPS)) {
@@ -249,24 +249,24 @@ void SSS_PENCIL::Local_ring_mult_all
 
 void SSS_PENCIL::Local_cyl_ring_mult_all
 (
-	Array<complx,3> A, Array<complx,3> B, 
-	Array<DP,2> local_result
+	Array<Complex,3> A, Array<Complex,3> B, 
+	Array<Real,2> local_result
 )
 {
 
-	Array<DP,3> Ar=Array<DP,3>(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
-    Array<DP,3> Br=Array<DP,3>(reinterpret_cast<DP*>(B.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<Real,3> Ar=Array<Real,3>(reinterpret_cast<Real*>(A.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+    Array<Real,3> Br=Array<Real,3>(reinterpret_cast<Real*>(B.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 	
-	DP  Kpll,  Kperp;
+	Real  Kpll,  Kperp;
 	int shell_index, slab_index;
 	
 	local_result = 0.0;
 		
 	int	 Kperp_max = Anis_max_Krho_radius_inside();
 	
-    for (int lx=0; lx<local_Nx; lx++)
-		for (int ly=0; ly<local_Ny; ly++)
-	        for (int lz=0; lz<local_Nz; lz++) {
+    for (int lx=0; lx<maxlx; lx++)
+		for (int ly=0; ly<maxly; ly++)
+	        for (int lz=0; lz<2*maxlz; lz++) {
 				 Kpll = AnisKpll(lx, ly, lz);
 				
 				 Kperp = AnisKperp(lx, ly, lz);
@@ -285,29 +285,29 @@ void SSS_PENCIL::Local_cyl_ring_mult_all
 
 void SSS_PENCIL::Local_cyl_ring_mult_all
 (
-	Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az,
-	Array<complx,3> Bx, Array<complx,3> By, Array<complx,3> Bz,  
-	Array<DP,2> local_result
+	Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
+	Array<Complex,3> Bx, Array<Complex,3> By, Array<Complex,3> Bz,  
+	Array<Real,2> local_result
 )
 {
-	Array<DP,3> Axr=Array<DP,3>(reinterpret_cast<DP*>(Ax.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
-    Array<DP,3> Ayr=Array<DP,3>(reinterpret_cast<DP*>(Ay.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
-	Array<DP,3> Azr=Array<DP,3>(reinterpret_cast<DP*>(Az.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<Real,3> Axr=Array<Real,3>(reinterpret_cast<Real*>(Ax.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+    Array<Real,3> Ayr=Array<Real,3>(reinterpret_cast<Real*>(Ay.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<Real,3> Azr=Array<Real,3>(reinterpret_cast<Real*>(Az.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 	
-	Array<DP,3> Bxr=Array<DP,3>(reinterpret_cast<DP*>(Bx.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
-    Array<DP,3> Byr=Array<DP,3>(reinterpret_cast<DP*>(By.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
-	Array<DP,3> Bzr=Array<DP,3>(reinterpret_cast<DP*>(Bz.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<Real,3> Bxr=Array<Real,3>(reinterpret_cast<Real*>(Bx.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+    Array<Real,3> Byr=Array<Real,3>(reinterpret_cast<Real*>(By.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<Real,3> Bzr=Array<Real,3>(reinterpret_cast<Real*>(Bz.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 
-	DP  Kpll,  Kperp, AdotB;
+	Real  Kpll,  Kperp, AdotB;
 	int shell_index, slab_index;
 	
 	local_result = 0.0;
 	
 	int	 Kperp_max = Anis_max_Krho_radius_inside();
 	
-    for (int lx=0; lx<local_Nx; lx++)
-		for (int ly=0; ly<local_Ny; ly++)
-	        for (int lz=0; lz<local_Nz; lz++) {
+    for (int lx=0; lx<maxlx; lx++)
+		for (int ly=0; ly<maxly; ly++)
+	        for (int lz=0; lz<2*maxlz; lz++) {
 				 Kpll = AnisKpll(lx, ly, lz);
 				
 				 Kperp = AnisKperp(lx, ly, lz);
@@ -332,24 +332,24 @@ void SSS_PENCIL::Local_cyl_ring_mult_all
 
 void SSS_PENCIL::Local_shell_mult_all_imagVW_B0
 (
-	TinyVector<DP,3> B0,
-	Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az,
-	Array<complx,3> Bx, Array<complx,3> By, Array<complx,3> Bz, 
-	Array<DP,1> local_result
+	TinyVector<Real,3> B0,
+	Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
+	Array<Complex,3> Bx, Array<Complex,3> By, Array<Complex,3> Bz, 
+	Array<Real,1> local_result
 )
 {
-/*	DP Kmag;
+/*	Real Kmag;
 	int shell_index;
-	TinyVector<DP,3>  K;
-	DP AdotB;
+	TinyVector<Real,3>  K;
+	Real AdotB;
 	
 	local_result = 0.0;
 	
 	int	Kmax_inside = Max_radius_inside();
 	
-    for (int lx=0; lx<local_Nx; lx++)
-		for (int ly=0; ly<local_Ny; ly++)
-	        for (int lz=0; lz<local_Nz; lz++) {
+    for (int lx=0; lx<maxlx; lx++)
+		for (int ly=0; ly<maxly; ly++)
+	        for (int lz=0; lz<2*maxlz; lz++) {
 				Kmag = Kmagnitude(lx, ly, lz);
 				
 				if (Kmag <= Kmax_inside) {
@@ -372,23 +372,23 @@ void SSS_PENCIL::Local_shell_mult_all_imagVW_B0
 
 void SSS_PENCIL::Local_ring_mult_all_imagVW_B0
 (
-	TinyVector<DP,3> B0,
-	Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az,
-	Array<complx,3> Bx, Array<complx,3> By, Array<complx,3> Bz, 
-	Array<DP,2> local_result
+	TinyVector<Real,3> B0,
+	Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
+	Array<Complex,3> Bx, Array<Complex,3> By, Array<Complex,3> Bz, 
+	Array<Real,2> local_result
 )
 {
-/*	DP Kmag, theta, AdotB;
+/*	Real Kmag, theta, AdotB;
 	int shell_index, sector_index;
-	TinyVector<DP,3>  K;
+	TinyVector<Real,3>  K;
 	
 	local_result = 0.0;
 		
 	int	Kmax_inside = Max_radius_inside();
 	
-    for (int lx=0; lx<local_Nx; lx++)
-		for (int ly=0; ly<local_Ny; ly++)
-	        for (int lz=0; lz<local_Nz; lz++) {
+    for (int lx=0; lx<maxlx; lx++)
+		for (int ly=0; ly<maxly; ly++)
+	        for (int lz=0; lz<2*maxlz; lz++) {
 				Kmag = Kmagnitude(lx, ly, lz);
 				
 				if ((Kmag <= Kmax_inside) && (Kmag > MYEPS)) {
@@ -415,24 +415,24 @@ void SSS_PENCIL::Local_ring_mult_all_imagVW_B0
 
 void SSS_PENCIL::Local_cyl_ring_mult_all_imagVW_B0
 ( 
-	TinyVector<DP,3> B0,
-	Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az,
-	Array<complx,3> Bx, Array<complx,3> By, Array<complx,3> Bz, 
-	Array<DP,2> local_result
+	TinyVector<Real,3> B0,
+	Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
+	Array<Complex,3> Bx, Array<Complex,3> By, Array<Complex,3> Bz, 
+	Array<Real,2> local_result
 )
 {
 
-/*	DP  Kpll,  Kperp, AdotB;
+/*	Real  Kpll,  Kperp, AdotB;
 	int shell_index, slab_index;
-	TinyVector<DP,3>  K;
+	TinyVector<Real,3>  K;
 	
 	local_result = 0.0;
 	
 	int	 Kperp_max = Anis_max_Krho_radius_inside();
 	
-    for (int lx=0; lx<local_Nx; lx++)
-		for (int ly=0; ly<local_Ny; ly++)
-	        for (int lz=0; lz<local_Nz; lz++) {
+    for (int lx=0; lx<maxlx; lx++)
+		for (int ly=0; ly<maxly; ly++)
+	        for (int lz=0; lz<2*maxlz; lz++) {
 				 Kpll = AnisKpll(lx, ly, lz);
 				
 				 Kperp = AnisKperp(lx, ly, lz);
@@ -457,23 +457,23 @@ void SSS_PENCIL::Local_cyl_ring_mult_all_imagVW_B0
 //
 //  sum(A.curl(B)) for a given shell
 // 
-DP SSS_PENCIL::Local_shell_mult_vorticity
+Real SSS_PENCIL::Local_shell_mult_vorticity
 (
-    Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az,
-    Array<complx,3> Bx, Array<complx,3> By, Array<complx,3> Bz,  
-    DP inner_radius, DP outer_radius
+    Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
+    Array<Complex,3> Bx, Array<Complex,3> By, Array<Complex,3> Bz,  
+    Real inner_radius, Real outer_radius
 )
 {
 	
-/*	TinyVector<complx,3> vorticity;
-	complx vort_y;
+/*	TinyVector<Complex,3> vorticity;
+	Complex vort_y;
 	
-	DP Kmag, AdotB;
-	DP result = 0.0;
+	Real Kmag, AdotB;
+	Real result = 0.0;
 	
-    for (int lx=0; lx<local_Nx; lx++)
-		for (int ly=0; ly<local_Ny; ly++)
-	        for (int lz=0; lz<local_Nz; lz++) {
+    for (int lx=0; lx<maxlx; lx++)
+		for (int ly=0; ly<maxly; ly++)
+	        for (int lz=0; lz<2*maxlz; lz++) {
 				Kmag = Kmagnitude(lx, ly, lz);
 				
 				if ((Kmag > inner_radius) && (Kmag <= outer_radius)) {
@@ -506,23 +506,23 @@ DP SSS_PENCIL::Local_shell_mult_vorticity
 //
 //	sum(A.curl(B)/k^2) for a given shell
 //
-DP SSS_PENCIL::Local_shell_mult_vector_potential
+Real SSS_PENCIL::Local_shell_mult_vector_potential
 (
-    Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az,
-    Array<complx,3> Bx, Array<complx,3> By, Array<complx,3> Bz,  
-    DP inner_radius, DP outer_radius
+    Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
+    Array<Complex,3> Bx, Array<Complex,3> By, Array<Complex,3> Bz,  
+    Real inner_radius, Real outer_radius
 )
 {
-/*	TinyVector<complx,3> vorticity;
-	complx vort_y;
-	DP AdotB;
+/*	TinyVector<Complex,3> vorticity;
+	Complex vort_y;
+	Real AdotB;
 	
-	DP Kmag;
-	DP result = 0.0;
+	Real Kmag;
+	Real result = 0.0;
 	
-    for (int lx=0; lx<local_Nx; lx++)
-		for (int ly=0; ly<local_Ny; ly++)
-	        for (int lz=0; lz<local_Nz; lz++) {
+    for (int lx=0; lx<maxlx; lx++)
+		for (int ly=0; ly<maxly; ly++)
+	        for (int lz=0; lz<2*maxlz; lz++) {
 				Kmag = Kmagnitude(lx, ly, lz);
 				
 				if ( (Kmag > inner_radius) && (Kmag <= outer_radius) )  {
@@ -559,23 +559,23 @@ DP SSS_PENCIL::Local_shell_mult_vector_potential
 //
 void SSS_PENCIL::Local_shell_mult_vorticity_all
 ( 
-    Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az,
-    Array<complx,3> Bx, Array<complx,3> By, Array<complx,3> Bz,
-    Array<DP,1> result
+    Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
+    Array<Complex,3> Bx, Array<Complex,3> By, Array<Complex,3> Bz,
+    Array<Real,1> result
 )
 {
 	
-/*	TinyVector<complx,3> vorticity;
-	complx vort_y;
+/*	TinyVector<Complex,3> vorticity;
+	Complex vort_y;
 	
-	DP Kmag, AdotB;
+	Real Kmag, AdotB;
 	int shell_index;
 	
 	int	Kmax_inside = Max_radius_inside();
 	
-    for (int lx=0; lx<local_Nx; lx++)
-		for (int ly=0; ly<local_Ny; ly++)
-	        for (int lz=0; lz<local_Nz; lz++) {
+    for (int lx=0; lx<maxlx; lx++)
+		for (int ly=0; ly<maxly; ly++)
+	        for (int lz=0; lz<2*maxlz; lz++) {
 				Kmag = Kmagnitude(lx, ly, lz);
 				
 				if (Kmag <= Kmax_inside) {
@@ -611,24 +611,24 @@ void SSS_PENCIL::Local_shell_mult_vorticity_all
 //
 void SSS_PENCIL::Local_shell_mult_vector_potential_all
 (
-     Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az,
-     Array<complx,3> Bx, Array<complx,3> By, Array<complx,3> Bz,  
-     Array<DP,1> result
+     Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
+     Array<Complex,3> Bx, Array<Complex,3> By, Array<Complex,3> Bz,  
+     Array<Real,1> result
 )
 {
-/*	TinyVector<complx,3> vorticity;
-	complx vort_y;
+/*	TinyVector<Complex,3> vorticity;
+	Complex vort_y;
 	
-	DP Kmag, AdotB;
+	Real Kmag, AdotB;
 	int shell_index;
 	
 	result = 0.0;
 	
 	int	Kmax_inside = Max_radius_inside();
 	
-    for (int lx=0; lx<local_Nx; lx++)
-		for (int ly=0; ly<local_Ny; ly++)
-	        for (int lz=0; lz<local_Nz; lz++) {
+    for (int lx=0; lx<maxlx; lx++)
+		for (int ly=0; ly<maxly; ly++)
+	        for (int lz=0; lz<2*maxlz; lz++) {
 				Kmag = Kmagnitude(lx, ly, lz);
 				
 				if (Kmag <= Kmax_inside) {
@@ -659,19 +659,19 @@ void SSS_PENCIL::Local_shell_mult_vector_potential_all
 
 //*********************************************************************************************
 
-void SSS_PENCIL::Fill_array_shell(Array<complx,3> A, Array<complx,3> B, DP inner_radius, DP outer_radius)					
+void SSS_PENCIL::Fill_array_shell(Array<Complex,3> A, Array<Complex,3> B, Real inner_radius, Real outer_radius)					
 {
 	
-	Array<DP,3> Ar=Array<DP,3>(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
-    Array<DP,3> Br=Array<DP,3>(reinterpret_cast<DP*>(B.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<Real,3> Ar=Array<Real,3>(reinterpret_cast<Real*>(A.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+    Array<Real,3> Br=Array<Real,3>(reinterpret_cast<Real*>(B.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 	
-	DP Kmag;
+	Real Kmag;
 	
 	B = 0.0;
 	
-    for (int lx=0; lx<local_Nx; lx++)
-		for (int ly=0; ly<local_Ny; ly++)
-	        for (int lz=0; lz<local_Nz; lz++) {
+    for (int lx=0; lx<maxlx; lx++)
+		for (int ly=0; ly<maxly; ly++)
+	        for (int lz=0; lz<2*maxlz; lz++) {
 				Kmag = Kmagnitude(lx, ly, lz);
 				
 				if ( (Kmag > inner_radius) && (Kmag <= outer_radius) ) 
@@ -680,18 +680,18 @@ void SSS_PENCIL::Fill_array_shell(Array<complx,3> A, Array<complx,3> B, DP inner
 }
 
 
-void SSS_PENCIL::Fill_array_ring(Array<complx,3> A, Array<complx,3> B, DP inner_radius, DP outer_radius, DP left_angle, DP right_angle)		
+void SSS_PENCIL::Fill_array_ring(Array<Complex,3> A, Array<Complex,3> B, Real inner_radius, Real outer_radius, Real left_angle, Real right_angle)		
 {
-	Array<DP,3> Ar=Array<DP,3>(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
-    Array<DP,3> Br=Array<DP,3>(reinterpret_cast<DP*>(B.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<Real,3> Ar=Array<Real,3>(reinterpret_cast<Real*>(A.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+    Array<Real,3> Br=Array<Real,3>(reinterpret_cast<Real*>(B.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 	
-	DP Kmag, theta;
+	Real Kmag, theta;
 	
 	B = 0.0;
 	
-    for (int lx=0; lx<local_Nx; lx++)
-		for (int ly=0; ly<local_Ny; ly++)
-	        for (int lz=0; lz<local_Nz; lz++) {
+    for (int lx=0; lx<maxlx; lx++)
+		for (int ly=0; ly<maxly; ly++)
+	        for (int lz=0; lz<2*maxlz; lz++) {
 				Kmag = Kmagnitude(lx, ly, lz);
 				theta = AnisKvect_polar_angle(lx, ly, lz);
 				
@@ -703,20 +703,20 @@ void SSS_PENCIL::Fill_array_ring(Array<complx,3> A, Array<complx,3> B, DP inner_
 
 
 	
-void SSS_PENCIL::Fill_array_cylindrical_ring(Array<complx,3> A, Array<complx,3> B, DP inner_radius, DP outer_radius, DP h_lower, DP h_upper)		
+void SSS_PENCIL::Fill_array_cylindrical_ring(Array<Complex,3> A, Array<Complex,3> B, Real inner_radius, Real outer_radius, Real h_lower, Real h_upper)		
 {
 	
-	Array<DP,3> Ar=Array<DP,3>(reinterpret_cast<DP*>(A.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
-    Array<DP,3> Br=Array<DP,3>(reinterpret_cast<DP*>(B.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+	Array<Real,3> Ar=Array<Real,3>(reinterpret_cast<Real*>(A.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
+    Array<Real,3> Br=Array<Real,3>(reinterpret_cast<Real*>(B.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 	
 	
-	DP Kmag, Kpll;
+	Real Kmag, Kpll;
 	
 	B = 0.0;
 	
-    for (int lx=0; lx<local_Nx; lx++)
-		for (int ly=0; ly<local_Ny; ly++)
-	        for (int lz=0; lz<local_Nz; lz++) {
+    for (int lx=0; lx<maxlx; lx++)
+		for (int ly=0; ly<maxly; ly++)
+	        for (int lz=0; lz<2*maxlz; lz++) {
 				Kmag = Kmagnitude(lx, ly, lz);
 				Kpll = AnisKpll(lx, ly, lz);
 				

@@ -75,24 +75,24 @@ void FluidIO::Output_global(FluidVF& U)
     if (global.program.helicity_switch)
         U.cvf.Compute_total_helicity();
     
-    DP total_dissipation;
+    Real total_dissipation;
     // energy dissipation due to hyperviscosity.
     if (U.hyper_dissipation_switch) {
-        DP kn_energy;
+        Real kn_energy;
         U.cvf.Compute_total_kn_energy(U.hyper_dissipation_exponent, kn_energy);
         total_dissipation = U.hyper_dissipation_coefficient*kn_energy;
     }
 	
 	if (global.mpi.master)  {
-		DP kmax = universal->Max_radius_inside();
+		Real kmax = universal->Max_radius_inside();
 		
 		total_dissipation += U.dissipation_coefficient*U.cvf.total_k2energy;
 		
-		DP kolm_scale_u = sqrt(sqrt((my_pow(U.dissipation_coefficient, 3) /total_dissipation)));
+		Real kolm_scale_u = sqrt(sqrt((my_pow(U.dissipation_coefficient, 3) /total_dissipation)));
 		
-		DP kmax_eta = kmax*kolm_scale_u;
+		Real kmax_eta = kmax*kolm_scale_u;
 		
-		DP Rlambda = 2*U.cvf.total_energy* sqrt(15/total_dissipation); 			
+		Real Rlambda = 2*U.cvf.total_energy* sqrt(15/total_dissipation); 			
 		
 		if (Global_data_buffer_full()) {
 			global.io.Dump_buffer(global_file, global.io.global_data.buffer, global.io.global_data.buffer_index, global.io.global_data.packet_size);
@@ -146,34 +146,34 @@ void FluidIO::Output_global_scalar(FluidVF &U, FluidSF& T)
 	U.cvf.Compute_entropy(); 
 	T.csf.Compute_entropy();
     
-    DP total_dissipation, Ttotal_dissipation;
+    Real total_dissipation, Ttotal_dissipation;
     
     // energy dissipation due to hyperviscosity.
     if (U.hyper_dissipation_switch) {
-        DP kn_energy;
+        Real kn_energy;
         U.cvf.Compute_total_kn_energy(U.hyper_dissipation_exponent, kn_energy);
         total_dissipation = U.hyper_dissipation_coefficient*kn_energy;
     }
     
     if (T.hyper_diffusion_switch) {
-        DP kn_energy;
+        Real kn_energy;
         T.csf.Compute_total_kn_energy(T.hyper_diffusion_exponent, kn_energy);
         Ttotal_dissipation = T.hyper_diffusion_coefficient*kn_energy;
     }
 	
 	if (global.mpi.master) {
-		DP kmax = universal->Max_radius_inside();
+		Real kmax = universal->Max_radius_inside();
 		
 		total_dissipation += U.dissipation_coefficient*U.cvf.total_k2energy;
 		
-		DP kolm_scale_u = sqrt(sqrt((my_pow(U.dissipation_coefficient,3) / total_dissipation)));
+		Real kolm_scale_u = sqrt(sqrt((my_pow(U.dissipation_coefficient,3) / total_dissipation)));
 		
-		DP kmax_eta1 = kmax * kolm_scale_u;
+		Real kmax_eta1 = kmax * kolm_scale_u;
 		
-		DP tempvar = U.dissipation_coefficient/T.diffusion_coefficient;
-		DP kmax_eta2 = kmax_eta1 * sqrt(sqrt(tempvar))/tempvar;
+		Real tempvar = U.dissipation_coefficient/T.diffusion_coefficient;
+		Real kmax_eta2 = kmax_eta1 * sqrt(sqrt(tempvar))/tempvar;
 	
-		DP Rlambda = 2*U.cvf.total_energy* sqrt(15/total_dissipation);
+		Real Rlambda = 2*U.cvf.total_energy* sqrt(15/total_dissipation);
 		
         Ttotal_dissipation += T.diffusion_coefficient*T.csf.total_k2energy;
 		
@@ -213,14 +213,14 @@ void FluidIO::Output_global_scalar(FluidVF &U, FluidSF& T)
 void FluidIO::Output_global_RBC(FluidVF& U, FluidSF& T)
 {
     
-	static DP nusselt_no;
+	static Real nusselt_no;
 	
 	U.cvf.Compute_total_energy();
 	U.cvf.Compute_total_k2energy();
 	
-/*	DP residual_T_energy;    // Exclude |T(kx,0,0)|^2
-	DP peclet_nu;			 
-	DP nusselt_nu2;
+/*	Real residual_T_energy;    // Exclude |T(kx,0,0)|^2
+	Real peclet_nu;			 
+	Real nusselt_nu2;
 	
 	residual_T_energy = Get_total_energy_residual_SCFT(T.F);
 	peclet_nu = globalvar_Ra*sqrt(2*Get_total_Sn_anis_SCFT(T.F, 6));
@@ -241,34 +241,34 @@ void FluidIO::Output_global_RBC(FluidVF& U, FluidSF& T)
 	
 	nusselt_no = Correlation::Get_Nusselt_no(U, T);
     
-    DP total_dissipation, Ttotal_dissipation;
+    Real total_dissipation, Ttotal_dissipation;
     
     // Energy dissipation due to hyperviscosity.
     if (U.hyper_dissipation_switch) {
-        DP kn_energy;
+        Real kn_energy;
         U.cvf.Compute_total_kn_energy(U.hyper_dissipation_exponent, kn_energy);
         total_dissipation = U.hyper_dissipation_coefficient*kn_energy;
     }
     
     if (T.hyper_diffusion_switch) {
-        DP kn_energy;
+        Real kn_energy;
         T.csf.Compute_total_kn_energy(T.hyper_diffusion_exponent, kn_energy);
         Ttotal_dissipation = T.hyper_diffusion_coefficient*kn_energy;
     }
 	
 	if (global.mpi.master) {
-		DP kmax = universal->Max_radius_inside();
+		Real kmax = universal->Max_radius_inside();
 		
         total_dissipation += U.dissipation_coefficient*U.cvf.total_k2energy;
 		
-		DP kolm_scale_u = sqrt(sqrt((my_pow(U.dissipation_coefficient,3) / total_dissipation)));
+		Real kolm_scale_u = sqrt(sqrt((my_pow(U.dissipation_coefficient,3) / total_dissipation)));
 		
-		DP kmax_eta1 = kmax * kolm_scale_u;
+		Real kmax_eta1 = kmax * kolm_scale_u;
 		
-		DP tempvar = U.dissipation_coefficient/T.diffusion_coefficient;
-		DP kmax_eta2 = kmax_eta1 * sqrt(sqrt(tempvar))/tempvar;
+		Real tempvar = U.dissipation_coefficient/T.diffusion_coefficient;
+		Real kmax_eta2 = kmax_eta1 * sqrt(sqrt(tempvar))/tempvar;
 		
-		DP Rlambda = 2*U.cvf.total_energy* sqrt(15/total_dissipation); 
+		Real Rlambda = 2*U.cvf.total_energy* sqrt(15/total_dissipation); 
 		
         Ttotal_dissipation += T.diffusion_coefficient*T.csf.total_k2energy;
 		
@@ -322,40 +322,40 @@ void FluidIO::Output_global(FluidVF &U, FluidSF& T1, FluidSF& T2)
 	T1.csf.Compute_entropy(); 
 	T1.csf.Compute_entropy();
     
-    DP total_dissipation, T1total_dissipation, T2total_dissipation;
+    Real total_dissipation, T1total_dissipation, T2total_dissipation;
     
     // Add energy dissipation due to hyperviscosity.
     if (U.hyper_dissipation_switch) {
-        DP kn_energy;
+        Real kn_energy;
         U.cvf.Compute_total_kn_energy(U.hyper_dissipation_exponent, kn_energy);
         total_dissipation = U.hyper_dissipation_coefficient*kn_energy;
     }
     
     if (T1.hyper_diffusion_switch) {
-        DP kn_energy;
+        Real kn_energy;
         T1.csf.Compute_total_kn_energy(T1.hyper_diffusion_exponent, kn_energy);
         T1total_dissipation = T1.hyper_diffusion_coefficient*kn_energy;
     }
     
     if (T2.hyper_diffusion_switch) {
-        DP kn_energy;
+        Real kn_energy;
         T2.csf.Compute_total_kn_energy(T2.hyper_diffusion_exponent, kn_energy);
         T2total_dissipation = T2.hyper_diffusion_coefficient*kn_energy;
     }
 	
 	if (global.mpi.master) {
-		DP kmax = universal->Max_radius_inside();
+		Real kmax = universal->Max_radius_inside();
 		
 		total_dissipation += U.dissipation_coefficient*U.cvf.total_k2energy;
 		
-		DP kolm_scale_u = sqrt(sqrt((my_pow(U.dissipation_coefficient,3) / total_dissipation)));
+		Real kolm_scale_u = sqrt(sqrt((my_pow(U.dissipation_coefficient,3) / total_dissipation)));
 		
-		DP kmax_eta1 = kmax * kolm_scale_u;
+		Real kmax_eta1 = kmax * kolm_scale_u;
 		
-		DP tempvar = U.dissipation_coefficient/T1.diffusion_coefficient;
-		DP kmax_eta2 = kmax_eta1 * sqrt(sqrt(tempvar))/tempvar;
+		Real tempvar = U.dissipation_coefficient/T1.diffusion_coefficient;
+		Real kmax_eta2 = kmax_eta1 * sqrt(sqrt(tempvar))/tempvar;
 		
-		DP Rlambda = 2*U.cvf.total_energy* sqrt(15/total_dissipation);
+		Real Rlambda = 2*U.cvf.total_energy* sqrt(15/total_dissipation);
 		
 		T1total_dissipation += T1.diffusion_coefficient*T1.csf.total_k2energy;
 		
@@ -400,7 +400,7 @@ void FluidIO::Output_global(FluidVF &U, FluidSF& T1, FluidSF& T2)
 
 void FluidIO::Output_global(FluidVF& U, FluidVF& W)
 {
-	static DP Hc;
+	static Real Hc;
 
 	U.cvf.Compute_total_energy();
 	U.cvf.Compute_total_k2energy();
@@ -420,37 +420,37 @@ void FluidIO::Output_global(FluidVF& U, FluidVF& W)
 	U.cvf.Compute_entropy();
 	W.cvf.Compute_entropy();
 
-    DP total_dissipation, Wtotal_dissipation;
+    Real total_dissipation, Wtotal_dissipation;
     
     // Energy dissipation due to hyperviscosity.
     if (U.hyper_dissipation_switch) {
-        DP kn_energy;
+        Real kn_energy;
         U.cvf.Compute_total_kn_energy(U.hyper_dissipation_exponent, kn_energy);
         total_dissipation += U.hyper_dissipation_coefficient*kn_energy;
     }
     
     if (W.hyper_dissipation_switch) {
-        DP kn_energy;
+        Real kn_energy;
         W.cvf.Compute_total_kn_energy(W.hyper_dissipation_exponent, kn_energy);
         Wtotal_dissipation += W.hyper_dissipation_coefficient*kn_energy;
     }
     
 		
 	if (global.mpi.master) {
-		DP kmax = universal->Max_radius_inside();
+		Real kmax = universal->Max_radius_inside();
 		
 		total_dissipation += U.dissipation_coefficient*U.cvf.total_k2energy;
         
-		DP total_dissipation_Hc = ((U.dissipation_coefficient+W.dissipation_coefficient)/2)*U.cvf.total_k2Hc;
+		Real total_dissipation_Hc = ((U.dissipation_coefficient+W.dissipation_coefficient)/2)*U.cvf.total_k2Hc;
 		
-		DP kolm_scale_u = sqrt(sqrt((my_pow(U.dissipation_coefficient,3) / total_dissipation)));
+		Real kolm_scale_u = sqrt(sqrt((my_pow(U.dissipation_coefficient,3) / total_dissipation)));
 		
-		DP kmax_eta1 = kmax * kolm_scale_u;
+		Real kmax_eta1 = kmax * kolm_scale_u;
 		
-		DP tempvar = U.dissipation_coefficient/W.dissipation_coefficient;
-		DP kmax_eta2 = kmax_eta1 * sqrt(sqrt(tempvar))/tempvar;
+		Real tempvar = U.dissipation_coefficient/W.dissipation_coefficient;
+		Real kmax_eta2 = kmax_eta1 * sqrt(sqrt(tempvar))/tempvar;
 		
-		DP Rlambda = 2*U.cvf.total_energy* sqrt(15/total_dissipation);
+		Real Rlambda = 2*U.cvf.total_energy* sqrt(15/total_dissipation);
 		
 		Wtotal_dissipation += W.dissipation_coefficient*W.cvf.total_k2energy;
 		
@@ -500,7 +500,7 @@ void FluidIO::Output_global(FluidVF& U, FluidVF& W)
 
 void FluidIO::Output_global(FluidVF& U, FluidVF& W, FluidSF& T)
 {
-	static DP Hc;
+	static Real Hc;
 	
 	U.cvf.Compute_total_energy();
 	U.cvf.Compute_total_k2energy();
@@ -520,47 +520,47 @@ void FluidIO::Output_global(FluidVF& U, FluidVF& W, FluidSF& T)
         W.cvf.Compute_total_helicity();
     }
 	
-	DP nusselt_no = Correlation::Get_Nusselt_no(U, T);
+	Real nusselt_no = Correlation::Get_Nusselt_no(U, T);
 	
 	U.cvf.Compute_entropy();
 	W.cvf.Compute_entropy();
 	
-    DP total_dissipation, Wtotal_dissipation, Ttotal_dissipation;
+    Real total_dissipation, Wtotal_dissipation, Ttotal_dissipation;
     
     // Energy dissipation due to hyperviscosity.
     if (U.hyper_dissipation_switch) {
-        DP kn_energy;
+        Real kn_energy;
         U.cvf.Compute_total_kn_energy(U.hyper_dissipation_exponent, kn_energy);
         total_dissipation += U.hyper_dissipation_coefficient*kn_energy;
     }
     
     if (W.hyper_dissipation_switch) {
-        DP kn_energy;
+        Real kn_energy;
         W.cvf.Compute_total_kn_energy(W.hyper_dissipation_exponent, kn_energy);
         Wtotal_dissipation += W.hyper_dissipation_coefficient*kn_energy;
     }
     
 	if (T.hyper_diffusion_switch) {
-        DP kn_energy;
+        Real kn_energy;
         T.csf.Compute_total_kn_energy(T.hyper_diffusion_exponent, kn_energy);
         Ttotal_dissipation = T.hyper_diffusion_coefficient*kn_energy;
     }
 	
 	if (global.mpi.master) {
-		DP kmax = universal->Max_radius_inside();
+		Real kmax = universal->Max_radius_inside();
 		
 		total_dissipation += U.dissipation_coefficient*U.cvf.total_k2energy;
         
-		DP total_dissipation_Hc = ((U.dissipation_coefficient+W.dissipation_coefficient)/2)*U.cvf.total_k2Hc;
+		Real total_dissipation_Hc = ((U.dissipation_coefficient+W.dissipation_coefficient)/2)*U.cvf.total_k2Hc;
 		
-		DP kolm_scale_u = sqrt(sqrt((my_pow(U.dissipation_coefficient,3) / total_dissipation)));
+		Real kolm_scale_u = sqrt(sqrt((my_pow(U.dissipation_coefficient,3) / total_dissipation)));
 		
-		DP kmax_eta1 = kmax * kolm_scale_u;
+		Real kmax_eta1 = kmax * kolm_scale_u;
 		
-		DP tempvar = U.dissipation_coefficient/W.dissipation_coefficient;
-		DP kmax_eta2 = kmax_eta1 * sqrt(sqrt(tempvar))/tempvar;
+		Real tempvar = U.dissipation_coefficient/W.dissipation_coefficient;
+		Real kmax_eta2 = kmax_eta1 * sqrt(sqrt(tempvar))/tempvar;
 		
-		DP Rlambda = 2*U.cvf.total_energy* sqrt(15/total_dissipation);
+		Real Rlambda = 2*U.cvf.total_energy* sqrt(15/total_dissipation);
 		
 		Wtotal_dissipation += W.dissipation_coefficient*W.cvf.total_k2energy;
 		
@@ -617,7 +617,7 @@ void FluidIO::Output_global(FluidVF& U, FluidVF& W, FluidSF& T)
 
 void FluidIO::Output_global(FluidVF& U, FluidVF& W, FluidSF& T, FluidSF& C)
 {
-	static DP Hc;
+	static Real Hc;
 	
 	U.cvf.Compute_total_energy();
 	U.cvf.Compute_total_k2energy();
@@ -639,54 +639,54 @@ void FluidIO::Output_global(FluidVF& U, FluidVF& W, FluidSF& T, FluidSF& C)
         W.cvf.Compute_total_helicity();
     }
 	
-	DP nusselt_no = Correlation::Get_Nusselt_no(U, T);
+	Real nusselt_no = Correlation::Get_Nusselt_no(U, T);
 	
 	U.cvf.Compute_entropy();
 	W.cvf.Compute_entropy();
 	
-    DP total_dissipation, Wtotal_dissipation, Ttotal_dissipation, Ctotal_dissipation;
+    Real total_dissipation, Wtotal_dissipation, Ttotal_dissipation, Ctotal_dissipation;
     
     // Energy dissipation due to hyperviscosity.
     if (U.hyper_dissipation_switch) {
-        DP kn_energy;
+        Real kn_energy;
         U.cvf.Compute_total_kn_energy(U.hyper_dissipation_exponent, kn_energy);
         total_dissipation += U.hyper_dissipation_coefficient*kn_energy;
     }
     
     if (W.hyper_dissipation_switch) {
-        DP kn_energy;
+        Real kn_energy;
         W.cvf.Compute_total_kn_energy(W.hyper_dissipation_exponent, kn_energy);
         Wtotal_dissipation += W.hyper_dissipation_coefficient*kn_energy;
     }
     
 	if (T.hyper_diffusion_switch) {
-        DP kn_energy;
+        Real kn_energy;
         T.csf.Compute_total_kn_energy(T.hyper_diffusion_exponent, kn_energy);
         Ttotal_dissipation = T.hyper_diffusion_coefficient*kn_energy;
     }
 	
 	if (C.hyper_diffusion_switch) {
-        DP kn_energy;
+        Real kn_energy;
         C.csf.Compute_total_kn_energy(C.hyper_diffusion_exponent, kn_energy);
         Ctotal_dissipation = C.hyper_diffusion_coefficient*kn_energy;
     }
 	
 	
 	if (global.mpi.master) {
-		DP kmax = universal->Max_radius_inside();
+		Real kmax = universal->Max_radius_inside();
 		
 		total_dissipation += U.dissipation_coefficient*U.cvf.total_k2energy;
         
-		DP total_dissipation_Hc = ((U.dissipation_coefficient+W.dissipation_coefficient)/2)*U.cvf.total_k2Hc;
+		Real total_dissipation_Hc = ((U.dissipation_coefficient+W.dissipation_coefficient)/2)*U.cvf.total_k2Hc;
 		
-		DP kolm_scale_u = sqrt(sqrt((my_pow(U.dissipation_coefficient,3) / total_dissipation)));
+		Real kolm_scale_u = sqrt(sqrt((my_pow(U.dissipation_coefficient,3) / total_dissipation)));
 		
-		DP kmax_eta1 = kmax * kolm_scale_u;
+		Real kmax_eta1 = kmax * kolm_scale_u;
 		
-		DP tempvar = U.dissipation_coefficient/W.dissipation_coefficient;
-		DP kmax_eta2 = kmax_eta1 * sqrt(sqrt(tempvar))/tempvar;
+		Real tempvar = U.dissipation_coefficient/W.dissipation_coefficient;
+		Real kmax_eta2 = kmax_eta1 * sqrt(sqrt(tempvar))/tempvar;
 		
-		DP Rlambda = 2*U.cvf.total_energy* sqrt(15/total_dissipation);
+		Real Rlambda = 2*U.cvf.total_energy* sqrt(15/total_dissipation);
 		
 		Wtotal_dissipation += W.dissipation_coefficient*W.cvf.total_k2energy;
 		

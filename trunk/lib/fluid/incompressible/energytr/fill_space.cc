@@ -34,8 +34,8 @@
  *		including the modes in the outer sphere. <BR>
  *		The last shell contains all the modes beyond the maximum inner sphere.
  *
- * @sa void Fill_array_shell(string basis_type, int N[], Array<complx,2> A, Array<complx,2> B,
- *		DP inner_radius, DP outer_radius, 	DP kfactor[])
+ * @sa void Fill_array_shell(string basis_type, int N[], Array<Complex,2> A, Array<Complex,2> B,
+ *		Real inner_radius, Real outer_radius, 	Real kfactor[])
  *
  * @sa universal_ET.cc
  *
@@ -55,8 +55,8 @@
 ///	 Includes the modes of the outer surface.
 void EnergyTr::Fill_in_sphere(int sphere_index, FluidVF& U)						
 {
-	DP inner_radius = 0;
-	DP outer_radius = global.energy_transfer.flux.radii(sphere_index);				
+	Real inner_radius = 0;
+	Real outer_radius = global.energy_transfer.flux.radii(sphere_index);				
 
 	universal->Fill_array_shell(U.cvf.V1, Giver.cvf.V1, inner_radius, outer_radius);
 	universal->Fill_array_shell(U.cvf.V2, Giver.cvf.V2, inner_radius, outer_radius);
@@ -69,8 +69,8 @@ void EnergyTr::Fill_in_sphere(int sphere_index, FluidVF& U)
 void EnergyTr::Fill_in_sphere(int sphere_index, FluidSF& T)						
 {
 		
-	DP inner_radius = 0;
-	DP outer_radius = global.energy_transfer.flux.radii(sphere_index);				
+	Real inner_radius = 0;
+	Real outer_radius = global.energy_transfer.flux.radii(sphere_index);				
 			
 	universal->Fill_array_shell(T.csf.F, Giver.cvf.V1, inner_radius, outer_radius);			
 }
@@ -80,8 +80,8 @@ void EnergyTr::Fill_in_sphere(int sphere_index, FluidSF& T)
 void EnergyTr::Fill_in_sphere_Vpll(int sphere_index, FluidVF& U)
 {
     
-	DP inner_radius = 0;
-	DP outer_radius = global.energy_transfer.flux.radii(sphere_index);
+	Real inner_radius = 0;
+	Real outer_radius = global.energy_transfer.flux.radii(sphere_index);
     
     if (global.field.anisotropy_dirn == 1)
         universal->Fill_array_shell(U.cvf.V1, Giver.cvf.V1, inner_radius, outer_radius);
@@ -106,8 +106,8 @@ void EnergyTr::Fill_out_sphere(): -- OUTSIDE SPHERE FILLED
 
 void EnergyTr::Fill_out_sphere(int sphere_index, FluidVF& U)
 {
-	DP inner_radius = global.energy_transfer.flux.radii(sphere_index);
-	DP outer_radius = INF_RADIUS;
+	Real inner_radius = global.energy_transfer.flux.radii(sphere_index);
+	Real outer_radius = INF_RADIUS;
 
 	universal->Fill_array_shell(U.cvf.V1, Giver.cvf.V1, inner_radius, outer_radius);
 	universal->Fill_array_shell(U.cvf.V2, Giver.cvf.V2, inner_radius, outer_radius);
@@ -118,8 +118,8 @@ void EnergyTr::Fill_out_sphere(int sphere_index, FluidVF& U)
 // For Passive Scalar 
 void EnergyTr::Fill_out_sphere(int sphere_index, FluidSF& T)						
 {
-	DP inner_radius = global.energy_transfer.flux.radii(sphere_index);
-	DP outer_radius = INF_RADIUS;
+	Real inner_radius = global.energy_transfer.flux.radii(sphere_index);
+	Real outer_radius = INF_RADIUS;
 			
 	universal->Fill_array_shell(T.csf.F, Giver.cvf.V1, inner_radius, outer_radius);	
 }
@@ -129,8 +129,8 @@ void EnergyTr::Fill_out_sphere(int sphere_index, FluidSF& T)
 void EnergyTr::Fill_out_sphere_Vpll(int sphere_index, FluidVF& U)
 {
     
-	DP inner_radius = global.energy_transfer.flux.radii(sphere_index);
-	DP outer_radius = INF_RADIUS;
+	Real inner_radius = global.energy_transfer.flux.radii(sphere_index);
+	Real outer_radius = INF_RADIUS;
     
     if (global.field.anisotropy_dirn == 1)
         universal->Fill_array_shell(U.cvf.V1, Giver.cvf.V1, inner_radius, outer_radius);
@@ -149,8 +149,8 @@ void EnergyTr::Fill_out_sphere_Vpll(int sphere_index, FluidVF& U)
 /// Include the modes of the outer surface, and exclude that of inner surface.
 void EnergyTr::Fill_shell(int shell_from_index, FluidVF& U)						
 {
-	DP inner_radius = global.energy_transfer.shell_to_shell.radii(shell_from_index - 1);
-	DP outer_radius = global.energy_transfer.shell_to_shell.radii(shell_from_index);
+	Real inner_radius = global.energy_transfer.shell_to_shell.radii(shell_from_index - 1);
+	Real outer_radius = global.energy_transfer.shell_to_shell.radii(shell_from_index);
 	
 	universal->Fill_array_shell(U.cvf.V1, Giver.cvf.V1, inner_radius, outer_radius);
 	universal->Fill_array_shell(U.cvf.V2, Giver.cvf.V2, inner_radius, outer_radius);
@@ -161,16 +161,16 @@ void EnergyTr::Fill_shell(int shell_from_index, FluidVF& U)
 // Passive scalar
 void EnergyTr::Fill_shell(int shell_from_index, FluidSF& T)						
 {
-	DP inner_radius = global.energy_transfer.shell_to_shell.radii(shell_from_index - 1);
-	DP outer_radius = global.energy_transfer.shell_to_shell.radii(shell_from_index);
+	Real inner_radius = global.energy_transfer.shell_to_shell.radii(shell_from_index - 1);
+	Real outer_radius = global.energy_transfer.shell_to_shell.radii(shell_from_index);
 			
 	universal->Fill_array_shell(T.csf.F, Giver.cvf.V1, inner_radius, outer_radius);
 }
 
 void EnergyTr::Fill_shell_Vpll(int shell_from_index, FluidVF& U)
 {
-	DP inner_radius = global.energy_transfer.shell_to_shell.radii(shell_from_index - 1);
-	DP outer_radius = global.energy_transfer.shell_to_shell.radii(shell_from_index);
+	Real inner_radius = global.energy_transfer.shell_to_shell.radii(shell_from_index - 1);
+	Real outer_radius = global.energy_transfer.shell_to_shell.radii(shell_from_index);
     
     if (global.field.anisotropy_dirn == 1)
         universal->Fill_array_shell(U.cvf.V1, Giver.cvf.V1, inner_radius, outer_radius);
@@ -189,11 +189,11 @@ void EnergyTr::Fill_shell_Vpll(int shell_from_index, FluidVF& U)
 
 void EnergyTr::Fill_ring(int ring_shell_from_index, int sector_from_index, FluidVF& U)						
 {
-	DP inner_radius = global.energy_transfer.ring_to_ring.radii(ring_shell_from_index - 1);
-	DP outer_radius = global.energy_transfer.ring_to_ring.radii(ring_shell_from_index);
+	Real inner_radius = global.energy_transfer.ring_to_ring.radii(ring_shell_from_index - 1);
+	Real outer_radius = global.energy_transfer.ring_to_ring.radii(ring_shell_from_index);
 	
-	DP left_angle = global.energy_transfer.ring_to_ring.sector_angles(sector_from_index-1);
-	DP right_angle = global.energy_transfer.ring_to_ring.sector_angles(sector_from_index);	
+	Real left_angle = global.energy_transfer.ring_to_ring.sector_angles(sector_from_index-1);
+	Real right_angle = global.energy_transfer.ring_to_ring.sector_angles(sector_from_index);	
 	
 	
 	universal->Fill_array_ring(U.cvf.V1, Giver.cvf.V1, inner_radius, outer_radius, left_angle, right_angle);
@@ -205,11 +205,11 @@ void EnergyTr::Fill_ring(int ring_shell_from_index, int sector_from_index, Fluid
 
 void EnergyTr::Fill_ring(int ring_shell_from_index, int sector_from_index, FluidSF& T)						
 {
-	DP inner_radius = global.energy_transfer.ring_to_ring.radii(ring_shell_from_index - 1);
-	DP outer_radius = global.energy_transfer.ring_to_ring.radii(ring_shell_from_index);
+	Real inner_radius = global.energy_transfer.ring_to_ring.radii(ring_shell_from_index - 1);
+	Real outer_radius = global.energy_transfer.ring_to_ring.radii(ring_shell_from_index);
 	
-	DP left_angle = global.energy_transfer.ring_to_ring.sector_angles(sector_from_index-1);
-	DP right_angle = global.energy_transfer.ring_to_ring.sector_angles(sector_from_index);
+	Real left_angle = global.energy_transfer.ring_to_ring.sector_angles(sector_from_index-1);
+	Real right_angle = global.energy_transfer.ring_to_ring.sector_angles(sector_from_index);
 	
 	universal->Fill_array_ring(T.csf.F, Giver.cvf.V1, inner_radius, outer_radius, left_angle, right_angle);	
 }
@@ -217,11 +217,11 @@ void EnergyTr::Fill_ring(int ring_shell_from_index, int sector_from_index, Fluid
 
 void EnergyTr::Fill_ring_Vpll(int ring_shell_from_index, int sector_from_index, FluidVF& U)
 {
-	DP inner_radius = global.energy_transfer.ring_to_ring.radii(ring_shell_from_index - 1);
-	DP outer_radius = global.energy_transfer.ring_to_ring.radii(ring_shell_from_index);
+	Real inner_radius = global.energy_transfer.ring_to_ring.radii(ring_shell_from_index - 1);
+	Real outer_radius = global.energy_transfer.ring_to_ring.radii(ring_shell_from_index);
 	
-	DP left_angle = global.energy_transfer.ring_to_ring.sector_angles(sector_from_index-1);
-	DP right_angle = global.energy_transfer.ring_to_ring.sector_angles(sector_from_index);
+	Real left_angle = global.energy_transfer.ring_to_ring.sector_angles(sector_from_index-1);
+	Real right_angle = global.energy_transfer.ring_to_ring.sector_angles(sector_from_index);
 	
     if (global.field.anisotropy_dirn == 1)
         universal->Fill_array_ring(U.cvf.V1, Giver.cvf.V1, inner_radius, outer_radius, left_angle, right_angle);
@@ -242,11 +242,11 @@ void EnergyTr::Fill_ring_Vpll(int ring_shell_from_index, int sector_from_index, 
 void EnergyTr::Fill_cylindrical_ring(int cylindrical_shell_from_index, int slab_from_index, FluidVF& U)			
 {	
 	
-	DP inner_radius = global.energy_transfer.cylindrical_ring_to_ring.radii(cylindrical_shell_from_index - 1);
-	DP outer_radius = global.energy_transfer.cylindrical_ring_to_ring.radii(cylindrical_shell_from_index);
+	Real inner_radius = global.energy_transfer.cylindrical_ring_to_ring.radii(cylindrical_shell_from_index - 1);
+	Real outer_radius = global.energy_transfer.cylindrical_ring_to_ring.radii(cylindrical_shell_from_index);
 	
-	DP h_lower = global.energy_transfer.cylindrical_ring_to_ring.kpll_array(slab_from_index-1);
-	DP h_upper = global.energy_transfer.cylindrical_ring_to_ring.kpll_array(slab_from_index);
+	Real h_lower = global.energy_transfer.cylindrical_ring_to_ring.kpll_array(slab_from_index-1);
+	Real h_upper = global.energy_transfer.cylindrical_ring_to_ring.kpll_array(slab_from_index);
 	
 	universal->Fill_array_cylindrical_ring(U.cvf.V1, Giver.cvf.V1, inner_radius, outer_radius, h_lower, h_upper);
 	universal->Fill_array_cylindrical_ring(U.cvf.V2, Giver.cvf.V2, inner_radius, outer_radius, h_lower, h_upper);
@@ -258,22 +258,22 @@ void EnergyTr::Fill_cylindrical_ring(int cylindrical_shell_from_index, int slab_
 
 void EnergyTr::Fill_cylindrical_ring(int cylindrical_shell_from_index, int slab_from_index, FluidSF& T)			
 {	
-	DP inner_radius = global.energy_transfer.cylindrical_ring_to_ring.radii(cylindrical_shell_from_index - 1);
-	DP outer_radius = global.energy_transfer.cylindrical_ring_to_ring.radii(cylindrical_shell_from_index);
+	Real inner_radius = global.energy_transfer.cylindrical_ring_to_ring.radii(cylindrical_shell_from_index - 1);
+	Real outer_radius = global.energy_transfer.cylindrical_ring_to_ring.radii(cylindrical_shell_from_index);
 	
-	DP h_lower = global.energy_transfer.cylindrical_ring_to_ring.kpll_array(slab_from_index-1);
-	DP h_upper = global.energy_transfer.cylindrical_ring_to_ring.kpll_array(slab_from_index);
+	Real h_lower = global.energy_transfer.cylindrical_ring_to_ring.kpll_array(slab_from_index-1);
+	Real h_upper = global.energy_transfer.cylindrical_ring_to_ring.kpll_array(slab_from_index);
 	
 	universal->Fill_array_cylindrical_ring(T.csf.F, Giver.cvf.V1, inner_radius, outer_radius, h_lower, h_upper);
 }
 
 void EnergyTr::Fill_cylindrical_ring_Vpll(int cylindrical_shell_from_index, int slab_from_index, FluidVF& U)
 {
-	DP inner_radius = global.energy_transfer.cylindrical_ring_to_ring.radii(cylindrical_shell_from_index - 1);
-	DP outer_radius = global.energy_transfer.cylindrical_ring_to_ring.radii(cylindrical_shell_from_index);
+	Real inner_radius = global.energy_transfer.cylindrical_ring_to_ring.radii(cylindrical_shell_from_index - 1);
+	Real outer_radius = global.energy_transfer.cylindrical_ring_to_ring.radii(cylindrical_shell_from_index);
 	
-	DP h_lower = global.energy_transfer.cylindrical_ring_to_ring.kpll_array(slab_from_index-1);
-	DP h_upper = global.energy_transfer.cylindrical_ring_to_ring.kpll_array(slab_from_index);
+	Real h_lower = global.energy_transfer.cylindrical_ring_to_ring.kpll_array(slab_from_index-1);
+	Real h_upper = global.energy_transfer.cylindrical_ring_to_ring.kpll_array(slab_from_index);
 	
     if (global.field.anisotropy_dirn == 1)
         universal->Fill_array_cylindrical_ring(U.cvf.V1, Giver.cvf.V1, inner_radius, outer_radius, h_lower, h_upper);

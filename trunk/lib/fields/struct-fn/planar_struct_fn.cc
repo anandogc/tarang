@@ -49,7 +49,7 @@
 void RVF::Compute_planar_structure_function_unit_anis1(ofstream& file_out, int pll_index)
 {
 	TinyVector<int,3>	j1, j2;
-	TinyVector<DP,3>	v_1, v_2;
+	TinyVector<Real,3>	v_1, v_2;
 	
 	int data_size_St, data_size_St_count;
 	int tag_St = 111;
@@ -151,13 +151,13 @@ void RVF::Compute_planar_structure_function_unit_anis1(ofstream& file_out, int p
 			
 			data_size_St = (*RV_St).size();
 			
-			MPI_Recv( reinterpret_cast<DP*>((*RV_St).data()), data_size_St, 
-					 MPI_DP, source, tag_St, MPI_COMM_WORLD, &status );
+			MPI_Recv( reinterpret_cast<Real*>((*RV_St).data()), data_size_St, 
+					 MPI_Real, source, tag_St, MPI_COMM_WORLD, &status );
 					 
 			data_size_St_count = (*RV_St_count).size(); 		 
 					 
-			MPI_Recv( reinterpret_cast<DP*>((*RV_St_count).data()), data_size_St_count, 
-					 MPI_DP, source, tag_St_count, MPI_COMM_WORLD, &status );	
+			MPI_Recv( reinterpret_cast<Real*>((*RV_St_count).data()), data_size_St_count, 
+					 MPI_Real, source, tag_St_count, MPI_COMM_WORLD, &status );	
 					 
 			file_out << "%% pll_index = " << local_N1*source + pll_index << endl;
 			
@@ -188,13 +188,13 @@ void RVF::Compute_planar_structure_function_unit_anis1(ofstream& file_out, int p
 	else {
 		data_size_St = (*RV_St).size();
 		
-		MPI_Send( reinterpret_cast<DP*>((*RV_St).data()), data_size_St, 
-				 MPI_DP, master_id, tag_St, MPI_COMM_WORLD );
+		MPI_Send( reinterpret_cast<Real*>((*RV_St).data()), data_size_St, 
+				 MPI_Real, master_id, tag_St, MPI_COMM_WORLD );
 			
 		data_size_St_count = (*RV_St_count).size(); 
 				 	 
-		MPI_Send( reinterpret_cast<DP*>((*RV_St_count).data()), data_size_St_count, 
-				 MPI_DP, master_id, tag_St_count, MPI_COMM_WORLD );		 
+		MPI_Send( reinterpret_cast<Real*>((*RV_St_count).data()), data_size_St_count, 
+				 MPI_Real, master_id, tag_St_count, MPI_COMM_WORLD );		 
 	}
 	
 	MPI_Barrier(MPI_COMM_WORLD);
@@ -206,14 +206,14 @@ void RVF::Compute_planar_structure_function_unit_anis2
 (
 	int pll_index,
 	int otherproc, 
-	Array<complx,2> otherprocV1,
-	Array<complx,2> otherprocV2,
-	Array<complx,2> otherprocV3
+	Array<Complex,2> otherprocV1,
+	Array<Complex,2> otherprocV2,
+	Array<Complex,2> otherprocV3
 )
 {
 	
 	TinyVector<int,3>	j1, j2;
-	TinyVector<DP,3>	v_1, v_2;
+	TinyVector<Real,3>	v_1, v_2;
 	
 	int Pi2 = pll_index;
 	int Qi2 = pll_index;
@@ -286,14 +286,14 @@ void RVF::Compute_planar_structure_function_unit_anis3
 (
 	int pll_index,
 	int otherproc, 
-	Array<DP,2> otherprocV1,
-	Array<DP,2> otherprocV2,
-	Array<DP,2> otherprocV3,
+	Array<Real,2> otherprocV1,
+	Array<Real,2> otherprocV2,
+	Array<Real,2> otherprocV3,
 	int imag_switch
 )
 {
 	TinyVector<int,3>	j1, j2;
-	TinyVector<DP,3>	v_1, v_2;
+	TinyVector<Real,3>	v_1, v_2;
 	
 	int Pi3 = pll_index;
 	int Qi3 = pll_index;
@@ -358,10 +358,10 @@ void RVF::Compute_local_planar_structure_function_anis2(int pll_index)
 	*RV_St_count = 0;
 
 	// allocate otherprocVi vars
-	Array<complx,2> otherprocV1(local_N1,(Nrv[3]/2)+1); 
-	Array<complx,2> otherprocV2(local_N1,(Nrv[3]/2)+1); 
-	Array<complx,2> otherprocV3(local_N1,(Nrv[3]/2)+1);
-	Array<complx,2> temp(local_N1,(Nrv[3]/2)+1); 
+	Array<Complex,2> otherprocV1(local_N1,(Nrv[3]/2)+1); 
+	Array<Complex,2> otherprocV2(local_N1,(Nrv[3]/2)+1); 
+	Array<Complex,2> otherprocV3(local_N1,(Nrv[3]/2)+1);
+	Array<Complex,2> temp(local_N1,(Nrv[3]/2)+1); 
 	
 	// with itself
 	otherprocV1 = (*V1r)(Range::all(),pll_index,Range::all());
@@ -379,32 +379,32 @@ void RVF::Compute_local_planar_structure_function_anis2(int pll_index)
 		
 		// first component of plane=pll_index
 		temp = (*V1r)(Range::all(),pll_index,Range::all());
-		MPI_Isend( reinterpret_cast<DP*>((temp).data()), data_size, 
-					 MPI_DP, send_to, tag, MPI_COMM_WORLD, &request);
+		MPI_Isend( reinterpret_cast<Real*>((temp).data()), data_size, 
+					 MPI_Real, send_to, tag, MPI_COMM_WORLD, &request);
 		
-		MPI_Irecv( reinterpret_cast<DP*>((otherprocV1).data()), data_size, 
-					 MPI_DP, receive_from, tag, MPI_COMM_WORLD, &request2);
+		MPI_Irecv( reinterpret_cast<Real*>((otherprocV1).data()), data_size, 
+					 MPI_Real, receive_from, tag, MPI_COMM_WORLD, &request2);
 		
 		MPI_Wait(&request2, &status);
 		
 		// second component of plane=pll_index
 		temp = (*V2r)(Range::all(),pll_index,Range::all());
-		MPI_Isend( reinterpret_cast<DP*>((temp).data()), data_size, 
-				  MPI_DP, send_to, tag, MPI_COMM_WORLD, &request);
+		MPI_Isend( reinterpret_cast<Real*>((temp).data()), data_size, 
+				  MPI_Real, send_to, tag, MPI_COMM_WORLD, &request);
 		
-		MPI_Irecv( reinterpret_cast<DP*>((otherprocV2).data()), data_size, 
-				 MPI_DP, receive_from, tag, MPI_COMM_WORLD, &request2);
+		MPI_Irecv( reinterpret_cast<Real*>((otherprocV2).data()), data_size, 
+				 MPI_Real, receive_from, tag, MPI_COMM_WORLD, &request2);
 		
 		MPI_Wait(&request2, &status);
 		
 		
 		// thrid component of plane=pll_index
 		temp = (*V3r)(Range::all(),pll_index,Range::all());
-		MPI_Isend( reinterpret_cast<DP*>((temp).data()), data_size, 
-				  MPI_DP, send_to, tag, MPI_COMM_WORLD, &request);
+		MPI_Isend( reinterpret_cast<Real*>((temp).data()), data_size, 
+				  MPI_Real, send_to, tag, MPI_COMM_WORLD, &request);
 		
-		MPI_Irecv( reinterpret_cast<DP*>((otherprocV3).data()), data_size, 
-				 MPI_DP, receive_from, tag, MPI_COMM_WORLD, &request2);
+		MPI_Irecv( reinterpret_cast<Real*>((otherprocV3).data()), data_size, 
+				 MPI_Real, receive_from, tag, MPI_COMM_WORLD, &request2);
 		
 		MPI_Wait(&request2, &status);
 		
@@ -426,10 +426,10 @@ void RVF::Compute_local_planar_structure_function_anis3
 	MPI_Request request, request2;
 	
 	// allocate otherprocVi vars
-	Array<DP,2> otherprocV1(local_N1,Nrv[2]); 
-	Array<DP,2> otherprocV2(local_N1,Nrv[2]);
-	Array<DP,2> otherprocV3(local_N1,Nrv[2]);
-	Array<DP,2> temp(local_N1,Nrv[2]);
+	Array<Real,2> otherprocV1(local_N1,Nrv[2]); 
+	Array<Real,2> otherprocV2(local_N1,Nrv[2]);
+	Array<Real,2> otherprocV3(local_N1,Nrv[2]);
+	Array<Real,2> temp(local_N1,Nrv[2]);
 	
 	*RV_St = 0.0;
 	*RV_St_count = 0;
@@ -465,11 +465,11 @@ void RVF::Compute_local_planar_structure_function_anis3
 		else if (imag_switch == 1) 
 			temp = imag((*V1r)(Range::all(),Range::all(),pll_index));
 			
-		MPI_Isend( reinterpret_cast<DP*>((temp).data()), data_size, 
-				   MPI_DP, send_to, tag, MPI_COMM_WORLD, &request);
+		MPI_Isend( reinterpret_cast<Real*>((temp).data()), data_size, 
+				   MPI_Real, send_to, tag, MPI_COMM_WORLD, &request);
 				
-		MPI_Irecv( reinterpret_cast<DP*>((otherprocV1).data()), data_size, 
-				  MPI_DP, receive_from, tag, MPI_COMM_WORLD, &request2);
+		MPI_Irecv( reinterpret_cast<Real*>((otherprocV1).data()), data_size, 
+				  MPI_Real, receive_from, tag, MPI_COMM_WORLD, &request2);
 		
 		MPI_Wait(&request2, &status);
 		
@@ -480,11 +480,11 @@ void RVF::Compute_local_planar_structure_function_anis3
 		else if (imag_switch == 1) 
 			temp = imag((*V2r)(Range::all(),Range::all(),pll_index));
 		
-		MPI_Isend( reinterpret_cast<DP*>((temp).data()), data_size, 
-				  MPI_DP, send_to, tag, MPI_COMM_WORLD, &request);
+		MPI_Isend( reinterpret_cast<Real*>((temp).data()), data_size, 
+				  MPI_Real, send_to, tag, MPI_COMM_WORLD, &request);
 		
-		MPI_Irecv( reinterpret_cast<DP*>((otherprocV2).data()), data_size, 
-				  MPI_DP, receive_from, tag, MPI_COMM_WORLD, &request2);
+		MPI_Irecv( reinterpret_cast<Real*>((otherprocV2).data()), data_size, 
+				  MPI_Real, receive_from, tag, MPI_COMM_WORLD, &request2);
 		
 		MPI_Wait(&request2, &status);
 		
@@ -495,11 +495,11 @@ void RVF::Compute_local_planar_structure_function_anis3
 		else if (imag_switch == 1) 
 			temp = imag((*V3r)(Range::all(),Range::all(),pll_index));
 		
-		MPI_Isend( reinterpret_cast<DP*>((temp).data()), data_size, 
-				  MPI_DP, send_to, tag, MPI_COMM_WORLD, &request);
+		MPI_Isend( reinterpret_cast<Real*>((temp).data()), data_size, 
+				  MPI_Real, send_to, tag, MPI_COMM_WORLD, &request);
 		
-		MPI_Irecv( reinterpret_cast<DP*>((otherprocV3).data()), data_size, 
-				  MPI_DP, receive_from, tag, MPI_COMM_WORLD, &request2);
+		MPI_Irecv( reinterpret_cast<Real*>((otherprocV3).data()), data_size, 
+				  MPI_Real, receive_from, tag, MPI_COMM_WORLD, &request2);
 		
 		MPI_Wait(&request2, &status);
 		
@@ -535,15 +535,15 @@ void RVF::RV_Compute_planar_structure_function_anis2(int pll_index)
 			
 	int data_size = (*RV_St).size(); 
 	
-	MPI_Reduce(reinterpret_cast<DP*>((*RV_St).data()), 
-			   reinterpret_cast<DP*>((*RV_St_final).data()), 
-			   data_size, MPI_DP, MPI_SUM, master_id, MPI_COMM_WORLD); 
+	MPI_Reduce(reinterpret_cast<Real*>((*RV_St).data()), 
+			   reinterpret_cast<Real*>((*RV_St_final).data()), 
+			   data_size, MPI_Real, MPI_SUM, master_id, MPI_COMM_WORLD); 
 	
 	data_size = (*RV_St_count).size();  
 	
 	MPI_Reduce(reinterpret_cast<int*>((*RV_St_count).data()), 
 			   reinterpret_cast<int*>((*RV_St_count_final).data()), 
-			   data_size, MPI_DP, MPI_SUM, master_id, MPI_COMM_WORLD); 
+			   data_size, MPI_Real, MPI_SUM, master_id, MPI_COMM_WORLD); 
 	
 	
 	// Normalize St(..)	
@@ -577,15 +577,15 @@ void RVF::RV_Compute_planar_structure_function_anis3(int pll_index, int imag_swi
 	
 	int data_size = (*RV_St).size(); 
 	
-	MPI_Reduce(reinterpret_cast<DP*>((*RV_St).data()), 
-			   reinterpret_cast<DP*>((*RV_St_final).data()), 
-			   data_size, MPI_DP, MPI_SUM, master_id, MPI_COMM_WORLD); 
+	MPI_Reduce(reinterpret_cast<Real*>((*RV_St).data()), 
+			   reinterpret_cast<Real*>((*RV_St_final).data()), 
+			   data_size, MPI_Real, MPI_SUM, master_id, MPI_COMM_WORLD); 
 	
 	data_size = (*RV_St_count).size();  
 	
 	MPI_Reduce(reinterpret_cast<int*>((*RV_St_count).data()), 
 			   reinterpret_cast<int*>((*RV_St_count_final).data()), 
-			   data_size, MPI_DP, MPI_SUM, master_id, MPI_COMM_WORLD); 
+			   data_size, MPI_Real, MPI_SUM, master_id, MPI_COMM_WORLD); 
 	
 	
 	// Normalize St(..)	
@@ -614,7 +614,7 @@ void RVF::RV_Compute_planar_structure_function_anis3(int pll_index, int imag_swi
 void RSF::Compute_planar_structure_function_unit_anis1(ofstream& file_out, int pll_index)
 {
 	TinyVector<int,3>	j1, j2;
-	DP					F1, F2;
+	Real					F1, F2;
 	
 	int data_size_St, data_size_St_count;
 	int tag_St = 111;
@@ -702,13 +702,13 @@ void RSF::Compute_planar_structure_function_unit_anis1(ofstream& file_out, int p
 			
 			data_size_St = (*RS_St).size();
 			
-			MPI_Recv( reinterpret_cast<DP*>((*RS_St).data()), data_size_St, 
-					 MPI_DP, source, tag_St, MPI_COMM_WORLD, &status );
+			MPI_Recv( reinterpret_cast<Real*>((*RS_St).data()), data_size_St, 
+					 MPI_Real, source, tag_St, MPI_COMM_WORLD, &status );
 			
 			data_size_St_count = (*RS_St_count).size(); 		 
 			
-			MPI_Recv( reinterpret_cast<DP*>((*RS_St_count).data()), data_size_St_count, 
-					 MPI_DP, source, tag_St_count, MPI_COMM_WORLD, &status );	
+			MPI_Recv( reinterpret_cast<Real*>((*RS_St_count).data()), data_size_St_count, 
+					 MPI_Real, source, tag_St_count, MPI_COMM_WORLD, &status );	
 			
 			file_out << "%% T: pll_index = " << local_N1*source + pll_index << endl;
 			
@@ -738,13 +738,13 @@ void RSF::Compute_planar_structure_function_unit_anis1(ofstream& file_out, int p
 	else {
 		data_size_St = (*RS_St).size();
 		
-		MPI_Send( reinterpret_cast<DP*>((*RS_St).data()), data_size_St, 
-				 MPI_DP, master_id, tag_St, MPI_COMM_WORLD );
+		MPI_Send( reinterpret_cast<Real*>((*RS_St).data()), data_size_St, 
+				 MPI_Real, master_id, tag_St, MPI_COMM_WORLD );
 		
 		data_size_St_count = (*RS_St_count).size(); 
 		
-		MPI_Send( reinterpret_cast<DP*>((*RS_St_count).data()), data_size_St_count, 
-				 MPI_DP, master_id, tag_St_count, MPI_COMM_WORLD );		 
+		MPI_Send( reinterpret_cast<Real*>((*RS_St_count).data()), data_size_St_count, 
+				 MPI_Real, master_id, tag_St_count, MPI_COMM_WORLD );		 
 	}
 	
 	MPI_Barrier(MPI_COMM_WORLD);
@@ -757,11 +757,11 @@ void RSF::Compute_planar_structure_function_unit_anis2
 (
 	 int pll_index,
 	 int otherproc, 
-	 Array<complx,2> otherprocF
+	 Array<Complex,2> otherprocF
 )
 {
 	TinyVector<int,3>	j1, j2;
-	DP					F1, F2;
+	Real					F1, F2;
 	
 	int Pi2 = pll_index;
 	int Qi2 = pll_index;
@@ -822,12 +822,12 @@ void RSF::Compute_planar_structure_function_unit_anis3
 (
 	 int pll_index,
 	 int otherproc, 
-	 Array<DP,2> otherprocF,
+	 Array<Real,2> otherprocF,
 	 int imag_switch
 )
 {
 	TinyVector<int,3>	j1, j2;
-	DP					F1, F2;
+	Real					F1, F2;
 	
 	int Pi3 = pll_index;
 	int Qi3 = pll_index;
@@ -883,8 +883,8 @@ void RSF::Compute_local_planar_structure_function_anis2(int pll_index)
 	MPI_Request request, request2;
 	
 	// allocate otherprocVi vars
-	Array<complx,2> otherprocF(local_N1,(Nrs[3]/2)+1);
-	Array<complx,2> temp(local_N1,(Nrs[3]/2)+1); 
+	Array<Complex,2> otherprocF(local_N1,(Nrs[3]/2)+1);
+	Array<Complex,2> temp(local_N1,(Nrs[3]/2)+1); 
 	
 	*RS_St = 0.0;
 	*RS_St_count = 0;
@@ -902,11 +902,11 @@ void RSF::Compute_local_planar_structure_function_anis2(int pll_index)
 		receive_from = (my_id+i) % numprocs;
 		
 		temp = (*Fr)(Range::all(),pll_index,Range::all());
-		MPI_Isend( reinterpret_cast<DP*>((temp).data()), data_size, 
-				  MPI_DP, send_to, tag, MPI_COMM_WORLD, &request);			 
+		MPI_Isend( reinterpret_cast<Real*>((temp).data()), data_size, 
+				  MPI_Real, send_to, tag, MPI_COMM_WORLD, &request);			 
 		 
-		MPI_Irecv( reinterpret_cast<DP*>((otherprocF).data()), data_size, 
-				  MPI_DP, receive_from, tag, MPI_COMM_WORLD, &request2);
+		MPI_Irecv( reinterpret_cast<Real*>((otherprocF).data()), data_size, 
+				  MPI_Real, receive_from, tag, MPI_COMM_WORLD, &request2);
 		
 		MPI_Wait(&request2, &status);
 
@@ -927,8 +927,8 @@ void RSF::Compute_local_planar_structure_function_anis3
 	MPI_Request request, request2;	
 	
 	// allocate otherprocVi vars
-	Array<DP,2> otherprocF(local_N1,Nrs[2]); 
-	Array<DP,2> temp(local_N1,Nrs[2]);
+	Array<Real,2> otherprocF(local_N1,Nrs[2]); 
+	Array<Real,2> temp(local_N1,Nrs[2]);
 	
 	*RS_St = 0.0;
 	*RS_St_count = 0;
@@ -957,11 +957,11 @@ void RSF::Compute_local_planar_structure_function_anis3
 		else if (imag_switch == 1) 
 			temp = imag((*Fr)(Range::all(),Range::all(),pll_index));
 		
-		MPI_Isend( reinterpret_cast<DP*>((temp).data()), data_size, 
-				 MPI_DP, send_to, tag, MPI_COMM_WORLD, &request);
+		MPI_Isend( reinterpret_cast<Real*>((temp).data()), data_size, 
+				 MPI_Real, send_to, tag, MPI_COMM_WORLD, &request);
 		
-		MPI_Irecv( reinterpret_cast<DP*>((otherprocF).data()), data_size, 
-					 MPI_DP, receive_from, tag, MPI_COMM_WORLD, &request2);
+		MPI_Irecv( reinterpret_cast<Real*>((otherprocF).data()), data_size, 
+					 MPI_Real, receive_from, tag, MPI_COMM_WORLD, &request2);
 		
 		MPI_Wait(&request2, &status);
 		
@@ -996,15 +996,15 @@ void RSF::RS_Compute_planar_structure_function_anis2(int pll_index)
 	
 	int data_size = (*RS_St).size(); 
 	
-	MPI_Reduce(reinterpret_cast<DP*>((*RS_St).data()), 
-			   reinterpret_cast<DP*>((*RS_St_final).data()), 
-			   data_size, MPI_DP, MPI_SUM, master_id, MPI_COMM_WORLD); 
+	MPI_Reduce(reinterpret_cast<Real*>((*RS_St).data()), 
+			   reinterpret_cast<Real*>((*RS_St_final).data()), 
+			   data_size, MPI_Real, MPI_SUM, master_id, MPI_COMM_WORLD); 
 	
 	data_size = (*RS_St_count).size();  
 	
 	MPI_Reduce(reinterpret_cast<int*>((*RS_St_count).data()), 
 			   reinterpret_cast<int*>((*RS_St_count_final).data()), 
-			   data_size, MPI_DP, MPI_SUM, master_id, MPI_COMM_WORLD); 
+			   data_size, MPI_Real, MPI_SUM, master_id, MPI_COMM_WORLD); 
 	
 	
 	// Normalize St(..)	
@@ -1033,15 +1033,15 @@ void RSF::RS_Compute_planar_structure_function_anis3(int pll_index, int imag_swi
 	
 	int data_size = (*RS_St).size(); 
 	
-	MPI_Reduce(reinterpret_cast<DP*>((*RS_St).data()), 
-			   reinterpret_cast<DP*>((*RS_St_final).data()), 
-			   data_size, MPI_DP, MPI_SUM, master_id, MPI_COMM_WORLD); 
+	MPI_Reduce(reinterpret_cast<Real*>((*RS_St).data()), 
+			   reinterpret_cast<Real*>((*RS_St_final).data()), 
+			   data_size, MPI_Real, MPI_SUM, master_id, MPI_COMM_WORLD); 
 	
 	data_size = (*RS_St_count).size();  
 	
 	MPI_Reduce(reinterpret_cast<int*>((*RS_St_count).data()), 
 			   reinterpret_cast<int*>((*RS_St_count_final).data()), 
-			   data_size, MPI_DP, MPI_SUM, master_id, MPI_COMM_WORLD); 
+			   data_size, MPI_Real, MPI_SUM, master_id, MPI_COMM_WORLD); 
 	
 	// Normalize St(..)	
 	

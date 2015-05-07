@@ -49,13 +49,13 @@
 void EnergyTr::Compute_shell_ET_B0(FluidVF& U, FluidVF& W)
 {
 	
-	TinyVector<DP,3> B0;
+	TinyVector<Real,3> B0;
 	
 	if (my_id == master_id)
 		B0 = real((W.cvf.V1)(0,0,0)), real((W.cvf.V2)(0,0,0)), real((W.cvf.V3)(0,0,0));
 	
 	int data_size = 3;
-	MPI_Bcast(reinterpret_cast<DP*>(B0.data()), data_size, MPI_DP, master_id, MPI_COMM_WORLD);
+	MPI_Bcast(reinterpret_cast<Real*>(B0.data()), data_size, MPI_Real, master_id, MPI_COMM_WORLD);
 	
 	universal->Shell_mult_all_imagVW_B0(B0, U.cvf.V1, U.cvf.V2, U.cvf.V3, W.cvf.V1, W.cvf.V2, W.cvf.V3, energy_tr_shell_B0);	
 												
@@ -68,13 +68,13 @@ void EnergyTr::Compute_shell_ET_B0(FluidVF& U, FluidVF& W)
 /// Done to compare them with shell-to-shell transfers.
 void EnergyTr::Compute_ring_ET_B0(FluidVF& U, FluidVF& W)
 {
-	TinyVector<DP,3> B0;
+	TinyVector<Real,3> B0;
 	
 	if (my_id == master_id)
 		B0 = real((W.cvf.V1)(0,0,0)), real((W.cvf.V2)(0,0,0)), real((W.cvf.V3)(0,0,0));
 	
 	int data_size = 3;
-	MPI_Bcast(reinterpret_cast<DP*>(B0.data()), data_size, MPI_DP, master_id, MPI_COMM_WORLD);
+	MPI_Bcast(reinterpret_cast<Real*>(B0.data()), data_size, MPI_Real, master_id, MPI_COMM_WORLD);
 	
 	universal->Ring_mult_all_imagVW_B0(B0, U.cvf.V1, U.cvf.V2, U.cvf.V3, W.cvf.V1, W.cvf.V2, W.cvf.V3, energy_tr_ring_B0);	
 												
@@ -90,13 +90,13 @@ void EnergyTr::Compute_ring_ET_B0(FluidVF& U, FluidVF& W)
 void EnergyTr::Compute_cylindrical_ring_ET_B0(FluidVF& U, FluidVF& W)
 {
 
-	TinyVector<DP,3> B0;
+	TinyVector<Real,3> B0;
 	
 	if (my_id == master_id)
 		B0 = real((W.cvf.V1)(0,0,0)), real((W.cvf.V2)(0,0,0)), real((W.cvf.V3)(0,0,0));
 	
 	int data_size = 3;
-	MPI_Bcast(reinterpret_cast<DP*>(B0.data()), data_size, MPI_DP, master_id, MPI_COMM_WORLD);
+	MPI_Bcast(reinterpret_cast<Real*>(B0.data()), data_size, MPI_Real, master_id, MPI_COMM_WORLD);
 	
 	universal->Cyl_ring_mult_all_imagVW_B0(B0, U.cvf.V1, U.cvf.V2, U.cvf.V3, W.cvf.V1, W.cvf.V2, W.cvf.V3, energy_tr_cylindrical_ring_B0);
 }

@@ -77,8 +77,8 @@ void Global::Process_basic_vars()
 	master_id=mpi.master_id;
 	master=mpi.master;
 
-	num_p_cols = mpi.num_p_cols;
 	num_p_rows = mpi.num_p_rows;
+	num_p_cols = mpi.num_p_cols;
 
 	I = myconstant.I;		
 	
@@ -98,14 +98,11 @@ void Global::Process_basic_vars()
 	INF_RADIUS = myconstant.INF_RADIUS; 
 	INF_TIME = myconstant.INF_TIME;
 
-	MPI_Comm_split(MPI_COMM_WORLD, my_id/num_p_cols, 0, &mpi.MPI_COMM_ROW);
-	MPI_Comm_split(MPI_COMM_WORLD, my_id%num_p_cols, 0, &mpi.MPI_COMM_COL);
-	
 		
 	// program
 	program.T_exists = ((program.kind == "SCALAR_INCOMPRESS") || (program.kind == "RBC") || (program.kind == "STRATIFIED") || (program.kind == "MRBC")) || (program.kind == "MHD_SCALAR_INCOMPRESS") || (program.kind == "MHD_SCALAR_INCOMPRESS_ALL") || (program.kind == "MHD_ASTRO_INCOMPRESS") || (program.kind == "MHD_ASTRO_INCOMPRESS_ALL");
 	program.W_exists = ((program.kind == "MHD_INCOMPRESS") || (program.kind == "KEPLERIAN")) || (program.kind == "MHD_SCALAR_INCOMPRESS") || (program.kind == "MHD_SCALAR_INCOMPRESS_ALL") || (program.kind == "MHD_ASTRO_INCOMPRESS") || (program.kind == "MHD_ASTRO_INCOMPRESS_ALL");
-	
+
 	program.sincostr_switch_Vx = basis_table[program.basis_type][program.sincostr_switch]["Vx"];
 	program.sincostr_switch_Vy = basis_table[program.basis_type][program.sincostr_switch]["Vy"];
 	program.sincostr_switch_Vz = basis_table[program.basis_type][program.sincostr_switch]["Vz"];

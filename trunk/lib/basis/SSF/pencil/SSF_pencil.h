@@ -45,8 +45,6 @@
 #include "universal.h"
 #include "ArrayOps.h"
 
-using namespace blitz;
-
 //*********************************************************************************************	
 
 
@@ -57,10 +55,10 @@ public:
 	SSF_PENCIL();
 	
 	#include "universal_fn_names.h"
-	void Zero_modes(Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az);
-	void Zero_modes(Array<complx,3> F);
+	void Zero_modes(Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az);
+	void Zero_modes(Array<Complex,3> F);
 	
-	void Assign_sub_array(Range y_range, Range z_range, Range x_range, Array<complx,3> A, complx value);
+	void Assign_sub_array(Range y_range, Range z_range, Range x_range, Array<Complex,3> A, Complex value);
 };
 
 #endif

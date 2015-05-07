@@ -99,17 +99,17 @@ public:
 	struct PHYSICS {
 		string	Pr_option;					// Prandtl number switch (PRLARGNE..) for RB
 		string	Uscaling;					// UBscaling (ULARGE... ) for RB
-		DP Rayleigh;							// Rayleigh number
-		DP Prandtl;							// Prandtl number	
+		Real Rayleigh;							// Rayleigh number
+		Real Prandtl;							// Prandtl number	
 		int temperature_grad;			// +1 for convection; -x for stratification;
 		
-		DP Chandrasekhar; // Chandrashekhar number
-		DP Prandtl_mag; //Magnetic Prandlt number
-		DP Prandtl_c;
-		DP Reynolds;
-		DP Reynolds_mag;
-		DP Peclet;
-		DP Peclet_c;
+		Real Chandrasekhar; // Chandrashekhar number
+		Real Prandtl_mag; //Magnetic Prandlt number
+		Real Prandtl_c;
+		Real Reynolds;
+		Real Reynolds_mag;
+		Real Peclet;
+		Real Peclet_c;
 		// factor for u3 in temperature eqn
 		void Print(int my_level);
 	} PHYSICS;
@@ -117,12 +117,12 @@ public:
 	struct MRBC {
 		string	Pr_option;					// Prandtl number switch (PRLARGNE..) for RB
 		string	Uscaling;					// UBscaling (ULARGE... ) for RB
-		DP		Pr;							// Prandtl number
+		Real		Pr;							// Prandtl number
 		
-		DP		RaD;
-		DP		RaM;
-		DP		SSD;						// Surface saturation deficit
-		DP		CSA;						// Condensate in saturated ascent
+		Real		RaD;
+		Real		RaM;
+		Real		SSD;						// Surface saturation deficit
+		Real		CSA;						// Condensate in saturated ascent
 		void Print(int my_level);
 	} MRBC;
 	
@@ -136,18 +136,18 @@ public:
 		int Nx, Ny, Nz;
 		int howmany;  // how many fields, e.g. RBC has 4.
 
-		vector<DP> kfactor;
-		DP xfactor[4];
-		vector<DP> L;		// Box size
-		DP Delta_x[4];	// Delta x along each direction
-		vector<DP> diss_coefficients;
-		vector<DP> hyper_diss_coefficients;
+		vector<Real> kfactor;
+		Real xfactor[4];
+		vector<Real> L;		// Box size
+		Real Delta_x[4];	// Delta x along each direction
+		vector<Real> diss_coefficients;
+		vector<Real> hyper_diss_coefficients;
 		vector<int> hyper_diss_exponents;
 		
 		TinyVector<int,3> shape_complex_array;
 		TinyVector<int,3> shape_real_array;
 		
-		DP twobyL1;			// for Chebyshev basis
+		Real twobyL1;			// for Chebyshev basis
 		
 		int maxlx, maxly, maxlz;
 
@@ -176,8 +176,8 @@ public:
 		
 		// for pencil
 
-		int num_p_cols;              // processors along the horizontal direction  
 		int num_p_rows;             // processors along the vertical direction
+		int num_p_cols;             // processors along the horizontal direction  
 		
 		int num_x_procs;
 		int num_y_procs;
@@ -204,16 +204,16 @@ public:
 
 
 	struct time{
-		DP init; 
-		DP final;
-		DP dt_fixed;
-		DP Courant_no;
+		Real init; 
+		Real final;
+		Real dt_fixed;
+		Real Courant_no;
 		string job_time;
 		
-		DP dt;				// variable time including CFL
-		DP now;
-		DP previous;
-		DP keplerian;
+		Real dt;				// variable time including CFL
+		Real now;
+		Real previous;
+		Real keplerian;
 		bool dt_computation_done;
 		
 		clock_t job_time_final;
@@ -230,7 +230,7 @@ public:
 		int field_procedure;
 
 		Array<int,1> int_para;
-		Array<DP,1> double_para;
+		Array<Real,1> double_para;
 		Array<string,1> string_para;
 
 		struct modes{
@@ -238,8 +238,8 @@ public:
 			int number;
 			int number_components;  // 2 for fluid, 4 for U,W (incompressiblity)
 			Array<int,2> coords;
-			Array<DP,2> field_array_real;
-			Array<complx,2> field_array_complex;
+			Array<Real,2> field_array_real;
+			Array<Complex,2> field_array_complex;
 			void Print(int my_level);
 		} modes;
 		void Print(int my_level);
@@ -266,15 +266,15 @@ public:
 		vector<int> N_out_reduced;
 
 		Array<int,1> int_para;
-		Array<DP,1> double_para;
+		Array<Real,1> double_para;
 		Array<string,1> string_para;
 		
 		struct init_cond_modes {
 			int number;
 			int number_components;		// if incompressible: subtract 1 for V, W
 			Array<int,2> coords;
-			Array<DP,2> field_array_real;
-			Array<complx,2> field_array_complex;
+			Array<Real,2> field_array_real;
+			Array<Complex,2> field_array_complex;
 			void Print(int my_level);
 			int In_table(int kx, int ky, int kz);
 		} init_cond_modes;
@@ -284,7 +284,7 @@ public:
 			unsigned long buffer_index;		// initialize to zero
 			unsigned long packet_size;
 
-			Array<DP,1> buffer;
+			Array<Real,1> buffer;
 		} global_data;
 
 		struct probes{
@@ -296,7 +296,7 @@ public:
 				int packet_size;		// for each time frame (define)
 				// (global.io.probes.spectral_space.number * 6) +1 + Tk for each field; 
 
-				Array<DP,1> field_buffer;  // in all nodes
+				Array<Real,1> field_buffer;  // in all nodes
 				void Print(int my_level);
 			} spectral_space;
 
@@ -307,7 +307,7 @@ public:
 				unsigned long buffer_index;		// initialize to zero
 				int packet_size;
 
-				Array<DP,1> field_buffer;
+				Array<Real,1> field_buffer;
 				void Print(int my_level);
 			} real_space;
 
@@ -315,50 +315,50 @@ public:
 		} probes;
 
 		struct time{
-			DP global_save_next;
-			DP complex_field_save_next;
-			DP field_frequent_save_next;
-			DP field_reduced_save_next;
-			DP real_field_save_next;
-			DP field_k_save_next;
-			DP field_r_save_next;
-			DP spectrum_save_next;
-			DP pressure_save_next;
-			DP pressure_spectrum_save_next;
-			DP flux_save_next;
-			DP shell_to_shell_save_next;
-			DP ring_spectrum_save_next;
-			DP ring_to_ring_save_next;
-			DP cylindrical_ring_spectrum_save_next;
-			DP cylindrical_ring_to_ring_save_next;
-			DP structure_fn_save_next;
-			DP Tk_shell_spectrum_save_next;
-			DP Tk_ring_spectrum_save_next;
-			DP Tk_cylindrical_ring_spectrum_save_next;
-			DP cout_save_next;
+			Real global_save_next;
+			Real complex_field_save_next;
+			Real field_frequent_save_next;
+			Real field_reduced_save_next;
+			Real real_field_save_next;
+			Real field_k_save_next;
+			Real field_r_save_next;
+			Real spectrum_save_next;
+			Real pressure_save_next;
+			Real pressure_spectrum_save_next;
+			Real flux_save_next;
+			Real shell_to_shell_save_next;
+			Real ring_spectrum_save_next;
+			Real ring_to_ring_save_next;
+			Real cylindrical_ring_spectrum_save_next;
+			Real cylindrical_ring_to_ring_save_next;
+			Real structure_fn_save_next;
+			Real Tk_shell_spectrum_save_next;
+			Real Tk_ring_spectrum_save_next;
+			Real Tk_cylindrical_ring_spectrum_save_next;
+			Real cout_save_next;
 
 
-			DP	global_save_interval;	
-			DP	complex_field_save_interval; 
-			DP	field_frequent_save_interval;
-			DP	field_reduced_save_interval;
-			DP	real_field_save_interval;
-			DP	field_k_save_interval;				
-			DP	field_r_save_interval;	
-			DP  pressure_save_interval;
-			DP	spectrum_save_interval;
-			DP	pressure_spectrum_save_interval;
-			DP	flux_save_interval;
-			DP	shell_to_shell_save_interval;
-			DP	ring_spectrum_save_interval;
-			DP	ring_to_ring_save_interval;
-			DP	cylindrical_ring_spectrum_save_interval;
-			DP	cylindrical_ring_to_ring_save_interval;
-			DP	structure_fn_save_interval;
-			DP  Tk_shell_spectrum_save_interval;
-			DP  Tk_ring_spectrum_save_interval;
-			DP  Tk_cylindrical_ring_spectrum_save_interval;
-			DP	cout_save_interval;
+			Real	global_save_interval;	
+			Real	complex_field_save_interval; 
+			Real	field_frequent_save_interval;
+			Real	field_reduced_save_interval;
+			Real	real_field_save_interval;
+			Real	field_k_save_interval;				
+			Real	field_r_save_interval;	
+			Real  pressure_save_interval;
+			Real	spectrum_save_interval;
+			Real	pressure_spectrum_save_interval;
+			Real	flux_save_interval;
+			Real	shell_to_shell_save_interval;
+			Real	ring_spectrum_save_interval;
+			Real	ring_to_ring_save_interval;
+			Real	cylindrical_ring_spectrum_save_interval;
+			Real	cylindrical_ring_to_ring_save_interval;
+			Real	structure_fn_save_interval;
+			Real  Tk_shell_spectrum_save_interval;
+			Real  Tk_ring_spectrum_save_interval;
+			Real  Tk_cylindrical_ring_spectrum_save_interval;
+			Real	cout_save_interval;
 			
 			bool	global_save_last;	
 			bool	complex_field_save_last; 
@@ -387,7 +387,7 @@ public:
 
 		io();
 		void Print(int my_level);
-		void Dump_buffer(ofstream& file, Array<DP,1> buffer, unsigned long& buffer_index, unsigned long packet_size);
+		void Dump_buffer(ofstream& file, Array<Real,1> buffer, unsigned long& buffer_index, unsigned long packet_size);
 	} io;
 
 
@@ -403,7 +403,7 @@ public:
 			int no_shells;     // prog defined
 			int no_sectors;   // to be read
 			string sector_option;
-			Array<DP,1> sector_angles;
+			Array<Real,1> sector_angles;
 			void Print(int my_level);
 		} ring;
 
@@ -412,7 +412,7 @@ public:
 			int no_shells;		// prog define
 			int no_slabs;		 // to be read
 			string kpll_option;
-			Array<DP,1> kpll_array;  // z coords for the sections
+			Array<Real,1> kpll_array;  // z coords for the sections
 			void Print(int my_level);
 		} cylindrical_ring;
 
@@ -429,14 +429,14 @@ public:
 		struct flux {
 			bool turnon;
 			int no_spheres;
-			Array<DP,1> radii;
+			Array<Real,1> radii;
 			void Print(int my_level);
 		} flux;
 
 		struct shell_to_shell {
 			bool turnon;
 			int no_shells;
-			Array<DP,1> radii;
+			Array<Real,1> radii;
 			void Print(int my_level);
 		} shell_to_shell;
 
@@ -445,8 +445,8 @@ public:
 			int no_shells;
 			int no_sectors;
 			string sector_option;
-			Array<DP,1> radii;
-			Array<DP,1> sector_angles;
+			Array<Real,1> radii;
+			Array<Real,1> sector_angles;
 			void Print(int my_level);
 		} ring_to_ring;
 
@@ -454,9 +454,9 @@ public:
 			bool turnon;
 			int no_shells;
 			int no_slabs;
-			Array<DP,1> radii;
+			Array<Real,1> radii;
 			string kpll_option;
-			Array<DP,1> kpll_array;  // kpll coords for the sections
+			Array<Real,1> kpll_array;  // kpll coords for the sections
 			void Print(int my_level);
 		} cylindrical_ring_to_ring;
 		void Print(int my_level);
@@ -478,75 +478,76 @@ public:
 
 
 	struct temp_array {
-		Array<complx,3> X_transform;
+		Array<Complex,3> X_transform;
 		
-		Array<complx,3> X;	
+		Array<Complex,3> X;	
 
 		// Used in div calc & in MHD (Compute_nlin_offdiag(W))
-		Array<complx,3> X2;					
+		Array<Complex,3> X2;					
 
 		//!  \f$ (local_{N2}, N_1, N_3/2+1) \f$. 	
-		Array<DP,3> Xr;
+		Array<Real,3> Xr;
+		Array<Real,3> Xr_slab; 	//Used for reading and writing HDF5
 
 		// Ar not reqd NOW.. CHANGE to Xr2
 		// BOTH Ar and Xr are reqd. Xr is the temp array..Ar is the real space array.
 		//!  temp array \f$ (local_{Ny}, N_x, N_z/2+1) \f$.
 		// For transforms.. MUST
 		// Also in Compute_nlin_offdiag(W)
-		Array<DP,3> Xr2;
+		Array<Real,3> Xr2;
 
 
 		// for the function satisfy reality condition
-		Array<complx,2> plane_xy;  // Ny,Nx 	
-		Array<complx,2> plane_xy_inproc;  // local_Nx,Ny orlocal_Nx_hor,Ny 
+		Array<Complex,2> plane_xy;  // Ny,Nx 	
+		Array<Complex,2> plane_xy_inproc;  // local_Nx,Ny orlocal_Nx_hor,Ny 
 		
 		// for Helmholtz solver: Chebyshev basis
-		Array<complx,1> in_helm_complex;    // Nx
-		Array<complx,1> out_helm_complex;    // Nx
+		Array<Complex,1> in_helm_complex;    // Nx
+		Array<Complex,1> out_helm_complex;    // Nx
    
-		Array<complx,1> V1_x;
+		Array<Complex,1> V1_x;
 		
 		// pl remove to
-		Array<DP,1> in_helm_real;    // Nx
-		Array<DP,1> out_helm_real;    // Nx
+		Array<Real,1> in_helm_real;    // Nx
+		Array<Real,1> out_helm_real;    // Nx
 
 		
-		Array<DP,3> pressure_plus,pressure_minus;   // local_Nz,Ny,Nx
-		Array<DP,1> pressure_derivative_real_1d;
+		Array<Real,3> pressure_plus,pressure_minus;   // local_Nz,Ny,Nx
+		Array<Real,1> pressure_derivative_real_1d;
 		
-		Array<DP,3> vx_plus, vx_minus;      // local_Nz,Ny, Nx
-		Array<DP,3> Xreal;
+		Array<Real,3> vx_plus, vx_minus;      // local_Nz,Ny, Nx
+		Array<Real,3> Xreal;
 		
-		Array<DP,4> influence_matrix;       // local_Nz,Ny,2,2
+		Array<Real,4> influence_matrix;       // local_Nz,Ny,2,2
 		//ChFF end
 		
 	} temp_array;
 
 
 	struct myconstant{
-		const complx  I;
+		const Complex  I;
 
 		/// minusI = -sqrt(-1).			
-		const complx  minusI;
+		const Complex  minusI;
 
 		/// minus2I = -2*sqrt(-1).			
-		const complx  minus2I;	
+		const Complex  minus2I;	
 
 		// Number of digits for output files
 		// NOTE:  for double only.. For float put MY_PRECISION = 6
 		//const int MY_PRECISION = 12;
 
 
-		const DP  MYEPS;
-		const DP  MYEPS2;
+		const Real  MYEPS;
+		const Real  MYEPS2;
 
 		const int MY_MAX_INT;
 		// cut off while reading diagnostic_procedure() array from input file and similar ops
 
 		/// Infinite radius.. All the modes outside -- for flux and shelltr calc
-		const DP INF_RADIUS;
+		const Real INF_RADIUS;
 
-		const DP INF_TIME; 
+		const Real INF_TIME; 
 		
 		const int MAX_NO_GLOB_BUFFER_PACKETS;
 		const int MAX_NO_PROBE_PACKETS;

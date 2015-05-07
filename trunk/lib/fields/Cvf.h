@@ -85,27 +85,27 @@ public:
 	// Nondynamic allocation now
 	
 	//!  Total energy of Cvf.
-	DP		total_E1, total_E2, total_E3;
-	DP		total_energy;						
+	Real		total_E1, total_E2, total_E3;
+	Real		total_energy;						
 	
 	//!  Total dissipation rate of Cvf (without \f$ \nu \f$).
-	DP		total_k2energy;	
-	DP		total_k2Hc;	
+	Real		total_k2energy;	
+	Real		total_k2Hc;	
 	
 	//!  \f$ \sum \vec{K} \cdot (\Re\vec{V}(\vec{K}) \times  \Im\vec{V}(\vec{K})) \f$				
-	DP		total_helicity1;						
+	Real		total_helicity1;						
 	
 	//!  \f$ \sum \vec{K} \cdot (\Re\vec{V}(\vec{K}) \times  \Im\vec{V}(\vec{K}))/K^2 \f$
-	DP		total_helicity2;						
+	Real		total_helicity2;						
 	
 	//!  Dissipation of H1. 
-	DP		total_k2H1;				
+	Real		total_k2H1;				
 	
 	//!  Dissipation of H2. 
-	DP		total_k2H2;				
+	Real		total_k2H2;				
 	
 	//!  Entropy of Cvf
-	DP		entropy;	
+	Real		entropy;	
 	
 																							
 	//*****************************************************************************************
@@ -182,9 +182,9 @@ public:
 	/// Compute total energy and dissipation of \f$ \vec{V} \f$. 
 	void Compute_total_energy();
 	void Compute_total_k2energy();
-	void Compute_total_kn_energy(int n, DP &result);
+	void Compute_total_kn_energy(int n, Real &result);
 	
-	void Compute_total_k2Hc(Array<complx,3> W1, Array<complx,3> W2, Array<complx,3> W3);
+	void Compute_total_k2Hc(Array<Complex,3> W1, Array<Complex,3> W2, Array<Complex,3> W3);
 	
 	/// Compute entropy of \f$ \vec{V} \f$.
 	void Compute_entropy();
@@ -193,17 +193,17 @@ public:
 	
 	
 	/// Return modal energy for grid index (i1,i2,i3).
-	DP Modal_energy(int i1, int i2, int i3);
+	Real Modal_energy(int i1, int i2, int i3);
 	
 	/// vorticity = modal vorticity for grid index (i1,i2,i3).
-	void Compute_Modal_vorticity(int i1, int i2, int i3, TinyVector<complx,3> &vorticity);
+	void Compute_Modal_vorticity(int i1, int i2, int i3, TinyVector<Complex,3> &vorticity);
 	
-	void Compute_Modal_vorticity_y_component(int l1, int l2, int l3, complx &vort_y);
+	void Compute_Modal_vorticity_y_component(int l1, int l2, int l3, Complex &vort_y);
 	
 	//*****************************************************************************************
 	
 	/// Return modal helicity for the grid index (i1,i2,i3).
-	DP Modal_helicity(int i1, int i2, int i3);
+	Real Modal_helicity(int i1, int i2, int i3);
 	
 	/// Compute total helicity1, helicity2, and their dissipation for Cvf.
 	void Compute_total_helicity();

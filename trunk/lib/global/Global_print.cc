@@ -172,7 +172,7 @@ void Global::force::Print(int my_level)
 		<<'\n'<<Indent(my_level+1)<<"C_switch: "<<C_switch
         <<'\n'<<Indent(my_level+1)<<"field_procedure: "<<field_procedure
         <<'\n'<<Indent(my_level+1)<<"int_para : "<<Print_linear_blitz_array<int>(int_para)
-        <<'\n'<<Indent(my_level+1)<<"double_para : "<<Print_linear_blitz_array<DP>(double_para)
+        <<'\n'<<Indent(my_level+1)<<"double_para : "<<Print_linear_blitz_array<Real>(double_para)
         <<'\n'<<Indent(my_level+1)<<"string_para : "<<Print_linear_blitz_array<string>(string_para)
         <<endl;
 }
@@ -193,7 +193,7 @@ void Global::io::Print(int my_level)
 		<<'\n'<<Indent(my_level+1)<<"N_in_reduced: "<<Print_vector(N_in_reduced)
         <<'\n'<<Indent(my_level+1)<<"N_out_reduced: "<<Print_vector(N_out_reduced)
         <<'\n'<<Indent(my_level+1)<<"int_para : "<<Print_linear_blitz_array<int>(int_para)
-        <<'\n'<<Indent(my_level+1)<<"double_para : "<<Print_linear_blitz_array<DP>(double_para)
+        <<'\n'<<Indent(my_level+1)<<"double_para : "<<Print_linear_blitz_array<Real>(double_para)
         <<'\n'<<Indent(my_level+1)<<"string_para : "<<Print_linear_blitz_array<string>(string_para);
 
         probes.Print(my_level+1);
@@ -247,9 +247,9 @@ void Global::io::init_cond_modes::Print(int my_level)
     for (int i=0; i<number; i++){
         cout <<'\n'<<Indent(my_level+2)<<"- coord: "<< Print_linear_blitz_array<int>(coords(i, Range(1,3)));
         if (field_array_real.size()>0)
-			 cout<<'\n'<<Indent(my_level+2)<<"- mode: "<< Print_linear_blitz_array<DP>(field_array_real(i, Range::all()));
+			 cout<<'\n'<<Indent(my_level+2)<<"- mode: "<< Print_linear_blitz_array<Real>(field_array_real(i, Range::all()));
 		else if (field_array_complex.size()>0)
-			 cout<<'\n'<<Indent(my_level+2)<<"- mode: "<< Print_linear_blitz_array<complx>(field_array_complex(i, Range::all()));
+			 cout<<'\n'<<Indent(my_level+2)<<"- mode: "<< Print_linear_blitz_array<Complex>(field_array_complex(i, Range::all()));
 	}
     cout<<endl;
 }
@@ -376,9 +376,9 @@ void Global::energy_transfer::ring_to_ring::Print(int my_level)
         <<'\n'<<Indent(my_level+1)<<"turnon: "<<turnon
         <<'\n'<<Indent(my_level+1)<<"no_shells: "<<no_shells
         <<'\n'<<Indent(my_level+1)<<"no_sectors: "<<no_sectors
-        <<'\n'<<Indent(my_level+1)<<"radii: "<<Print_linear_blitz_array<DP>(radii)
+        <<'\n'<<Indent(my_level+1)<<"radii: "<<Print_linear_blitz_array<Real>(radii)
 		<<'\n'<<Indent(my_level+1)<<"sector_option: "<<sector_option
-        <<'\n'<<Indent(my_level+1)<<"sector_angles: "<<Print_linear_blitz_array<DP>(sector_angles)
+        <<'\n'<<Indent(my_level+1)<<"sector_angles: "<<Print_linear_blitz_array<Real>(sector_angles)
         <<endl;
 }
 
@@ -392,9 +392,9 @@ void Global::energy_transfer::cylindrical_ring_to_ring::Print(int my_level)
         <<'\n'<<Indent(my_level+1)<<"turnon: "<<turnon
         <<'\n'<<Indent(my_level+1)<<"no_shells: "<<no_shells
         <<'\n'<<Indent(my_level+1)<<"no_slabs: "<<no_slabs
-        <<'\n'<<Indent(my_level+1)<<"radii: "<<Print_linear_blitz_array<DP>(radii)
+        <<'\n'<<Indent(my_level+1)<<"radii: "<<Print_linear_blitz_array<Real>(radii)
         <<'\n'<<Indent(my_level+1)<<"kpll_option: "<<kpll_option
-        <<'\n'<<Indent(my_level+1)<<"kpll_array: "<<Print_linear_blitz_array<DP>(kpll_array)
+        <<'\n'<<Indent(my_level+1)<<"kpll_array: "<<Print_linear_blitz_array<Real>(kpll_array)
         <<endl;
 }
 
@@ -456,7 +456,7 @@ void Global::spectrum::ring::Print(int my_level)
         <<'\n'<<Indent(my_level+1)<<"no_shells: "<<no_shells
         <<'\n'<<Indent(my_level+1)<<"no_sectors: "<<no_sectors
         <<'\n'<<Indent(my_level+1)<<"sector_option: "<<sector_option
-        <<'\n'<<Indent(my_level+1)<<"sector_angles: "<<Print_linear_blitz_array<DP>(sector_angles)
+        <<'\n'<<Indent(my_level+1)<<"sector_angles: "<<Print_linear_blitz_array<Real>(sector_angles)
         <<endl;
 }
 
@@ -471,6 +471,6 @@ void Global::spectrum::cylindrical_ring::Print(int my_level)
         <<'\n'<<Indent(my_level+1)<<"no_shells: "<<no_shells
         <<'\n'<<Indent(my_level+1)<<"no_slabs: "<<no_slabs
         <<'\n'<<Indent(my_level+1)<<"kpll_option: "<<kpll_option
-        <<'\n'<<Indent(my_level+1)<<"kpll_array: "<<Print_linear_blitz_array<DP>(kpll_array)
+        <<'\n'<<Indent(my_level+1)<<"kpll_array: "<<Print_linear_blitz_array<Real>(kpll_array)
         <<endl;
 }

@@ -162,7 +162,7 @@ void CSF::Compute_total_k2energy()
 }
 
 
-void CSF::Compute_total_kn_energy(int n, DP &result)
+void CSF::Compute_total_kn_energy(int n, Real &result)
 {
 	result = TWO * universal->Get_total_Sn(F, n);
 }
@@ -181,7 +181,7 @@ void CSF::Compute_entropy()
 
 **********************************************************************************************/
 
-DP CSF::Modal_energy(int i1, int i2, int i3)
+Real CSF::Modal_energy(int i1, int i2, int i3)
 {
 	return universal->Modal_energy(i1, i2, i3, F);	
 }

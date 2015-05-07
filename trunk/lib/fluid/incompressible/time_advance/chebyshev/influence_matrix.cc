@@ -59,7 +59,7 @@
 
 //****************************************************************************************
 
-void Print_large_Fourier_elements_real(Array<DP,3> A)
+void Print_large_Fourier_elements_real(Array<Real,3> A)
 {
     for (int ly=0; ly<local_Ny; ly++)
         for (int lz=0; lz<local_Nz; lz++)
@@ -73,7 +73,7 @@ void Print_large_Fourier_elements_real(Array<DP,3> A)
 
 void Time_advance_incompress::Compute_homgeneous_soln_influence_matrix(FluidVF& U, Pressure& P)
 {
-	DP lambda_supplement;
+	Real lambda_supplement;
     
 	global.temp_array.influence_matrix = 0.0;
 	
@@ -111,7 +111,7 @@ void Time_advance_incompress::Compute_homgeneous_soln_influence_matrix(FluidVF& 
     global.temp_array.influence_matrix = 0.0;
 
     
-    DP factor1, factor2;
+    Real factor1, factor2;
     
     // vx_plus = v
     // T'_k(1) = n^2;  T'_k(-1) = (-1)^k n^2
@@ -137,7 +137,7 @@ void Time_advance_incompress::Compute_homgeneous_soln_influence_matrix(FluidVF& 
 	
 /*	cout << "vx+(0,0), vx-(0,0) " << global.temp_array.vx_plus(0,0,Range::all()) << global.temp_array.vx_minus(0,0,Range::all()) << endl;
 	
-	DP v_prime_plus, v_prime_minus;
+	Real v_prime_plus, v_prime_minus;
 	
 	Compute_derivative_at_boundary(global.temp_array.vx_plus(0,0,Range::all()) , v_prime_plus, v_prime_minus);
 	cout << "vx+(+1), vx+(-1) = " << v_prime_plus << " " << v_prime_minus << endl;
@@ -149,10 +149,10 @@ void Time_advance_incompress::Compute_homgeneous_soln_influence_matrix(FluidVF& 
 //******************************************************************************
 void Time_advance_incompress::Compute_pressure_Ux_chebyshev(FluidVF& U, Pressure& P)
 {
-    DP Vplus_top, Vminus_top, Vplus_bottom, Vminus_bottom;
-    complx delta_plus,delta_minus;
-    complx vx_prime_plus,vx_prime_minus;
-	DP determinant;
+    Real Vplus_top, Vminus_top, Vplus_bottom, Vminus_bottom;
+    Complex delta_plus,delta_minus;
+    Complex vx_prime_plus,vx_prime_minus;
+	Real determinant;
     
     for(int ly=0; ly<local_Ny; ly++)
 		for (int lz=0; lz<local_Nz; lz++) {
@@ -184,20 +184,20 @@ void Time_advance_incompress::Compute_pressure_Ux_chebyshev(FluidVF& U, Pressure
         }
 	
 	for (int lx=0; lx<(U.cvf.V1).extent(2); lx++) {
-		universal->Assign_spectral_field(lx,0,0, P.F,complx(0,0));
-		universal->Assign_spectral_field(lx,0,0, U.cvf.V1,complx(0,0));
+		universal->Assign_spectral_field(lx,0,0, P.F,Complex(0,0));
+		universal->Assign_spectral_field(lx,0,0, U.cvf.V1,Complex(0,0));
 	}
 }
 
 
 //****************************************************************************************
 
-void Time_advance_incompress::Compute_derivative_at_boundary(Array<complx,1> v,complx &v_prime_plus, complx &v_prime_minus)
+void Time_advance_incompress::Compute_derivative_at_boundary(Array<Complex,1> v,Complex &v_prime_plus, Complex &v_prime_minus)
 {
     v_prime_plus = 0.0;
     v_prime_minus = 0.0;
     
-    DP factor1, factor2;
+    Real factor1, factor2;
     
     // Nx even
     for (int kx=0; kx<=(Nx-2); kx=kx+2) {
@@ -216,12 +216,12 @@ void Time_advance_incompress::Compute_derivative_at_boundary(Array<complx,1> v,c
  //****************************************************************************************
 
 
- void Time_advance_incompress::Compute_derivative_at_boundary(Array<DP,1> v, DP &v_prime_plus, DP &v_prime_minus)
+ void Time_advance_incompress::Compute_derivative_at_boundary(Array<Real,1> v, Real &v_prime_plus, Real &v_prime_minus)
  {
      v_prime_plus = 0.0;
      v_prime_minus = 0.0;
      
-     DP factor1, factor2;
+     Real factor1, factor2;
  
      // Nx even
      for (int kx=0; kx<=(Nx-2); kx=kx+2) {

@@ -49,7 +49,7 @@
 #include "FluidIO.h"
 
 
-extern Uniform<DP> SPECrand;
+extern Uniform<Real> SPECrand;
 
 //*********************************************************************************************
 
@@ -62,18 +62,18 @@ extern Uniform<DP> SPECrand;
  * @note	The mean mode has zero energy.
  */
 
-void  FluidIO::Initialize_using_energy_helicity_spectrum(FluidVF& U, DP epsilon, DP hk_by_kek)
+void  FluidIO::Initialize_using_energy_helicity_spectrum(FluidVF& U, Real epsilon, Real hk_by_kek)
 {
-	DP Kmag, ek, amp, phase1, phase2, phase3;
+	Real Kmag, ek, amp, phase1, phase2, phase3;
 	int index;
 	
 	
     
 	Model_initial_using_shell_spectrum_Pope(U.dissipation_coefficient, epsilon, Correlation::shell_ek1);
     
-	for (int lx=0; lx<=global.field.maxlx; lx++)
-		for (int ly=0; ly<=global.field.maxly; ly++)
-			for (int lz=0; lz<=global.field.maxlz; lz++) {
+	for (int lx=0; lx<global.field.maxlx; lx++)
+		for (int ly=0; ly<global.field.maxly; ly++)
+			for (int lz=0; lz<global.field.maxlz; lz++) {
 
 				Kmag = universal->Kmagnitude(lx, ly, lz);
 				
@@ -103,16 +103,16 @@ void  FluidIO::Initialize_using_energy_helicity_spectrum(FluidVF& U, DP epsilon,
 
 //*********************************************************************************************
 
-void  FluidIO::Initialize_using_energy_helicity_spectrum(FluidSF& T, DP epsilon)
+void  FluidIO::Initialize_using_energy_helicity_spectrum(FluidSF& T, Real epsilon)
 {
-	DP Kmag, ek, amp, phase;
+	Real Kmag, ek, amp, phase;
 	int index;
 	
 	Model_initial_using_shell_spectrum_Pope(T.diffusion_coefficient, epsilon, Correlation::shell_ek);
 	
-    for (int lx=0; lx<=global.field.maxlx; lx++)
-        for (int ly=0; ly<=global.field.maxly; ly++)
-            for (int lz=0; lz<=global.field.maxlz; lz++) {
+    for (int lx=0; lx<global.field.maxlx; lx++)
+        for (int ly=0; ly<global.field.maxly; ly++)
+            for (int lz=0; lz<global.field.maxlz; lz++) {
 				Kmag = universal->Kmagnitude(lx, ly, lz);
 				
 				if (Kmag > MYEPS) {
@@ -134,10 +134,10 @@ void  FluidIO::Initialize_using_energy_helicity_spectrum(FluidSF& T, DP epsilon)
 
 void  FluidIO::Init_cond_energy_helicity_spectrum(FluidVF& U) 
 {
-    DP epsilon, sk;
-    DP Ux000 = 0.0;
-    DP Uy000 = 0.0;
-    DP Uz000 = 0.0;
+    Real epsilon, sk;
+    Real Ux000 = 0.0;
+    Real Uy000 = 0.0;
+    Real Uz000 = 0.0;
     
     if (global.io.double_para.size() == 2) {
         epsilon = global.io.double_para(0);
@@ -165,9 +165,9 @@ void  FluidIO::Init_cond_energy_helicity_spectrum(FluidVF& U)
             real(U.cvf.V3(0,0,0)) = Uz000;
         }
         else {
-            U.cvf.V1(0,0,0) = complx(Ux000,0.0);
-            U.cvf.V2(0,0,0) = complx(Uy000,0.0);
-            U.cvf.V3(0,0,0) = complx(Uz000,0.0);
+            U.cvf.V1(0,0,0) = Complex(Ux000,0.0);
+            U.cvf.V2(0,0,0) = Complex(Uy000,0.0);
+            U.cvf.V3(0,0,0) = Complex(Uz000,0.0);
         }
     }
 }
@@ -195,11 +195,11 @@ void  FluidIO::Init_cond_energy_helicity_spectrum(FluidVF& U, FluidSF& T)
 void  FluidIO::Init_cond_energy_helicity_spectrum_scalar(FluidVF& U, FluidSF& T)
 {
 
-    DP epsilon, sk, Tepsilon;
-    DP Ux000 = 0.0;
-    DP Uy000 = 0.0;
-    DP Uz000 = 0.0;
-    DP T000 = 0.0;
+    Real epsilon, sk, Tepsilon;
+    Real Ux000 = 0.0;
+    Real Uy000 = 0.0;
+    Real Uz000 = 0.0;
+    Real T000 = 0.0;
     
     if (global.io.double_para.size() == 3) {
         epsilon = global.io.double_para(0);
@@ -228,10 +228,10 @@ void  FluidIO::Init_cond_energy_helicity_spectrum_scalar(FluidVF& U, FluidSF& T)
             real(T.csf.F(0,0,0))  = T000;
         }
         else {
-            U.cvf.V1(0,0,0) = complx(Ux000,0.0);
-            U.cvf.V2(0,0,0) = complx(Uy000,0.0);
-            U.cvf.V3(0,0,0) = complx(Uz000,0.0);
-            T.csf.F(0,0,0)  = complx(T000,0.0);
+            U.cvf.V1(0,0,0) = Complex(Ux000,0.0);
+            U.cvf.V2(0,0,0) = Complex(Uy000,0.0);
+            U.cvf.V3(0,0,0) = Complex(Uz000,0.0);
+            T.csf.F(0,0,0)  = Complex(T000,0.0);
         }
     }
 }
@@ -246,7 +246,7 @@ void  FluidIO::Init_cond_energy_helicity_spectrum_RBC(FluidVF& U, FluidSF& T)
 	}
 	
 	else if (global.PHYSICS.Pr_option == "PRINFTY") {
-		DP Tepsilon = global.io.double_para(0);
+		Real Tepsilon = global.io.double_para(0);
         Initialize_using_energy_helicity_spectrum(T, Tepsilon);
         
         U.Infinite_Prandtl_number_compute_velocity(T);
@@ -272,14 +272,14 @@ void  FluidIO::Init_cond_energy_helicity_spectrum_RBC(FluidVF& U, FluidSF& T)
  */
 void  FluidIO::Init_cond_energy_helicity_spectrum(FluidVF& U, FluidVF& W)
 {
-    DP epsilon, sk, Wepsilon, Wsk, h;
+    Real epsilon, sk, Wepsilon, Wsk, h;
     
-    DP Ux000 = 0.0;
-    DP Uy000 = 0.0;
-    DP Uz000 = 0.0;
-    DP Wx000 = 0.0;
-    DP Wy000 = 0.0;
-    DP Wz000 = 0.0;
+    Real Ux000 = 0.0;
+    Real Uy000 = 0.0;
+    Real Uz000 = 0.0;
+    Real Wx000 = 0.0;
+    Real Wy000 = 0.0;
+    Real Wz000 = 0.0;
     
     
     if (global.io.double_para.size() == 5) {
@@ -308,7 +308,7 @@ void  FluidIO::Init_cond_energy_helicity_spectrum(FluidVF& U, FluidVF& W)
     }
     
 	int index;
-	DP temp;
+	Real temp;
 	
 	if (abs(h) < MYEPS) {  // zero cross helicity
 		Initialize_using_energy_helicity_spectrum(U, epsilon, sk);
@@ -319,12 +319,12 @@ void  FluidIO::Init_cond_energy_helicity_spectrum(FluidVF& U, FluidVF& W)
 		Model_initial_using_shell_spectrum_Pope(U.dissipation_coefficient, epsilon, Correlation::shell_ek1);
 		Model_initial_using_shell_spectrum_Pope(W.dissipation_coefficient, Wepsilon, Correlation::shell_ek2);
 		
-		DP Kmag, ek, amp, phase1, phase2, phase3;
-		DP ekW, ampW, phase1W, phase2W, phase3W;
+		Real Kmag, ek, amp, phase1, phase2, phase3;
+		Real ekW, ampW, phase1W, phase2W, phase3W;
 		
-        for (int lx=0; lx<=global.field.maxlx; lx++)
-            for (int ly=0; ly<=global.field.maxly; ly++)
-                for (int lz=0; lz<=global.field.maxlz; lz++) {
+        for (int lx=0; lx<global.field.maxlx; lx++)
+            for (int ly=0; ly<global.field.maxly; ly++)
+                for (int lz=0; lz<global.field.maxlz; lz++) {
 					
 					Kmag = universal->Kmagnitude(lx, ly, lz);
 					
@@ -367,13 +367,13 @@ void  FluidIO::Init_cond_energy_helicity_spectrum(FluidVF& U, FluidVF& W)
             real(W.cvf.V3(0,0,0)) = Wz000;
         }
         else {
-            U.cvf.V1(0,0,0) = complx(Ux000,0.0);
-            U.cvf.V2(0,0,0) = complx(Uy000,0.0);
-            U.cvf.V3(0,0,0) = complx(Uz000,0.0);
+            U.cvf.V1(0,0,0) = Complex(Ux000,0.0);
+            U.cvf.V2(0,0,0) = Complex(Uy000,0.0);
+            U.cvf.V3(0,0,0) = Complex(Uz000,0.0);
             
-            W.cvf.V1(0,0,0) = complx(Wx000,0.0);
-            W.cvf.V2(0,0,0) = complx(Wy000,0.0);
-            W.cvf.V3(0,0,0) = complx(Wz000,0.0);
+            W.cvf.V1(0,0,0) = Complex(Wx000,0.0);
+            W.cvf.V2(0,0,0) = Complex(Wy000,0.0);
+            W.cvf.V3(0,0,0) = Complex(Wz000,0.0);
         }
     }
 }
@@ -394,15 +394,15 @@ void  FluidIO::Init_cond_energy_helicity_spectrum(FluidVF& U, FluidVF& W)
  */
 void  FluidIO::Init_cond_energy_helicity_spectrum(FluidVF& U, FluidVF& W, FluidSF& T)
 {
-	DP epsilon, sk, Wepsilon, Wsk, h, Tepsilon;
+	Real epsilon, sk, Wepsilon, Wsk, h, Tepsilon;
     
-    DP Ux000 = 0.0;
-    DP Uy000 = 0.0;
-    DP Uz000 = 0.0;
-    DP Wx000 = 0.0;
-    DP Wy000 = 0.0;
-    DP Wz000 = 0.0;
-    DP T000 = 0.0;
+    Real Ux000 = 0.0;
+    Real Uy000 = 0.0;
+    Real Uz000 = 0.0;
+    Real Wx000 = 0.0;
+    Real Wy000 = 0.0;
+    Real Wz000 = 0.0;
+    Real T000 = 0.0;
     
     
     if (global.io.double_para.size() == 6) {
@@ -434,7 +434,7 @@ void  FluidIO::Init_cond_energy_helicity_spectrum(FluidVF& U, FluidVF& W, FluidS
     }
     
 	int index;
-	DP temp;
+	Real temp;
 	
 	if (abs(h) < MYEPS) {  // zero cross helicity
 		Initialize_using_energy_helicity_spectrum(U, epsilon, sk);
@@ -445,12 +445,12 @@ void  FluidIO::Init_cond_energy_helicity_spectrum(FluidVF& U, FluidVF& W, FluidS
 		Model_initial_using_shell_spectrum_Pope(U.dissipation_coefficient, epsilon, Correlation::shell_ek1);
 		Model_initial_using_shell_spectrum_Pope(W.dissipation_coefficient, Wepsilon, Correlation::shell_ek2);
 		
-		DP Kmag, ek, amp, phase1, phase2, phase3;
-		DP ekW, ampW, phase1W, phase2W, phase3W;
+		Real Kmag, ek, amp, phase1, phase2, phase3;
+		Real ekW, ampW, phase1W, phase2W, phase3W;
 		
-        for (int lx=0; lx<=global.field.maxlx; lx++)
-            for (int ly=0; ly<=global.field.maxly; ly++)
-                for (int lz=0; lz<=global.field.maxlz; lz++) {
+        for (int lx=0; lx<global.field.maxlx; lx++)
+            for (int ly=0; ly<global.field.maxly; ly++)
+                for (int lz=0; lz<global.field.maxlz; lz++) {
 					
 					Kmag = universal->Kmagnitude(lx, ly, lz);
 					
@@ -496,14 +496,14 @@ void  FluidIO::Init_cond_energy_helicity_spectrum(FluidVF& U, FluidVF& W, FluidS
             real(T.csf.F(0,0,0)) = T000;
         }
         else {
-            U.cvf.V1(0,0,0) = complx(Ux000,0.0);
-            U.cvf.V2(0,0,0) = complx(Uy000,0.0);
-            U.cvf.V3(0,0,0) = complx(Uz000,0.0);
+            U.cvf.V1(0,0,0) = Complex(Ux000,0.0);
+            U.cvf.V2(0,0,0) = Complex(Uy000,0.0);
+            U.cvf.V3(0,0,0) = Complex(Uz000,0.0);
             
-            W.cvf.V1(0,0,0) = complx(Wx000,0.0);
-            W.cvf.V2(0,0,0) = complx(Wy000,0.0);
-            W.cvf.V3(0,0,0) = complx(Wz000,0.0);
-            T.csf.F(0,0,0)  = complx(T000,0.0);
+            W.cvf.V1(0,0,0) = Complex(Wx000,0.0);
+            W.cvf.V2(0,0,0) = Complex(Wy000,0.0);
+            W.cvf.V3(0,0,0) = Complex(Wz000,0.0);
+            T.csf.F(0,0,0)  = Complex(T000,0.0);
         }
     }
 }

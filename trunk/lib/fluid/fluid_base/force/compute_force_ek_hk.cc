@@ -46,16 +46,16 @@
 
 
 //*********************************************************************************************
-// DP energy_supply, DP epsh_by_k_epse
-// DP energy_level, h_by_k_E
+// Real energy_supply, Real epsh_by_k_epse
+// Real energy_level, h_by_k_E
 
-void FORCE::Force_energy_helicity_supply_or_level_basic(FluidVF& U, string force_type, DP inner_radius, DP outer_radius, DP para1, DP para2, bool add_flag)
+void FORCE::Force_energy_helicity_supply_or_level_basic(FluidVF& U, string force_type, Real inner_radius, Real outer_radius, Real para1, Real para2, bool add_flag)
 { 
 	
-	DP energy_supply = 0.0;
-	DP epsh_by_k_epse = 0.0;
-	DP energy_level = 0.0;
-	DP h_by_k_E = 0.0;
+	Real energy_supply = 0.0;
+	Real epsh_by_k_epse = 0.0;
+	Real energy_level = 0.0;
+	Real h_by_k_E = 0.0;
 	
 	if (force_type == "ENERGY_SUPPLY") {
 		energy_supply = para1;
@@ -76,11 +76,11 @@ void FORCE::Force_energy_helicity_supply_or_level_basic(FluidVF& U, string force
 	
 	int nf; 
 	int kx_max, ky_max, kz_max, kx_min, ky_min, kz_min;
-	DP modal_energy;
-	DP temp, temp1, temp2, temp3;
+	Real modal_energy;
+	Real temp, temp1, temp2, temp3;
 	
 	nf = universal->Get_number_modes_in_shell(inner_radius, outer_radius);
-	DP energy_supply_per_mode, energy_per_mode;
+	Real energy_supply_per_mode, energy_per_mode;
 	
 	if (force_type == "ENERGY_SUPPLY")
 		energy_supply_per_mode = energy_supply / nf;
@@ -107,7 +107,7 @@ void FORCE::Force_energy_helicity_supply_or_level_basic(FluidVF& U, string force
 		ky_min = -ky_max; 
 	
 	int lx, ly, lz;
-	DP Kmag, alpha_k, beta_k, sk;
+	Real Kmag, alpha_k, beta_k, sk;
 
 	for (int kx = kx_min; kx <= kx_max; kx++)
 		for (int ky = ky_min; ky <= ky_max; ky++)  
@@ -185,12 +185,12 @@ void FORCE::Force_energy_helicity_supply_or_level_basic(FluidVF& U, string force
 						
 }				
 
-void FORCE::Force_energy_helicity_supply_or_level_basic_assign(FluidVF& U, string force_type, DP inner_radius, DP outer_radius, DP para1, DP para2)
+void FORCE::Force_energy_helicity_supply_or_level_basic_assign(FluidVF& U, string force_type, Real inner_radius, Real outer_radius, Real para1, Real para2)
 {
 	Force_energy_helicity_supply_or_level_basic(U, force_type, inner_radius, outer_radius, para1, para2, false);
 }
 
-void FORCE::Force_energy_helicity_supply_or_level_basic_add(FluidVF& U, string force_type, DP inner_radius, DP outer_radius, DP para1, DP para2)
+void FORCE::Force_energy_helicity_supply_or_level_basic_add(FluidVF& U, string force_type, Real inner_radius, Real outer_radius, Real para1, Real para2)
 {
 	Force_energy_helicity_supply_or_level_basic(U, force_type, inner_radius, outer_radius, para1, para2, true);
 }
@@ -200,11 +200,11 @@ void FORCE::Force_energy_helicity_supply_or_level_basic_add(FluidVF& U, string f
 //	Scalar
 //
 
-void FORCE::Force_energy_helicity_supply_or_level_basic(FluidSF& T, string force_type, DP inner_radius, DP outer_radius, DP para, bool add_flag)
+void FORCE::Force_energy_helicity_supply_or_level_basic(FluidSF& T, string force_type, Real inner_radius, Real outer_radius, Real para, bool add_flag)
 {
 	
-	DP energy_supply = 0.0;
-	DP energy_level = 0.0;
+	Real energy_supply = 0.0;
+	Real energy_level = 0.0;
 	
 	if (force_type == "ENERGY_SUPPLY")
 		energy_supply = para;
@@ -222,9 +222,9 @@ void FORCE::Force_energy_helicity_supply_or_level_basic(FluidSF& T, string force
 		return;
 	
 	int nf; 
-	DP energy_supply_per_mode;
-    DP energy_per_mode;
-	DP modal_energy;
+	Real energy_supply_per_mode;
+    Real energy_per_mode;
+	Real modal_energy;
 	
 	int kx_max, ky_max, kz_max, kx_min, ky_min, kz_min;
 	
@@ -257,7 +257,7 @@ void FORCE::Force_energy_helicity_supply_or_level_basic(FluidSF& T, string force
 					
 	
 	int lx, ly, lz;	
-	DP Kmag, alpha_k;
+	Real Kmag, alpha_k;
 		
 	for (int kx = kx_min; kx <= kx_max; kx++)
 		for (int ky = ky_min; ky <= ky_max; ky++)  
@@ -291,12 +291,12 @@ void FORCE::Force_energy_helicity_supply_or_level_basic(FluidSF& T, string force
 			}		// of for
 }	
 
-void FORCE::Force_energy_helicity_supply_or_level_basic_assign(FluidSF& T, string force_type, DP inner_radius, DP outer_radius, DP para)
+void FORCE::Force_energy_helicity_supply_or_level_basic_assign(FluidSF& T, string force_type, Real inner_radius, Real outer_radius, Real para)
 {
 	Force_energy_helicity_supply_or_level_basic(T, force_type, inner_radius, outer_radius, para, false);
 }
 
-void FORCE::Force_energy_helicity_supply_or_level_basic_add(FluidSF& T, string force_type, DP inner_radius, DP outer_radius, DP para)
+void FORCE::Force_energy_helicity_supply_or_level_basic_add(FluidSF& T, string force_type, Real inner_radius, Real outer_radius, Real para)
 {
 	Force_energy_helicity_supply_or_level_basic(T, force_type, inner_radius, outer_radius, para, true);
 }
@@ -304,10 +304,10 @@ void FORCE::Force_energy_helicity_supply_or_level_basic_add(FluidSF& T, string f
 // derived fn
 void FORCE::Compute_force_const_energy_helicity_supply(FluidVF& U)
 {
-	DP inner_radius = global.force.double_para(0);
-	DP outer_radius = global.force.double_para(1);
-	DP energy_supply = global.force.double_para(2);
-	DP epsh_by_k_epse = global.force.double_para(3);				// epsh(k)/(k*eps(k))
+	Real inner_radius = global.force.double_para(0);
+	Real outer_radius = global.force.double_para(1);
+	Real energy_supply = global.force.double_para(2);
+	Real epsh_by_k_epse = global.force.double_para(3);				// epsh(k)/(k*eps(k))
 	
 	if (U.force_switch) 
 		Force_energy_helicity_supply_or_level_basic_assign(U, "ENERGY_SUPPLY", inner_radius, outer_radius, energy_supply, epsh_by_k_epse);
@@ -320,11 +320,11 @@ void FORCE::Compute_force_const_energy_helicity_supply(FluidVF& U)
 void FORCE::Compute_force_const_energy_helicity_supply(FluidVF& U, FluidSF& T)
 {
 	
-	DP inner_radius = global.force.double_para(0);
-	DP outer_radius = global.force.double_para(1);
-	DP energy_supply = global.force.double_para(2);
-	DP epsh_by_k_epse = global.force.double_para(3);				// epsh(k)/(k*eps(k))
-	DP energy_supply_scalar = global.force.double_para(4);
+	Real inner_radius = global.force.double_para(0);
+	Real outer_radius = global.force.double_para(1);
+	Real energy_supply = global.force.double_para(2);
+	Real epsh_by_k_epse = global.force.double_para(3);				// epsh(k)/(k*eps(k))
+	Real energy_supply_scalar = global.force.double_para(4);
 	
 	if (U.force_switch) 
 		Force_energy_helicity_supply_or_level_basic_assign(U, "ENERGY_SUPPLY", inner_radius, outer_radius, energy_supply, epsh_by_k_epse);
@@ -338,12 +338,12 @@ void FORCE::Compute_force_const_energy_helicity_supply(FluidVF& U, FluidSF& T)
 void FORCE::Compute_force_const_energy_helicity_supply(FluidVF& U, FluidVF& W)
 {
 		
-	DP inner_radius = global.force.double_para(0);
-	DP outer_radius = global.force.double_para(1);
-	DP energy_supply = global.force.double_para(2);
-	DP epsh_by_k_epse = global.force.double_para(3);				// epsh(k)/(k*eps(k))
-	DP energy_supply_W = global.force.double_para(4);
-	DP epsh_by_k_epse_W = global.force.double_para(5);			// W.epsh(k)/(k*W.eps(k))
+	Real inner_radius = global.force.double_para(0);
+	Real outer_radius = global.force.double_para(1);
+	Real energy_supply = global.force.double_para(2);
+	Real epsh_by_k_epse = global.force.double_para(3);				// epsh(k)/(k*eps(k))
+	Real energy_supply_W = global.force.double_para(4);
+	Real epsh_by_k_epse_W = global.force.double_para(5);			// W.epsh(k)/(k*W.eps(k))
 	
 	if (U.force_switch) 
 		Force_energy_helicity_supply_or_level_basic_assign(U, "ENERGY_SUPPLY", inner_radius, outer_radius, energy_supply, epsh_by_k_epse);
@@ -357,13 +357,13 @@ void FORCE::Compute_force_const_energy_helicity_supply(FluidVF& U, FluidVF& W)
 void FORCE::Compute_force_const_energy_helicity_supply(FluidVF& U, FluidVF& W, FluidSF& T)
 {
 
-	DP inner_radius = global.force.double_para(0);
-	DP outer_radius = global.force.double_para(1);
-	DP energy_supply = global.force.double_para(2);
-	DP epsh_by_k_epse = global.force.double_para(3);				// epsh(k)/(k*eps(k))
-	DP energy_supply_W = global.force.double_para(4);
-	DP epsh_by_k_epse_W = global.force.double_para(5);			// W.epsh(k)/(k*W.eps(k))
-	DP energy_supply_scalar = global.force.double_para(6);
+	Real inner_radius = global.force.double_para(0);
+	Real outer_radius = global.force.double_para(1);
+	Real energy_supply = global.force.double_para(2);
+	Real epsh_by_k_epse = global.force.double_para(3);				// epsh(k)/(k*eps(k))
+	Real energy_supply_W = global.force.double_para(4);
+	Real epsh_by_k_epse_W = global.force.double_para(5);			// W.epsh(k)/(k*W.eps(k))
+	Real energy_supply_scalar = global.force.double_para(6);
 	
 	if (U.force_switch) 
 		Force_energy_helicity_supply_or_level_basic_assign(U, "ENERGY_SUPPLY", inner_radius, outer_radius, energy_supply, epsh_by_k_epse);
@@ -379,10 +379,10 @@ void FORCE::Compute_force_const_energy_helicity_supply(FluidVF& U, FluidVF& W, F
 //*********************************************************************************************
 void FORCE::Compute_force_const_energy_helicity(FluidVF& U)
 {
-	DP inner_radius = global.force.double_para(0);
-	DP outer_radius = global.force.double_para(1);
-	DP energy_level = global.force.double_para(2);
-	DP h_by_k_E = global.force.double_para(3);				// epsh(k)/(k*eps(k))
+	Real inner_radius = global.force.double_para(0);
+	Real outer_radius = global.force.double_para(1);
+	Real energy_level = global.force.double_para(2);
+	Real h_by_k_E = global.force.double_para(3);				// epsh(k)/(k*eps(k))
 	
 	if (U.force_switch) 
 		Force_energy_helicity_supply_or_level_basic_assign(U, "CONSTANT_ENERGY", inner_radius, outer_radius, energy_level, h_by_k_E);
@@ -392,11 +392,11 @@ void FORCE::Compute_force_const_energy_helicity(FluidVF& U)
 // derived fn
 void FORCE::Compute_force_const_energy_helicity(FluidVF& U, FluidSF& T)
 {
-	DP inner_radius = global.force.double_para(0);
-	DP outer_radius = global.force.double_para(1);
-	DP energy_level = global.force.double_para(2);
-	DP h_by_k_E = global.force.double_para(3);				// epsh(k)/(k*eps(k))
-	DP energy_level_scalar = global.force.double_para(4);
+	Real inner_radius = global.force.double_para(0);
+	Real outer_radius = global.force.double_para(1);
+	Real energy_level = global.force.double_para(2);
+	Real h_by_k_E = global.force.double_para(3);				// epsh(k)/(k*eps(k))
+	Real energy_level_scalar = global.force.double_para(4);
 	
 	if (U.force_switch) 
 		Force_energy_helicity_supply_or_level_basic_assign(U, "CONSTANT_ENERGY", inner_radius, outer_radius, energy_level, h_by_k_E);
@@ -412,12 +412,12 @@ void FORCE::Compute_force_const_energy_helicity(FluidVF& U, FluidSF& T)
 // derived fn
 void FORCE::Compute_force_const_energy_helicity(FluidVF& U, FluidVF& W)
 {
-	DP inner_radius = global.force.double_para(0);
-	DP outer_radius = global.force.double_para(1);
-	DP energy_level = global.force.double_para(2);
-	DP h_by_k_E = global.force.double_para(3);				// epsh(k)/(k*eps(k))
-	DP energy_level_W = global.force.double_para(4);
-	DP h_by_k_E_W = global.force.double_para(5);
+	Real inner_radius = global.force.double_para(0);
+	Real outer_radius = global.force.double_para(1);
+	Real energy_level = global.force.double_para(2);
+	Real h_by_k_E = global.force.double_para(3);				// epsh(k)/(k*eps(k))
+	Real energy_level_W = global.force.double_para(4);
+	Real h_by_k_E_W = global.force.double_para(5);
 	
 	if (U.force_switch) 
 		Force_energy_helicity_supply_or_level_basic_assign(U, "CONSTANT_ENERGY", inner_radius, outer_radius, energy_level, h_by_k_E);
@@ -430,13 +430,13 @@ void FORCE::Compute_force_const_energy_helicity(FluidVF& U, FluidVF& W)
 // derived fn
 void FORCE::Compute_force_const_energy_helicity(FluidVF& U, FluidVF& W, FluidSF& T)
 {
-	DP inner_radius = global.force.double_para(0);
-	DP outer_radius = global.force.double_para(1);
-	DP energy_level = global.force.double_para(2);
-	DP h_by_k_E = global.force.double_para(3);				// epsh(k)/(k*eps(k))
-	DP energy_level_W = global.force.double_para(4);
-	DP h_by_k_E_W = global.force.double_para(5);
-	DP energy_level_scalar = global.force.double_para(6);
+	Real inner_radius = global.force.double_para(0);
+	Real outer_radius = global.force.double_para(1);
+	Real energy_level = global.force.double_para(2);
+	Real h_by_k_E = global.force.double_para(3);				// epsh(k)/(k*eps(k))
+	Real energy_level_W = global.force.double_para(4);
+	Real h_by_k_E_W = global.force.double_para(5);
+	Real energy_level_scalar = global.force.double_para(6);
 	
 	if (U.force_switch) 
 		Force_energy_helicity_supply_or_level_basic_assign(U, "CONSTANT_ENERGY", inner_radius, outer_radius, energy_level, h_by_k_E);

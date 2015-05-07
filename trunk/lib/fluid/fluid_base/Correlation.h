@@ -68,65 +68,65 @@ class Correlation
 public:
 	
 	//!  Energy of Vx in shell k
-	static  Array<DP,1>		shell_ek1;
+	static  Array<Real,1>		shell_ek1;
 	
 	//!  Energy of Vy in shell k
-	static Array<DP,1>		shell_ek2;
+	static Array<Real,1>		shell_ek2;
 	
 	//!  Energy of Vz in shell k
-	static Array<DP,1>		shell_ek3;
+	static Array<Real,1>		shell_ek3;
 
 	
 	//!  Energy Dissipation rate in shell k (without \f$ \nu \f$).
-	static Array<DP,1>		shell_dissk1;
-	static Array<DP,1>		shell_dissk2;
-	static Array<DP,1>		shell_dissk3;
+	static Array<Real,1>		shell_dissk1;
+	static Array<Real,1>		shell_dissk2;
+	static Array<Real,1>		shell_dissk3;
 	
 	//! Sum \f$ \vec{K} \cdot (\Re\vec{V}(\vec{K}) \times  \Im\vec{V}(\vec{K})) \f$ in shell k
 	//! components along 1,2,3 directions.
 	
 	//!  Energy in ring(m,n) along e1 (toroidal direction).
-	static Array<DP,2>		ring_ek1;
+	static Array<Real,2>		ring_ek1;
 	
 	//!  Energy in ring(m,n) along e2 (poloidal direction).
-	static Array<DP,2>		ring_ek2;
+	static Array<Real,2>		ring_ek2;
 	
-	static Array<DP,2>		ring_ek3;
+	static Array<Real,2>		ring_ek3;
 	
 	//!  Energy Dissipation rate in ring(m,n) (without \f$ \nu \f$).
-	static Array<DP,2>		ring_dissk1, ring_dissk2, ring_dissk3;
+	static Array<Real,2>		ring_dissk1, ring_dissk2, ring_dissk3;
 	
 	
 	
 	//!  Energy spectrum along the anisotropy direction.
-	static Array<DP,2>		cylindrical_ring_ek1;
+	static Array<Real,2>		cylindrical_ring_ek1;
 	
 	//!  Energy spectrum perpendicular to the anisotropy direction.
-	static Array<DP,2>		cylindrical_ring_ek2;
+	static Array<Real,2>		cylindrical_ring_ek2;
 	
 	//!  Energy Dissipation rate in ring(m,n) (without \f$ \nu \f$).
-	static Array<DP,2>		cylindrical_ring_dissk1, cylindrical_ring_dissk2;
+	static Array<Real,2>		cylindrical_ring_dissk1, cylindrical_ring_dissk2;
 	
 	//! \f$ \sum \vec{K} \cdot (\Re\vec{V}(\vec{K}) \times  \Im\vec{V}(\vec{K})) \f$
 	/// in ring(m,n)
 	
 	//!  For scalars
-	static Array<DP,1>		shell_ek;
-	static Array<DP,1>		shell_dissk;
+	static Array<Real,1>		shell_ek;
+	static Array<Real,1>		shell_dissk;
 	
-	static Array<DP,2>		ring_ek;
-	static Array<DP,2>		ring_dissk;
+	static Array<Real,2>		ring_ek;
+	static Array<Real,2>		ring_dissk;
 	
-	static Array<DP,2>		cylindrical_ring_ek;
-	static Array<DP,2>		cylindrical_ring_dissk;
+	static Array<Real,2>		cylindrical_ring_ek;
+	static Array<Real,2>		cylindrical_ring_dissk;
 	
 	
-	static Array<DP,2> ring_spectrum;
-	static Array<DP,2> cylindrical_ring_spectrum;
+	static Array<Real,2> ring_spectrum;
+	static Array<Real,2> cylindrical_ring_spectrum;
 
 	static void Initialize();
-	static DP Get_Nusselt_no(FluidVF& U, FluidSF& T);
-	static DP Get_cross_helicity(FluidVF &U, FluidVF& W);
+	static Real Get_Nusselt_no(FluidVF& U, FluidSF& T);
+	static Real Get_cross_helicity(FluidVF &U, FluidVF& W);
 	
 	static void Compute_shell_spectrum(FluidVF& U);
 	static void Compute_shell_spectrum(FluidVF& U, FluidVF& W);

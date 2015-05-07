@@ -88,7 +88,7 @@ void FluidIO_incompress::Output_all_inloop(FluidVF& U, Pressure& P)
 		global.io.time.complex_field_save_next += global.io.time.complex_field_save_interval;
 	}	
 	
-	if (global.time.now >= global.io.time.field_frequent_save_next) {  
+	if (global.time.now >= global.io.time.field_frequent_save_next) {\
 		Output_complex_field_frequent(U); 
 		global.io.time.field_frequent_save_next += global.io.time.field_frequent_save_interval;
 	}	
@@ -162,12 +162,19 @@ void FluidIO_incompress::Output_last(FluidVF& U, Pressure& P)
 	if (global.io.time.complex_field_save_last)
 		Output_complex_field(U); 
 	
-	if (global.io.time.field_frequent_save_last) 
+	if (global.io.time.field_frequent_save_last) {
+		Real total_abs_div;
+		U.Compute_divergence_field(global.temp_array.X2, total_abs_div, true);
 		Output_complex_field_frequent(U);
+	}
 	
 	if (global.io.time.field_reduced_save_last)
 		Output_reduced_complex_field(U);
-	
+
+	if (global.io.time.real_field_save_last) {
+		U.Inverse_transform();
+		Output_real_field(U);
+	}	
 	if (global.io.time.spectrum_save_last)
 		Output_shell_spectrum(U);	
 	
@@ -296,6 +303,12 @@ void FluidIO_incompress::Output_last(FluidVF& U, FluidSF& T, Pressure& P)
 	
 	if (global.io.time.field_reduced_save_last)
 		Output_reduced_complex_field(U, T);
+
+	if (global.io.time.real_field_save_last) {
+		U.Inverse_transform();
+		T.Inverse_transform();
+		Output_real_field(U, T);
+	}
 	
 	if (global.io.time.spectrum_save_last)
 		Output_shell_spectrum(U, T);	
@@ -357,6 +370,7 @@ void FluidIO_incompress::Output_all_inloop(FluidVF& U, FluidVF& W, Pressure& P)
 		Output_reduced_complex_field(U, W);
 		global.io.time.field_reduced_save_next += global.io.time.field_reduced_save_interval;
 	}	
+
 				
 	if (global.time.now >= global.io.time.spectrum_save_next) {
 		Output_shell_spectrum(U, W);	
@@ -427,7 +441,12 @@ void FluidIO_incompress::Output_last(FluidVF& U, FluidVF& W, Pressure& P)
 	
 	if (global.io.time.field_reduced_save_last)
 		Output_reduced_complex_field(U, W);
-	
+
+	if (global.io.time.real_field_save_last) {
+		U.Inverse_transform();
+		W.Inverse_transform();
+		Output_real_field(U, W);
+	}	
 	if (global.io.time.spectrum_save_last)
 		Output_shell_spectrum(U, W);	
 	
@@ -562,7 +581,13 @@ void FluidIO_incompress::Output_last(FluidVF& U, FluidVF& W, FluidSF& T, Pressur
 	
 	if (global.io.time.field_reduced_save_last)
 		Output_reduced_complex_field(U, W, T);
-	
+
+	if (global.io.time.real_field_save_last) {
+		U.Inverse_transform();
+		W.Inverse_transform();
+		T.Inverse_transform();
+		Output_real_field(U, W, T);
+	}	
 	if (global.io.time.spectrum_save_last)
 		Output_shell_spectrum(U, W, T);	
 	
@@ -721,7 +746,13 @@ void FluidIO_incompress::Output_last(FluidVF& U, FluidSF& T1, FluidSF& T2, Press
 	
 	if (global.io.time.field_reduced_save_last)
 		Output_reduced_complex_field(U, T1, T2);
-	
+
+	if (global.io.time.real_field_save_last) {
+		U.Inverse_transform();
+		T1.Inverse_transform();
+		T2.Inverse_transform();
+		Output_real_field(U, T1, T2);
+	}	
 	if (global.io.time.spectrum_save_last)
 		Output_shell_spectrum(U, T1, T2);	
 	

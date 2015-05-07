@@ -55,8 +55,8 @@ public:
 	MPI_Datatype MPI_Vector_resized_y_plane_block;
 	FFF_PENCIL();
 	 #include "universal_fn_names.h"
-	void Assign_sub_array(Range y_range, Range z_range, Range x_range, Array<complx,3> A, complx value);
-	void Get_XY_plane(Array<complx,3> A, Array<complx,2> plane_xy, int kz);
+	void Assign_sub_array(Range y_range, Range z_range, Range x_range, Array<Complex,3> A, Complex value);
+	void Get_XY_plane(Array<Complex,3> A, Array<Complex,2> plane_xy, int kz);
 
 };
 

@@ -50,10 +50,11 @@ void  FluidIO::Init_cond_complex_field(FluidVF& U)
 {
 
 	U.cvf.Read_complex_field();
-    
-    if (global.io.input_vx_vy_switch && global.field.incompressible)
-        universal->Fill_Vz(U.cvf.V1, U.cvf.V2, U.cvf.V3);
-        // Vz(lx,ly,lz=0) already read; construct for lz>=1.
+   
+	if (global.io.input_vx_vy_switch && global.field.incompressible)
+		universal->Fill_Vz(U.cvf.V1, U.cvf.V2, U.cvf.V3);
+		// Vz(lx,ly,lz=0) already read; construct for lz>=1.
+
 }
 
 //*********************************************************************************************
@@ -71,11 +72,11 @@ void  FluidIO::Init_cond_complex_field(FluidVF& U, FluidSF& T)
 void  FluidIO::Init_cond_scalar_complex_field(FluidVF& U, FluidSF& T)
 {
 	U.cvf.Read_complex_field();
-    
-    if (global.io.input_vx_vy_switch && global.field.incompressible)
-        universal->Fill_Vz(U.cvf.V1, U.cvf.V2, U.cvf.V3);
-        // Vz(lx,ly,lz=0) already read; construct for lz>=1.
-    
+	
+	if (global.io.input_vx_vy_switch && global.field.incompressible)
+		universal->Fill_Vz(U.cvf.V1, U.cvf.V2, U.cvf.V3);
+		// Vz(lx,ly,lz=0) already read; construct for lz>=1.
+	
 	T.csf.Read_complex_field();
 }
 
@@ -84,11 +85,11 @@ void  FluidIO::Init_cond_RBC_complex_field(FluidVF& U, FluidSF& T)
 {
 	if (global.PHYSICS.Pr_option == "PRZERO") {
 		U.cvf.Read_complex_field();
-        
-        if (global.io.input_vx_vy_switch && global.field.incompressible)
-            universal->Fill_Vz(U.cvf.V1, U.cvf.V2, U.cvf.V3);
-            // Vz(lx,ly,lz=0) already read; construct for lz>=1.
-        
+		
+		if (global.io.input_vx_vy_switch && global.field.incompressible)
+			universal->Fill_Vz(U.cvf.V1, U.cvf.V2, U.cvf.V3);
+			// Vz(lx,ly,lz=0) already read; construct for lz>=1.
+		
 		U.Zero_Prandtl_number_compute_temperature(T);
 	}
 	else if (global.PHYSICS.Pr_option == "PRINFTY") {
@@ -103,11 +104,11 @@ void  FluidIO::Init_cond_RBC_complex_field(FluidVF& U, FluidSF& T)
 void  FluidIO::Init_cond_complex_field(FluidVF& U, FluidSF& T1, FluidSF& T2)
 {
 	U.cvf.Read_complex_field();
-    
-    if (global.io.input_vx_vy_switch && global.field.incompressible)
-        universal->Fill_Vz(U.cvf.V1, U.cvf.V2, U.cvf.V3);
-        // Vz(lx,ly,lz=0) already read; construct for lz>=1.
-    
+	
+	if (global.io.input_vx_vy_switch && global.field.incompressible)
+		universal->Fill_Vz(U.cvf.V1, U.cvf.V2, U.cvf.V3);
+		// Vz(lx,ly,lz=0) already read; construct for lz>=1.
+	
 	T1.csf.Read_complex_field();
 	T2.csf.Read_complex_field();
 }
@@ -119,16 +120,16 @@ void  FluidIO::Init_cond_complex_field(FluidVF& U, FluidSF& T1, FluidSF& T2)
 void  FluidIO::Init_cond_complex_field(FluidVF& U, FluidVF& W)
 {
 	U.cvf.Read_complex_field();
-    
-    if (global.io.input_vx_vy_switch && global.field.incompressible)
-        universal->Fill_Vz(U.cvf.V1, U.cvf.V2, U.cvf.V3);
-        // Vz(lx,ly,lz=0) already read; construct for lz>=1.
-    
+	
+	if (global.io.input_vx_vy_switch && global.field.incompressible)
+		universal->Fill_Vz(U.cvf.V1, U.cvf.V2, U.cvf.V3);
+		// Vz(lx,ly,lz=0) already read; construct for lz>=1.
+	
 	W.cvf.Read_complex_field();
-    
-    if (global.io.input_vx_vy_switch && global.field.incompressible)
-        universal->Fill_Vz(W.cvf.V1, W.cvf.V2, W.cvf.V3);
-        // W.Vz(lx,ly,lz=0) already read; construct for lz>=1.
+	
+	if (global.io.input_vx_vy_switch && global.field.incompressible)
+		universal->Fill_Vz(W.cvf.V1, W.cvf.V2, W.cvf.V3);
+		// W.Vz(lx,ly,lz=0) already read; construct for lz>=1.
 }
 
 //
@@ -136,17 +137,17 @@ void  FluidIO::Init_cond_complex_field(FluidVF& U, FluidVF& W)
 void  FluidIO::Init_cond_complex_field(FluidVF& U, FluidVF& W, FluidSF& T)
 {
 	U.cvf.Read_complex_field();
-    
-    if (global.io.input_vx_vy_switch && global.field.incompressible)
-        universal->Fill_Vz(U.cvf.V1, U.cvf.V2, U.cvf.V3);
-        // Vz(lx,ly,lz=0) already read; construct for lz>=1.
-    
+	
+	if (global.io.input_vx_vy_switch && global.field.incompressible)
+		universal->Fill_Vz(U.cvf.V1, U.cvf.V2, U.cvf.V3);
+		// Vz(lx,ly,lz=0) already read; construct for lz>=1.
+	
 	W.cvf.Read_complex_field();
-    
-    if (global.io.input_vx_vy_switch && global.field.incompressible)
-        universal->Fill_Vz(W.cvf.V1, W.cvf.V2, W.cvf.V3);
-        // W.Vz(lx,ly,lz=0) already read; construct for lz>=1.
-    
+	
+	if (global.io.input_vx_vy_switch && global.field.incompressible)
+		universal->Fill_Vz(W.cvf.V1, W.cvf.V2, W.cvf.V3);
+		// W.Vz(lx,ly,lz=0) already read; construct for lz>=1.
+	
 	T.csf.Read_complex_field();
 }
 
@@ -161,11 +162,11 @@ void  FluidIO::Init_cond_complex_field(FluidVF& U, FluidVF& W, FluidSF& T)
 // Fluid
 void  FluidIO::Init_cond_reduced_complex_field(FluidVF& U)
 {
-    U.cvf.Read_reduced_complex_field();
-    
-    if (global.io.input_vx_vy_switch && global.field.incompressible)
-        universal->Fill_Vz(U.cvf.V1, U.cvf.V2, U.cvf.V3);
-        // Vz(lx,ly,lz=0) already read; construct for lz>=1.
+	U.cvf.Read_reduced_complex_field();
+	
+	if (global.io.input_vx_vy_switch && global.field.incompressible)
+		universal->Fill_Vz(U.cvf.V1, U.cvf.V2, U.cvf.V3);
+		// Vz(lx,ly,lz=0) already read; construct for lz>=1.
 }
 
 //*********************************************************************************************
@@ -185,11 +186,11 @@ void  FluidIO::Init_cond_reduced_complex_field(FluidVF& U, FluidSF& T)
 void  FluidIO::Init_cond_reduced_complex_field_scalar(FluidVF& U, FluidSF& T)
 {
 	U.cvf.Read_reduced_complex_field();	
-    
-    if (global.io.input_vx_vy_switch && global.field.incompressible)
-        universal->Fill_Vz(U.cvf.V1, U.cvf.V2, U.cvf.V3);
-        // Vz(lx,ly,lz=0) already read; construct for lz>=1.
-    
+	
+	if (global.io.input_vx_vy_switch && global.field.incompressible)
+		universal->Fill_Vz(U.cvf.V1, U.cvf.V2, U.cvf.V3);
+		// Vz(lx,ly,lz=0) already read; construct for lz>=1.
+	
 	T.csf.Read_reduced_complex_field();	
 }
 
@@ -198,15 +199,15 @@ void  FluidIO::Init_cond_reduced_complex_field_RBC(FluidVF& U, FluidSF& T)
 
 	if (global.PHYSICS.Pr_option == "PRZERO") {
 		U.cvf.Read_reduced_complex_field();
-        
-        if (global.io.input_vx_vy_switch && global.field.incompressible)
-            universal->Fill_Vz(U.cvf.V1, U.cvf.V2, U.cvf.V3);
-            // Vz(lx,ly,lz=0) already read; construct for lz>=1.
-        
+		
+		if (global.io.input_vx_vy_switch && global.field.incompressible)
+			universal->Fill_Vz(U.cvf.V1, U.cvf.V2, U.cvf.V3);
+			// Vz(lx,ly,lz=0) already read; construct for lz>=1.
+		
 		U.Zero_Prandtl_number_compute_temperature(T);
 	}
 
-	if (global.PHYSICS.Pr_option == "PRINFTY") {
+	else if (global.PHYSICS.Pr_option == "PRINFTY") {
 		T.csf.Read_reduced_complex_field();
 		U.Infinite_Prandtl_number_compute_velocity(T);
 	}
@@ -220,11 +221,11 @@ void  FluidIO::Init_cond_reduced_complex_field_RBC(FluidVF& U, FluidSF& T)
 void  FluidIO::Init_cond_reduced_complex_field(FluidVF& U, FluidSF& T1, FluidSF& T2)
 {
 	U.cvf.Read_reduced_complex_field();	
-    
-    if (global.io.input_vx_vy_switch && global.field.incompressible)
-        universal->Fill_Vz(U.cvf.V1, U.cvf.V2, U.cvf.V3);
-        // Vz(lx,ly,lz=0) already read; construct for lz>=1.
-    
+	
+	if (global.io.input_vx_vy_switch && global.field.incompressible)
+		universal->Fill_Vz(U.cvf.V1, U.cvf.V2, U.cvf.V3);
+		// Vz(lx,ly,lz=0) already read; construct for lz>=1.
+	
 	T1.csf.Read_reduced_complex_field();
 	T2.csf.Read_reduced_complex_field();
 }
@@ -235,16 +236,16 @@ void  FluidIO::Init_cond_reduced_complex_field(FluidVF& U, FluidSF& T1, FluidSF&
 void  FluidIO::Init_cond_reduced_complex_field(FluidVF& U, FluidVF& W)
 {
 	U.cvf.Read_reduced_complex_field();
-    
-    if (global.io.input_vx_vy_switch && global.field.incompressible)
-        universal->Fill_Vz(U.cvf.V1, U.cvf.V2, U.cvf.V3);
-        // Vz(lx,ly,lz=0) already read; construct for lz>=1.
-    
+	
+	if (global.io.input_vx_vy_switch && global.field.incompressible)
+		universal->Fill_Vz(U.cvf.V1, U.cvf.V2, U.cvf.V3);
+		// Vz(lx,ly,lz=0) already read; construct for lz>=1.
+	
 	W.cvf.Read_reduced_complex_field();
-    
-    if (global.io.input_vx_vy_switch && global.field.incompressible)
-        universal->Fill_Vz(W.cvf.V1, W.cvf.V2, W.cvf.V3);
-        // W.Vz(lx,ly,lz=0) already read; construct for lz>=1.
+	
+	if (global.io.input_vx_vy_switch && global.field.incompressible)
+		universal->Fill_Vz(W.cvf.V1, W.cvf.V2, W.cvf.V3);
+		// W.Vz(lx,ly,lz=0) already read; construct for lz>=1.
 }
 
 
@@ -254,17 +255,17 @@ void  FluidIO::Init_cond_reduced_complex_field(FluidVF& U, FluidVF& W)
 void  FluidIO::Init_cond_reduced_complex_field(FluidVF& U, FluidVF& W, FluidSF& T)
 {
 	U.cvf.Read_reduced_complex_field();
-    
-    if (global.io.input_vx_vy_switch && global.field.incompressible)
-        universal->Fill_Vz(U.cvf.V1, U.cvf.V2, U.cvf.V3);
-        // Vz(lx,ly,lz=0) already read; construct for lz>=1.
-    
+	
+	if (global.io.input_vx_vy_switch && global.field.incompressible)
+		universal->Fill_Vz(U.cvf.V1, U.cvf.V2, U.cvf.V3);
+		// Vz(lx,ly,lz=0) already read; construct for lz>=1.
+	
 	W.cvf.Read_reduced_complex_field();
-    
-    if (global.io.input_vx_vy_switch && global.field.incompressible)
-        universal->Fill_Vz(W.cvf.V1, W.cvf.V2, W.cvf.V3);
-        // W.Vz(lx,ly,lz=0) already read; construct for lz>=1.
-    
+	
+	if (global.io.input_vx_vy_switch && global.field.incompressible)
+		universal->Fill_Vz(W.cvf.V1, W.cvf.V2, W.cvf.V3);
+		// W.Vz(lx,ly,lz=0) already read; construct for lz>=1.
+	
 	T.csf.Read_reduced_complex_field();
 }
 

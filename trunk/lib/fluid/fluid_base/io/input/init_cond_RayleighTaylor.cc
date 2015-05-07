@@ -52,8 +52,8 @@
 void  FluidIO::Init_cond_Rayleigh_Taylor(FluidVF& U, FluidSF& T)
 {
 
-	DP slope = global.io.double_para(0);
-	DP x;
+	Real slope = global.io.double_para(0);
+	Real x;
 	
 	U.cvf.V1 = 0.0;
 	U.cvf.V2 = 0.0;

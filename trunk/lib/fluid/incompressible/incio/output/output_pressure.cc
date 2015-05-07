@@ -72,7 +72,7 @@ void FluidIO_incompress::Output_pressure_spectrum(Pressure& P)
         global.program.sincostr_switch = global.program.sincostr_switch_divergence;
         universal->Xderiv(P.F, global.temp_array.X);
         
-        DP sum_rmsgradp = sqrt(sum(sqr(abs(global.temp_array.X))));
+        Real sum_rmsgradp = sqrt(sum(sqr(abs(global.temp_array.X))));
         
         universal->Yderiv(P.F, global.temp_array.X);        
         sum_rmsgradp += sqrt(sum(sqr(abs(global.temp_array.X))));

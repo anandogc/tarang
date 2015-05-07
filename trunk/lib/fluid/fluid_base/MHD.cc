@@ -59,16 +59,16 @@ void MHD::UB_to_Elsasser_field(FluidVF& U, FluidVF& W)
 void MHD::Elsasser_to_UB_field(FluidVF& U, FluidVF& W)
 {
 	global.temp_array.X = U.cvf.V1; 
-	U.cvf.V1 = complx(0.5,0)*(U.cvf.V1 + W.cvf.V1);   
-	W.cvf.V1 =  complx(0.5,0)*(global.temp_array.X - W.cvf.V1);
+	U.cvf.V1 = Complex(0.5,0)*(U.cvf.V1 + W.cvf.V1);   
+	W.cvf.V1 =  Complex(0.5,0)*(global.temp_array.X - W.cvf.V1);
 	
 	global.temp_array.X = U.cvf.V2; 
-	U.cvf.V2 = complx(0.5,0)*(U.cvf.V2 + W.cvf.V2);   
-	W.cvf.V2 =  complx(0.5,0)*(global.temp_array.X - W.cvf.V2);
+	U.cvf.V2 = Complex(0.5,0)*(U.cvf.V2 + W.cvf.V2);   
+	W.cvf.V2 =  Complex(0.5,0)*(global.temp_array.X - W.cvf.V2);
 	
 	global.temp_array.X = U.cvf.V3; 
-	U.cvf.V3 = complx(0.5,0)*(U.cvf.V3 + W.cvf.V3);   
-	W.cvf.V3 =  complx(0.5,0)*(global.temp_array.X - W.cvf.V3);
+	U.cvf.V3 = Complex(0.5,0)*(U.cvf.V3 + W.cvf.V3);   
+	W.cvf.V3 =  Complex(0.5,0)*(global.temp_array.X - W.cvf.V3);
 }
 
 
@@ -119,16 +119,16 @@ void MHD::UB_to_Elsasser_force(FluidVF& U, FluidVF& W)
 void MHD::Elsasser_to_UB_force(FluidVF& U, FluidVF& W)
 {
 	global.temp_array.X = U.Force1;   
-	U.Force1 = complx(0.5,0)*(U.Force1 + W.Force1);   
-	W.Force1 = complx(0.5,0)*(global.temp_array.X - W.Force1);
+	U.Force1 = Complex(0.5,0)*(U.Force1 + W.Force1);   
+	W.Force1 = Complex(0.5,0)*(global.temp_array.X - W.Force1);
 	
 	global.temp_array.X = U.Force2;   
-	U.Force2 = complx(0.5,0)*(U.Force2 + W.Force2);   
-	W.Force2 = complx(0.5,0)*(global.temp_array.X - W.Force2);
+	U.Force2 = Complex(0.5,0)*(U.Force2 + W.Force2);   
+	W.Force2 = Complex(0.5,0)*(global.temp_array.X - W.Force2);
 	
 	global.temp_array.X = U.Force3;   
-	U.Force3 = complx(0.5,0)*(U.Force3 + W.Force3);   
-	W.Force3 = complx(0.5,0)*(global.temp_array.X - W.Force3);
+	U.Force3 = Complex(0.5,0)*(U.Force3 + W.Force3);   
+	W.Force3 = Complex(0.5,0)*(global.temp_array.X - W.Force3);
 }
 
 //
@@ -150,16 +150,16 @@ void MHD::UB_to_Elsasser_nlin(FluidVF& U, FluidVF& W)
 void MHD::Elsasser_to_UB_nlin(FluidVF& U, FluidVF& W)
 {
 	global.temp_array.X = U.nlin1;   
-	U.nlin1 = complx(0.5,0)*(U.nlin1 + W.nlin1);   
-	W.nlin1 = complx(0.5,0)*(global.temp_array.X - W.nlin1);
+	U.nlin1 = Complex(0.5,0)*(U.nlin1 + W.nlin1);   
+	W.nlin1 = Complex(0.5,0)*(global.temp_array.X - W.nlin1);
 	
 	global.temp_array.X = U.nlin2;   
-	U.nlin2 = complx(0.5,0)*(U.nlin2 + W.nlin2);   
-	W.nlin2 = complx(0.5,0)*(global.temp_array.X - W.nlin2);
+	U.nlin2 = Complex(0.5,0)*(U.nlin2 + W.nlin2);   
+	W.nlin2 = Complex(0.5,0)*(global.temp_array.X - W.nlin2);
 	
 	global.temp_array.X = U.nlin3;   
-	U.nlin3 = complx(0.5,0)*(U.nlin3 + W.nlin3);   
-	W.nlin3 = complx(0.5,0)*(global.temp_array.X - W.nlin3);
+	U.nlin3 = Complex(0.5,0)*(U.nlin3 + W.nlin3);   
+	W.nlin3 = Complex(0.5,0)*(global.temp_array.X - W.nlin3);
 }
 
 //******************************  End of Elasser.cc  ******************************************

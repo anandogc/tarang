@@ -49,7 +49,7 @@
  
  ***********************************************************************************************/
 
-void ChSS_SLAB::Forward_transform(Array<DP,3> Ar, Array<complx,3> A)
+void ChSS_SLAB::Forward_transform(Array<Real,3> Ar, Array<Complex,3> A)
 {
 	if (Ny > 1)
         spectralTransform.Forward_transform_ChSS_SLAB(Ar, A);
@@ -68,7 +68,7 @@ void ChSS_SLAB::Forward_transform(Array<DP,3> Ar, Array<complx,3> A)
  ***********************************************************************************************/
 
 
-void ChSS_SLAB::Inverse_transform(Array<complx,3> A, Array<DP,3> Ar)
+void ChSS_SLAB::Inverse_transform(Array<Complex,3> A, Array<Real,3> Ar)
 {
     if (Ny > 1)
         spectralTransform.Inverse_transform_ChSS_SLAB(A, Ar);
@@ -85,25 +85,25 @@ void ChSS_SLAB::Inverse_transform(Array<complx,3> A, Array<DP,3> Ar)
 
 ***********************************************************************************************/
 
-void  ChSS_SLAB::Xderiv(Array<complx,3> A, Array<complx,3> B)
+void  ChSS_SLAB::Xderiv(Array<Complex,3> A, Array<Complex,3> B)
 {	
     int kx;
-	DP Kx;
+	Real Kx;
 
     B(Range::all(), Range::all(), Nx-1) = 0;
-    B(Range::all(), Range::all(), Nx-2) = complx(2.0*(Nx-1),0)*A(Range::all(), Range::all(), Nx-1);
+    B(Range::all(), Range::all(), Nx-2) = Complex(2.0*(Nx-1),0)*A(Range::all(), Range::all(), Nx-1);
 
 	for (int lx=(Nx-3); lx>=1; lx--) 	{
-		B(Range::all(),Range::all(), lx) = (complx(2*(lx+1),0)*A(Range::all(),Range::all(),lx+1)) + B(Range::all(),Range::all(),lx+2);
+		B(Range::all(),Range::all(), lx) = (Complex(2*(lx+1),0)*A(Range::all(),Range::all(),lx+1)) + B(Range::all(),Range::all(),lx+2);
 	}
 
-    B(Range::all(),Range::all(),0) =  A(Range::all(),Range::all(),1) + B(Range::all(),Range::all(),2)*complx(0.5,0);
+    B(Range::all(),Range::all(),0) =  A(Range::all(),Range::all(),1) + B(Range::all(),Range::all(),2)*Complex(0.5,0);
     
     B = kfactor[1]*B;
 }
 
 
-void  ChSS_SLAB::Add_Xderiv(Array<complx,3> A, Array<complx,3> B)
+void  ChSS_SLAB::Add_Xderiv(Array<Complex,3> A, Array<Complex,3> B)
 {
  
 	Xderiv(A, global.temp_array.X2);
@@ -112,10 +112,10 @@ void  ChSS_SLAB::Add_Xderiv(Array<complx,3> A, Array<complx,3> B)
 
 
 
-void  ChSS_SLAB::Xderiv(Array<DP,3> A, Array<DP,3> B)
+void  ChSS_SLAB::Xderiv(Array<Real,3> A, Array<Real,3> B)
 {
     int kx;
-	DP Kx;
+	Real Kx;
     
     B(Range::all(), Range::all(), Nx-1) = 0;
     B(Range::all(), Range::all(), Nx-2) = 2.0*(Nx-1)*A(Range::all(), Range::all(), Nx-1);
@@ -138,38 +138,38 @@ void  ChSS_SLAB::Xderiv(Array<DP,3> A, Array<DP,3> B)
 
 // Note: In the first half- ky=i2;
 // In the second half- i2=0:Ny/-1; fftw-index=(Ny/2 +1+i2); FT-index=fftw-index-N=(i2+1-Ny/2)
-void ChSS_SLAB::Yderiv(Array<complx,3> A, Array<complx,3> B)
+void ChSS_SLAB::Yderiv(Array<Complex,3> A, Array<Complex,3> B)
 {
-	DP Ky;
+	Real Ky;
 	
 	if (Ny > 1) 
 		for (int ly=0; ly<Ny; ly++) {
 			Ky = Get_ky(ly)*kfactor[2];
 			
 			if (global.program.sincostr_switch[1] == 'S')
-				B(ly,Range::all(),Range::all()) = complex<DP>(Ky, 0)* (A(ly,Range::all(),Range::all()));
+				B(ly,Range::all(),Range::all()) = complex<Real>(Ky, 0)* (A(ly,Range::all(),Range::all()));
 			
 			else if (global.program.sincostr_switch[1] == 'C')
-				B(ly,Range::all(),Range::all()) = complex<DP>(-Ky, 0)* (A(ly,Range::all(),Range::all()));
+				B(ly,Range::all(),Range::all()) = complex<Real>(-Ky, 0)* (A(ly,Range::all(),Range::all()));
 		}
 	
 	else // Ny = 1
 		B = 0;
 }
 
-void ChSS_SLAB::Add_Yderiv(Array<complx,3> A, Array<complx,3> B)
+void ChSS_SLAB::Add_Yderiv(Array<Complex,3> A, Array<Complex,3> B)
 {
-	DP Ky;
+	Real Ky;
 	
 	if (Ny > 1)
 		for (int ly=0; ly<Ny; ly++) {
 			Ky = Get_ky(ly)*kfactor[2];
 			
 			if (global.program.sincostr_switch[1] == 'S')
-				B(ly,Range::all(),Range::all()) += complex<DP>(Ky, 0)* (A(ly,Range::all(),Range::all()));
+				B(ly,Range::all(),Range::all()) += complex<Real>(Ky, 0)* (A(ly,Range::all(),Range::all()));
 			
 			else if (global.program.sincostr_switch[1] == 'C')
-				B(ly,Range::all(),Range::all()) += complex<DP>(-Ky, 0)* (A(ly,Range::all(),Range::all()));
+				B(ly,Range::all(),Range::all()) += complex<Real>(-Ky, 0)* (A(ly,Range::all(),Range::all()));
 		}
 }
 
@@ -180,12 +180,12 @@ void ChSS_SLAB::Add_Yderiv(Array<complx,3> A, Array<complx,3> B)
 ***********************************************************************************************/
 
 
-void ChSS_SLAB::Zderiv(Array<complx,3> A, Array<complx,3> B)
+void ChSS_SLAB::Zderiv(Array<Complex,3> A, Array<Complex,3> B)
 {
-	DP Kz;
+	Real Kz;
 	
-	Array<DP,3> A_real(reinterpret_cast<DP*>(A.data()), shape_real_array, neverDeleteData);
-	Array<DP,3> B_real(reinterpret_cast<DP*>(B.data()), shape_real_array, neverDeleteData);
+	Array<Real,3> A_real(reinterpret_cast<Real*>(A.data()), shape_real_array, neverDeleteData);
+	Array<Real,3> B_real(reinterpret_cast<Real*>(B.data()), shape_real_array, neverDeleteData);
 	
 	for (int lz=0; lz<Nz; lz++) {
 		Kz = lz*kfactor[3];
@@ -201,13 +201,13 @@ void ChSS_SLAB::Zderiv(Array<complx,3> A, Array<complx,3> B)
 
 
 
-void ChSS_SLAB::Add_Zderiv(Array<complx,3> A, Array<complx,3> B)
+void ChSS_SLAB::Add_Zderiv(Array<Complex,3> A, Array<Complex,3> B)
 {
 	
-	Array<DP,3> A_real(reinterpret_cast<DP*>(A.data()), shape_real_array, neverDeleteData);
-	Array<DP,3> B_real(reinterpret_cast<DP*>(B.data()), shape_real_array, neverDeleteData);
+	Array<Real,3> A_real(reinterpret_cast<Real*>(A.data()), shape_real_array, neverDeleteData);
+	Array<Real,3> B_real(reinterpret_cast<Real*>(B.data()), shape_real_array, neverDeleteData);
 	
-	DP Kz;
+	Real Kz;
 	
 	for (int lz=0; lz<Nz; lz++) {
 		Kz = lz*kfactor[3];
@@ -228,21 +228,21 @@ void ChSS_SLAB::Add_Zderiv(Array<complx,3> A, Array<complx,3> B)
  ***********************************************************************************************/
 
 
-void ChSS_SLAB::Laplacian(DP factor, Array<complx,3> A, Array<complx,3> B)
+void ChSS_SLAB::Laplacian(Real factor, Array<Complex,3> A, Array<Complex,3> B)
 {
 	Xderiv(A, global.temp_array.X);
 	Xderiv(global.temp_array.X, B);
 	
 	B *= factor;
 	
-	DP Kperp_sqr, Kperp_sqr_factor;
+	Real Kperp_sqr, Kperp_sqr_factor;
 	
 	for (int ly=0; ly<A.extent(0); ly++) {
 		Kperp_sqr = my_pow(Get_ky(ly)*kfactor[2],2);
 		
         for (int lz=0; lz<A.extent(1); lz++) {
 			Kperp_sqr_factor = factor*(Kperp_sqr+my_pow(Get_lz(lz)*kfactor[3],2));
-			B(ly,lz,Range::all()) -= complx(Kperp_sqr_factor,0)*A(ly,lz,Range::all());
+			B(ly,lz,Range::all()) -= Complex(Kperp_sqr_factor,0)*A(ly,lz,Range::all());
 		}
 	}
 }
@@ -255,21 +255,21 @@ void ChSS_SLAB::Laplacian(DP factor, Array<complx,3> A, Array<complx,3> B)
  ***********************************************************************************************/
 
 
-void ChSS_SLAB::Subtract_Laplacian(DP factor, Array<complx,3> A, Array<complx,3> B)
+void ChSS_SLAB::Subtract_Laplacian(Real factor, Array<Complex,3> A, Array<Complex,3> B)
 {
 	Xderiv(A, global.temp_array.X);
 	Xderiv(global.temp_array.X, global.temp_array.X2);  // could possibly use X for X2--- test it
 	
 	B -= factor*global.temp_array.X2;
 	
-	DP Kperp_sqr, Kperp_sqr_factor;
+	Real Kperp_sqr, Kperp_sqr_factor;
 	
 	for (int ly=0; ly<A.extent(0); ly++) {
 		Kperp_sqr = my_pow(Get_ky(ly)*kfactor[2],2);
 		
         for (int lz=0; lz<A.extent(1); lz++) {
 			Kperp_sqr_factor = factor*(Kperp_sqr +my_pow(Get_lz(lz)*kfactor[3],2));
-			B(ly,lz,Range::all()) += complx(Kperp_sqr_factor,0)*A(ly,lz,Range::all());
+			B(ly,lz,Range::all()) += Complex(Kperp_sqr_factor,0)*A(ly,lz,Range::all());
 		}
 	}
 

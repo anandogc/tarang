@@ -74,15 +74,15 @@ void Pressure::Compute_pressure(FluidVF &U)
     // For Keplerian. ONLY FFF SLAB BASIS
     // -iq omega Ky ux + i N.mu = mu'^2 p(t)
     else {
-        DP omega_keplerian = global.force.double_para(0);
-        DP q_keplerian = global.force.double_para(1);
+        Real omega_keplerian = global.force.double_para(0);
+        Real q_keplerian = global.force.double_para(1);
         
-        DP q_omega_t = q_keplerian*omega_keplerian*global.time.keplerian;
+        Real q_omega_t = q_keplerian*omega_keplerian*global.time.keplerian;
         
         U.Compute_divergence_nlin(F);
         // div(nlin) = ik.N + iq omega t  Ky Nx -> F  (the proc uses temp arrays)
         
-        DP Kx,Ky,Kz,Ksqr, mu_sqr;
+        Real Kx,Ky,Kz,Ksqr, mu_sqr;
         
         for (int lx=0; lx<local_Nx; lx++)
             for (int ly=0; ly<Ny; ly++)

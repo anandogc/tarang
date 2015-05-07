@@ -97,33 +97,46 @@ SSS_PENCIL::SSS_PENCIL()
 	}
 	
 	//global.mpi.num_p_hor is assigned in global via mpirun argument
-	spectralTransform.Init("SSS", Nx, Ny, Nz, global.mpi.num_p_cols);
+	spectralTransform.Init("SSS", Nx, Ny, Nz, global.mpi.num_p_rows);
 	
-	global.field.shape_complex_array = spectralTransform.local_Nx_row, spectralTransform.local_Ny_col, Nz/2;
-	global.field.shape_real_array = Nx, spectralTransform.local_Ny_row, 2*spectralTransform.local_Nz_col;
+	global.field.shape_complex_array = spectralTransform.Get_FA_shape();
+	global.field.shape_real_array = spectralTransform.Get_RA_shape();
+
+
+	//********
 	
-	//************
+	global.mpi.num_x_procs = 1;
+	global.mpi.num_y_procs = global.mpi.num_p_cols;
+	global.mpi.num_z_procs = global.mpi.num_p_rows;
 	
-	global.mpi.num_x_procs = global.mpi.num_p_cols;
-	global.mpi.num_y_procs = global.mpi.num_p_rows;
-	global.mpi.num_z_procs = 1;
+	global.mpi.my_x_pcoord = 0;
+	global.mpi.my_y_pcoord = spectralTransform.Get_col_id();
+	global.mpi.my_z_pcoord = spectralTransform.Get_row_id();
 	
-	global.mpi.my_x_pcoord = spectralTransform.my_id_row;
-	global.mpi.my_y_pcoord = spectralTransform.my_id_col;
-	global.mpi.my_z_pcoord = 0;
-	
-	global.mpi.num_x_procs_real = 1;
+	global.mpi.num_x_procs_real = global.mpi.num_p_cols;
 	global.mpi.num_y_procs_real = global.mpi.num_p_rows;
-	global.mpi.num_z_procs_real = global.mpi.num_p_cols;
+	global.mpi.num_z_procs_real = 1;
 	
-	global.mpi.my_x_pcoord_real = 0;
-	global.mpi.my_y_pcoord_real = spectralTransform.my_id_row;
-	global.mpi.my_z_pcoord_real = spectralTransform.my_id_col;
+	global.mpi.my_x_pcoord_real = spectralTransform.Get_col_id();
+	global.mpi.my_y_pcoord_real = spectralTransform.Get_row_id();
+	global.mpi.my_z_pcoord_real = 0;
 	
 	
-	global.field.maxlx = spectralTransform.local_Nx_row-1;
-	global.field.maxly = spectralTransform.local_Ny_col-1;
-	global.field.maxlz = Nz/2;
+	global.field.maxlx = global.field.shape_complex_array(0);
+	global.field.maxly = global.field.shape_complex_array(1);
+	global.field.maxlz = global.field.shape_complex_array(2);
+
+	global.field.lx_start = global.mpi.my_x_pcoord*global.field.maxlx;
+	global.field.ly_start = global.mpi.my_y_pcoord*global.field.maxly;
+	global.field.lz_start = global.mpi.my_z_pcoord*global.field.maxlz;
+
+	global.field.maxrx = global.field.shape_real_array(0);
+	global.field.maxry = global.field.shape_real_array(1);
+	global.field.maxrz = global.field.shape_real_array(2);
+
+	global.field.rx_start = global.mpi.my_x_pcoord_real*global.field.maxrx;
+	global.field.ry_start = global.mpi.my_y_pcoord_real*global.field.maxry;
+	global.field.rz_start = global.mpi.my_z_pcoord_real*global.field.maxrz;
 
     // alias..
 	kfactor.resize(4);
@@ -132,21 +145,9 @@ SSS_PENCIL::SSS_PENCIL()
 	kfactor[2]= global.field.kfactor[2];
 	kfactor[3]= global.field.kfactor[3];
 	
-	local_Nx=spectralTransform.local_Nx_row;
-	local_Ny=spectralTransform.local_Ny_col;
-	local_Nz=Nz/2;
-	
-	local_Nx_start=spectralTransform.local_Nx_start_row;
-	local_Ny_start=spectralTransform.local_Ny_start_col;
-	local_Nz_start=0;
-
-	local_Nx_real=Nx;
-	local_Ny_real=spectralTransform.local_Ny_row;
-	local_Nz_real=spectralTransform.local_Nz_col;
-	
 	shape_complex_array = global.field.shape_complex_array;
     shape_real_array = global.field.shape_real_array;
-
+	
 	num_x_procs = global.mpi.num_x_procs;
 	num_y_procs = global.mpi.num_y_procs;
 	num_z_procs = global.mpi.num_z_procs;
@@ -163,36 +164,52 @@ SSS_PENCIL::SSS_PENCIL()
 	my_y_pcoord_real = global.mpi.my_y_pcoord_real;
 	my_z_pcoord_real = global.mpi.my_z_pcoord_real;
 
+	maxlx = global.field.maxlx;
+	maxly = global.field.maxly;
+	maxlz = global.field.maxlz;
+
+	lx_start = global.field.lx_start;
+	ly_start = global.field.ly_start;
+	lz_start = global.field.lz_start;
+
+	maxrx = global.field.maxrx;
+	maxry = global.field.maxry;
+	maxrz = global.field.maxrz;
+
+	rx_start = global.field.rx_start;
+	ry_start = global.field.ry_start;
+	rz_start = global.field.rz_start;
+
 	global.temp_array.X_transform.resize(shape_complex_array);
-	
+
 	global.temp_array.X.resize(shape_complex_array);
     global.temp_array.X2.resize(shape_complex_array);
 	
 	global.temp_array.Xr.resize(shape_real_array);
     global.temp_array.Xr2.resize(shape_real_array);
+	global.temp_array.Xr_slab.resize(shape_real_array*shape(1,num_p_rows,1));
 
-    	
 	BasicIO::Array_properties<3> array_properties;
-	array_properties.shape_full_complex_array = Nx, Ny, Nz;
+	array_properties.shape_full_complex_array = Nx, Ny, Nz/2;
 	array_properties.shape_full_real_array = Nx, Ny, Nz;
 
-	array_properties.id_complex_array = my_x_pcoord, my_y_pcoord, my_z_pcoord;
-	array_properties.id_real_array = my_x_pcoord_real, my_y_pcoord_real, my_z_pcoord_real;
+	array_properties.id_complex_array = my_x_pcoord_real, 0, my_z_pcoord_real;
+	array_properties.id_real_array = my_x_pcoord_real, 0, my_z_pcoord_real;
 
-	array_properties.numprocs_complex_array = num_x_procs, num_y_procs, num_z_procs;
-	array_properties.numprocs_real_array = num_x_procs_real, num_y_procs_real, num_z_procs_real;
+	array_properties.numprocs_complex_array = num_x_procs_real, 1, num_z_procs_real;
+	array_properties.numprocs_real_array = num_x_procs_real, 1, num_z_procs_real;
 
 	if (global.io.N_in_reduced.size() == 3)
-		array_properties.shape_N_in_reduced = global.io.N_in_reduced[0], global.io.N_in_reduced[1], global.io.N_in_reduced[2]/2+1;
+		array_properties.shape_N_in_reduced = global.io.N_in_reduced[0], global.io.N_in_reduced[1], global.io.N_in_reduced[2]/2;
 	
 	if (global.io.N_out_reduced.size() == 3)
-		array_properties.shape_N_out_reduced = global.io.N_out_reduced[0], global.io.N_out_reduced[1], global.io.N_out_reduced[2]/2+1;
+		array_properties.shape_N_out_reduced = global.io.N_out_reduced[0], global.io.N_out_reduced[1], global.io.N_out_reduced[2]/2;
 
 	array_properties.Fourier_directions = 0,0,0;
 	array_properties.Z = 2;
 
-	array_properties.datatype_complex_space = BasicIO::H5T_DP;
-	array_properties.datatype_real_space = BasicIO::H5T_DP;
+	array_properties.datatype_complex_space = BasicIO::H5T_Complex;
+	array_properties.datatype_real_space = BasicIO::H5T_Real;
 
 	BasicIO::Set_H5_plans(array_properties, this);
 }

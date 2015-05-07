@@ -15,11 +15,11 @@ inline int beta_k(int k) {return (k >= Nx-2) ? 0 : 1;}
 
 //******************************************************************************
 
-void Time_advance_incompress::Helmholtz_real(Array<DP,1> f, Array<DP,1> x, DP lambda, DP value_plus1, DP value_minus1)
+void Time_advance_incompress::Helmholtz_real(Array<Real,1> f, Array<Real,1> x, Real lambda, Real value_plus1, Real value_minus1)
 {
-    static Array<DP,1> even_x(Nx/2);
-    static Array<DP,1> odd_x(Nx/2);
-    static Array<DP,1> half_f(Nx/2);
+    static Array<Real,1> even_x(Nx/2);
+    static Array<Real,1> odd_x(Nx/2);
+    static Array<Real,1> half_f(Nx/2);
 
     // Even part
     for (int i=0; i<Nx/2; i++)
@@ -43,10 +43,10 @@ void Time_advance_incompress::Helmholtz_real(Array<DP,1> f, Array<DP,1> x, DP la
 
 // Solves A u = f with the top entry
 // The matrix entries: [1,1,1..; a1,b1,c1, ..;  ] = [d0, d1, d2..]
-void Time_advance_incompress::Helmholtz_complex(Array<complx,1> f, Array<complx, 1> u, DP lambda, complx value_plus1, complx value_minus1)
+void Time_advance_incompress::Helmholtz_complex(Array<Complex,1> f, Array<Complex, 1> u, Real lambda, Complex value_plus1, Complex value_minus1)
 {
-    static Array<DP,1> f_part(Nx);
-    static Array<DP,1> u_part(Nx);
+    static Array<Real,1> f_part(Nx);
+    static Array<Real,1> u_part(Nx);
     
     f_part = real(f);
     Helmholtz_real(f_part, u_part, lambda, real(value_plus1), real(value_minus1));
@@ -60,9 +60,9 @@ void Time_advance_incompress::Helmholtz_complex(Array<complx,1> f, Array<complx,
 //******************************************************************************
 
 // lambda = k_perp^2 + lambda_supplement
-void Time_advance_incompress::Helmholtz_real_full_array(Array<DP,3> R, Array<DP,3> u, bool pressure_switch, DP lambda_supplement,  DP value_plus1, DP value_minus1)
+void Time_advance_incompress::Helmholtz_real_full_array(Array<Real,3> R, Array<Real,3> u, bool pressure_switch, Real lambda_supplement,  Real value_plus1, Real value_minus1)
 {
-    DP lambda, Kperpsqr;
+    Real lambda, Kperpsqr;
     int ky,kz;
     
 	for(int ly=0; ly<local_Ny; ly++)
@@ -94,9 +94,9 @@ void Time_advance_incompress::Helmholtz_real_full_array(Array<DP,3> R, Array<DP,
 //******************************************************************************
 
 // lambda = k_perp^2 + lambda_supplement
-void Time_advance_incompress::Helmholtz_complex_full_array(Array<complx,3> R, Array<complx,3> u, DP lambda_supplement, complx value_plus1, complx value_minus1)
+void Time_advance_incompress::Helmholtz_complex_full_array(Array<Complex,3> R, Array<Complex,3> u, Real lambda_supplement, Complex value_plus1, Complex value_minus1)
 {
-    DP lambda, Kperpsqr;
+    Real lambda, Kperpsqr;
     int ky,kz;
     
 	if ((basis_type == "ChFF") || (basis_type=="ChSF")) {
@@ -153,15 +153,15 @@ void Time_advance_incompress::Helmholtz_complex_full_array(Array<complx,3> R, Ar
 //******************************************************************************
 
 // d=rhs(Nx/2)
-void Time_advance_incompress::Tridiagonal_solver(Array<DP,1> f, Array<DP,1> y, DP lambda, DP d0, int odd_switch)
+void Time_advance_incompress::Tridiagonal_solver(Array<Real,1> f, Array<Real,1> y, Real lambda, Real d0, int odd_switch)
 {
 	int k;
     
     // The matrix entries: [1,1,1..; a1,b1,c1, ..;  ] = [d0, d1, d2..]
-    static Array<DP,1> a(Nx/2);  // m=Nx/2;
-    static Array<DP,1> b(Nx/2); 
-    static Array<DP,1> c(Nx/2); 
-    static Array<DP,1> d(Nx/2);
+    static Array<Real,1> a(Nx/2);  // m=Nx/2;
+    static Array<Real,1> b(Nx/2); 
+    static Array<Real,1> c(Nx/2); 
+    static Array<Real,1> d(Nx/2);
     
     
     a(0)=0; // not defined really
@@ -185,8 +185,8 @@ void Time_advance_incompress::Tridiagonal_solver(Array<DP,1> f, Array<DP,1> y, D
 
     int n = Nx/2-1;
 
-    Array<DP,1> X(n);
-    Array<DP,1> Y(n);
+    Array<Real,1> X(n);
+    Array<Real,1> Y(n);
    
 
     //STEP 1
@@ -200,8 +200,8 @@ void Time_advance_incompress::Tridiagonal_solver(Array<DP,1> f, Array<DP,1> y, D
     }
 
     //STEP 2
-    Array<DP,1> theta(n+1);
-    Array<DP,1> lamda(n+1);
+    Array<Real,1> theta(n+1);
+    Array<Real,1> lamda(n+1);
     
     theta(0) = 1;
     lamda(0) = 0;
@@ -212,8 +212,8 @@ void Time_advance_incompress::Tridiagonal_solver(Array<DP,1> f, Array<DP,1> y, D
     }
 
     //STEP 3
-    DP THETA  = 0;
-    DP LAMDA = 0;
+    Real THETA  = 0;
+    Real LAMDA = 0;
     for (int i=0; i<=n; i++){
         THETA += theta(i);
         LAMDA += lamda(i);

@@ -48,8 +48,8 @@
 
 FluidVF::FluidVF
 (
-	DP dissipation_coefficient, 
-	DP hyper_dissipation_coefficient, 
+	Real dissipation_coefficient, 
+	Real hyper_dissipation_coefficient, 
 	int hyper_dissipation_exponent,
 	bool force_switch,
 	string field_name
@@ -82,9 +82,9 @@ FluidVF::FluidVF
 	//********************************************************************************************* 
 
 
-void FluidVF::Compute_divergence_nlin(Array<complx,3> div)
+void FluidVF::Compute_divergence_nlin(Array<Complex,3> div)
 {
-    DP total_abs_div;  // not reqd for this function.
+    Real total_abs_div;  // not reqd for this function.
     universal->Compute_divergence(nlin1, nlin2, nlin3, div, "nlin", total_abs_div, false);
     // PS: global.temp_array.X is used in Compute_divergence_field.. so
     // be careful.
@@ -102,7 +102,7 @@ void FluidVF::Compute_divergence_nlin(Array<complx,3> div)
  *
  *  @return  \f$ *F = \mathcal{F}(D_i V_i) \f$. 
  */
-void FluidVF::Compute_divergence_field(Array<complx,3> div, DP &total_abs_div, bool print_switch)
+void FluidVF::Compute_divergence_field(Array<Complex,3> div, Real &total_abs_div, bool print_switch)
 {
     universal->Compute_divergence(cvf.V1, cvf.V2, cvf.V3, div, "field", total_abs_div, print_switch);
     // PS: global.temp_array.X is used in Compute_divergence_field.. so
@@ -111,14 +111,14 @@ void FluidVF::Compute_divergence_field(Array<complx,3> div, DP &total_abs_div, b
 	
 //*********************************************************************************************	
 
-DP	FluidVF::Get_mag_V0()
+Real	FluidVF::Get_mag_V0()
 {
-	DP modV0;
+	Real modV0;
 	
 	if (my_id == master_id)
 		modV0 = sqrt( pow2(real((cvf.V1)(0,0,0)))  +  pow2(real((cvf.V2)(0,0,0)))  +  pow2(real((cvf.V3)(0,0,0))) ) ;	
 
-	MPI_Bcast( &modV0, 1, MPI_DP, master_id, MPI_COMM_WORLD);
+	MPI_Bcast( &modV0, 1, MPI_Real, master_id, MPI_COMM_WORLD);
 
 	return modV0;														
 }	
@@ -277,7 +277,7 @@ Function 2: for CVF: Y = Y+ factor*dt*U.nlin;
  
 ***********************************************************************************************/
 
-void FluidVF::Add_nlin_factor_dt(DP factor)
+void FluidVF::Add_nlin_factor_dt(Real factor)
 {	
 	if (abs(factor) > MYEPS2) {
 		cvf.V1 += (factor*global.time.dt)*(nlin1);
@@ -288,7 +288,7 @@ void FluidVF::Add_nlin_factor_dt(DP factor)
 }
 
 
-void FluidVF::Add_field_nlin_factor_dt(PlainCVF& Y, DP factor)
+void FluidVF::Add_field_nlin_factor_dt(PlainCVF& Y, Real factor)
 {	
 	if (abs(factor) > MYEPS2) {
 		Y.V1 += (factor*global.time.dt)* (nlin1);         
@@ -308,7 +308,7 @@ void FluidVF::Add_field_nlin_factor_dt(PlainCVF& Y, DP factor)
  * @return when hyper_dissipation_switch == 1, 
  *			\f$ V(k) = V(k) * \exp(-\nu K^2 dt) + \exp(-\nu_h)  K^4 dt) \f$
  */
-void FluidVF::Mult_field_exp_ksqr_dt(DP a)
+void FluidVF::Mult_field_exp_ksqr_dt(Real a)
 {
 	if (abs(a) > MYEPS) {
 		if (!hyper_dissipation_switch) {
@@ -341,7 +341,7 @@ void FluidVF::Mult_field_exp_ksqr_dt(DP a)
  *			\f$ N(k) = N(k) * \exp(-\nu K^2 dt) + \exp(-\nu_h)  K^4 dt) \f$
  */
 
-void FluidVF::Mult_nlin_exp_ksqr_dt(DP a)
+void FluidVF::Mult_nlin_exp_ksqr_dt(Real a)
 {
 	if (abs(a) > MYEPS) {
 		if (!hyper_dissipation_switch) {
@@ -376,28 +376,30 @@ void FluidVF::Mult_nlin_exp_ksqr_dt(DP a)
  *					and \f$ V_x(kx, 0, kz) = 0 \f$.
  *				
  */
-void FluidVF::Add_complex_conj(int kx, int ky, int kz, complx Vx, complx Vy, complx Vz)			
+void FluidVF::Add_complex_conj(int kx, int ky, int kz, Complex Vx, Complex Vy, Complex Vz)			
 {	
-	TinyVector<complx,3> localV;
+	TinyVector<Complex,3> localV;
 	
 		// On kz=0 or kz=N[3]/2 plane
 	if ((basis_type == "FFF" || basis_type == "FFFW") && (kz == 0)) {
 		localV = conj(Vx), conj(Vy), conj(Vz);
 		universal->Assign_spectral_field(-kx, -ky, kz, cvf.V1, cvf.V2, cvf.V3, localV);
-		cout << "Complex-conj(V) added for k = (" << -kx << "," << -ky << "," << kz << ")" << endl;	
+		if (master)
+			cout << "Complex-conj(V) added for k = (" << -kx << "," << -ky << "," << kz << ")" << endl;	
 	}
 	
 	else if ((basis_type == "SFF") && (kz == 0)) {          
 		localV = conj(Vx), conj(Vy), conj(Vz);
 		universal->Assign_spectral_field(kx, -ky, kz, cvf.V1, cvf.V2, cvf.V3, localV);
-		cout << "Complex-conj(V) added for k = (" << kx << "," << -ky << "," << kz << ")" << endl;	
+		if (master)
+			cout << "Complex-conj(V) added for k = (" << kx << "," << -ky << "," << kz << ")" << endl;	
 	}
 }
 
-void FluidVF::Assign_field_and_comp_conj(int kx, int ky, int kz, complx Vx, complx Vy, complx Vz)
+void FluidVF::Assign_field_and_comp_conj(int kx, int ky, int kz, Complex Vx, Complex Vy, Complex Vz)
 {	
     
-    TinyVector<complx,3> localV(Vx, Vy, Vz);
+    TinyVector<Complex,3> localV(Vx, Vy, Vz);
 
 	universal->Assign_spectral_field(kx, ky, kz, cvf.V1, cvf.V2, cvf.V3, localV);	// in appropriate proc.
 	
@@ -406,22 +408,22 @@ void FluidVF::Assign_field_and_comp_conj(int kx, int ky, int kz, complx Vx, comp
 
 /// 3D: Generate random vector at (kx,ky,kz) with range = rand_range
 
-void FluidVF::Assign_random_complex_vector(int kx, int ky, int kz, DP rand_range)
+void FluidVF::Assign_random_complex_vector(int kx, int ky, int kz, Real rand_range)
 {
-	complx  Vx, Vy, Vz;
+	Complex  Vx, Vy, Vz;
 	
-	Vx = complx( 2*rand_range*(SPECrand.random()-0.5), 2*rand_range*(SPECrand.random()-0.5) );
+	Vx = Complex( 2*rand_range*(SPECrand.random()-0.5), 2*rand_range*(SPECrand.random()-0.5) );
 	
-	Vy = complx( 2*rand_range*(SPECrand.random()-0.5), 2*rand_range*(SPECrand.random()-0.5) );
+	Vy = Complex( 2*rand_range*(SPECrand.random()-0.5), 2*rand_range*(SPECrand.random()-0.5) );
     
    // universal->Last_component(kx, ky, kz, Vx, Vy, Vz);
 	
 	Assign_field_and_comp_conj(kx, ky, kz, Vx, Vy, Vz);
 }
 
-void FluidVF::Assign_random_real_vector(int kx, int ky, int kz, DP rand_range)
+void FluidVF::Assign_random_real_vector(int kx, int ky, int kz, Real rand_range)
 {
-	DP Vx, Vy, Vz;
+	Real Vx, Vy, Vz;
 	
 	Vx = 2*rand_range*(SPECrand.random()-0.5);
 	
@@ -433,20 +435,20 @@ void FluidVF::Assign_random_real_vector(int kx, int ky, int kz, DP rand_range)
 }
 
 
-void FluidVF::Assign_field(int kx, int ky, int kz, DP Vx, DP Vy, DP Vz)
+void FluidVF::Assign_field(int kx, int ky, int kz, Real Vx, Real Vy, Real Vz)
 {	
     
-    TinyVector<DP,3> localV(Vx, Vy, Vz);
+    TinyVector<Real,3> localV(Vx, Vy, Vz);
 	
 	universal->Assign_spectral_field(kx, ky, kz, cvf.V1, cvf.V2, cvf.V3, localV);	// in appropriate proc.
 }
 
 //*********************************************************************************************
 /// 3D: Return Tk = Real(-nlin(k). conj(V(k))  for vector V
-DP FluidVF::Get_Tk(int kx, int ky, int kz)
+Real FluidVF::Get_Tk(int kx, int ky, int kz)
 {	
-	TinyVector<complx,3> localV_complex, localnlin_complex;
-	TinyVector<DP,3> localV_real, localnlin_real;
+	TinyVector<Complex,3> localV_complex, localnlin_complex;
+	TinyVector<Real,3> localV_real, localnlin_real;
 	
 	if (universal->Probe_in_me(kx,ky,kz)) {
 		if (basis_type == "SSS") {
@@ -468,7 +470,7 @@ DP FluidVF::Get_Tk(int kx, int ky, int kz)
 
 //*********************************************************************************************
 
-void FluidVF::Get_local_max_real_space(DP local_ur[])
+void FluidVF::Get_local_max_real_space(Real local_ur[])
 {	
 	local_ur[0] = max(abs(rvf.V1r));
 	local_ur[2] = max(abs(rvf.V3r));
@@ -481,10 +483,10 @@ void FluidVF::Get_local_max_real_space(DP local_ur[])
 
 //*********************************************************************************************
 /*
-DP FluidVF::Get_dt()
+Real FluidVF::Get_dt()
 {
-	DP local_ux,local_uy,local_uz;
-	DP ux, uy, uz;
+	Real local_ux,local_uy,local_uz;
+	Real ux, uy, uz;
 	
 	if (global.program.dt_option == 0) {
 		return global.time.dt_fixed;
@@ -493,16 +495,16 @@ DP FluidVF::Get_dt()
 	else if (global.program.dt_option == 1) {
 		Get_local_max_real_space(local_ux,local_uy,local_uz);
 		
-		MPI_Reduce(&local_ux, &ux, 1, MPI_DP, MPI_MAX, master_id, MPI_COMM_WORLD);
-		MPI_Reduce(&local_uy, &uy, 1, MPI_DP, MPI_MAX, master_id, MPI_COMM_WORLD);
-		MPI_Reduce(&local_uz, &uz, 1, MPI_DP, MPI_MAX, master_id, MPI_COMM_WORLD);
+		MPI_Reduce(&local_ux, &ux, 1, MPI_Real, MPI_MAX, master_id, MPI_COMM_WORLD);
+		MPI_Reduce(&local_uy, &uy, 1, MPI_Real, MPI_MAX, master_id, MPI_COMM_WORLD);
+		MPI_Reduce(&local_uz, &uz, 1, MPI_Real, MPI_MAX, master_id, MPI_COMM_WORLD);
 		
-		DP sum_ubydx = ux/global.field.Delta_x[1] +  uz/global.field.Delta_x[3];
+		Real sum_ubydx = ux/global.field.Delta_x[1] +  uz/global.field.Delta_x[3];
 		
 		if (Ny > 1)
 			sum_ubydx += uy/global.field.Delta_x[2];
 		
-		DP dt = global.time.Courant_no/sum_ubydx;
+		Real dt = global.time.Courant_no/sum_ubydx;
 		
 		MPI_Bcast(&dt, 1, MPI_DOUBLE, master_id, MPI_COMM_WORLD); 
 		
@@ -513,10 +515,10 @@ DP FluidVF::Get_dt()
 
 
 
-DP FluidVF::Get_dt()
+Real FluidVF::Get_dt()
 {
-	DP local_ur[3];
-	DP ur[3];
+	Real local_ur[3];
+	Real ur[3];
 	
 	if (global.program.dt_option == 0) {
 		return global.time.dt_fixed;
@@ -526,14 +528,14 @@ DP FluidVF::Get_dt()
 		
 		Get_local_max_real_space(local_ur);
 		
-		MPI_Allreduce(local_ur, ur, 3, MPI_DP, MPI_MAX, MPI_COMM_WORLD);
+		MPI_Allreduce(local_ur, ur, 3, MPI_Real, MPI_MAX, MPI_COMM_WORLD);
 		
-		DP sum_ubydx = ur[0]/global.field.Delta_x[1] +  ur[2]/global.field.Delta_x[3];
+		Real sum_ubydx = ur[0]/global.field.Delta_x[1] +  ur[2]/global.field.Delta_x[3];
 		
 		if (Ny > 1)
 			sum_ubydx += ur[1]/global.field.Delta_x[2];
 		
-		DP dt = global.time.Courant_no/sum_ubydx;
+		Real dt = global.time.Courant_no/sum_ubydx;
 		
 		return min(dt, global.time.dt_fixed);
 	}
@@ -542,7 +544,7 @@ DP FluidVF::Get_dt()
 }	
 
 
-DP FluidVF::Get_dt(FluidSF& T)
+Real FluidVF::Get_dt(FluidSF& T)
 {
 	return Get_dt();
 }
@@ -550,7 +552,7 @@ DP FluidVF::Get_dt(FluidSF& T)
 
 // Alfven waves move with the speed of local mean magnetic field.. So we look for Bmax
 // in the real space.
-DP FluidVF::Get_dt(FluidVF& W)
+Real FluidVF::Get_dt(FluidVF& W)
 {
 	
 	
@@ -560,10 +562,10 @@ DP FluidVF::Get_dt(FluidVF& W)
 	
 	else if (global.program.dt_option == 1) {
 		
-		DP local_ur[3], local_wr[3];
+		Real local_ur[3], local_wr[3];
 		
-		DP local_uwr[6];
-		DP uwr[6];
+		Real local_uwr[6];
+		Real uwr[6];
 		
 		Get_local_max_real_space(local_ur);
 		W.Get_local_max_real_space(local_wr);
@@ -575,15 +577,15 @@ DP FluidVF::Get_dt(FluidVF& W)
 		local_uwr[4] = local_wr[1];
 		local_uwr[5] = local_wr[2];
 		
-		MPI_Allreduce(local_uwr, uwr, 6, MPI_DP, MPI_MAX, MPI_COMM_WORLD);
+		MPI_Allreduce(local_uwr, uwr, 6, MPI_Real, MPI_MAX, MPI_COMM_WORLD);
 		
 		// for fluid
-		DP sum_ubydx = (uwr[0]+uwr[3])/global.field.Delta_x[1] +  (uwr[2]+uwr[5])/global.field.Delta_x[3];
+		Real sum_ubydx = (uwr[0]+uwr[3])/global.field.Delta_x[1] +  (uwr[2]+uwr[5])/global.field.Delta_x[3];
 		
 		if (Ny > 1)
 			sum_ubydx += (uwr[1]+uwr[4])/global.field.Delta_x[2];
 		
-		DP dt = global.time.Courant_no/sum_ubydx;
+		Real dt = global.time.Courant_no/sum_ubydx;
 		
 		return min(dt, global.time.dt_fixed);
 	}
@@ -592,7 +594,7 @@ DP FluidVF::Get_dt(FluidVF& W)
 }
 
 
-DP FluidVF::Get_dt(FluidVF& W, FluidSF& T)
+Real FluidVF::Get_dt(FluidVF& W, FluidSF& T)
 {
 	return Get_dt(W);
 }

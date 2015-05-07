@@ -67,24 +67,24 @@ int Ifluid_main()
 		// U.Inverse_transform();
 		// U.Forward_transform();
 		// //cout << U.rvf.V1r << endl;
-		// universal->Print_large_Fourier_elements(U.cvf.V1, "U.cvf.V1");
-		// universal->Print_large_Fourier_elements(U.cvf.V2, "U.cvf.V2");
-		// universal->Print_large_Fourier_elements(U.cvf.V3, "U.cvf.V3");
+		// universal->Print_large_Fourier_elements(U.cvf.V1, "Ifluid main U.cvf.V1");
+		// universal->Print_large_Fourier_elements(U.cvf.V2, "Ifluid main U.cvf.V2");
+		// universal->Print_large_Fourier_elements(U.cvf.V3, "Ifluid main U.cvf.V3");
 		// exit(1);
 		
-		DP total_abs_div;
+		Real total_abs_div;
 		U.Compute_divergence_field(global.temp_array.X2, total_abs_div, true);
 		
 		// true mean print nonzero div modes
 		if (total_abs_div > MYEPS2) {
 			cout << "abs(sum(Divergence)) of the initial field U = " << total_abs_div << "is large. " << '\n' << "Therefore exiting the program." << endl;
-			return (1);
+			MPI_Abort(MPI_COMM_WORLD, 1);
 		}
 		
 		fluidIO_incompress.Output_all_inloop(U, P);  // for initial cond
 
 
-		if (my_id == master_id)  
+		if (master)  
 			cout << endl << "STARTING THE SIMULATION NOW" << endl;
 		int  iter=0;  // iterations 
 
@@ -107,14 +107,14 @@ int Ifluid_main()
 			
 			time_advance_incompress.Time_advance_step(U, P, Force);
 			
-			DP total_abs_div;
+			Real total_abs_div;
 			U.Compute_divergence_field(global.temp_array.X2, total_abs_div, true);
 			// true mean print nonzero div modes
 			if (total_abs_div > MYEPS2) {
 				cout << "abs(sum(Divergence)) of U = " << total_abs_div << "is large. " << '\n' << "Therefore exiting the program." << endl;
 				break;
 			}
-	
+
 			fluidIO_incompress.Output_all_inloop(U, P);
 			
 			if ( (my_id == 0) && isnan(U.cvf.total_energy) )  { 

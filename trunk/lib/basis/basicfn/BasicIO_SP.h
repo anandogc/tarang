@@ -56,27 +56,26 @@ void BasicIO::Set_H5_plans(Array_properties<rank> array_properties, Planner* pla
 
 		memspace_filter[i].resize(array_properties.shape_full_complex_array(i));
 		memspace_filter[i]=1;
-
 	}
 
 	//if (master) cerr <<" Full: " << endl;
 	planner->H5_full = Set_plan(rank, array_properties.id_complex_array.data(), array_properties.numprocs_complex_array.data(), dataspace_filter, memspace_filter, array_properties.datatype_complex_space);
 	if ( (planner->H5_full.dataspace == 0) || (planner->H5_full.memspace == 0) ){
 		if (master)
-			cerr << "BasicIO: Error in setting HDF5 full array IO plan." << endl;
+			cerr << "BasicIO::Set_H5_plans - Error in setting HDF5 full array IO plan." << endl;
 		exit(1);
 	}
 
 
 	//Kz0_full
 	int kz0_Z_length=0;
-	if (H5Tequal(array_properties.datatype_complex_space, H5T_COMPLX)>0)
+	if (H5Tequal(array_properties.datatype_complex_space, H5T_Complex)>0)
 		kz0_Z_length = 1;
-	else if (H5Tequal(array_properties.datatype_complex_space, H5T_DP)>0)
+	else if (H5Tequal(array_properties.datatype_complex_space, H5T_Real)>0)
 		kz0_Z_length = 2;
 	else{
 		if (master)
-			cerr << "BasicIO: Unrecognized datatype in 'Array_properties.datatype_complex_space'" << endl;
+			cerr << "BasicIO::Set_H5_plans - Unrecognized datatype in 'Array_properties.datatype_complex_space'" << endl;
 		exit(0);
 	}
 
@@ -89,7 +88,7 @@ void BasicIO::Set_H5_plans(Array_properties<rank> array_properties, Planner* pla
 	planner->H5_kz0_full = Set_plan(rank, array_properties.id_complex_array.data(), array_properties.numprocs_complex_array.data(), dataspace_filter, memspace_filter, array_properties.datatype_complex_space);
 	if ( (planner->H5_kz0_full.dataspace == 0) || (planner->H5_kz0_full.memspace == 0) ){
 		if (master)
-			cerr << "BasicIO: Error in setting HDF5 kz0 IO plan." << endl;
+			cerr << "BasicIO::Set_H5_plans - Error in setting HDF5 kz0 IO plan." << endl;
 		exit(1);
 	}
 
@@ -107,7 +106,7 @@ void BasicIO::Set_H5_plans(Array_properties<rank> array_properties, Planner* pla
 	planner->H5_real = Set_plan(rank, array_properties.id_real_array.data(), array_properties.numprocs_real_array.data(), dataspace_filter, memspace_filter, array_properties.datatype_real_space);
 	if ( (planner->H5_real.dataspace == 0) || (planner->H5_real.memspace == 0) ){
 		if (master)
-			cerr << "BasicIO: Error in setting HDF5 real IO plan." << endl;
+			cerr << "BasicIO::Set_H5_plans - Error in setting HDF5 real IO plan." << endl;
 		exit(1);
 	}
 
@@ -140,7 +139,7 @@ void BasicIO::Set_H5_plans(Array_properties<rank> array_properties, Planner* pla
 			planner->H5_in_reduced = Set_plan(rank, array_properties.id_complex_array.data(), array_properties.numprocs_complex_array.data(), dataspace_filter, memspace_filter, array_properties.datatype_complex_space);
 			if ( (planner->H5_in_reduced.dataspace == 0) || (planner->H5_in_reduced.memspace == 0) ) {
 				if (master)
-					cerr << "BasicIO: Error in setting HDF5 in_reduced IO plan." << endl;
+					cerr << "BasicIO::Set_H5_plans - Error in setting HDF5 in_reduced IO plan." << endl;
 				exit(1);
 			}
 
@@ -157,7 +156,7 @@ void BasicIO::Set_H5_plans(Array_properties<rank> array_properties, Planner* pla
 			planner->H5_in_kz0_reduced = Set_plan(rank, array_properties.id_complex_array.data(), array_properties.numprocs_complex_array.data(), dataspace_filter, memspace_filter, array_properties.datatype_complex_space);
 			if ( (planner->H5_in_kz0_reduced.dataspace == 0) || (planner->H5_in_kz0_reduced.memspace == 0) ){
 				if (master)
-					cerr << "BasicIO: Error in setting HDF5 in_kz0_reduced IO plan." << endl;
+					cerr << "BasicIO::Set_H5_plans - Error in setting HDF5 in_kz0_reduced IO plan." << endl;
 				exit(1);
 			}
 		}
@@ -196,7 +195,7 @@ void BasicIO::Set_H5_plans(Array_properties<rank> array_properties, Planner* pla
 			planner->H5_out_reduced = Set_plan(rank, array_properties.id_complex_array.data(), array_properties.numprocs_complex_array.data(), dataspace_filter, memspace_filter, array_properties.datatype_complex_space);
 			if ( (planner->H5_out_reduced.dataspace == 0) || (planner->H5_out_reduced.memspace == 0) ){
 				if (master)
-					cerr << "BasicIO: Error in setting HDF5 out_reduced IO plan." << endl;
+					cerr << "BasicIO::Set_H5_plans - Error in setting HDF5 out_reduced IO plan." << endl;
 				exit(1);
 			}
 
@@ -208,11 +207,11 @@ void BasicIO::Set_H5_plans(Array_properties<rank> array_properties, Planner* pla
 			memspace_filter[array_properties.Z]=0;
 			memspace_filter[array_properties.Z](Range(0,kz0_Z_length-1))=1;
 
-			//if (master) cerr <<" out__kz0_reduced:. " << endl;
+			//if (master) cerr <<" out_kz0_reduced:. " << endl;
 			planner->H5_out_kz0_reduced = Set_plan(rank, array_properties.id_complex_array.data(), array_properties.numprocs_complex_array.data(), dataspace_filter, memspace_filter, array_properties.datatype_complex_space);
 			if ( (planner->H5_out_kz0_reduced.dataspace == 0) || (planner->H5_out_kz0_reduced.memspace == 0) ){
 				if (master)
-					cerr << "BasicIO: Error in setting HDF5 out_kz0_reduced IO plan." << endl;
+					cerr << "BasicIO::Set_H5_plans - Error in setting HDF5 out_kz0_reduced IO plan." << endl;
 				exit(1);
 			}
 

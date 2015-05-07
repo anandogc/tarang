@@ -41,20 +41,20 @@
 
 
 // GPU arrays
-Array<complx,3> V1_gpu(shape_complex_array);
-Array<complx,3> V2_gpu(shape_complex_array);
-Array<complx,3> V3_gpu(shape_complex_array);
+Array<Complex,3> V1_gpu(shape_complex_array);
+Array<Complex,3> V2_gpu(shape_complex_array);
+Array<Complex,3> V3_gpu(shape_complex_array);
 
-Array<complx,3> nlin1_gpu(shape_complex_array);
-Array<complx,3> nlin2_gpu(shape_complex_array);
-Array<complx,3> nlin3_gpu(shape_complex_array);
+Array<Complex,3> nlin1_gpu(shape_complex_array);
+Array<Complex,3> nlin2_gpu(shape_complex_array);
+Array<Complex,3> nlin3_gpu(shape_complex_array);
 
 
-Array<complx,3> Pressure_gup(shape_complex_array);
+Array<Complex,3> Pressure_gup(shape_complex_array);
 
-Array<complx,3> V1r_gpu(shape_real_array);
-Array<complx,3> V2r_gpu(shape_real_array);
-Array<complx,3> V3r_gpu(shape_real_array);
+Array<Complex,3> V1r_gpu(shape_real_array);
+Array<Complex,3> V2r_gpu(shape_real_array);
+Array<Complex,3> V3r_gpu(shape_real_array);
 
 
 

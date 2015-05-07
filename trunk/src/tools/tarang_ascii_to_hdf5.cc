@@ -132,8 +132,8 @@ int main(int argc, char** argv)
 	array_properties.Fourier_directions = 1,1,1;
 	array_properties.Z = 1;
 
-	array_properties.datatype_complex_space = BasicIO::H5T_COMPLX;
-	array_properties.datatype_real_space = BasicIO::H5T_DP;
+	array_properties.datatype_complex_space = BasicIO::H5T_Complex;
+	array_properties.datatype_real_space = BasicIO::H5T_Real;
 
 	BasicIO::Set_H5_plans(array_properties, &tarang_2_3);
 
@@ -162,15 +162,15 @@ int main(int argc, char** argv)
 }
 
 
-void Read_complex_array(Array<complx, 3> &A, int Nz, string field_name)
+void Read_complex_array(Array<Complex, 3> &A, int Nz, string field_name)
 {	
 	cout << "Reading " << field_name << " ..." << flush;
-	complx temp_x;
+	Complex temp_x;
 	for (int i=0; i<Nx; i++)
 		for (int j=0; j<Ny; j++)
 			for (int k=0; k<Nz/2+1; k++) {
 				if (file_in >> temp_x){
-					A(i,j,k) = (complx)temp_x;
+					A(i,j,k) = (Complex)temp_x;
 				}
 				else {
 					cout << endl << "ERROR: INPUT DATA < Required size. (" << i << "x" << j << "x" << k << ") points read." << endl;
@@ -185,15 +185,15 @@ void Read_complex_array(Array<complx, 3> &A, int Nz, string field_name)
 int Convert_PRINFTY()
 {
 	cout << "Allocating 1 Array ..." << flush;
-	Array<complx, 3> A(Nx, Ny, Nz/2+1);
-	Array<complx, 3> B(Ny, Nz/2+1, Nx);
+	Array<Complex, 3> A(Nx, Ny, Nz/2+1);
+	Array<Complex, 3> B(Ny, Nz/2+1, Nx);
 	cout << "Done" << endl;
 
 	
 	Read_complex_array(A, Nz, "T");
 
-	complx* A_data = A.data();
-	complx* B_data = B.data();
+	Complex* A_data = A.data();
+	Complex* B_data = B.data();
 
 	for (int x=0; x<Nx; x++){
 		for (int y=0; y<local_Ny; y++){
@@ -211,9 +211,9 @@ int Convert_PRINFTY()
 /*int Convert_FLUID()
 {
 	cout << "Allocating 3 Arrays ..." << flush;
-	Array<complx, 3> CV1(local_Nx, Ny, Nz/2+1);
-	Array<complx, 3> CV2(local_Nx, Ny, Nz/2+1);
-	Array<complx, 3> CV3(local_Nx, Ny, Nz/2+1);
+	Array<Complex, 3> CV1(local_Nx, Ny, Nz/2+1);
+	Array<Complex, 3> CV2(local_Nx, Ny, Nz/2+1);
+	Array<Complex, 3> CV3(local_Nx, Ny, Nz/2+1);
 	cout << "Done" << endl;
 	
 	Read_complex_array(CV1, Nz, "CV1");
@@ -235,11 +235,11 @@ int Convert_PRINFTY()
 int Convert_RBC()
 {
 	cout << "Allocating 4 Arrays ..." << flush;
-	Array<complx, 3> CV1(local_Nx, Ny, Nz/2+1);
-	Array<complx, 3> CV2(local_Nx, Ny, Nz/2+1);
-	Array<complx, 3> CV3(local_Nx, Ny, Nz/2+1);
+	Array<Complex, 3> CV1(local_Nx, Ny, Nz/2+1);
+	Array<Complex, 3> CV2(local_Nx, Ny, Nz/2+1);
+	Array<Complex, 3> CV3(local_Nx, Ny, Nz/2+1);
 
-	Array<complx, 3> T(local_Nx, Ny, Nz/2+1);
+	Array<Complex, 3> T(local_Nx, Ny, Nz/2+1);
 	cout << "Done" << endl;
 	
 	
@@ -267,13 +267,13 @@ int Convert_RBC()
 int Convert_MHD()
 {
 	cout << "Allocating 6 Arrays ..." << flush;
-	Array<complx, 3> CV1(local_Nx, Ny, Nz/2+1);
-	Array<complx, 3> CV2(local_Nx, Ny, Nz/2+1);
-	Array<complx, 3> CV3(local_Nx, Ny, Nz/2+1);
+	Array<Complex, 3> CV1(local_Nx, Ny, Nz/2+1);
+	Array<Complex, 3> CV2(local_Nx, Ny, Nz/2+1);
+	Array<Complex, 3> CV3(local_Nx, Ny, Nz/2+1);
 
-	Array<complx, 3> CW1(local_Nx, Ny, Nz/2+1);
-	Array<complx, 3> CW2(local_Nx, Ny, Nz/2+1);
-	Array<complx, 3> CW3(local_Nx, Ny, Nz/2+1);
+	Array<Complex, 3> CW1(local_Nx, Ny, Nz/2+1);
+	Array<Complex, 3> CW2(local_Nx, Ny, Nz/2+1);
+	Array<Complex, 3> CW3(local_Nx, Ny, Nz/2+1);
 	cout << "Done" << endl;
 	
 	
@@ -305,15 +305,15 @@ int Convert_MHD()
 int Convert_MRBC()
 {
 	cout << "Allocating 7 Arrays ..." << flush;
-	Array<complx, 3> CV1(local_Nx, Ny, Nz/2+1);
-	Array<complx, 3> CV2(local_Nx, Ny, Nz/2+1);
-	Array<complx, 3> CV3(local_Nx, Ny, Nz/2+1);
+	Array<Complex, 3> CV1(local_Nx, Ny, Nz/2+1);
+	Array<Complex, 3> CV2(local_Nx, Ny, Nz/2+1);
+	Array<Complex, 3> CV3(local_Nx, Ny, Nz/2+1);
 
-	Array<complx, 3> CW1(local_Nx, Ny, Nz/2+1);
-	Array<complx, 3> CW2(local_Nx, Ny, Nz/2+1);
-	Array<complx, 3> CW3(local_Nx, Ny, Nz/2+1);
+	Array<Complex, 3> CW1(local_Nx, Ny, Nz/2+1);
+	Array<Complex, 3> CW2(local_Nx, Ny, Nz/2+1);
+	Array<Complex, 3> CW3(local_Nx, Ny, Nz/2+1);
 
-	Array<complx, 3> T(local_Nx, Ny, Nz/2+1);
+	Array<Complex, 3> T(local_Nx, Ny, Nz/2+1);
 	cout << "Done" << endl;
 
 

@@ -144,8 +144,8 @@ SFF_SLAB::SFF_SLAB()
 		array_properties.Fourier_directions = 0,1,1;
 		array_properties.Z = 2;
 	
-		array_properties.datatype_complex_space = BasicIO::H5T_COMPLX;
-		array_properties.datatype_real_space = BasicIO::H5T_DP;
+		array_properties.datatype_complex_space = BasicIO::H5T_Complex;
+		array_properties.datatype_real_space = BasicIO::H5T_Real;
 
 		BasicIO::Set_H5_plans(array_properties, this);
 	}
@@ -174,8 +174,8 @@ SFF_SLAB::SFF_SLAB()
 		array_properties.Fourier_directions = 0,1;
 		array_properties.Z = 1;
 	
-		array_properties.datatype_complex_space = BasicIO::H5T_COMPLX;
-		array_properties.datatype_real_space = BasicIO::H5T_DP;
+		array_properties.datatype_complex_space = BasicIO::H5T_Complex;
+		array_properties.datatype_real_space = BasicIO::H5T_Real;
 
 		BasicIO::Set_H5_plans(array_properties, this);
 	}

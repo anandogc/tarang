@@ -231,7 +231,7 @@ int Iscalar_main()
 		cout << "energy U.cvf.V3 = " << universal->Get_total_energy(U.cvf.V3) << endl;*/
 		
 	   /* cout << "Values at the boundaries: " << endl;
-		Array<complx,2> v_plus(local_Ny, local_Nz), v_minus(local_Ny, local_Nz);
+		Array<Complex,2> v_plus(local_Ny, local_Nz), v_minus(local_Ny, local_Nz);
 		
 		time_advance_incompress.Compute_fn_at_boundary(U.cvf.V1, v_plus, v_minus);
 		cout << "V1(+1), V1(-1) = " << sum(abs(v_plus)) << " " << sum(abs(v_minus)) << endl;
@@ -245,7 +245,7 @@ int Iscalar_main()
 		time_advance_incompress.Compute_fn_at_boundary(T.csf.F, v_plus, v_minus);
 		cout << "F(+1), F(-1) = " << sum(abs(v_plus))  << " " << sum(abs(v_minus)) << endl; */
 		
-		DP total_abs_div;
+		Real total_abs_div;
 		U.Compute_divergence_field(global.temp_array.X2, total_abs_div, true);
 		// true mean print nonzero div modes
 		if (total_abs_div > MYEPS2) {

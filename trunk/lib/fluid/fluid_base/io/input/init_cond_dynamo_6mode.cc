@@ -45,15 +45,15 @@
 void FluidIO::Init_cond_DYNAMO_SIX_MODE(FluidVF& U, FluidVF& W)
 {
 	int k0 = int(global.io.double_para(0));
-	DP amp101 = global.io.double_para(1);
-	DP amp011 = global.io.double_para(2);
-	DP amp112 = global.io.double_para(3);
-	DP h = global.io.double_para(4);
+	Real amp101 = global.io.double_para(1);
+	Real amp011 = global.io.double_para(2);
+	Real amp112 = global.io.double_para(3);
+	Real h = global.io.double_para(4);
 	
-	DP ampW101 = global.io.double_para(5);
-	DP ampW011 = global.io.double_para(6);
-	DP ampW112 = global.io.double_para(7);
-	DP hW = global.io.double_para(8);
+	Real ampW101 = global.io.double_para(5);
+	Real ampW011 = global.io.double_para(6);
+	Real ampW112 = global.io.double_para(7);
+	Real hW = global.io.double_para(8);
 	
 	Setup_SIX_MODE_field(U, k0, amp101, amp011, amp112, h);
 	Setup_SIX_MODE_field(W, k0, ampW101, ampW011, ampW112, hW);

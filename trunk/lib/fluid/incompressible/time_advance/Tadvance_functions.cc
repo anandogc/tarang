@@ -157,14 +157,15 @@ void Time_advance_incompress::Add_pressure_gradient(FluidVF& U, Pressure& P)
 	global.program.sincostr_switch = global.program.sincostr_switch_divergence;	   	
 	universal->Add_Zderiv(P.F, U.nlin3 );
     
+
     if (global.program.kind == "KEPLERIAN") {
-        DP omega_keplerian = global.force.double_para(0);
-        DP q_keplerian = global.force.double_para(1);
+        Real omega_keplerian = global.force.double_para(0);
+        Real q_keplerian = global.force.double_para(1);
         
-        DP q_omega_t = q_keplerian*omega_keplerian*global.time.previous;
+        Real q_omega_t = q_keplerian*omega_keplerian*global.time.previous;
         
         universal->Yderiv(P.F, global.temp_array.X);
-        U.nlin1 = U.nlin1 + complx(q_omega_t,0)*global.temp_array.X;
+        U.nlin1 = U.nlin1 + Complex(q_omega_t,0)*global.temp_array.X;
     }
 }
 
@@ -294,7 +295,7 @@ void Time_advance_incompress::Compute_rhs(FluidVF& U, FluidVF& W, FluidSF& T, Fl
  * @note For hyperviscosity:  \f$ \exp(-K^2*\nu*dt) \f$ is replaced by
  *					 $ \exp(-K^2*\nu*dt - K^4*\nu_h dt) \f$
  */
-void Time_advance_incompress::Single_time_step(FluidVF& U, DP a, DP b, DP c)
+void Time_advance_incompress::Single_time_step(FluidVF& U, Real a, Real b, Real c)
 {	
 	
 	if ((abs(a) < MYEPS) && (abs(b) < MYEPS)) 
@@ -324,7 +325,7 @@ void Time_advance_incompress::Single_time_step(FluidVF& U, DP a, DP b, DP c)
 
 
 //*********************************************************************************************
-void Time_advance_incompress::Single_time_step(FluidSF& T, DP a, DP b, DP c)
+void Time_advance_incompress::Single_time_step(FluidSF& T, Real a, Real b, Real c)
 {	
 	
 	if ((abs(a) < MYEPS) && (abs(b) < MYEPS)) 
@@ -356,7 +357,7 @@ void Time_advance_incompress::Single_time_step(FluidSF& T, DP a, DP b, DP c)
 
 //*********************************************************************************************	
 //	Passive scalar  
-void Time_advance_incompress::Single_time_step(FluidVF& U, FluidSF& T, DP a, DP b, DP c)
+void Time_advance_incompress::Single_time_step(FluidVF& U, FluidSF& T, Real a, Real b, Real c)
 {	
 	if (global.program.kind == "INC_SCALAR") 
 		Single_time_step_scalar(U, T, a, b, c);
@@ -368,7 +369,7 @@ void Time_advance_incompress::Single_time_step(FluidVF& U, FluidSF& T, DP a, DP 
 
 
 //*********************************************************************************************
-void Time_advance_incompress::Single_time_step_scalar(FluidVF& U, FluidSF& T, DP a, DP b, DP c)
+void Time_advance_incompress::Single_time_step_scalar(FluidVF& U, FluidSF& T, Real a, Real b, Real c)
 {	
 	Single_time_step(U, a, b, c);
 	Single_time_step(T, a, b, c);	
@@ -376,7 +377,7 @@ void Time_advance_incompress::Single_time_step_scalar(FluidVF& U, FluidSF& T, DP
 
 
 //*********************************************************************************************
-void Time_advance_incompress::Single_time_step_RBC(FluidVF& U, FluidSF& T, DP a, DP b, DP c)
+void Time_advance_incompress::Single_time_step_RBC(FluidVF& U, FluidSF& T, Real a, Real b, Real c)
 {
 	
 	if (global.PHYSICS.Pr_option == "PRZERO") {	
@@ -394,7 +395,7 @@ void Time_advance_incompress::Single_time_step_RBC(FluidVF& U, FluidSF& T, DP a,
 } 
 
 //*********************************************************************************************
-void Time_advance_incompress::Single_time_step(FluidVF& U, FluidSF& T1, FluidSF& T2, DP a, DP b, DP c)
+void Time_advance_incompress::Single_time_step(FluidVF& U, FluidSF& T1, FluidSF& T2, Real a, Real b, Real c)
 {	
 	Single_time_step(U, a, b, c);
 	Single_time_step(T1, a, b, c);	
@@ -405,7 +406,7 @@ void Time_advance_incompress::Single_time_step(FluidVF& U, FluidSF& T1, FluidSF&
 //*********************************************************************************************
 //	MHD		
 
-void Time_advance_incompress::Single_time_step(FluidVF& U, FluidVF& W, DP a, DP b, DP c)
+void Time_advance_incompress::Single_time_step(FluidVF& U, FluidVF& W, Real a, Real b, Real c)
 {  
 	Single_time_step(U, a, b, c);
 	Single_time_step(W, a, b, c);
@@ -415,7 +416,7 @@ void Time_advance_incompress::Single_time_step(FluidVF& U, FluidVF& W, DP a, DP 
 //*********************************************************************************************
 //	MHD + passive scalar  
 
-void Time_advance_incompress::Single_time_step(FluidVF& U, FluidVF& W, FluidSF& T, DP a, DP b, DP c)
+void Time_advance_incompress::Single_time_step(FluidVF& U, FluidVF& W, FluidSF& T, Real a, Real b, Real c)
 {
 	Single_time_step(U, a, b, c);
 	Single_time_step(W, a, b, c);
@@ -423,7 +424,7 @@ void Time_advance_incompress::Single_time_step(FluidVF& U, FluidVF& W, FluidSF& 
 }
 
 // MHD Astro
-void Time_advance_incompress::Single_time_step(FluidVF& U, FluidVF& W, FluidSF& T, FluidSF& C, DP a, DP b, DP c)
+void Time_advance_incompress::Single_time_step(FluidVF& U, FluidVF& W, FluidSF& T, FluidSF& C, Real a, Real b, Real c)
 {
 	Single_time_step(U, a, b, c);
 	Single_time_step(W, a, b, c);
@@ -447,7 +448,6 @@ void Time_advance_incompress::Compute_force_TO_rhs(FluidVF& U, Pressure& P, FORC
 	Add_force(U);											// nlin = nlin - f
 
 	P.Compute_pressure(U);									// Compute pressure using V(t+dt/2)
-	
 	Compute_rhs(U, P);
 }
 
@@ -556,19 +556,19 @@ void Time_advance_incompress::Compute_force_TO_rhs(FluidSF& T, FORCE& Force)
 
 //*********************************************************************************************
 //*********************************************************************************************
-/** @brief Compute_RK4_parts(PlainCVF& tot_Vrhs, DP dt, DP b, DP factor) conmputes Ci's for 
+/** @brief Compute_RK4_parts(PlainCVF& tot_Vrhs, Real dt, Real b, Real factor) conmputes Ci's for 
  *		for computing fields at t+dt.
  *
  * @return tot_Vrhs = (U+factor*dt*RHS(t))*exp(-nu k^2 b*dt)
  *			RHS is contained in *nlin
  */
-void Time_advance_incompress::Compute_RK4_parts(FluidVF& U, PlainCVF& tot_Vrhs, DP b, DP factor)
+void Time_advance_incompress::Compute_RK4_parts(FluidVF& U, PlainCVF& tot_Vrhs, Real b, Real factor)
 {	
 	U.Mult_nlin_exp_ksqr_dt(b);				// U.nlin = U.nlin x exp(-nu k^2 b*dt)
 	U.Add_field_nlin_factor_dt(tot_Vrhs, factor);		// tot_Vrhs += factor*dt*U.nlin
 }
 
-void Time_advance_incompress::Compute_RK4_parts(FluidSF& T, PlainCSF& tot_Srhs, DP b, DP factor)
+void Time_advance_incompress::Compute_RK4_parts(FluidSF& T, PlainCSF& tot_Srhs, Real b, Real factor)
 {	
 	T.Mult_nlin_exp_ksqr_dt(b);					// T.nlin = T.nlin x exp(kappa k^2 b*dt)
 	T.Add_field_nlin_factor_dt(tot_Srhs, factor);		// tot_Srhs += factor*dt*S.nlin
@@ -576,7 +576,7 @@ void Time_advance_incompress::Compute_RK4_parts(FluidSF& T, PlainCSF& tot_Srhs, 
 
 
 void Time_advance_incompress::Compute_RK4_parts(FluidVF& U, FluidSF& T, PlainCVF& tot_Vrhs, PlainCSF& tot_Srhs, 
-                                                DP b, DP factor)
+                                                Real b, Real factor)
 {	
 	if (global.program.kind == "INC_SCALAR") 
 		Compute_RK4_parts_scalar(U, T,tot_Vrhs, tot_Srhs, b, factor);
@@ -587,7 +587,7 @@ void Time_advance_incompress::Compute_RK4_parts(FluidVF& U, FluidSF& T, PlainCVF
 
 
 void Time_advance_incompress::Compute_RK4_parts_scalar(FluidVF& U, FluidSF& T, PlainCVF& tot_Vrhs, 
-                                                       PlainCSF& tot_Srhs, DP b, DP factor)
+                                                       PlainCSF& tot_Srhs, Real b, Real factor)
 {	
 	Compute_RK4_parts(U, tot_Vrhs, b, factor);
 	Compute_RK4_parts(T, tot_Srhs, b, factor);
@@ -595,7 +595,7 @@ void Time_advance_incompress::Compute_RK4_parts_scalar(FluidVF& U, FluidSF& T, P
 
 
 void Time_advance_incompress::Compute_RK4_parts_RBC(FluidVF& U, FluidSF& T, PlainCVF& tot_Vrhs, 
-                                                    PlainCSF& tot_Srhs, DP b, DP factor)
+                                                    PlainCSF& tot_Srhs, Real b, Real factor)
 {	
 	if (global.PHYSICS.Pr_option == "PRZERO") {
 		Compute_RK4_parts(U, tot_Vrhs, b, factor);
@@ -609,7 +609,7 @@ void Time_advance_incompress::Compute_RK4_parts_RBC(FluidVF& U, FluidSF& T, Plai
 		Compute_RK4_parts_scalar(U, T, tot_Vrhs, tot_Srhs, b, factor);
 }
 
-void Time_advance_incompress::Compute_RK4_parts(FluidVF& U, FluidSF& T1, FluidSF& T2, PlainCVF& tot_Vrhs, PlainCSF& tot_S1rhs, PlainCSF& tot_S2rhs, DP b, DP factor)
+void Time_advance_incompress::Compute_RK4_parts(FluidVF& U, FluidSF& T1, FluidSF& T2, PlainCVF& tot_Vrhs, PlainCSF& tot_S1rhs, PlainCSF& tot_S2rhs, Real b, Real factor)
 {	
 	Compute_RK4_parts(U, tot_Vrhs, b, factor);
 	Compute_RK4_parts(T1, tot_S1rhs, b, factor);
@@ -617,21 +617,21 @@ void Time_advance_incompress::Compute_RK4_parts(FluidVF& U, FluidSF& T1, FluidSF
 }
 
 
-void Time_advance_incompress::Compute_RK4_parts(FluidVF& U, FluidVF& W, PlainCVF& tot_Vrhs, PlainCVF& tot_Wrhs, DP b, DP factor)
+void Time_advance_incompress::Compute_RK4_parts(FluidVF& U, FluidVF& W, PlainCVF& tot_Vrhs, PlainCVF& tot_Wrhs, Real b, Real factor)
 {	
 	Compute_RK4_parts(U, tot_Vrhs, b, factor);
 	Compute_RK4_parts(W, tot_Wrhs, b, factor);
 }
 
 
-void Time_advance_incompress::Compute_RK4_parts(FluidVF& U, FluidVF& W, FluidSF& T, PlainCVF& tot_Vrhs,PlainCVF& tot_Wrhs,PlainCSF& tot_Srhs, DP b, DP factor)
+void Time_advance_incompress::Compute_RK4_parts(FluidVF& U, FluidVF& W, FluidSF& T, PlainCVF& tot_Vrhs,PlainCVF& tot_Wrhs,PlainCSF& tot_Srhs, Real b, Real factor)
 {	
 	Compute_RK4_parts(U, tot_Vrhs, b, factor);
 	Compute_RK4_parts(W, tot_Wrhs, b, factor);
 	Compute_RK4_parts(T, tot_Srhs, b, factor);
 }
 
-void Time_advance_incompress::Compute_RK4_parts(FluidVF& U, FluidVF& W, FluidSF& T, FluidSF& C, PlainCVF& tot_Vrhs,PlainCVF& tot_Wrhs,PlainCSF& tot_Srhs, PlainCSF& tot_Crhs, DP b, DP factor)
+void Time_advance_incompress::Compute_RK4_parts(FluidVF& U, FluidVF& W, FluidSF& T, FluidSF& C, PlainCVF& tot_Vrhs,PlainCVF& tot_Wrhs,PlainCSF& tot_Srhs, PlainCSF& tot_Crhs, Real b, Real factor)
 {
 	Compute_RK4_parts(U, tot_Vrhs, b, factor);
 	Compute_RK4_parts(W, tot_Wrhs, b, factor);
@@ -642,20 +642,20 @@ void Time_advance_incompress::Compute_RK4_parts(FluidVF& U, FluidVF& W, FluidSF&
 
 void Time_advance_incompress::Make_field_incompressible(FluidVF& U)
 {
-    DP total_abs_div;
+    Real total_abs_div;
     
     universal->Compute_divergence(U.cvf.V1, U.cvf.V2, U.cvf.V3, global.temp_array.X2, "field", total_abs_div, false);
     
-    DP omega_keplerian = global.force.double_para(0);
-    DP q_keplerian = global.force.double_para(1);
+    Real omega_keplerian = global.force.double_para(0);
+    Real q_keplerian = global.force.double_para(1);
     
-    DP q_omega_t = q_keplerian*omega_keplerian*global.time.now;
+    Real q_omega_t = q_keplerian*omega_keplerian*global.time.now;
     
-    DP Kx,Ky,Kz, mu_x, Ksqr, mu_sqr;
+    Real Kx,Ky,Kz, mu_x, Ksqr, mu_sqr;
     
-    complx Ux000 = U.cvf.V1(0,0,0);
-    complx Uy000 = U.cvf.V2(0,0,0);
-    complx Uz000 = U.cvf.V3(0,0,0);
+    Complex Ux000 = U.cvf.V1(0,0,0);
+    Complex Uy000 = U.cvf.V2(0,0,0);
+    Complex Uz000 = U.cvf.V3(0,0,0);
     
     for (int lx=0; lx<local_Nx; lx++)
         for (int ly=0; ly<Ny; ly++)
@@ -667,9 +667,9 @@ void Time_advance_incompress::Make_field_incompressible(FluidVF& U)
                 mu_sqr = Ksqr+pow2(q_omega_t*Ky)+2*q_omega_t*Kx*Ky;
                 mu_x = Kx+q_omega_t*Ky;
                 
-                U.cvf.V1(lx,ly,lz) = U.cvf.V1(lx,ly,lz) + global.temp_array.X2(lx,ly,lz)*complx(0,mu_x/mu_sqr);
-                U.cvf.V2(lx,ly,lz) = U.cvf.V2(lx,ly,lz) + global.temp_array.X2(lx,ly,lz)*complx(0,Ky/mu_sqr);
-                U.cvf.V3(lx,ly,lz) = U.cvf.V3(lx,ly,lz) + global.temp_array.X2(lx,ly,lz)*complx(0,Kz/mu_sqr);
+                U.cvf.V1(lx,ly,lz) = U.cvf.V1(lx,ly,lz) + global.temp_array.X2(lx,ly,lz)*Complex(0,mu_x/mu_sqr);
+                U.cvf.V2(lx,ly,lz) = U.cvf.V2(lx,ly,lz) + global.temp_array.X2(lx,ly,lz)*Complex(0,Ky/mu_sqr);
+                U.cvf.V3(lx,ly,lz) = U.cvf.V3(lx,ly,lz) + global.temp_array.X2(lx,ly,lz)*Complex(0,Kz/mu_sqr);
             }
     
     if (master) {

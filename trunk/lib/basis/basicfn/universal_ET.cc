@@ -48,18 +48,18 @@
 
 
 
-DP Universal::Local_shell_mult_single
+Real Universal::Local_shell_mult_single
 ( 
-	Array<complx,3> A, Array<complx,3> B, 
-	DP inner_radius, DP outer_radius
+	Array<Complex,3> A, Array<Complex,3> B, 
+	Real inner_radius, Real outer_radius
 )
 {
-	DP Kmag;
-	DP local_result = 0.0;
+	Real Kmag;
+	Real local_result = 0.0;
 	
-	for (int lx=0; lx<A.extent(0); lx++)
-        for (int ly=0; ly<A.extent(1); ly++)
-            for (int lz=0; lz<A.extent(2); lz++) {
+	for (int lx=0; lx<maxlx; lx++)
+        for (int ly=0; ly<maxly; ly++)
+            for (int lz=0; lz<maxlz; lz++) {
 				Kmag = Kmagnitude(lx, ly, lz);
 				
 				if ( (Kmag > inner_radius) && (Kmag <= outer_radius) ) 
@@ -72,17 +72,17 @@ DP Universal::Local_shell_mult_single
 
 //
 //
-DP Universal::Shell_mult_single
+Real Universal::Shell_mult_single
 ( 
-	Array<complx,3> A, Array<complx,3> B, 
-	DP inner_radius, DP outer_radius
+	Array<Complex,3> A, Array<Complex,3> B, 
+	Real inner_radius, Real outer_radius
 )
 {
-	DP local_total;
+	Real local_total;
 	local_total = Local_shell_mult_single(A, B, inner_radius, outer_radius);
 	
-	DP total = 0;
-	MPI_Reduce(&local_total, &total, 1, MPI_DP, MPI_SUM, master_id, MPI_COMM_WORLD);	
+	Real total = 0;
+	MPI_Reduce(&local_total, &total, 1, MPI_Real, MPI_SUM, master_id, MPI_COMM_WORLD);	
 
 	return total;
 }				
@@ -93,21 +93,21 @@ DP Universal::Shell_mult_single
 
 void Universal::Local_shell_mult_all
 ( 
-	Array<complx,3> A, Array<complx,3> B, 
-	Array<DP, 1> shell_radius_array,
-	Array<DP,1> local_result
+	Array<Complex,3> A, Array<Complex,3> B, 
+	Array<Real, 1> shell_radius_array,
+	Array<Real,1> local_result
 )
 {
-	DP Kmag;
+	Real Kmag;
 	int shell_index;
 	
 	local_result = 0.0;
 	 
 	 int	Kmax_inside = Max_radius_inside();
 	
-	for (int lx=0; lx<A.extent(0); lx++)
-        for (int ly=0; ly<A.extent(1); ly++)
-            for (int lz=0; lz<A.extent(2); lz++) {
+	for (int lx=0; lx<maxlx; lx++)
+        for (int ly=0; ly<maxly; ly++)
+            for (int lz=0; lz<maxlz; lz++) {
 				Kmag = Kmagnitude(lx, ly, lz);
 				
 				if (Kmag <= Kmax_inside) {
@@ -124,18 +124,18 @@ void Universal::Local_shell_mult_all
 //
 void Universal::Shell_mult_all
 ( 
-	Array<complx,3> A, Array<complx,3> B,
-	Array<DP, 1> shell_radius_array,
-	Array<DP,1> result
+	Array<Complex,3> A, Array<Complex,3> B,
+	Array<Real, 1> shell_radius_array,
+	Array<Real,1> result
 )
 {
-	static Array<DP,1> local_result(result.length());
+	static Array<Real,1> local_result(result.length());
 	
 	Local_shell_mult_all(A, B, shell_radius_array, local_result);
 	
 	int data_size = result.size();
 	
-	MPI_Reduce(reinterpret_cast<DP*>(local_result.data()), reinterpret_cast<DP*>(result.data()),data_size, MPI_DP, MPI_SUM, master_id, MPI_COMM_WORLD); 						
+	MPI_Reduce(reinterpret_cast<Real*>(local_result.data()), reinterpret_cast<Real*>(result.data()),data_size, MPI_Real, MPI_SUM, master_id, MPI_COMM_WORLD); 						
 }				
 
 
@@ -144,23 +144,23 @@ void Universal::Shell_mult_all
 
 void Universal::Local_shell_mult_all
 (	 
-	Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az,
-	Array<complx,3> Bx, Array<complx,3> By, Array<complx,3> Bz,
-	Array<DP, 1> shell_radius_array,
-	Array<DP,1> local_result
+	Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
+	Array<Complex,3> Bx, Array<Complex,3> By, Array<Complex,3> Bz,
+	Array<Real, 1> shell_radius_array,
+	Array<Real,1> local_result
 )
 {
-	DP Kmag;
+	Real Kmag;
 	int shell_index;
-	DP AdotB;
+	Real AdotB;
 	
 	local_result = 0.0;
 	
 	int	Kmax_inside = Max_radius_inside();
 	
-	for (int lx=0; lx<Ax.extent(0); lx++)
-        for (int ly=0; ly<Ax.extent(1); ly++)
-            for (int lz=0; lz<Ax.extent(2); lz++) {
+	for (int lx=0; lx<maxlx; lx++)
+        for (int ly=0; ly<maxly; ly++)
+            for (int lz=0; lz<maxlz; lz++) {
 				Kmag = Kmagnitude(lx, ly, lz);
 				
 				if (Kmag <= Kmax_inside) {
@@ -179,19 +179,19 @@ void Universal::Local_shell_mult_all
 //
 void Universal::Shell_mult_all
 (
-	Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az,
-	Array<complx,3> Bx, Array<complx,3> By, Array<complx,3> Bz,  
-	Array<DP, 1> shell_radius_array,
-	Array<DP,1> result
+	Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
+	Array<Complex,3> Bx, Array<Complex,3> By, Array<Complex,3> Bz,  
+	Array<Real, 1> shell_radius_array,
+	Array<Real,1> result
 )
 {
-	static Array<DP,1> local_result(result.length());
+	static Array<Real,1> local_result(result.length());
 	
 	Local_shell_mult_all(Ax, Ay, Az, Bx, By, Bz, shell_radius_array, local_result);
 	
 	int data_size = result.size();
 	
-	MPI_Reduce(reinterpret_cast<DP*>(local_result.data()), reinterpret_cast<DP*>(result.data()),data_size, MPI_DP, MPI_SUM, master_id, MPI_COMM_WORLD);
+	MPI_Reduce(reinterpret_cast<Real*>(local_result.data()), reinterpret_cast<Real*>(result.data()),data_size, MPI_Real, MPI_SUM, master_id, MPI_COMM_WORLD);
 }	
 
 
@@ -204,20 +204,20 @@ void Universal::Shell_mult_all
 
 void Universal::Local_ring_mult_all
 ( 
-	Array<complx,3> A, Array<complx,3> B, 
-	Array<DP,2> local_result
+	Array<Complex,3> A, Array<Complex,3> B, 
+	Array<Real,2> local_result
 )
 {
-	DP Kmag, theta;
+	Real Kmag, theta;
 	int shell_index, sector_index;
 	
 	local_result = 0.0;
 	
 	int	Kmax_inside = Max_radius_inside();
 	
-	for (int lx=0; lx<A.extent(0); lx++)
-        for (int ly=0; ly<A.extent(1); ly++)
-            for (int lz=0; lz<A.extent(2); lz++) {
+	for (int lx=0; lx<maxlx; lx++)
+        for (int ly=0; ly<maxly; ly++)
+            for (int lz=0; lz<maxlz; lz++) {
 				Kmag = Kmagnitude(lx, ly, lz);
 				
 				if ((Kmag <= Kmax_inside) && (Kmag > MYEPS)) {
@@ -236,17 +236,17 @@ void Universal::Local_ring_mult_all
 //
 void Universal::Ring_mult_all
 ( 
-	Array<complx,3> A, Array<complx,3> B, 
-	Array<DP,2> result
+	Array<Complex,3> A, Array<Complex,3> B, 
+	Array<Real,2> result
 )
 {
-	static Array<DP,2> local_result( (result.length())(0), (result.length())(1));
+	static Array<Real,2> local_result(result.shape());
 	
 	Local_ring_mult_all(A, B, local_result);
 	
-	int data_size = (result.length())(0) * (result.length())(1);
+	int data_size = result.size();
 	
-	MPI_Reduce(reinterpret_cast<DP*>(local_result.data()), reinterpret_cast<DP*>(result.data()),data_size, MPI_DP, MPI_SUM, master_id, MPI_COMM_WORLD); 						
+	MPI_Reduce(reinterpret_cast<Real*>(local_result.data()), reinterpret_cast<Real*>(result.data()),data_size, MPI_Real, MPI_SUM, master_id, MPI_COMM_WORLD); 						
 }				
 
 
@@ -255,22 +255,22 @@ void Universal::Ring_mult_all
 
 void Universal::Local_ring_mult_all
 (
-	Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az,
-	Array<complx,3> Bx, Array<complx,3> By, Array<complx,3> Bz, 
-	Array<DP,2> local_result
+	Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
+	Array<Complex,3> Bx, Array<Complex,3> By, Array<Complex,3> Bz, 
+	Array<Real,2> local_result
 )
 {
-	DP Kmag, theta;
+	Real Kmag, theta;
 	int shell_index, sector_index;
-	DP AdotB;
+	Real AdotB;
 	
 	local_result = 0.0;
 	
 	int	Kmax_inside = Max_radius_inside();
 	
-	for (int lx=0; lx<Ax.extent(0); lx++)
-        for (int ly=0; ly<Ax.extent(1); ly++)
-            for (int lz=0; lz<Ax.extent(2); lz++) {
+	for (int lx=0; lx<maxlx; lx++)
+        for (int ly=0; ly<maxly; ly++)
+            for (int lz=0; lz<maxlz; lz++) {
 				Kmag = Kmagnitude(lx, ly, lz);
 				
 				if ((Kmag <= Kmax_inside) && (Kmag > MYEPS)) {
@@ -291,18 +291,18 @@ void Universal::Local_ring_mult_all
 //
 void Universal::Ring_mult_all
 (
-	Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az,
-	Array<complx,3> Bx, Array<complx,3> By, Array<complx,3> Bz,  
-	Array<DP,2> result
+	Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
+	Array<Complex,3> Bx, Array<Complex,3> By, Array<Complex,3> Bz,  
+	Array<Real,2> result
 )
 {
-	static Array<DP,2> local_result( (result.length())(0), (result.length())(1));
+	static Array<Real,2> local_result(result.shape());
 	
 	Local_ring_mult_all(Ax, Ay, Az, Bx, By, Bz, local_result);
 	
-	int data_size = (result.length())(0) * (result.length())(1);
+	int data_size = result.size();
 	
-	MPI_Reduce(reinterpret_cast<DP*>(local_result.data()), reinterpret_cast<DP*>(result.data()),data_size, MPI_DP, MPI_SUM, master_id, MPI_COMM_WORLD); 						
+	MPI_Reduce(reinterpret_cast<Real*>(local_result.data()), reinterpret_cast<Real*>(result.data()),data_size, MPI_Real, MPI_SUM, master_id, MPI_COMM_WORLD); 						
 }				
 			
 
@@ -316,21 +316,21 @@ void Universal::Ring_mult_all
 
 void Universal::Local_cyl_ring_mult_all
 (
-	Array<complx,3> A, Array<complx,3> B, 
-	Array<DP,2> local_result
+	Array<Complex,3> A, Array<Complex,3> B, 
+	Array<Real,2> local_result
 )
 {
 
-	DP  Kpll,  Kperp;
+	Real  Kpll,  Kperp;
 	int shell_index, slab_index;
 	
 	local_result = 0.0;
 		
 	int	 Kperp_max = Anis_max_Krho_radius_inside();
 	
-	for (int lx=0; lx<A.extent(0); lx++)
-        for (int ly=0; ly<A.extent(1); ly++)
-            for (int lz=0; lz<A.extent(2); lz++) {
+	for (int lx=0; lx<maxlx; lx++)
+        for (int ly=0; ly<maxly; ly++)
+            for (int lz=0; lz<maxlz; lz++) {
 				 Kpll = AnisKpll(lx, ly, lz);
 				
 				 Kperp = AnisKperp(lx, ly, lz);
@@ -349,17 +349,17 @@ void Universal::Local_cyl_ring_mult_all
 
 void Universal::Cyl_ring_mult_all
 (
-	Array<complx,3> A, Array<complx,3> B, 
-	Array<DP,2> result
+	Array<Complex,3> A, Array<Complex,3> B, 
+	Array<Real,2> result
 )
 {
-	static Array<DP,2> local_result( (result.length())(0), (result.length())(1));
+	static Array<Real,2> local_result(result.shape());
 	
 	Local_cyl_ring_mult_all(A, B, local_result);
 	
-	int data_size = (result.length())(0) * (result.length())(1);
+	int data_size = result.size();
 	
-	MPI_Reduce(reinterpret_cast<DP*>(local_result.data()), reinterpret_cast<DP*>(result.data()),data_size, MPI_DP, MPI_SUM, master_id, MPI_COMM_WORLD); 						
+	MPI_Reduce(reinterpret_cast<Real*>(local_result.data()), reinterpret_cast<Real*>(result.data()),data_size, MPI_Real, MPI_SUM, master_id, MPI_COMM_WORLD); 						
 }
 
 
@@ -368,22 +368,22 @@ void Universal::Cyl_ring_mult_all
 
 void Universal::Local_cyl_ring_mult_all
 (
-	Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az,
-	Array<complx,3> Bx, Array<complx,3> By, Array<complx,3> Bz,  
-	Array<DP,2> local_result
+	Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
+	Array<Complex,3> Bx, Array<Complex,3> By, Array<Complex,3> Bz,  
+	Array<Real,2> local_result
 )
 {
 
-	DP  Kpll,  Kperp, AdotB;
+	Real  Kpll,  Kperp, AdotB;
 	int shell_index, slab_index;
 	
 	local_result = 0.0;
 	
 	int	 Kperp_max = Anis_max_Krho_radius_inside();
 	
-	for (int lx=0; lx<Ax.extent(0); lx++)
-        for (int ly=0; ly<Ax.extent(1); ly++)
-            for (int lz=0; lz<Ax.extent(2); lz++) {
+	for (int lx=0; lx<maxlx; lx++)
+        for (int ly=0; ly<maxly; ly++)
+            for (int lz=0; lz<maxlz; lz++) {
 				 Kpll = AnisKpll(lx, ly, lz);
 				
 				 Kperp = AnisKperp(lx, ly, lz);
@@ -402,18 +402,18 @@ void Universal::Local_cyl_ring_mult_all
 
 void Universal::Cyl_ring_mult_all
 (
-	Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az,
-	Array<complx,3> Bx, Array<complx,3> By, Array<complx,3> Bz, 
-	Array<DP,2> result
+	Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
+	Array<Complex,3> Bx, Array<Complex,3> By, Array<Complex,3> Bz, 
+	Array<Real,2> result
 )
 {
-	static Array<DP,2> local_result( (result.length())(0), (result.length())(1));
+	static Array<Real,2> local_result(result.shape());
 	
 	Local_cyl_ring_mult_all(Ax, Ay, Az, Bx, By, Bz, local_result);
 	
-	int data_size = (result.length())(0) * (result.length())(1);
+	int data_size = result.size();
 	
-	MPI_Reduce(reinterpret_cast<DP*>(local_result.data()), reinterpret_cast<DP*>(result.data()),data_size, MPI_DP, MPI_SUM, master_id, MPI_COMM_WORLD); 						
+	MPI_Reduce(reinterpret_cast<Real*>(local_result.data()), reinterpret_cast<Real*>(result.data()),data_size, MPI_Real, MPI_SUM, master_id, MPI_COMM_WORLD); 						
 }
 
 /**********************************************************************************************
@@ -425,24 +425,24 @@ void Universal::Cyl_ring_mult_all
 
 void Universal::Local_shell_mult_all_imagVW_B0
 (
-	TinyVector<DP,3> B0,
-	Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az,
-	Array<complx,3> Bx, Array<complx,3> By, Array<complx,3> Bz, 
-	Array<DP,1> local_result
+	TinyVector<Real,3> B0,
+	Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
+	Array<Complex,3> Bx, Array<Complex,3> By, Array<Complex,3> Bz, 
+	Array<Real,1> local_result
 )
 {
-	DP Kmag;
+	Real Kmag;
 	int shell_index;
-	TinyVector<DP,3>  K;
-	DP AdotB;
+	TinyVector<Real,3>  K;
+	Real AdotB;
 	
 	local_result = 0.0;
 	
 	int	Kmax_inside = Max_radius_inside();
 	
-	for (int lx=0; lx<Ax.extent(0); lx++)
-        for (int ly=0; ly<Ax.extent(1); ly++)
-            for (int lz=0; lz<Ax.extent(2); lz++) {
+	for (int lx=0; lx<maxlx; lx++)
+        for (int ly=0; ly<maxly; ly++)
+            for (int lz=0; lz<maxlz; lz++) {
 				Kmag = Kmagnitude(lx, ly, lz);
 				
 				if (Kmag <= Kmax_inside) {
@@ -463,19 +463,19 @@ void Universal::Local_shell_mult_all_imagVW_B0
 
 void Universal::Shell_mult_all_imagVW_B0
 ( 
-	TinyVector<DP,3> B0,
-	Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az,
-	Array<complx,3> Bx, Array<complx,3> By, Array<complx,3> Bz,  
-	Array<DP,1> result
+	TinyVector<Real,3> B0,
+	Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
+	Array<Complex,3> Bx, Array<Complex,3> By, Array<Complex,3> Bz,  
+	Array<Real,1> result
 )
 {
-	static Array<DP,1> local_result(result.length());
+	static Array<Real,1> local_result(result.length());
 	
 	Local_shell_mult_all_imagVW_B0(B0, Ax, Ay, Az, Bx, By, Bz, local_result);
 	
 	int data_size = result.size();
 	
-	MPI_Reduce(reinterpret_cast<DP*>(local_result.data()), reinterpret_cast<DP*>(result.data()),data_size, MPI_DP, MPI_SUM, master_id, MPI_COMM_WORLD); 						
+	MPI_Reduce(reinterpret_cast<Real*>(local_result.data()), reinterpret_cast<Real*>(result.data()),data_size, MPI_Real, MPI_SUM, master_id, MPI_COMM_WORLD); 						
 }
 
 
@@ -483,23 +483,23 @@ void Universal::Shell_mult_all_imagVW_B0
 
 void Universal::Local_ring_mult_all_imagVW_B0
 (
-	TinyVector<DP,3> B0,
-	Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az,
-	Array<complx,3> Bx, Array<complx,3> By, Array<complx,3> Bz, 
-	Array<DP,2> local_result
+	TinyVector<Real,3> B0,
+	Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
+	Array<Complex,3> Bx, Array<Complex,3> By, Array<Complex,3> Bz, 
+	Array<Real,2> local_result
 )
 {
-	DP Kmag, theta, AdotB;
+	Real Kmag, theta, AdotB;
 	int shell_index, sector_index;
-	TinyVector<DP,3>  K;
+	TinyVector<Real,3>  K;
 	
 	local_result = 0.0;
 		
 	int	Kmax_inside = Max_radius_inside();
 	
-	for (int lx=0; lx<Ax.extent(0); lx++)
-        for (int ly=0; ly<Ax.extent(1); ly++)
-            for (int lz=0; lz<Ax.extent(2); lz++) {
+	for (int lx=0; lx<maxlx; lx++)
+        for (int ly=0; ly<maxly; ly++)
+            for (int lz=0; lz<maxlz; lz++) {
 				Kmag = Kmagnitude(lx, ly, lz);
 				
 				if ((Kmag <= Kmax_inside) && (Kmag > MYEPS)) {
@@ -522,19 +522,19 @@ void Universal::Local_ring_mult_all_imagVW_B0
 
 void Universal::Ring_mult_all_imagVW_B0
 (
-	TinyVector<DP,3> B0,
-	Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az,
-	Array<complx,3> Bx, Array<complx,3> By, Array<complx,3> Bz,  
-	Array<DP,2> result
+	TinyVector<Real,3> B0,
+	Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
+	Array<Complex,3> Bx, Array<Complex,3> By, Array<Complex,3> Bz,  
+	Array<Real,2> result
 )
 {
-	static Array<DP,2> local_result( (result.length())(0), (result.length())(1));
+	static Array<Real,2> local_result(result.shape());
 	
 	Local_ring_mult_all_imagVW_B0(B0, Ax, Ay, Az, Bx, By, Bz, local_result);
 	
-	int data_size = (result.length())(0) * (result.length())(1);
+	int data_size = result.size();
 	
-	MPI_Reduce(reinterpret_cast<DP*>(local_result.data()), reinterpret_cast<DP*>(result.data()),data_size, MPI_DP, MPI_SUM, master_id, MPI_COMM_WORLD); 						
+	MPI_Reduce(reinterpret_cast<Real*>(local_result.data()), reinterpret_cast<Real*>(result.data()),data_size, MPI_Real, MPI_SUM, master_id, MPI_COMM_WORLD); 						
 }
 
 
@@ -542,24 +542,24 @@ void Universal::Ring_mult_all_imagVW_B0
 
 void Universal::Local_cyl_ring_mult_all_imagVW_B0
 ( 
-	TinyVector<DP,3> B0,
-	Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az,
-	Array<complx,3> Bx, Array<complx,3> By, Array<complx,3> Bz, 
-	Array<DP,2> local_result
+	TinyVector<Real,3> B0,
+	Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
+	Array<Complex,3> Bx, Array<Complex,3> By, Array<Complex,3> Bz, 
+	Array<Real,2> local_result
 )
 {
 
-	DP  Kpll,  Kperp, AdotB;
+	Real  Kpll,  Kperp, AdotB;
 	int shell_index, slab_index;
-	TinyVector<DP,3>  K;
+	TinyVector<Real,3>  K;
 	
 	local_result = 0.0;
 	
 	int	 Kperp_max = Anis_max_Krho_radius_inside();
 	
-	for (int lx=0; lx<Ax.extent(0); lx++)
-        for (int ly=0; ly<Ax.extent(1); ly++)
-            for (int lz=0; lz<Ax.extent(2); lz++) {
+	for (int lx=0; lx<maxlx; lx++)
+        for (int ly=0; ly<maxly; ly++)
+            for (int lz=0; lz<maxlz; lz++) {
 				 Kpll = AnisKpll(lx, ly, lz);
 				
 				 Kperp = AnisKperp(lx, ly, lz);
@@ -581,19 +581,19 @@ void Universal::Local_cyl_ring_mult_all_imagVW_B0
 
 void Universal::Cyl_ring_mult_all_imagVW_B0
 (
-	TinyVector<DP,3> B0,
-	Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az,
-	Array<complx,3> Bx, Array<complx,3> By, Array<complx,3> Bz, 
-	Array<DP,2> result
+	TinyVector<Real,3> B0,
+	Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
+	Array<Complex,3> Bx, Array<Complex,3> By, Array<Complex,3> Bz, 
+	Array<Real,2> result
 )
 {
-	static Array<DP,2> local_result( (result.length())(0), (result.length())(1));
+	static Array<Real,2> local_result(result.shape());
 	
 	Local_cyl_ring_mult_all_imagVW_B0(B0, Ax, Ay, Az, Bx, By, Bz, local_result);
 	
-	int data_size = (result.length())(0) * (result.length())(1);
+	int data_size = result.size();
 	
-	MPI_Reduce(reinterpret_cast<DP*>(local_result.data()), reinterpret_cast<DP*>(result.data()),data_size, MPI_DP, MPI_SUM, master_id, MPI_COMM_WORLD); 						
+	MPI_Reduce(reinterpret_cast<Real*>(local_result.data()), reinterpret_cast<Real*>(result.data()),data_size, MPI_Real, MPI_SUM, master_id, MPI_COMM_WORLD); 						
 }
 
 
@@ -603,23 +603,23 @@ void Universal::Cyl_ring_mult_all_imagVW_B0
 //
 //  sum(A.curl(B)) for a given shell
 // 
-DP Universal::Local_shell_mult_vorticity
+Real Universal::Local_shell_mult_vorticity
 (
-    Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az,
-    Array<complx,3> Bx, Array<complx,3> By, Array<complx,3> Bz,  
-    DP inner_radius, DP outer_radius
+    Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
+    Array<Complex,3> Bx, Array<Complex,3> By, Array<Complex,3> Bz,  
+    Real inner_radius, Real outer_radius
 )
 {
 	
-	TinyVector<complx,3> vorticity;
-	complx vort_y;
+	TinyVector<Complex,3> vorticity;
+	Complex vort_y;
 	
-	DP Kmag, AdotB;
-	DP result = 0.0;
+	Real Kmag, AdotB;
+	Real result = 0.0;
 	
-	for (int lx=0; lx<Ax.extent(0); lx++)
-        for (int ly=0; ly<Ax.extent(1); ly++)
-            for (int lz=0; lz<Ax.extent(2); lz++) {
+	for (int lx=0; lx<maxlx; lx++)
+        for (int ly=0; ly<maxly; ly++)
+            for (int lz=0; lz<maxlz; lz++) {
 				Kmag = Kmagnitude(lx, ly, lz);
 				
 				if ((Kmag > inner_radius) && (Kmag <= outer_radius)) {
@@ -650,18 +650,18 @@ DP Universal::Local_shell_mult_vorticity
 //
 
 
-DP Universal::Shell_mult_vorticity
+Real Universal::Shell_mult_vorticity
 (
-    Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az,
-    Array<complx,3> Bx, Array<complx,3> By, Array<complx,3> Bz,  
-    DP inner_radius, DP outer_radius
+    Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
+    Array<Complex,3> Bx, Array<Complex,3> By, Array<Complex,3> Bz,  
+    Real inner_radius, Real outer_radius
 )
 {
-	DP local_total;
+	Real local_total;
 	local_total = Local_shell_mult_vorticity(Ax, Ay, Az, Bx, By, Bz, inner_radius, outer_radius);
 	
-	DP total;
-	MPI_Reduce(&local_total, &total, 1, MPI_DP, MPI_SUM, master_id, MPI_COMM_WORLD);	
+	Real total;
+	MPI_Reduce(&local_total, &total, 1, MPI_Real, MPI_SUM, master_id, MPI_COMM_WORLD);	
 	
 	if (my_id == master_id) 
 		return total;
@@ -673,23 +673,23 @@ DP Universal::Shell_mult_vorticity
 //
 //	sum(A.curl(B)/k^2) for a given shell
 //
-DP Universal::Local_shell_mult_vector_potential
+Real Universal::Local_shell_mult_vector_potential
 (
-    Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az,
-    Array<complx,3> Bx, Array<complx,3> By, Array<complx,3> Bz,  
-    DP inner_radius, DP outer_radius
+    Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
+    Array<Complex,3> Bx, Array<Complex,3> By, Array<Complex,3> Bz,  
+    Real inner_radius, Real outer_radius
 )
 {
-	TinyVector<complx,3> vorticity;
-	complx vort_y;
-	DP AdotB;
+	TinyVector<Complex,3> vorticity;
+	Complex vort_y;
+	Real AdotB;
 	
-	DP Kmag;
-	DP result = 0.0;
+	Real Kmag;
+	Real result = 0.0;
 	
-	for (int lx=0; lx<Ax.extent(0); lx++)
-        for (int ly=0; ly<Ax.extent(1); ly++)
-            for (int lz=0; lz<Ax.extent(2); lz++) {
+	for (int lx=0; lx<maxlx; lx++)
+        for (int ly=0; ly<maxly; ly++)
+            for (int lz=0; lz<maxlz; lz++) {
 				Kmag = Kmagnitude(lx, ly, lz);
 				
 				if ( (Kmag > inner_radius) && (Kmag <= outer_radius) )  {
@@ -720,18 +720,18 @@ DP Universal::Local_shell_mult_vector_potential
 //
 //
 //
-DP Universal::Shell_mult_vector_potential
+Real Universal::Shell_mult_vector_potential
 ( 
-    Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az,
-    Array<complx,3> Bx, Array<complx,3> By, Array<complx,3> Bz,  
-    DP inner_radius, DP outer_radius
+    Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
+    Array<Complex,3> Bx, Array<Complex,3> By, Array<Complex,3> Bz,  
+    Real inner_radius, Real outer_radius
 )
 {
-	DP local_total;
+	Real local_total;
 	local_total = Local_shell_mult_vector_potential(Ax, Ay, Az, Bx, By, Bz, inner_radius, outer_radius);
 	
-	DP total;
-	MPI_Reduce(&local_total, &total, 1, MPI_DP, MPI_SUM, master_id, MPI_COMM_WORLD);	
+	Real total;
+	MPI_Reduce(&local_total, &total, 1, MPI_Real, MPI_SUM, master_id, MPI_COMM_WORLD);	
 	
 	if (my_id == master_id) 
 		return total;
@@ -746,23 +746,23 @@ DP Universal::Shell_mult_vector_potential
 //
 void Universal::Local_shell_mult_vorticity_all
 ( 
-    Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az,
-    Array<complx,3> Bx, Array<complx,3> By, Array<complx,3> Bz,
-    Array<DP,1> result
+    Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
+    Array<Complex,3> Bx, Array<Complex,3> By, Array<Complex,3> Bz,
+    Array<Real,1> result
 )
 {
 	
-	TinyVector<complx,3> vorticity;
-	complx vort_y;
+	TinyVector<Complex,3> vorticity;
+	Complex vort_y;
 	
-	DP Kmag, AdotB;
+	Real Kmag, AdotB;
 	int shell_index;
 	
 	int	Kmax_inside = Max_radius_inside();
 	
-	for (int lx=0; lx<Ax.extent(0); lx++)
-        for (int ly=0; ly<Ax.extent(1); ly++)
-            for (int lz=0; lz<Ax.extent(2); lz++) {
+	for (int lx=0; lx<maxlx; lx++)
+        for (int ly=0; ly<maxly; ly++)
+            for (int lz=0; lz<maxlz; lz++) {
 				Kmag = Kmagnitude(lx, ly, lz);
 				
 				if (Kmag <= Kmax_inside) {
@@ -793,18 +793,18 @@ void Universal::Local_shell_mult_vorticity_all
 //
 void Universal::Shell_mult_vorticity_all
 (
-    Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az,
-    Array<complx,3> Bx, Array<complx,3> By, Array<complx,3> Bz,
-    Array<DP,1> result
+    Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
+    Array<Complex,3> Bx, Array<Complex,3> By, Array<Complex,3> Bz,
+    Array<Real,1> result
 )
 {
-	static Array<DP,1> local_result(result.length());
+	static Array<Real,1> local_result(result.length());
 	
 	Local_shell_mult_vorticity_all(Ax, Ay, Az, Bx, By, Bz, local_result);
 	
 	int data_size = result.size();
 	
-	MPI_Reduce(reinterpret_cast<DP*>(local_result.data()), reinterpret_cast<DP*>(result.data()), data_size, MPI_DP, MPI_SUM, master_id, MPI_COMM_WORLD); 						
+	MPI_Reduce(reinterpret_cast<Real*>(local_result.data()), reinterpret_cast<Real*>(result.data()), data_size, MPI_Real, MPI_SUM, master_id, MPI_COMM_WORLD); 						
 }	
 
 
@@ -813,24 +813,24 @@ void Universal::Shell_mult_vorticity_all
 //
 void Universal::Local_shell_mult_vector_potential_all
 (
-     Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az,
-     Array<complx,3> Bx, Array<complx,3> By, Array<complx,3> Bz,  
-     Array<DP,1> result
+     Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
+     Array<Complex,3> Bx, Array<Complex,3> By, Array<Complex,3> Bz,  
+     Array<Real,1> result
 )
 {
-	TinyVector<complx,3> vorticity;
-	complx vort_y;
+	TinyVector<Complex,3> vorticity;
+	Complex vort_y;
 	
-	DP Kmag, AdotB;
+	Real Kmag, AdotB;
 	int shell_index;
 	
 	result = 0.0;
 	
 	int	Kmax_inside = Max_radius_inside();
 	
-	for (int lx=0; lx<Ax.extent(0); lx++)
-        for (int ly=0; ly<Ax.extent(1); ly++)
-            for (int lz=0; lz<Ax.extent(2); lz++) {
+	for (int lx=0; lx<maxlx; lx++)
+        for (int ly=0; ly<maxly; ly++)
+            for (int lz=0; lz<maxlz; lz++) {
 				Kmag = Kmagnitude(lx, ly, lz);
 				
 				if (Kmag <= Kmax_inside) {
@@ -861,32 +861,32 @@ void Universal::Local_shell_mult_vector_potential_all
 //
 void Universal::Shell_mult_vector_potential_all
 (
-    Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az,
-    Array<complx,3> Bx, Array<complx,3> By, Array<complx,3> Bz,
-    Array<DP,1> result
+    Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
+    Array<Complex,3> Bx, Array<Complex,3> By, Array<Complex,3> Bz,
+    Array<Real,1> result
 )
 {
-	static Array<DP,1> local_result(result.length());
+	static Array<Real,1> local_result(result.length());
 	
 	Local_shell_mult_vector_potential_all(Ax, Ay, Az, Bx, By, Bz, local_result);
 	
 	int data_size = result.size();
 	
-	MPI_Reduce(reinterpret_cast<DP*>(local_result.data()), reinterpret_cast<DP*>(result.data()), data_size, MPI_DP, MPI_SUM, master_id, MPI_COMM_WORLD); 						
+	MPI_Reduce(reinterpret_cast<Real*>(local_result.data()), reinterpret_cast<Real*>(result.data()), data_size, MPI_Real, MPI_SUM, master_id, MPI_COMM_WORLD); 						
 }	
 
 
 //*********************************************************************************************
 
-void Universal::Fill_array_shell(Array<complx,3> A, Array<complx,3> B, DP inner_radius, DP outer_radius)					
+void Universal::Fill_array_shell(Array<Complex,3> A, Array<Complex,3> B, Real inner_radius, Real outer_radius)					
 {	
-	DP Kmag;
+	Real Kmag;
 	
 	B = 0.0;
 	
-	for (int lx=0; lx<A.extent(0); lx++)
-        for (int ly=0; ly<A.extent(1); ly++)
-            for (int lz=0; lz<A.extent(2); lz++) {
+	for (int lx=0; lx<maxlx; lx++)
+        for (int ly=0; ly<maxly; ly++)
+            for (int lz=0; lz<maxlz; lz++) {
 				Kmag = Kmagnitude(lx, ly, lz);
 				
 				if ( (Kmag > inner_radius) && (Kmag <= outer_radius) ) 
@@ -895,15 +895,15 @@ void Universal::Fill_array_shell(Array<complx,3> A, Array<complx,3> B, DP inner_
 }
 
 
-void Universal::Fill_array_ring(Array<complx,3> A, Array<complx,3> B, DP inner_radius, DP outer_radius, DP left_angle, DP right_angle)		
+void Universal::Fill_array_ring(Array<Complex,3> A, Array<Complex,3> B, Real inner_radius, Real outer_radius, Real left_angle, Real right_angle)		
 {	
-	DP Kmag, theta;
+	Real Kmag, theta;
 	
 	B = 0.0;
 	
-	for (int lx=0; lx<A.extent(0); lx++)
-        for (int ly=0; ly<A.extent(1); ly++)
-            for (int lz=0; lz<A.extent(2); lz++) {
+	for (int lx=0; lx<maxlx; lx++)
+        for (int ly=0; ly<maxly; ly++)
+            for (int lz=0; lz<maxlz; lz++) {
 				Kmag = Kmagnitude(lx, ly, lz);
 				theta = AnisKvect_polar_angle(lx, ly, lz);
 				
@@ -915,15 +915,15 @@ void Universal::Fill_array_ring(Array<complx,3> A, Array<complx,3> B, DP inner_r
 
 
 	
-void Universal::Fill_array_cylindrical_ring(Array<complx,3> A, Array<complx,3> B, DP inner_radius, DP outer_radius, DP h_lower, DP h_upper)		
+void Universal::Fill_array_cylindrical_ring(Array<Complex,3> A, Array<Complex,3> B, Real inner_radius, Real outer_radius, Real h_lower, Real h_upper)		
 {	
-	DP Kmag, Kpll;
+	Real Kmag, Kpll;
 	
 	B = 0.0;
 	
-	for (int lx=0; lx<A.extent(0); lx++)
-        for (int ly=0; ly<A.extent(1); ly++)
-            for (int lz=0; lz<A.extent(2); lz++) {
+	for (int lx=0; lx<maxlx; lx++)
+        for (int ly=0; ly<maxly; ly++)
+            for (int lz=0; lz<maxlz; lz++) {
 				Kmag = Kmagnitude(lx, ly, lz);
 				Kpll = AnisKpll(lx, ly, lz);
 				

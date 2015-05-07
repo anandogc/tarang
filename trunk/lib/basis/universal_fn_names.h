@@ -38,97 +38,97 @@
 	// KEEP FNS NAMES THAT ARE IN "ALL" BASIS DIRS
 	// basic
 
-	void Last_component(int kx, int ky, int kz, DP &Vx, DP &Vy, DP &Vz);
-	void Last_component(int kx, int ky, int kz, complx& Vx, complx& Vy, complx& Vz);
-	void Dealias(Array<complx,3> A);
-	bool Is_dealiasing_necessary(Array<complx,3> A, DP outer_radius);
-    void Satisfy_strong_reality_condition_in_Array(Array<complx,3> A);
-    void Satisfy_weak_reality_condition_in_Array(Array<complx,3> A);
-    void Test_reality_condition_in_Array(Array<complx,3> A);
+	void Last_component(int kx, int ky, int kz, Real &Vx, Real &Vy, Real &Vz);
+	void Last_component(int kx, int ky, int kz, Complex& Vx, Complex& Vy, Complex& Vz);
+	void Dealias(Array<Complex,3> A);
+	bool Is_dealiasing_necessary(Array<Complex,3> A, Real outer_radius);
+    void Satisfy_strong_reality_condition_in_Array(Array<Complex,3> A);
+    void Satisfy_weak_reality_condition_in_Array(Array<Complex,3> A);
+    void Test_reality_condition_in_Array(Array<Complex,3> A);
 
     // transform
     
-	void Forward_transform(Array<DP,3> Ar, Array<complx,3> A);
+	void Forward_transform(Array<Real,3> Ar, Array<Complex,3> A);
     
-	void Inverse_transform(Array<complx,3> A, Array<DP,3> Ar);
+	void Inverse_transform(Array<Complex,3> A, Array<Real,3> Ar);
     
-	void Xderiv(Array<complx,3> A, Array<complx,3> B);
-	void Yderiv(Array<complx,3> A, Array<complx,3> B);
-	void Zderiv(Array<complx,3> A, Array<complx,3> B);
+	void Xderiv(Array<Complex,3> A, Array<Complex,3> B);
+	void Yderiv(Array<Complex,3> A, Array<Complex,3> B);
+	void Zderiv(Array<Complex,3> A, Array<Complex,3> B);
 
-	void Add_Xderiv(Array<complx,3> A, Array<complx,3> B);
-	void Add_Yderiv(Array<complx,3> A, Array<complx,3> B);
-	void Add_Zderiv(Array<complx,3> A, Array<complx,3> B);
+	void Add_Xderiv(Array<Complex,3> A, Array<Complex,3> B);
+	void Add_Yderiv(Array<Complex,3> A, Array<Complex,3> B);
+	void Add_Zderiv(Array<Complex,3> A, Array<Complex,3> B);
 
-	void  Xderiv(Array<DP,3> A, Array<DP,3> B);
+	void  Xderiv(Array<Real,3> A, Array<Real,3> B);
 
-	void Laplacian(DP factor, Array<complx,3> A, Array<complx,3> B);
-	void Subtract_Laplacian(DP factor, Array<complx,3> A, Array<complx,3> B);
+	void Laplacian(Real factor, Array<Complex,3> A, Array<Complex,3> B);
+	void Subtract_Laplacian(Real factor, Array<Complex,3> A, Array<Complex,3> B);
 
 	// Energy
     
-    /*DP Get_local_energy_XZ_plane(Array<complx,3> A, int ny);
+    /*Real Get_local_energy_XZ_plane(Array<Complex,3> A, int ny);
     
-    DP Get_local_energy_XZ_plane
+    Real Get_local_energy_XZ_plane
 	(
-		Array<complx,3> A, Array<complx,3> B, 
+		Array<Complex,3> A, Array<Complex,3> B, 
 		int ny
 	);*/
     
-	DP Get_local_energy_real_space(Array<DP,3> Ar);
-	DP Get_local_energy(Array<complx,3> A);
-	DP Get_local_energy_real_space(Array<DP,3> Ar, Array<DP,3> Br);
-    DP Get_local_energy(Array<complx,3> A, Array<complx,3> B);
+	Real Get_local_energy_real_space(Array<Real,3> Ar);
+	Real Get_local_energy(Array<Complex,3> A);
+	Real Get_local_energy_real_space(Array<Real,3> Ar, Array<Real,3> Br);
+    Real Get_local_energy(Array<Complex,3> A, Array<Complex,3> B);
 
     void Compute_local_helicity
     (
-        Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az, 
-        DP &local_helicity1, DP &local_helicity2, 
-        DP &local_dissipation_H1, DP &local_dissipation_H2
+        Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az, 
+        Real &local_helicity1, Real &local_helicity2, 
+        Real &local_dissipation_H1, Real &local_dissipation_H2
     );
     
     void Compute_total_helicity
     (
-        Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az, 
-        DP &total_helicity1, DP &total_helicity2, 
-        DP &total_dissipation_H1, DP &total_dissipation_H2
+        Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az, 
+        Real &total_helicity1, Real &total_helicity2, 
+        Real &total_dissipation_H1, Real &total_dissipation_H2
      );
     
    void Compute_local_shell_spectrum_helicity
     (
-        Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az, 
-        Array<DP,1> local_H1k1, Array<DP,1> local_H1k2, Array<DP,1> local_H1k3, 
-        Array<DP,1> local_H1k_count
+        Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az, 
+        Array<Real,1> local_H1k1, Array<Real,1> local_H1k2, Array<Real,1> local_H1k3, 
+        Array<Real,1> local_H1k_count
     );
     
     void Compute_shell_spectrum_helicity
     (
-        Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az, 
-        Array<DP,1> H1k1, Array<DP,1> H1k2, Array<DP,1> H1k3 
+        Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az, 
+        Array<Real,1> H1k1, Array<Real,1> H1k2, Array<Real,1> H1k3 
     );
 
     void Compute_local_ring_spectrum_helicity
     ( 
-        Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az, 
-        Array<DP,2> local_H1k1, Array<DP,2> local_H1k2, Array<DP,2> local_H1k3
+        Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az, 
+        Array<Real,2> local_H1k1, Array<Real,2> local_H1k2, Array<Real,2> local_H1k3
     );
     
     void Compute_ring_spectrum_helicity
     (
-        Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az, 
-        Array<DP,2> local_H1k1, Array<DP,2> local_H1k2, Array<DP,2> local_H1k3
+        Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az, 
+        Array<Real,2> local_H1k1, Array<Real,2> local_H1k2, Array<Real,2> local_H1k3
     );
 
     void Compute_local_cylindrical_ring_spectrum_helicity
     (
-        Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az, 
-        Array<DP,2> local_H1k1, Array<DP,2> local_H1k2
+        Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az, 
+        Array<Real,2> local_H1k1, Array<Real,2> local_H1k2
     );
     
     void Compute_cylindrical_ring_spectrum_helicity
     (
-        Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az, 
-        Array<DP,2> local_H1k1, Array<DP,2> local_H1k2
+        Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az, 
+        Array<Real,2> local_H1k1, Array<Real,2> local_H1k2
     );
     
 	
@@ -147,35 +147,35 @@
 	
 	bool Probe_in_me(int kx, int ky, int kz);
 	
-	complx Get_spectral_field(int kx, int ky, int kz, Array<complx,3> A);
-	TinyVector<complx,3> Get_spectral_field(int kx, int ky, int kz, Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az);
-//	DP Get_spectral_field(int kx, int ky, int kz, Array<complx,3> A);
-//	TinyVector<DP,3> Get_spectral_field(int kx, int ky, int kz, Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az);
+	Complex Get_spectral_field(int kx, int ky, int kz, Array<Complex,3> A);
+	TinyVector<Complex,3> Get_spectral_field(int kx, int ky, int kz, Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az);
+//	Real Get_spectral_field(int kx, int ky, int kz, Array<Complex,3> A);
+//	TinyVector<Real,3> Get_spectral_field(int kx, int ky, int kz, Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az);
 	
-	void Assign_spectral_field(int kx, int ky, int kz, Array<complx,3> A,complx field);
-	void Assign_spectral_field(int kx, int ky, int kz, Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az, TinyVector<complx,3> V);
-	void Assign_spectral_field(int kx, int ky, int kz, Array<complx,3> A, DP field);
-	void Assign_spectral_field(int kx, int ky, int kz, Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az, TinyVector<DP,3> V);
+	void Assign_spectral_field(int kx, int ky, int kz, Array<Complex,3> A,Complex field);
+	void Assign_spectral_field(int kx, int ky, int kz, Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az, TinyVector<Complex,3> V);
+	void Assign_spectral_field(int kx, int ky, int kz, Array<Complex,3> A, Real field);
+	void Assign_spectral_field(int kx, int ky, int kz, Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az, TinyVector<Real,3> V);
 
-    void Add_spectral_field(int kx, int ky, int kz, Array<complx,3> A,complx field);
-    void Add_spectral_field(int kx, int ky, int kz, Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az, TinyVector<complx,3> V);
-    void Add_spectral_field(int kx, int ky, int kz, Array<complx,3> A, DP field);
-    void Add_spectral_field(int kx, int ky, int kz, Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az, TinyVector<DP,3> V);
+    void Add_spectral_field(int kx, int ky, int kz, Array<Complex,3> A,Complex field);
+    void Add_spectral_field(int kx, int ky, int kz, Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az, TinyVector<Complex,3> V);
+    void Add_spectral_field(int kx, int ky, int kz, Array<Complex,3> A, Real field);
+    void Add_spectral_field(int kx, int ky, int kz, Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az, TinyVector<Real,3> V);
 	
-	complx Get_local_spectral_field(int lx, int ly, int lz, Array<complx,3> A);
-	TinyVector<complx,3> Get_local_spectral_field(int lx, int ly, int lz, Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az);
-//	DP Get_local_spectral_field(int lx, int ly, int lz, Array<complx,3> A);
-//	TinyVector<DP,3> Get_local_spectral_field(int lx, int ly, int lz, Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az);
+	Complex Get_local_spectral_field(int lx, int ly, int lz, Array<Complex,3> A);
+	TinyVector<Complex,3> Get_local_spectral_field(int lx, int ly, int lz, Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az);
+//	Real Get_local_spectral_field(int lx, int ly, int lz, Array<Complex,3> A);
+//	TinyVector<Real,3> Get_local_spectral_field(int lx, int ly, int lz, Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az);
 	
-	void Assign_local_spectral_field(int lx, int ly, int lz, Array<complx,3> A,complx field);
-	void Assign_local_spectral_field(int lx, int ly, int lz, Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az, TinyVector<complx,3> V);
-	void Assign_local_spectral_field(int lx, int ly, int lz, Array<complx,3> A, DP field);
-	void Assign_local_spectral_field(int lx, int ly, int lz, Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az, TinyVector<DP,3> V);
+	void Assign_local_spectral_field(int lx, int ly, int lz, Array<Complex,3> A,Complex field);
+	void Assign_local_spectral_field(int lx, int ly, int lz, Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az, TinyVector<Complex,3> V);
+	void Assign_local_spectral_field(int lx, int ly, int lz, Array<Complex,3> A, Real field);
+	void Assign_local_spectral_field(int lx, int ly, int lz, Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az, TinyVector<Real,3> V);
 	
-	void Add_local_spectral_field(int lx, int ly, int lz, Array<complx,3> A,complx field);
-	void Add_local_spectral_field(int lx, int ly, int lz, Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az, TinyVector<complx,3> V);
-	void Add_local_spectral_field(int lx, int ly, int lz, Array<complx,3> A, DP field);
-	void Add_local_spectral_field(int lx, int ly, int lz, Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az, TinyVector<DP,3> V);
+	void Add_local_spectral_field(int lx, int ly, int lz, Array<Complex,3> A,Complex field);
+	void Add_local_spectral_field(int lx, int ly, int lz, Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az, TinyVector<Complex,3> V);
+	void Add_local_spectral_field(int lx, int ly, int lz, Array<Complex,3> A, Real field);
+	void Add_local_spectral_field(int lx, int ly, int lz, Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az, TinyVector<Real,3> V);
 	
 	int Get_lx_real_space(int rx);
 	int Get_ly_real_space(int ry);
@@ -187,61 +187,61 @@
 
 
 	bool Probe_in_me_real_space(int rx, int ry, int rz);
-	DP Get_real_field(int rx, int ry, int rz, Array<DP,3> A);
-	TinyVector<DP,3> Get_real_field(int rx, int ry, int rz, Array<DP,3> Ax, Array<DP,3> Ay, Array<DP,3> Az);
-	void Assign_real_field(int rx, int ry, int rz, Array<DP,3> A, DP field);
-	void Assign_real_field(int rx, int ry, int rz, Array<DP,3> Ax, Array<DP,3> Ay, Array<DP,3> Az, TinyVector<DP,3> V);
+	Real Get_real_field(int rx, int ry, int rz, Array<Real,3> A);
+	TinyVector<Real,3> Get_real_field(int rx, int ry, int rz, Array<Real,3> Ax, Array<Real,3> Ay, Array<Real,3> Az);
+	void Assign_real_field(int rx, int ry, int rz, Array<Real,3> A, Real field);
+	void Assign_real_field(int rx, int ry, int rz, Array<Real,3> Ax, Array<Real,3> Ay, Array<Real,3> Az, TinyVector<Real,3> V);
 	
 	
-	void Wavenumber(int lx, int ly, int lz, TinyVector<DP,3> & K);
-	void Wavenumber(int lx, int ly, int lz, TinyVector<complx,3> & K);
+	void Wavenumber(int lx, int ly, int lz, TinyVector<Real,3> & K);
+	void Wavenumber(int lx, int ly, int lz, TinyVector<Complex,3> & K);
 	
-	DP Kmagnitude(int lx, int ly, int lz);
+	Real Kmagnitude(int lx, int ly, int lz);
 	
 	int Min_radius_outside();
 	int Max_radius_inside();
 
-	DP Approx_number_modes_in_shell(int radius);
+	Real Approx_number_modes_in_shell(int radius);
 	
-	DP Multiplicity_factor(int lx, int ly, int lz);
+	Real Multiplicity_factor(int lx, int ly, int lz);
 	
-	DP Modal_energy(int lx, int ly, int lz, Array<complx,3> A);
-	DP Get_Modal_helicity
+	Real Modal_energy(int lx, int ly, int lz, Array<Complex,3> A);
+	Real Get_Modal_helicity
 	(
 		int lx, int ly, int lz,
-		Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az
+		Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az
 	);
 	
 	void Compute_Modal_vorticity
 	(
 		 int lx, int ly, int lz, 
-		 Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az, 
-		 TinyVector<complx,3> &vorticity
+		 Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az, 
+		 TinyVector<Complex,3> &vorticity
 	);
 	
 	void Compute_Modal_vorticity_y_component
 	(
 		 int lx, int ly, int lz, 
-		 Array<complx,3> Ax, Array<complx,3> Ay, Array<complx,3> Az, 
-		 complx &vort_y
+		 Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az, 
+		 Complex &vort_y
 	 );
 	
-	DP AnisKpll(int lx, int ly, int lz);
-	DP AnisKperp(int lx, int ly, int lz);
-	DP AnisKh1(int lx, int ly, int lz);
-	DP AnisKh2(int lx, int ly, int lz);
-	DP Anis_min_Kpll();
-	DP Anis_max_Kpll() ;
+	Real AnisKpll(int lx, int ly, int lz);
+	Real AnisKperp(int lx, int ly, int lz);
+	Real AnisKh1(int lx, int ly, int lz);
+	Real AnisKh2(int lx, int ly, int lz);
+	Real Anis_min_Kpll();
+	Real Anis_max_Kpll() ;
 	
 	int Anis_max_Krho_radius_inside();
-	DP Get_max_polar_angle() ;
+	Real Get_max_polar_angle() ;
 	
-	DP AnisKvect_polar_angle(int lx, int ly, int lz);
-	DP AnisKvect_azimuthal_angle(int lx, int ly, int lz);
+	Real AnisKvect_polar_angle(int lx, int ly, int lz);
+	Real AnisKvect_azimuthal_angle(int lx, int ly, int lz);
 
-    int Read(Array<complx,3> A, BasicIO::H5_plan plan, string file_name, string dataset_name="");
-    int Read(Array<DP,3> Ar, BasicIO::H5_plan plan, string file_name, string dataset_name="");
+    int Read(Array<Complex,3> A, BasicIO::H5_plan plan, string file_name, string dataset_name="");
+    int Read(Array<Real,3> Ar, BasicIO::H5_plan plan, string file_name, string dataset_name="");
 
-    int Write(Array<complx,3> A, BasicIO::H5_plan plan, string folder_name, string file_name, string dataset_name="");
-    int Write(Array<DP,3> Ar, BasicIO::H5_plan plan, string folder_name, string file_name, string dataset_name="");
-    
+    int Write(Array<Complex,3> A, BasicIO::H5_plan plan, string folder_name, string file_name, string dataset_name="");
+    int Write(Array<Real,3> Ar, BasicIO::H5_plan plan, string folder_name, string file_name, string dataset_name="");
+

@@ -41,7 +41,7 @@ Global global;
 
 // SpectralTransform spectralTransform;
 
-Uniform<DP> SPECrand;
+Uniform<Real> SPECrand;
 
 struct H5_Planner{
     BasicIO::H5_plan H5_real;
@@ -104,11 +104,11 @@ int main(int argc, char** argv)
     int local_Ny=Ny/numprocs;
     int local_Nz=(Nz/2+1)/numprocs;
 
-    Array<DP,3> A(Nz,Ny,Nx);
-    Array<DP,3> B(Ny,Nz+2,Nx);
+    Array<Real,3> A(Nz,Ny,Nx);
+    Array<Real,3> B(Ny,Nz+2,Nx);
 
-    DP* A_data = A.data(); 
-    DP* B_data = B.data();
+    Real* A_data = A.data(); 
+    Real* B_data = B.data();
     
 
  	//Configure fortran input
@@ -135,8 +135,8 @@ int main(int argc, char** argv)
 	array_properties.Fourier_directions = 1,1,1;
 	array_properties.Z = 2;
 
-	array_properties.datatype_complex_space = BasicIO::H5T_DP;
-	array_properties.datatype_real_space = BasicIO::H5T_DP;
+	array_properties.datatype_complex_space = BasicIO::H5T_Real;
+	array_properties.datatype_real_space = BasicIO::H5T_Real;
 
 	BasicIO::Set_H5_plans(array_properties, &fortran_output);
 
@@ -165,8 +165,8 @@ int main(int argc, char** argv)
 	array_properties.Fourier_directions = 1,1,1;
 	array_properties.Z = 1;
 
-	array_properties.datatype_complex_space = BasicIO::H5T_COMPLX;
-	array_properties.datatype_real_space = BasicIO::H5T_DP;
+	array_properties.datatype_complex_space = BasicIO::H5T_Complex;
+	array_properties.datatype_real_space = BasicIO::H5T_Real;
 
 	BasicIO::Set_H5_plans(array_properties, &tarang_2_3);
 

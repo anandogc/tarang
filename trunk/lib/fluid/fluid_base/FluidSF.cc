@@ -48,8 +48,8 @@
 
 FluidSF::FluidSF
 (
-	DP diffusion_coefficient, 
-	DP hyper_diffusion_coefficient, 
+	Real diffusion_coefficient, 
+	Real hyper_diffusion_coefficient, 
 	int hyper_diffusion_exponent,
 	bool force_switch,
 	string field_name
@@ -161,16 +161,16 @@ void FluidSF::Copy_field_from(CSF& T)
  
 ***********************************************************************************************/
 
-void FluidSF::Add_nlin_factor_dt(DP factor)
+void FluidSF::Add_nlin_factor_dt(Real factor)
 {
 	if (abs(factor) > MYEPS2)
-		csf.F = csf.F + complex<DP>(factor*global.time.dt,0)*(nlin);
+		csf.F = csf.F + complex<Real>(factor*global.time.dt,0)*(nlin);
 }
 
-void FluidSF::Add_field_nlin_factor_dt(PlainCSF& S, DP factor)
+void FluidSF::Add_field_nlin_factor_dt(PlainCSF& S, Real factor)
 {  
 	if (abs(factor) > MYEPS2)						  
-		S.F = S.F + complex<DP>(factor*global.time.dt,0) * (nlin);
+		S.F = S.F + complex<Real>(factor*global.time.dt,0) * (nlin);
 }
 
 //*********************************************************************************************
@@ -183,7 +183,7 @@ void FluidSF::Add_field_nlin_factor_dt(PlainCSF& S, DP factor)
  * @return when hyper_dissipation_switch == 1, 
  *			\f$ csf.F(k) = F(k) * \exp(-\kappa K^2 global.time.dt) + \exp(-\kappa_h)  K^4 dt) \f$
  */
-void FluidSF::Mult_field_exp_ksqr_dt(DP a)
+void FluidSF::Mult_field_exp_ksqr_dt(Real a)
 {
     if (global.program.kind != "GP") {
         if (abs(a) > MYEPS) {
@@ -211,7 +211,7 @@ void FluidSF::Mult_field_exp_ksqr_dt(DP a)
  * @return when hyper_dissipation_switch == 1, 
  *			\f$ csf.F(k) = F(k) * \exp(-\kappa K^2 global.time.dt) + \exp(-\kappa_h)  K^4 dt) \f$
  */
-void FluidSF::Mult_nlin_exp_ksqr_dt(DP a)
+void FluidSF::Mult_nlin_exp_ksqr_dt(Real a)
 {
     if (global.program.kind != "GP") {
         if (abs(a) > MYEPS) {
@@ -243,26 +243,28 @@ void FluidSF::Mult_nlin_exp_ksqr_dt(DP a)
  * @return  SCFT: For (ky = 0) -> \f$ imag(csf.F(kx, 0, kz))  = 0\f$,
  *				
  */
-void FluidSF::Add_complex_conj(int kx, int ky, int kz, complx localG)					
+void FluidSF::Add_complex_conj(int kx, int ky, int kz, Complex localG)					
 {	
 	// On kz=0 or kz=N[3]/2 plane
 	if ((basis_type == "FFF" || basis_type == "FFFW") && ((kz == 0) || (kz == N[3]/2)) )	{          
 		universal->Assign_spectral_field(-kx, -ky, kz, csf.F, localG);
-		cout << "Complex-conj(F) added for k = (" << -kx << "," << -ky << "," << kz << ")" << endl;	
+		if (master)
+			cout << "Complex-conj(F) added for k = (" << -kx << "," << -ky << "," << kz << ")" << endl;	
 	}
 	
 	else if ((basis_type == "SFF") && ((kz == 0) || (kz == N[3]/2)) ) 	{         
 		universal->Assign_spectral_field(kx, -ky, kz, csf.F, localG);
-		cout << "Complex-conj(F) added for k = (" << kx << "," << -ky << "," << kz << ")" << endl;	
+		if (master)
+			cout << "Complex-conj(F) added for k = (" << kx << "," << -ky << "," << kz << ")" << endl;	
 	}
 }
 
 
 /** @brief D=3:  \f$ csf.F(kx, ky, kz) = G \f$ and add complex conjugate.
  *  
- * @sa Add_complex_conj(int kx, int ky,int kz,  complx G)
+ * @sa Add_complex_conj(int kx, int ky,int kz,  Complex G)
  */
-void FluidSF::Assign_field_and_comp_conj(int kx, int ky, int kz, complx localG)
+void FluidSF::Assign_field_and_comp_conj(int kx, int ky, int kz, Complex localG)
 {
 	universal->Assign_spectral_field(kx, ky, kz, csf.F, localG);
 	
@@ -270,32 +272,32 @@ void FluidSF::Assign_field_and_comp_conj(int kx, int ky, int kz, complx localG)
 }
 
 
-void FluidSF::Assign_field(int kx, int ky, int kz, DP localG)
+void FluidSF::Assign_field(int kx, int ky, int kz, Real localG)
 {
 	universal->Assign_spectral_field(kx, ky, kz, csf.F, localG);
 }
 
 /// 3D: Generate random vector at (kx,ky,kz) with range = rand_range 
-void FluidSF::Assign_random_complex_scalar(int kx, int ky, int kz, DP rand_range)
+void FluidSF::Assign_random_complex_scalar(int kx, int ky, int kz, Real rand_range)
 {
-	complx localG = complx( 2*rand_range*(SPECrand.random()-0.5), 2*rand_range*(SPECrand.random()-0.5) );
+	Complex localG = Complex( 2*rand_range*(SPECrand.random()-0.5), 2*rand_range*(SPECrand.random()-0.5) );
 	
 	Assign_field_and_comp_conj(kx, ky, kz, localG);
 }
 
 /// 3D: Generate random vector at (kx,ky,kz) with range = rand_range 
-void FluidSF::Assign_random_real_scalar(int kx, int ky, int kz, DP rand_range)
+void FluidSF::Assign_random_real_scalar(int kx, int ky, int kz, Real rand_range)
 {
-	DP localG = 2*rand_range*(SPECrand.random()-0.5);
+	Real localG = 2*rand_range*(SPECrand.random()-0.5);
 	
 	Assign_field(kx, ky, kz, localG);
 }	
 
 /// 3D:  Return Tk = Real(-nlin(k). conj(csf.F(k)) for scalar T
-DP FluidSF::Get_Tk(int kx, int ky, int kz)
+Real FluidSF::Get_Tk(int kx, int ky, int kz)
 {
-	complx localG_complex, localnlin_complex;
-	DP localG_real, localnlin_real;
+	Complex localG_complex, localnlin_complex;
+	Real localG_real, localnlin_real;
 	
 	if (universal->Probe_in_me(kx,ky,kz)) {
 		if (basis_type == "SSS") {
@@ -315,7 +317,7 @@ DP FluidSF::Get_Tk(int kx, int ky, int kz)
 }
 
 
-DP FluidSF::Get_dt()
+Real FluidSF::Get_dt()
 {
 	
 	if (global.program.dt_option == 0)

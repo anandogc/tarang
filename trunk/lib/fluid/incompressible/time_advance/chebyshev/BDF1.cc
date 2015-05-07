@@ -63,7 +63,7 @@
 void Time_advance_incompress::BDF1(FluidVF& U, Pressure& P, FORCE& Force)
 {
    
-	DP lambda_supplement;
+	Real lambda_supplement;
     
 	Force.Compute_force(U);
 	
@@ -76,7 +76,7 @@ void Time_advance_incompress::BDF1(FluidVF& U, Pressure& P, FORCE& Force)
     // Compute div(R) and place in X2
 	U.Compute_divergence_nlin(global.temp_array.X2);
     
-    Helmholtz_complex_full_array(global.temp_array.X2, P.F, 0, complx(0,0), complx(0,0));
+    Helmholtz_complex_full_array(global.temp_array.X2, P.F, 0, Complex(0,0), Complex(0,0));
     // P.F = p_particular; lambda_supplement=0 (third arg).
 	
 	// V1 computation
@@ -86,7 +86,7 @@ void Time_advance_incompress::BDF1(FluidVF& U, Pressure& P, FORCE& Force)
 	universal->Add_Xderiv(P.F, U.nlin1);
 	U.nlin1 /= (-U.dissipation_coefficient);
 	
-    Helmholtz_complex_full_array(U.nlin1, U.cvf.V1, lambda_supplement, complx(0,0), complx(0,0));
+    Helmholtz_complex_full_array(U.nlin1, U.cvf.V1, lambda_supplement, Complex(0,0), Complex(0,0));
     // X2 = u_particular
 	
 	
@@ -101,7 +101,7 @@ void Time_advance_incompress::BDF1(FluidVF& U, Pressure& P, FORCE& Force)
 		universal->Add_Yderiv(P.F, U.nlin2);
 		U.nlin2 /= (-U.dissipation_coefficient);
 			
-		Helmholtz_complex_full_array(U.nlin2, U.cvf.V2, lambda_supplement, complx(0,0), complx(0,0));
+		Helmholtz_complex_full_array(U.nlin2, U.cvf.V2, lambda_supplement, Complex(0,0), Complex(0,0));
 	}
     
     // V3 soln
@@ -111,7 +111,7 @@ void Time_advance_incompress::BDF1(FluidVF& U, Pressure& P, FORCE& Force)
 	universal->Add_Zderiv(P.F, U.nlin3);
 	U.nlin3 /= (-U.dissipation_coefficient);
 	
-	Helmholtz_complex_full_array(U.nlin3, U.cvf.V3, lambda_supplement, complx(0,0), complx(0,0));
+	Helmholtz_complex_full_array(U.nlin3, U.cvf.V3, lambda_supplement, Complex(0,0), Complex(0,0));
 	
 }
 

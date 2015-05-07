@@ -61,8 +61,8 @@ void  FluidIO::Init_cond_modes(FluidVF &U)
 	}
 	
 	int kx, ky, kz;	
-	complx Vx_complex, Vy_complex, Vz_complex;
-	DP Vx_real, Vy_real, Vz_real;
+	Complex Vx_complex, Vy_complex, Vz_complex;
+	Real Vx_real, Vy_real, Vz_real;
 	
 	U.cvf.V1 = 0.0; 
 	U.cvf.V2 = 0.0; 
@@ -73,7 +73,22 @@ void  FluidIO::Init_cond_modes(FluidVF &U)
 		ky = global.io.init_cond_modes.coords(mode,2); 
 		kz = global.io.init_cond_modes.coords(mode,3);
 		
-		if (basis_type == "SSS") {
+		if (basis_type != "SSS") {
+			Vx_complex = global.io.init_cond_modes.field_array_complex(mode,0); 
+			Vy_complex = global.io.init_cond_modes.field_array_complex(mode,1); 
+			
+			if (global.field.incompressible) 
+				universal->Last_component(kx, ky, kz, Vx_complex, Vy_complex, Vz_complex);
+			
+			else
+				Vz_complex = global.io.init_cond_modes.field_array_complex(mode,2); 
+	
+			U.Assign_field_and_comp_conj(kx, ky, kz, Vx_complex, Vy_complex, Vz_complex);
+
+			if (my_id == master_id) 
+				cout << "k, V : (" << kx << " " << ky  << " " <<kz << ") " <<	Vx_complex	<<	" "	<< Vy_complex	<<	" "	<<	Vz_complex	<<  endl; 
+		}
+		else {
 			Vx_real = global.io.init_cond_modes.field_array_real(mode,0); 
 			Vy_real = global.io.init_cond_modes.field_array_real(mode,1); 
 			
@@ -89,22 +104,6 @@ void  FluidIO::Init_cond_modes(FluidVF &U)
 				cout << "k, V : (" << kx << " " << ky  << " " <<kz << ") " << Vx_real	<<	" "	<< Vy_real	<<	" "		<<	Vz_real	<<  endl; 
 		}
 		
-		else {
-			Vx_complex = global.io.init_cond_modes.field_array_complex(mode,0); 
-			Vy_complex = global.io.init_cond_modes.field_array_complex(mode,1); 
-			
-			if (global.field.incompressible) 
-				universal->Last_component(kx, ky, kz, Vx_complex, Vy_complex, Vz_complex);
-			
-			else
-				Vz_complex = global.io.init_cond_modes.field_array_complex(mode,2); 
-			
-			U.Assign_field_and_comp_conj(kx, ky, kz, Vx_complex, Vy_complex, Vz_complex);				
-
-
-			if (my_id == master_id) 
-				cout << "k, V : (" << kx << " " << ky  << " " <<kz << ") " <<	Vx_complex	<<	" "	<< Vy_complex	<<	" "	<<	Vz_complex	<<  endl; 
-		}
 	}
 
 
@@ -152,8 +151,8 @@ void  FluidIO::Init_cond_modes_scalar(FluidVF&U, FluidSF& T)
 	}
 	
 	int kx, ky, kz;	
-	complx Vx_complex, Vy_complex, Vz_complex, G_complex;
-	DP Vx_real, Vy_real, Vz_real, G_real;
+	Complex Vx_complex, Vy_complex, Vz_complex, G_complex;
+	Real Vx_real, Vy_real, Vz_real, G_real;
 	
 	(U.cvf.V1) = 0.0; 
 	(U.cvf.V2) = 0.0; 
@@ -231,8 +230,8 @@ void  FluidIO::Init_cond_modes_RBC(FluidVF&U, FluidSF& T)
 	else if (global.PHYSICS.Pr_option == "PRINFTY") {
 		
 		int kx, ky, kz;
-		complx G_complex;
-		DP G_real;
+		Complex G_complex;
+		Real G_real;
 		
 		(U.cvf.V1) = 0.0; 
 		(U.cvf.V2) = 0.0; 
@@ -293,11 +292,11 @@ void  FluidIO::Init_cond_modes(FluidVF& U, FluidVF& W)
 {
 	
 	int kx, ky, kz;	
-	complx Vx_complex, Vy_complex, Vz_complex;
-	DP Vx_real, Vy_real, Vz_real;
+	Complex Vx_complex, Vy_complex, Vz_complex;
+	Real Vx_real, Vy_real, Vz_real;
 	
-	complx Wx_complex, Wy_complex, Wz_complex;
-	DP Wx_real, Wy_real, Wz_real;
+	Complex Wx_complex, Wy_complex, Wz_complex;
+	Real Wx_real, Wy_real, Wz_real;
 	
 	(U.cvf.V1) = 0.0; 
 	(U.cvf.V2) = 0.0; 
@@ -391,14 +390,14 @@ void  FluidIO::Init_cond_modes(FluidVF& U, FluidVF& W)
 void  FluidIO::Init_cond_modes(FluidVF& U, FluidVF& W, FluidSF& T)
 {
 	int kx, ky, kz;	
-	complx Vx_complex, Vy_complex, Vz_complex;
-	DP Vx_real, Vy_real, Vz_real;
+	Complex Vx_complex, Vy_complex, Vz_complex;
+	Real Vx_real, Vy_real, Vz_real;
 	
-	complx Wx_complex, Wy_complex, Wz_complex;
-	DP Wx_real, Wy_real, Wz_real;
+	Complex Wx_complex, Wy_complex, Wz_complex;
+	Real Wx_real, Wy_real, Wz_real;
 	
-	complx G_complex;
-	DP G_real;
+	Complex G_complex;
+	Real G_real;
 	
 	(U.cvf.V1) = 0.0; 
 	(U.cvf.V2) = 0.0; 
@@ -487,14 +486,14 @@ void  FluidIO::Init_cond_modes(FluidVF& U, FluidVF& W, FluidSF& T)
 void  FluidIO::Init_cond_modes(FluidVF& U, FluidVF& W, FluidSF& T, FluidSF& C)
 {
 	int kx, ky, kz;
-	complx Vx_complex, Vy_complex, Vz_complex;
-	DP Vx_real, Vy_real, Vz_real;
+	Complex Vx_complex, Vy_complex, Vz_complex;
+	Real Vx_real, Vy_real, Vz_real;
 	
-	complx Wx_complex, Wy_complex, Wz_complex;
-	DP Wx_real, Wy_real, Wz_real;
+	Complex Wx_complex, Wy_complex, Wz_complex;
+	Real Wx_real, Wy_real, Wz_real;
 	
-	complx G_complex, H_complex;
-	DP G_real, H_real;
+	Complex G_complex, H_complex;
+	Real G_real, H_real;
 	
 	(U.cvf.V1) = 0.0;
 	(U.cvf.V2) = 0.0;
@@ -592,8 +591,8 @@ void  FluidIO::Init_cond_modes(FluidVF&U, FluidSF& T1, FluidSF& T2)
 {
 	
 	int kx, ky, kz;	
-	complx Vx_complex, Vy_complex, Vz_complex, G1_complex, G2_complex;
-	DP Vx_real, Vy_real, Vz_real, G1_real, G2_real;
+	Complex Vx_complex, Vy_complex, Vz_complex, G1_complex, G2_complex;
+	Real Vx_real, Vy_real, Vz_real, G1_real, G2_real;
 	
 	(U.cvf.V1) = 0.0; 
 	(U.cvf.V2) = 0.0; 
@@ -663,9 +662,9 @@ void  FluidIO::Init_cond_modes(FluidVF&U, FluidSF& T1, FluidSF& T2)
 void  FluidIO::Init_cond_modes_Chebyshev(FluidVF&U)
 {
 	int kx, ky, kz;
-    DP Kx,Ky,Kz;
-    complx Vx_complex, Vy_complex, Vz_complex;
-    DP Vx_real, Vy_real, Vz_real, dvxdx;
+    Real Kx,Ky,Kz;
+    Complex Vx_complex, Vy_complex, Vz_complex;
+    Real Vx_real, Vy_real, Vz_real, dvxdx;
     int mode;
 	
 	(U.cvf.V1) = 0.0;
@@ -750,7 +749,7 @@ void  FluidIO::Init_cond_modes_Chebyshev(FluidVF&U)
                     if (mode > -1)
                         Vy_complex = global.io.init_cond_modes.field_array_complex(mode,1);
                     else // no input mode
-                        Vy_complex = complx(0.0,0.0);
+                        Vy_complex = Complex(0.0,0.0);
                         
                     universal->Last_component(kx, ky, kz, global.temp_array.X(ly,lz,lx), Vy_complex, Vz_complex);
                     
@@ -771,8 +770,8 @@ void  FluidIO::Init_cond_modes_scalar_Chebyshev(FluidVF&U, FluidSF& T)
    	(T.csf.F) = 0.0;
     
     int kx, ky, kz;
-    complx G_complex;
-	DP G_real;
+    Complex G_complex;
+	Real G_real;
 	
     for (int mode = 0; mode < global.io.init_cond_modes.number; mode++) {
 		kx = global.io.init_cond_modes.coords(mode,1);
@@ -814,8 +813,8 @@ void  FluidIO::Init_cond_modes_RBC_Chebyshev(FluidVF&U, FluidSF& T)
 		(U.cvf.V3) = 0.0;
 		
 		int kx, ky, kz;
-		complx G_complex;
-		DP G_real;
+		Complex G_complex;
+		Real G_real;
 		
 		for (int mode = 0; mode < global.io.init_cond_modes.number; mode++) {
 			kx = global.io.init_cond_modes.coords(mode,1);

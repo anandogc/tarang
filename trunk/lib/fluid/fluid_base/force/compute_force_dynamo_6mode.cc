@@ -48,10 +48,10 @@ void FORCE::Compute_force_DYNAMO_SIX_MODE(FluidVF& U, FluidVF& W)
 		
 		if (!global.force.configuration_done) {
 			int k0 = ((int) global.force.double_para(0));
-			DP amp101 = global.force.double_para(1);
-			DP amp011 = global.force.double_para(2);
-			DP amp112 = global.force.double_para(3);
-			DP h = global.force.double_para(4);
+			Real amp101 = global.force.double_para(1);
+			Real amp011 = global.force.double_para(2);
+			Real amp112 = global.force.double_para(3);
+			Real h = global.force.double_para(4);
 			
 			Setup_SIX_MODE_force_field(U, k0, amp101, amp011, amp112, h); 
 			// force only u field		

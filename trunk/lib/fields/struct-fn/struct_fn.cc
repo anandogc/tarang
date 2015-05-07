@@ -45,8 +45,8 @@ void Compute_dr
 	string basis_type,
 	int N[], 
 	TinyVector<int,3> j1, TinyVector<int,3> j2, 
-	TinyVector<DP,3> &dr,
-	DP delta_x[]
+	TinyVector<Real,3> &dr,
+	Real delta_x[]
 ) 
 {
 
@@ -91,12 +91,12 @@ void Compute_dr
 void RVF::Compute_dSt
 (
 	TinyVector<int,3> j1, TinyVector<int,3> j2,
-	TinyVector<DP,3> V1, TinyVector<DP,3> V2
+	TinyVector<Real,3> V1, TinyVector<Real,3> V2
 )
 {
-	TinyVector<DP,3>	dr, dr_hat;
-	TinyVector<DP,3>	dV;	
-	DP					abs_dr, dV_pll, dV_perp;
+	TinyVector<Real,3>	dr, dr_hat;
+	TinyVector<Real,3>	dV;	
+	Real					abs_dr, dV_pll, dV_perp;
 	
 	
 	Compute_dr(RV_basis_type, Nrv, j1, j2, dr, RV_Delta_x);
@@ -133,14 +133,14 @@ void RVF::Compute_dSt
 void RVF::Compute_structure_function_unit
 (
 	int otherproc, 
-	Array<complx,3> otherV1,
-	Array<complx,3> otherV2,
-	Array<complx,3> otherV3
+	Array<Complex,3> otherV1,
+	Array<Complex,3> otherV2,
+	Array<Complex,3> otherV3
 )
 {	
 	
 	TinyVector<int,3>	j1, j2;
-	TinyVector<DP,3>	v_1, v_2;
+	TinyVector<Real,3>	v_1, v_2;
 	
 	for (int Pi1=0; Pi1<=(local_N1-1); Pi1=Pi1+RV_structurefn_neighbour_index)
 		for (int Pi2=0; Pi2<=(Nrv[2]-1); Pi2=Pi2+RV_structurefn_neighbour_index) 
@@ -218,9 +218,9 @@ void RVF::Compute_local_structure_function()
 	MPI_Request request, request2;
 	
 	// allocate otherprocVi vars
-	Array<complx,3> otherprocV1(local_N1,Nrv[2],(Nrv[3]/2)+1); 
-	Array<complx,3> otherprocV2(local_N1,Nrv[2],(Nrv[3]/2)+1); 
-	Array<complx,3> otherprocV3(local_N1,Nrv[2],(Nrv[3]/2)+1); 
+	Array<Complex,3> otherprocV1(local_N1,Nrv[2],(Nrv[3]/2)+1); 
+	Array<Complex,3> otherprocV2(local_N1,Nrv[2],(Nrv[3]/2)+1); 
+	Array<Complex,3> otherprocV3(local_N1,Nrv[2],(Nrv[3]/2)+1); 
 	
 	*RV_St = 0.0;
 	*RV_St_count = 0;
@@ -240,33 +240,33 @@ void RVF::Compute_local_structure_function()
 		receive_from = (my_id + i) % numprocs;
 		
 		// first component
-		MPI_Isend( reinterpret_cast<DP*>((*V1r).data()), data_size, 
-				MPI_DP, send_to, tag, MPI_COMM_WORLD, &request);
+		MPI_Isend( reinterpret_cast<Real*>((*V1r).data()), data_size, 
+				MPI_Real, send_to, tag, MPI_COMM_WORLD, &request);
 		
-		MPI_Irecv( reinterpret_cast<DP*>((otherprocV1).data()), data_size, 
-				MPI_DP, receive_from, tag, MPI_COMM_WORLD, &request2);
+		MPI_Irecv( reinterpret_cast<Real*>((otherprocV1).data()), data_size, 
+				MPI_Real, receive_from, tag, MPI_COMM_WORLD, &request2);
 
 		MPI_Wait(&request2, &status);
 		
 		// Second component
 		if (Nrv[2] > 1)   // if 2D, then ignore V2 transfer.
 		{
-			MPI_Isend( reinterpret_cast<DP*>((*V2r).data()), data_size, 
-				 MPI_DP, send_to, tag, MPI_COMM_WORLD, &request);
+			MPI_Isend( reinterpret_cast<Real*>((*V2r).data()), data_size, 
+				 MPI_Real, send_to, tag, MPI_COMM_WORLD, &request);
 	
-			MPI_Irecv( reinterpret_cast<DP*>((otherprocV2).data()), data_size, 
-				 MPI_DP, receive_from, tag, MPI_COMM_WORLD, &request2);
+			MPI_Irecv( reinterpret_cast<Real*>((otherprocV2).data()), data_size, 
+				 MPI_Real, receive_from, tag, MPI_COMM_WORLD, &request2);
 
 			MPI_Wait(&request2, &status);
 		}
 		
 		
 		// Third component
-		MPI_Isend( reinterpret_cast<DP*>((*V3r).data()), data_size, 
-				 MPI_DP, send_to, tag, MPI_COMM_WORLD, &request);
+		MPI_Isend( reinterpret_cast<Real*>((*V3r).data()), data_size, 
+				 MPI_Real, send_to, tag, MPI_COMM_WORLD, &request);
 	
-		MPI_Irecv( reinterpret_cast<DP*>((otherprocV3).data()), data_size, 
-				 MPI_DP, receive_from, tag, MPI_COMM_WORLD, &request2);
+		MPI_Irecv( reinterpret_cast<Real*>((otherprocV3).data()), data_size, 
+				 MPI_Real, receive_from, tag, MPI_COMM_WORLD, &request2);
 		
 		MPI_Wait(&request2, &status); 
 		
@@ -284,15 +284,15 @@ void RVF::RV_Compute_structure_function()
 	
 	int data_size = (*RV_St).size(); 
 	
-	MPI_Reduce(reinterpret_cast<DP*>((*RV_St).data()), 
-			   reinterpret_cast<DP*>((*RV_St_final).data()), 
-			   data_size, MPI_DP, MPI_SUM, master_id, MPI_COMM_WORLD); 
+	MPI_Reduce(reinterpret_cast<Real*>((*RV_St).data()), 
+			   reinterpret_cast<Real*>((*RV_St_final).data()), 
+			   data_size, MPI_Real, MPI_SUM, master_id, MPI_COMM_WORLD); 
 
 	data_size = (*RV_St_count).size();  
 	
 	MPI_Reduce(reinterpret_cast<int*>((*RV_St_count).data()), 
 			   reinterpret_cast<int*>((*RV_St_count_final).data()), 
-			   data_size, MPI_DP, MPI_SUM, master_id, MPI_COMM_WORLD); 
+			   data_size, MPI_Real, MPI_SUM, master_id, MPI_COMM_WORLD); 
 	
 
 	// Normalize St(..)	
@@ -323,11 +323,11 @@ void RVF::RV_Compute_structure_function()
 void RSF::Compute_dSt
 (
 	TinyVector<int,3> j1, TinyVector<int,3> j2,
-	DP F1, DP F2
+	Real F1, Real F2
 )
 {	
-	TinyVector<DP,3>	dr;	
-	DP					abs_dr;
+	TinyVector<Real,3>	dr;	
+	Real					abs_dr;
 	
 	Compute_dr(RS_basis_type, Nrs, j1, j2, dr, RS_Delta_x);
 	abs_dr = sqrt(dot(dr,dr));
@@ -352,11 +352,11 @@ void RSF::Compute_dSt
 void RSF::Compute_structure_function_unit
 (
 	int otherproc,
-	Array<complx,3> otherprocF
+	Array<Complex,3> otherprocF
 )
 {
 	TinyVector<int,3>	j1, j2;
-	DP					F1, F2;
+	Real					F1, F2;
 	
 	for (int Pi1=0; Pi1<=(local_N1-1); Pi1=Pi1+RS_structurefn_neighbour_index)
 		for (int Pi2=0; Pi2<=(Nrs[2]-1); Pi2=Pi2+RS_structurefn_neighbour_index) 
@@ -421,7 +421,7 @@ void RSF::Compute_local_structure_function()
 	MPI_Request request, request2;
 	
 	// allocate otherprocVi vars
-	Array<complx,3> otherprocF(local_N1,Nrs[2],(Nrs[3]/2)+1);
+	Array<Complex,3> otherprocF(local_N1,Nrs[2],(Nrs[3]/2)+1);
 	
 	*RS_St = 0.0;
 	*RS_St_count = 0;
@@ -438,11 +438,11 @@ void RSF::Compute_local_structure_function()
 		
 		receive_from = (my_id+i) % numprocs;
 		
-		MPI_Isend( reinterpret_cast<DP*>((*Fr).data()), data_size, 
-				 MPI_DP, send_to, tag, MPI_COMM_WORLD, &request);
+		MPI_Isend( reinterpret_cast<Real*>((*Fr).data()), data_size, 
+				 MPI_Real, send_to, tag, MPI_COMM_WORLD, &request);
 	
-		MPI_Irecv( reinterpret_cast<DP*>((otherprocF).data()), data_size, 
-				 MPI_DP, receive_from, tag, MPI_COMM_WORLD, &request2);
+		MPI_Irecv( reinterpret_cast<Real*>((otherprocF).data()), data_size, 
+				 MPI_Real, receive_from, tag, MPI_COMM_WORLD, &request2);
 		
 		MPI_Wait(&request2, &status);
 		
@@ -458,15 +458,15 @@ void RSF::RS_Compute_structure_function()
 	
 	int data_size = (*RS_St).size(); 
 	
-	MPI_Reduce(reinterpret_cast<DP*>((*RS_St).data()), 
-			   reinterpret_cast<DP*>((*RS_St_final).data()), 
-			   data_size, MPI_DP, MPI_SUM, master_id, MPI_COMM_WORLD); 
+	MPI_Reduce(reinterpret_cast<Real*>((*RS_St).data()), 
+			   reinterpret_cast<Real*>((*RS_St_final).data()), 
+			   data_size, MPI_Real, MPI_SUM, master_id, MPI_COMM_WORLD); 
 	
 	data_size = (*RS_St_count).size();
 
 	MPI_Reduce(reinterpret_cast<int*>((*RS_St_count).data()), 
 			   reinterpret_cast<int*>((*RS_St_count_final).data()), 
-			   data_size, MPI_DP, MPI_SUM, master_id, MPI_COMM_WORLD); 
+			   data_size, MPI_Real, MPI_SUM, master_id, MPI_COMM_WORLD); 
 	
 	// Normalize St(..)	
 	if (my_id == master_id)

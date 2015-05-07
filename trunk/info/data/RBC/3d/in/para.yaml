@@ -1,17 +1,17 @@
 program:
     kind: RBC
     basis_type: SFF 
-    decomposition: SLAB              #PENCIL, SLAB
+    decomposition: PENCIL              #PENCIL, SLAB
     iter_or_diag: ITERATION           #ITERATION, DIAGNOSTICS
     alias_option: ALIAS
     integration_scheme: EULER
     LES_switch: false
-    apply_strong_realitycond_alltime_switch: true
+    apply_strong_realitycond_alltime_switch: false
     apply_weak_realitycond_alltime_switch: false
     low_dimensional_switch: false
     two_and_half_dimension: false
     two_dimension: false       
-    dt_option: 1             # 0=fixed; 1=dx/umax
+    dt_option: 0             # 0=fixed; 1=dx/umax
     helicity_switch: false
     sincostr_switch: SFF 
     

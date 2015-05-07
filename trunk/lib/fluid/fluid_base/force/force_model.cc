@@ -51,7 +51,7 @@
  *	@param amp  
  *
  */
-void FORCE::Setup_Taylor_Green_force_field(FluidVF& U, int k0, DP amp)
+void FORCE::Setup_Taylor_Green_force_field(FluidVF& U, int k0, Real amp)
 {
 	if (U.force_switch == true) {
 		U.Force1 = 0.0; 
@@ -73,23 +73,23 @@ void FORCE::Setup_Taylor_Green_force_field(FluidVF& U, int k0, DP amp)
 		// CHOOSE SFF type
 		else if (basis_type == "SFF") {
 			
-			universal->Assign_spectral_field(k0, k0, k0, U.Force1, complx(amp/8, 0.0));
-			universal->Assign_spectral_field(k0, -k0, k0, U.Force1, complx(amp/8, 0.0));
+			universal->Assign_spectral_field(k0, k0, k0, U.Force1, Complex(amp/8, 0.0));
+			universal->Assign_spectral_field(k0, -k0, k0, U.Force1, Complex(amp/8, 0.0));
 			
-			universal->Assign_spectral_field(k0, k0, k0, U.Force2, complx(0, amp/8));
-			universal->Assign_spectral_field(k0, -k0, k0, U.Force2, complx(0, -amp/8));
+			universal->Assign_spectral_field(k0, k0, k0, U.Force2, Complex(0, amp/8));
+			universal->Assign_spectral_field(k0, -k0, k0, U.Force2, Complex(0, -amp/8));
 		}
 		
 		else if (basis_type == "FFF" || basis_type == "FFFW") {
-			universal->Assign_spectral_field(k0, k0, k0, U.Force1, complx(0, -amp/8));
-			universal->Assign_spectral_field(k0, -k0, k0, U.Force1, complx(0, -amp/8));
-			universal->Assign_spectral_field(-k0, k0, k0, U.Force1, complx(0, amp/8));
-			universal->Assign_spectral_field(-k0, -k0, k0, U.Force1, complx(0, amp/8));
+			universal->Assign_spectral_field(k0, k0, k0, U.Force1, Complex(0, -amp/8));
+			universal->Assign_spectral_field(k0, -k0, k0, U.Force1, Complex(0, -amp/8));
+			universal->Assign_spectral_field(-k0, k0, k0, U.Force1, Complex(0, amp/8));
+			universal->Assign_spectral_field(-k0, -k0, k0, U.Force1, Complex(0, amp/8));
 			
-			universal->Assign_spectral_field(k0, k0, k0, U.Force2, complx(0, amp/8));
-			universal->Assign_spectral_field(-k0, k0, k0, U.Force2, complx(0, amp/8));
-			universal->Assign_spectral_field(k0, -k0, k0, U.Force2, complx(0, -amp/8));
-			universal->Assign_spectral_field(-k0, -k0, k0, U.Force2, complx(0, -amp/8));
+			universal->Assign_spectral_field(k0, k0, k0, U.Force2, Complex(0, amp/8));
+			universal->Assign_spectral_field(-k0, k0, k0, U.Force2, Complex(0, amp/8));
+			universal->Assign_spectral_field(k0, -k0, k0, U.Force2, Complex(0, -amp/8));
+			universal->Assign_spectral_field(-k0, -k0, k0, U.Force2, Complex(0, -amp/8));
 		}
 	}
 }
@@ -108,7 +108,7 @@ void FORCE::Setup_Taylor_Green_force_field(FluidVF& U, int k0, DP amp)
  *	@param amp  
  *
  */
-void FORCE::Setup_ABC_force_field(FluidVF& U, int k0, DP amp, DP A, DP B, DP C)
+void FORCE::Setup_ABC_force_field(FluidVF& U, int k0, Real amp, Real A, Real B, Real C)
 {
 	if (U.force_switch == true) {
 		U.Force1 = 0.0; 
@@ -117,17 +117,17 @@ void FORCE::Setup_ABC_force_field(FluidVF& U, int k0, DP amp, DP A, DP B, DP C)
 		// initialize
 
 		if (basis_type == "FFF" || basis_type == "FFFW") {
-			universal->Assign_spectral_field(0, k0, 0, U.Force1, complx(amp*B/2, 0));
-			universal->Assign_spectral_field(0, -k0, 0, U.Force1, complx(amp*B/2, 0));
-			universal->Assign_spectral_field(0, 0, k0, U.Force1, complx(0, -amp*C));
+			universal->Assign_spectral_field(0, k0, 0, U.Force1, Complex(amp*B/2, 0));
+			universal->Assign_spectral_field(0, -k0, 0, U.Force1, Complex(amp*B/2, 0));
+			universal->Assign_spectral_field(0, 0, k0, U.Force1, Complex(0, -amp*C));
 			
-			universal->Assign_spectral_field(k0, 0, 0, U.Force2, complx(0, -amp*A/2));
-			universal->Assign_spectral_field(-k0, 0, 0, U.Force2, complx(0, amp*A/2));
-			universal->Assign_spectral_field(0, 0, k0, U.Force2, complx(amp*C, 0));
+			universal->Assign_spectral_field(k0, 0, 0, U.Force2, Complex(0, -amp*A/2));
+			universal->Assign_spectral_field(-k0, 0, 0, U.Force2, Complex(0, amp*A/2));
+			universal->Assign_spectral_field(0, 0, k0, U.Force2, Complex(amp*C, 0));
 			
-			universal->Assign_spectral_field(k0, 0, 0, U.Force3, complx(amp*A/2, 0));
-			universal->Assign_spectral_field(-k0, 0, 0, U.Force3, complx(amp*A/2, 0));
-			universal->Assign_spectral_field(0, k0, 0, U.Force3, complx(0, -amp*B));
+			universal->Assign_spectral_field(k0, 0, 0, U.Force3, Complex(amp*A/2, 0));
+			universal->Assign_spectral_field(-k0, 0, 0, U.Force3, Complex(amp*A/2, 0));
+			universal->Assign_spectral_field(0, k0, 0, U.Force3, Complex(0, -amp*B));
 		}
 		
 		else {
@@ -141,7 +141,7 @@ void FORCE::Setup_ABC_force_field(FluidVF& U, int k0, DP amp, DP A, DP B, DP C)
 //*********************************************************************************************
 
 	// WORK ON IT>>
-void FORCE::Setup_SIX_MODE_force_field(FluidVF& U, int k0, DP amp101, DP amp011, DP amp112, DP h)
+void FORCE::Setup_SIX_MODE_force_field(FluidVF& U, int k0, Real amp101, Real amp011, Real amp112, Real h)
 {
 /*
 	if (force_switch == true) {
@@ -156,14 +156,14 @@ void FORCE::Setup_SIX_MODE_force_field(FluidVF& U, int k0, DP amp101, DP amp011,
 			int ly_k0 = Get_ly3D("FFF", k0, N);
 			int ly_minus_k0 = Get_ly3D("FFF", -k0, N);
 			
-			DP factor1 = 2.0/sqrt(2+h*h) * amp101;
-			DP factor2 = 2.0/sqrt(2+h*h) * amp011;
-			DP factor3 = 4.0/sqrt(6+10*h*h) * amp112;
+			Real factor1 = 2.0/sqrt(2+h*h) * amp101;
+			Real factor2 = 2.0/sqrt(2+h*h) * amp011;
+			Real factor3 = 4.0/sqrt(6+10*h*h) * amp112;
 		
 			if (my_id == master_id)  
 			{
-				(U.Force1)(0, ly_k0, k0)  = complx(-h*(factor2/4), 0.0);
-				(U.Force1)(0, ly_minus_k0, k0) = complx(h*(factor2/4), 0.0);
+				(U.Force1)(0, ly_k0, k0)  = Complex(-h*(factor2/4), 0.0);
+				(U.Force1)(0, ly_minus_k0, k0) = Complex(h*(factor2/4), 0.0);
 				
 				(U.Force2)(0, ly_k0, k0)  = (I) * (factor2/4);
 				(U.Force2)(0, ly_minus_k0, k0) = (-I) * (factor2/4);
@@ -175,35 +175,35 @@ void FORCE::Setup_SIX_MODE_force_field(FluidVF& U, int k0, DP amp101, DP amp011,
 			if ( (lx_k0 >= 0) && (lx_k0 < local_N1) )
 			{
 				(U.Force1)(lx_k0, 0, k0)  = I * (factor1/4);
-				(U.Force2)(lx_k0, 0, k0)  = complx(-h*(factor1/4), 0.0);
+				(U.Force2)(lx_k0, 0, k0)  = Complex(-h*(factor1/4), 0.0);
 				(U.Force3)(lx_k0, 0, k0)  =  (-I) * (factor1/4);
 				
 				(U.Force1)(lx_k0, ly_k0, 2*k0)  = I * (factor3/8);
 				(U.Force1)(lx_k0, ly_minus_k0, 2*k0) = I * (factor3/8);
 				
-				(U.Force2)(lx_k0, ly_k0, 2*k0)  = I * (factor3/8) + complx(h*factor3/4, 0.0);
-				(U.Force2)(lx_k0, ly_minus_k0, 2*k0) = (-I) * (factor3/8) + complx(h*factor3/4, 0.0);
+				(U.Force2)(lx_k0, ly_k0, 2*k0)  = I * (factor3/8) + Complex(h*factor3/4, 0.0);
+				(U.Force2)(lx_k0, ly_minus_k0, 2*k0) = (-I) * (factor3/8) + Complex(h*factor3/4, 0.0);
 				
-				(U.Force3)(lx_k0, ly_k0, 2*k0)  = (-I) * (factor3/8) - complx(h*factor3/8, 0.0);
-				(U.Force3)(lx_k0, ly_minus_k0, 2*k0) = (-I) * (factor3/8) + complx(h*factor3/8, 0.0);	
+				(U.Force3)(lx_k0, ly_k0, 2*k0)  = (-I) * (factor3/8) - Complex(h*factor3/8, 0.0);
+				(U.Force3)(lx_k0, ly_minus_k0, 2*k0) = (-I) * (factor3/8) + Complex(h*factor3/8, 0.0);	
 			}
 		
 			if ( (lx_minus_k0 >= 0) && (lx_minus_k0 < local_N1) ) 
 			{
 				(U.Force1)(lx_minus_k0, 0, k0)  = -I * (factor1/4);		
-				(U.Force2)(lx_minus_k0, 0, k0)  = complx(h*(factor1/4), 0.0);
+				(U.Force2)(lx_minus_k0, 0, k0)  = Complex(h*(factor1/4), 0.0);
 				(U.Force3)(lx_minus_k0, 0, k0)  =  (-I) * (factor1/4);
 				
 				(U.Force1)(lx_minus_k0, ly_k0, 2*k0)  = (-I) * (factor3/8);
 				(U.Force1)(lx_minus_k0, ly_minus_k0, 2*k0) = (-I) * (factor3/8);
 			
-				(U.Force2)(lx_minus_k0, ly_k0, 2*k0)  = I * (factor3/8) - complx(h*factor3/4, 0.0);
+				(U.Force2)(lx_minus_k0, ly_k0, 2*k0)  = I * (factor3/8) - Complex(h*factor3/4, 0.0);
 				(U.Force2)(lx_minus_k0, ly_minus_k0, 2*k0) = (-I) * (factor3/8) 
-																- complx(h*factor3/4, 0.0);
+																- Complex(h*factor3/4, 0.0);
 			
-				(U.Force3)(lx_minus_k0, ly_k0, 2*k0)  = (-I) * (factor3/8) + complx(h*factor3/8, 0.0);
+				(U.Force3)(lx_minus_k0, ly_k0, 2*k0)  = (-I) * (factor3/8) + Complex(h*factor3/8, 0.0);
 				(U.Force3)(lx_minus_k0, ly_minus_k0, 2*k0) = (-I) * (factor3/8) 
-																- complx(h*factor3/8, 0.0);
+																- Complex(h*factor3/8, 0.0);
 			}	
 			
 		}
@@ -231,21 +231,23 @@ void FORCE::Setup_SIX_MODE_force_field(FluidVF& U, int k0, DP amp101, DP amp011,
  *					and \f$ F_x(kx, 0, kz) = 0 \f$.
  *				
  */
-void FORCE::Add_complex_conj_force(FluidVF& U, int kx, int ky, int kz, complx Fx, complx Fy, complx Fz)	
+void FORCE::Add_complex_conj_force(FluidVF& U, int kx, int ky, int kz, Complex Fx, Complex Fy, Complex Fz)	
 {	
-	TinyVector<complx,3> localF;
+	TinyVector<Complex,3> localF;
 	
 	// On kz=0 or kz=N[3]/2 plane
 	if ((basis_type == "FFF" || basis_type == "FFFW") && ((kz == 0) || (kz == N[3]/2)) ) {
 		localF = conj(Fx), conj(Fy), conj(Fz);
 		universal->Assign_spectral_field(-kx, -ky, kz, U.Force1, U.Force2, U.Force3, localF);
-		cout << "Complex-conj(Force) added for k = (" << -kx << "," << -ky << "," << kz << ")" << endl;	
+		if (master)
+			cout << "Complex-conj(Force) added for k = (" << -kx << "," << -ky << "," << kz << ")" << endl;	
 	}
 	
 	else if ((basis_type == "SFF") && ((kz == 0) || (kz == N[3]/2)) ) {          
 		localF = conj(Fx), conj(Fy), conj(Fz);
 		universal->Assign_spectral_field(kx, -ky, kz, U.Force1, U.Force2, U.Force3, localF);
-		cout << "Complex-conj(Force) added for k = (" << kx << "," << -ky << "," << kz << ")" << endl;	
+		if (master)
+			cout << "Complex-conj(Force) added for k = (" << kx << "," << -ky << "," << kz << ")" << endl;	
 	}	
 }	
 
@@ -253,18 +255,20 @@ void FORCE::Add_complex_conj_force(FluidVF& U, int kx, int ky, int kz, complx Fx
 	// Scalar 
 	//
 
-void FORCE::Add_complex_conj_force(FluidSF& T, int kx, int ky, int kz, complx localG)	
+void FORCE::Add_complex_conj_force(FluidSF& T, int kx, int ky, int kz, Complex localG)	
 {	
 	
 	// On kz=0 or kz=N[3]/2 plane
 	if ((basis_type == "FFF" || basis_type == "FFFW") && ((kz == 0) || (kz == N[3]/2)) )	{          
 		universal->Assign_spectral_field(-kx, -ky, kz, T.Force, localG);
-		cout << "Complex-conj(Force) added for k = (" << -kx << "," << -ky << "," << kz << ")" << endl;	
+		if (master)
+			cout << "Complex-conj(Force) added for k = (" << -kx << "," << -ky << "," << kz << ")" << endl;	
 	}
 	
 	else if ((basis_type == "SFF")  && ((kz == 0) || (kz == N[3]/2)) ) 	{         
 		universal->Assign_spectral_field(kx, -ky, kz, T.Force, localG);
-		cout << "Complex-conj(Force) added for k = (" << kx << "," << -ky << "," << kz << ")" << endl;	
+		if (master)
+			cout << "Complex-conj(Force) added for k = (" << kx << "," << -ky << "," << kz << ")" << endl;	
 	}
 }
 
@@ -276,11 +280,11 @@ void FORCE::Add_complex_conj_force(FluidSF& T, int kx, int ky, int kz, complx lo
  *  
  * @bug Does not work across the processors.
  *
- * @sa Add_complex_conj_force(int kx, int ky, kz, complx Fx, complx Fy, complx Fz)
+ * @sa Add_complex_conj_force(int kx, int ky, kz, Complex Fx, Complex Fy, Complex Fz)
  */
-void FORCE::Assign_force_and_comp_conj(FluidVF& U, int kx, int ky, int kz, complx Fx, complx Fy, complx Fz)
+void FORCE::Assign_force_and_comp_conj(FluidVF& U, int kx, int ky, int kz, Complex Fx, Complex Fy, Complex Fz)
 {
-	TinyVector<complx,3> localF(Fx, Fy, Fz);
+	TinyVector<Complex,3> localF(Fx, Fy, Fz);
 	
 	universal->Assign_spectral_field(kx, ky, kz, U.Force1, U.Force2, U.Force3, localF);	// in appropriate proc.
 	
@@ -295,9 +299,9 @@ void FORCE::Assign_force_and_comp_conj(FluidVF& U, int kx, int ky, int kz, compl
  *  
  * @bug Does not work across the processors.
  *
- * @sa Add_complex_conj_force(int kx, int ky, int kz, complx ForceG)
+ * @sa Add_complex_conj_force(int kx, int ky, int kz, Complex ForceG)
  */
-void  FORCE::Assign_force_and_comp_conj(FluidSF& T, int kx, int ky, int kz, complx localG)
+void  FORCE::Assign_force_and_comp_conj(FluidSF& T, int kx, int ky, int kz, Complex localG)
 {
 	universal->Assign_spectral_field(kx, ky, kz, T.Force, localG);
 	
@@ -312,11 +316,11 @@ void  FORCE::Assign_force_and_comp_conj(FluidSF& T, int kx, int ky, int kz, comp
  *  
  * @bug Does not work across the processors.
  *
- * @sa Add_complex_conj_force(int kx, int ky, kz, complx Fx, complx Fy, complx Fz)
+ * @sa Add_complex_conj_force(int kx, int ky, kz, Complex Fx, Complex Fy, Complex Fz)
  */
-void FORCE::Assign_force(FluidVF& U, int kx, int ky, int kz, DP Fx, DP Fy, DP Fz)
+void FORCE::Assign_force(FluidVF& U, int kx, int ky, int kz, Real Fx, Real Fy, Real Fz)
 {
-	TinyVector<DP,3> localF(Fx, Fy, Fz);
+	TinyVector<Real,3> localF(Fx, Fy, Fz);
 	
 	universal->Assign_spectral_field(kx, ky, kz, U.Force1, U.Force2, U.Force3, localF);	// in appropriate proc.
 }
@@ -329,18 +333,18 @@ void FORCE::Assign_force(FluidVF& U, int kx, int ky, int kz, DP Fx, DP Fy, DP Fz
  *  
  * @bug Does not work across the processors.
  *
- * @sa Add_complex_conj_force(int kx, int ky, int kz, complx ForceG)
+ * @sa Add_complex_conj_force(int kx, int ky, int kz, Complex ForceG)
  */
-void  FORCE::Assign_force(FluidSF& T, int kx, int ky, int kz, DP localG)
+void  FORCE::Assign_force(FluidSF& T, int kx, int ky, int kz, Real localG)
 {
 	universal->Assign_spectral_field(kx, ky, kz, T.Force, localG);
 }
 
 //*************************************************************************************
 
-void FORCE::Model_force_spectrum(DP force_spectrum_amplitude, DP force_spectrum_exponent, Array<DP,1> Sk)
+void FORCE::Model_force_spectrum(Real force_spectrum_amplitude, Real force_spectrum_exponent, Array<Real,1> Sk)
 {
-	DP k;
+	Real k;
 	
 	for (int i=0; i < (Sk.length())(0); i++) {
 		k = 1.0*i;
