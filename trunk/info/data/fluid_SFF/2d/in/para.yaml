@@ -1,7 +1,7 @@
 program:
     kind: FLUID_INCOMPRESS
-    basis_type: SFF 
-    decomposition: SLAB        #PENCIL, SLAB
+    basis_type: FFF 
+    decomposition: PENCIL        #PENCIL, SLAB
     iter_or_diag: ITERATION           #ITERATION, DIAGNOSTICS
     alias_option: DEALIAS
     integration_scheme: RK4
@@ -13,7 +13,7 @@ program:
     two_dimension: true       
     dt_option: 0               # 0=fixed; 1=dx/umax
     helicity_switch: false
-    sincostr_switch: SFF
+    sincostr_switch: FFF
     
 field:
     N: [8, 1, 8]

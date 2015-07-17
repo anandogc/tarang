@@ -4,7 +4,7 @@
 #include "spectral_transform.h"
 
 
-void test(int N, int iter);
+void test(int Nx, int Ny, int Nz, int iter);
 Real f(string basis, string basis_option, int rx, int ry, int rz);
 void Print_large_Fourier_elements(Array<Complex,3> A, string array_name);
 
@@ -15,20 +15,20 @@ int main(int argc, char** argv)
 
   	MPI_Init(&argc, &argv);
 
+  	int Nx=atoi(argv[1]);
+  	int Ny=atoi(argv[2]);
+  	int Nz=atoi(argv[3]);
 
+  	int iter=atoi(argv[4]);
 
-  	int N=atoi(argv[1]);
-
-  	int iter=atoi(argv[2]);
-
-  	test(N, iter);
+  	test(Nx, Ny, Nz, iter);
 
 	MPI_Finalize();
 	return 0;
 }
 
 
-void test(int N, int iter)
+void test(int Nx, int Ny, int Nz, int iter)
 {
   	MPI_Comm_rank(MPI_COMM_WORLD, &my_id);
 	MPI_Comm_size(MPI_COMM_WORLD, &numprocs);

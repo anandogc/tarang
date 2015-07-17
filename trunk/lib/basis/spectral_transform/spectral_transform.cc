@@ -323,7 +323,7 @@ void SpectralTransform::init_transform(){
 	else if (basis[2] == 'S') {
 
 		kind[0]=FFTW_RODFT10;
-		fft_plan_Sine_forward_z = FFTW_PLAN_MANY_R2R(1, Ny_dims, maxrx*maxry,
+		fft_plan_Sine_forward_z = FFTW_PLAN_MANY_R2R(1, Nz_dims, maxrx*maxry,
 		    reinterpret_cast<Real*>(RA.data()), NULL,
 		    1, Rz,
 		    reinterpret_cast<Real*>(RA.data()), NULL,
@@ -331,7 +331,7 @@ void SpectralTransform::init_transform(){
 		    kind, FFTW_PLAN_FLAG);
 
 		kind[0]=FFTW_RODFT01;
-		fft_plan_Sine_inverse_z = FFTW_PLAN_MANY_R2R(1, Ny_dims, maxrx*maxry,
+		fft_plan_Sine_inverse_z = FFTW_PLAN_MANY_R2R(1, Nz_dims, maxrx*maxry,
 		    reinterpret_cast<Real*>(RA.data()), NULL,
 		    1, Rz,
 		    reinterpret_cast<Real*>(RA.data()), NULL,
@@ -339,7 +339,7 @@ void SpectralTransform::init_transform(){
 		    kind, FFTW_PLAN_FLAG);
 
 		kind[0]=FFTW_REDFT10;
-		fft_plan_Cosine_forward_z = FFTW_PLAN_MANY_R2R(1, Ny_dims, maxrx*maxry,
+		fft_plan_Cosine_forward_z = FFTW_PLAN_MANY_R2R(1, Nz_dims, maxrx*maxry,
 		    reinterpret_cast<Real*>(RA.data()), NULL,
 		    1, Rz,
 		    reinterpret_cast<Real*>(RA.data()), NULL,
@@ -347,7 +347,7 @@ void SpectralTransform::init_transform(){
 		    kind, FFTW_PLAN_FLAG);
 
 		kind[0]=FFTW_REDFT01;
-		fft_plan_Cosine_inverse_z = FFTW_PLAN_MANY_R2R(1, Ny_dims, maxrx*maxry,
+		fft_plan_Cosine_inverse_z = FFTW_PLAN_MANY_R2R(1, Nz_dims, maxrx*maxry,
 		    reinterpret_cast<Real*>(RA.data()), NULL,
 		    1, Rz,
 		    reinterpret_cast<Real*>(RA.data()), NULL,
