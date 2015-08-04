@@ -36,13 +36,13 @@ void test(int Nx, int Ny, int Nz, int iter)
 	string basis="FFF";
 	string basis_option="FFF";
 
-	Nx=Ny=N;
-	Nz=N;
+	//Nx=Ny=N;
+	//Nz=N;
 
 	int rows=1;
 
-  	if (N<numprocs)		//For pencil
-  		rows=numprocs/N;
+  	if (Nx<numprocs)		//For pencil
+  		rows=numprocs/Nx;
 
 	SpectralTransform spectralTransform;
 	spectralTransform.Init(basis,Nx,Ny,Nz,rows);
