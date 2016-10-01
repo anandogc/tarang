@@ -66,7 +66,7 @@ void Pressure::Compute_pressure(FluidVF &U)
         }
         
         if (!global.io.output_pressure_done) {
-            fluidIO_incompress.Output_pressure(*this);	
+            fluidIO_incompress.Output_pressure (*this);	
             global.io.output_pressure_done = true;
         }
     }
@@ -99,7 +99,6 @@ void Pressure::Compute_pressure(FluidVF &U)
         if (master)
             F(0,0,0) = 0.0;
     }
-
 }
 
 

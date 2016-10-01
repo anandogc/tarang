@@ -312,7 +312,6 @@ void SSS_PENCIL::Array_mult_ksqr(Array<Complex,3> A)
 	Real Kxysqr;
 	Real Ksqr;
 	
-	// #pragma omp parallel for private(Kysqr,Kyzsqr,Ksqr) 
 	for (int lx=0; lx<maxlx; lx++) {
 		Kxsqr = my_pow(Get_kx(lx)*kfactor[1],2);
 
@@ -345,7 +344,6 @@ void SSS_PENCIL::Array_divide_ksqr(Array<Complex,3> A)
 	Real Kxysqr;
 	Real Ksqr;
 	
-	// #pragma omp parallel for private(Kysqr,Kyzsqr,Ksqr) 
 	for (int lx=0; lx<maxlx; lx++) {
 		Kxsqr= my_pow(Get_kx(lx)*kfactor[1],2);
 
@@ -381,7 +379,6 @@ void SSS_PENCIL::Array_exp_ksqr(Array<Complex,3> A, Real factor)
 	Real Kxysqr;
 	Real Ksqr;
 	
-	// #pragma omp parallel for private(Kysqr,Kyzsqr,Ksqr) 
 	for (int lx=0; lx<maxlx; lx++) {
 		Kxsqr= my_pow(Get_kx(lx)*kfactor[1],2);
 
@@ -498,7 +495,6 @@ void SSS_PENCIL::Fill_Vz(Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex
 		if (my_z_pcoord==0)
 			lz_min=1;
 		
-		// #pragma omp parallel for
 		for (int lx=0; lx<maxlx; lx++)
 			for (int ly=0; ly<maxly; ly++)
 				for (int lz=lz_min; lz<2*maxlz; lz++) {
@@ -511,33 +507,33 @@ void SSS_PENCIL::Fill_Vz(Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex
 	}
 }
 
-int SSS_PENCIL::Read(Array<Complex,3> A, BasicIO::H5_plan plan, string file_name, string dataset_name)
+int SSS_PENCIL::Read(Array<Complex,3> A, h5::Plan plan, string file_name, string dataset_name)
 {
 	int err = BasicIO::Read(global.temp_array.Xr_slab.data(), plan, file_name, dataset_name);
-	spectralTransform.To_pencil(global.temp_array.Xr_slab, global.temp_array.Xr);
-	spectralTransform.Transpose(global.temp_array.Xr, A);
+	fftk.To_pencil(global.temp_array.Xr_slab, global.temp_array.Xr);
+	fftk.Transpose(global.temp_array.Xr, A);
 	return err;
 }
 
-int SSS_PENCIL::Read(Array<Real,3> Ar, BasicIO::H5_plan plan, string file_name, string dataset_name)
+int SSS_PENCIL::Read(Array<Real,3> Ar, h5::Plan plan, string file_name, string dataset_name)
 {
 	int err = BasicIO::Read(global.temp_array.Xr_slab.data(), plan, file_name, dataset_name);
-	spectralTransform.To_pencil(global.temp_array.Xr_slab, Ar);
+	fftk.To_pencil(global.temp_array.Xr_slab, Ar);
 	return err;
 }
 
 
-int SSS_PENCIL::Write(Array<Complex,3> A, BasicIO::H5_plan plan, string folder_name, string file_name, string dataset_name)
+int SSS_PENCIL::Write(Array<Complex,3> A, h5::Plan plan, string access_mode, string folder_name, string file_name, string dataset_name)
 {
-	spectralTransform.Transpose(A, global.temp_array.Xr);
-	spectralTransform.To_slab(global.temp_array.Xr, global.temp_array.Xr_slab);
-	return BasicIO::Write(global.temp_array.Xr_slab.data(), plan, folder_name, file_name, dataset_name);
+	fftk.Transpose(A, global.temp_array.Xr);
+	fftk.To_slab(global.temp_array.Xr, global.temp_array.Xr_slab);
+	return BasicIO::Write(global.temp_array.Xr_slab.data(), plan, access_mode, folder_name, file_name, dataset_name);
 }
 
-int SSS_PENCIL::Write(Array<Real,3> Ar, BasicIO::H5_plan plan, string folder_name, string file_name, string dataset_name)
+int SSS_PENCIL::Write(Array<Real,3> Ar, h5::Plan plan, string access_mode, string folder_name, string file_name, string dataset_name)
 {
-	spectralTransform.To_slab(Ar, global.temp_array.Xr_slab);
-	return BasicIO::Write(global.temp_array.Xr_slab.data(), plan, folder_name, file_name, dataset_name);  
+	fftk.To_slab(Ar, global.temp_array.Xr_slab);
+	return BasicIO::Write(global.temp_array.Xr_slab.data(), plan, access_mode, folder_name, file_name, dataset_name);  
 }
 
 //*********************************  End of scft_basic.cc *************************************

@@ -99,10 +99,10 @@ SSF_PENCIL::SSF_PENCIL()
 	
 	
 	//global.mpi.num_p_rows is set in global via mpirun argument
-	spectralTransform.Init("SSF", Nx, Ny, Nz, global.mpi.num_p_rows);
+	fftk.Init("SSF", Nx, Ny, Nz, global.mpi.num_p_rows);
 
-	global.field.shape_complex_array = spectralTransform.Get_FA_shape();
-	global.field.shape_real_array = spectralTransform.Get_RA_shape();
+	global.field.shape_complex_array = fftk.Get_FA_shape();
+	global.field.shape_real_array = fftk.Get_RA_shape();
 
 
 	//********
@@ -112,15 +112,15 @@ SSF_PENCIL::SSF_PENCIL()
 	global.mpi.num_z_procs = global.mpi.num_p_rows;
 	
 	global.mpi.my_x_pcoord = 0;
-	global.mpi.my_y_pcoord = spectralTransform.Get_col_id();
-	global.mpi.my_z_pcoord = spectralTransform.Get_row_id();
+	global.mpi.my_y_pcoord = fftk.Get_col_id();
+	global.mpi.my_z_pcoord = fftk.Get_row_id();
 	
 	global.mpi.num_x_procs_real = global.mpi.num_p_cols;
 	global.mpi.num_y_procs_real = global.mpi.num_p_rows;
 	global.mpi.num_z_procs_real = 1;
 	
-	global.mpi.my_x_pcoord_real = spectralTransform.Get_col_id();
-	global.mpi.my_y_pcoord_real = spectralTransform.Get_row_id();
+	global.mpi.my_x_pcoord_real = fftk.Get_col_id();
+	global.mpi.my_y_pcoord_real = fftk.Get_row_id();
 	global.mpi.my_z_pcoord_real = 0;
 	
 	
@@ -193,6 +193,7 @@ SSF_PENCIL::SSF_PENCIL()
 
 
 	
+    BasicIO::Initialize(global.io.data_dir, fftk.Get_communicator("ROW")); 
 	BasicIO::Array_properties<3> array_properties;
 	array_properties.shape_full_complex_array = Nx, Ny, Nz/2+1;
 	array_properties.shape_full_real_array = Nx, Ny, Nz+2;
@@ -212,8 +213,8 @@ SSF_PENCIL::SSF_PENCIL()
 	array_properties.Fourier_directions = 1,1,1;
 	array_properties.Z = 2;
 
-	array_properties.datatype_complex_space = BasicIO::H5T_Complex;
-	array_properties.datatype_real_space = BasicIO::H5T_Real;
+	array_properties.datatype_complex_space = h5::Dtype(H5Complex);
+	array_properties.datatype_real_space = h5::Dtype(H5Real);
 
 	BasicIO::Set_H5_plans(array_properties, this);
 

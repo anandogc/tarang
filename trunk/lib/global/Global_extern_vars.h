@@ -55,7 +55,6 @@ extern Global global;
 //program
 extern string basis_type;
 extern bool fftw_switch;                 // for fftw_original
-extern string decomposition;               // PENCIL, SLAB
 extern string sincostr_switch;             // SINX, COSX, SCC, CSC, CCS, SSC, CSS, SCS
 extern string sincostr_switch_Vx, sincostr_switch_Vy, sincostr_switch_Vz;
 extern string sincostr_switch_F;

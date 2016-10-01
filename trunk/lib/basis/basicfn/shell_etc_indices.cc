@@ -79,7 +79,7 @@ void Compute_ring_index
 )
 {	
 	shell_index = first(shell_radius_array >= kkmag);
-	
+
 	if (theta > M_PI/2)
 		theta = M_PI - theta;		// 0 <= theta <= M_PI/2
 	

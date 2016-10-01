@@ -130,8 +130,9 @@ public:
 	//*****************************************************************************************
 
 	// Read/Write functions
-	void Write_real_field();
 	void Read_real_field();
+	void Write_real_field();
+	void Write_real_field_slice(unsigned int slice_file_counter);
 }; 
 
 #endif

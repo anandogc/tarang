@@ -45,7 +45,9 @@
 	// Array read write
 	// write each component separately, time.V1.hdf, time.V2.hdf... etc.
 class FluidIO 
-{	
+{
+	unsigned int slice_file_counter;		//slice file format: slice_<index>_<slice_file_counter>.h5
+
 public:
 	ifstream		field_in_file;
 	ifstream		force_field_in_file;
@@ -77,6 +79,8 @@ public:
 	
 public:
 	
+	FluidIO();
+
 	void Open_base_files();
     void Close_base_files();
 	
@@ -206,6 +210,10 @@ public:
 	void Output_real_field(FluidVF& U, FluidSF& T1, FluidSF& T2);
 	void Output_real_field(FluidVF& U, FluidVF& W);
 	void Output_real_field(FluidVF& U, FluidVF& W, FluidSF& T);
+
+	void Output_real_field_slice(FluidVF& U);
+	void Output_real_field_slice(FluidVF& U, FluidSF& T);
+	void Output_real_field_slice(FluidVF& U, FluidVF& W);
 	
 	void Output_field_k(FluidVF& U);
 	void Output_field_k(FluidVF& U, FluidSF& T);

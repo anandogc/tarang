@@ -154,10 +154,10 @@ void  FluidIO::Init_cond_modes_scalar(FluidVF&U, FluidSF& T)
 	Complex Vx_complex, Vy_complex, Vz_complex, G_complex;
 	Real Vx_real, Vy_real, Vz_real, G_real;
 	
-	(U.cvf.V1) = 0.0; 
-	(U.cvf.V2) = 0.0; 
-	(U.cvf.V3) = 0.0;
-	(T.csf.F) = 0.0;
+	U.cvf.V1 = 0.0; 
+	U.cvf.V2 = 0.0; 
+	U.cvf.V3 = 0.0;
+	T.csf.F = 0.0;
 	
 	for (int mode = 0; mode < global.io.init_cond_modes.number; mode++) {
 		kx = global.io.init_cond_modes.coords(mode,1); 

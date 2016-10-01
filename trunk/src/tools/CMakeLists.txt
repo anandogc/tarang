@@ -48,7 +48,7 @@ ADD_EXECUTABLE(tarang_field_version_convert2.3
 	tarang_field_version_convert2.3
 	)
 	
-TARGET_LINK_LIBRARIES(tarang_field_version_convert2.3 basis_basicfn global spectral_transform ${SYSTEM_LIBRARIES})
+TARGET_LINK_LIBRARIES(tarang_field_version_convert2.3 basis_basicfn global ${SYSTEM_LIBRARIES})
 
 ADD_CUSTOM_COMMAND(TARGET tarang_field_version_convert2.3
                    POST_BUILD
@@ -63,7 +63,7 @@ ADD_EXECUTABLE(tarang_field_convert_double_float
 	tarang_field_convert_double_float
 	)
 	
-TARGET_LINK_LIBRARIES(tarang_field_convert_double_float basis_basicfn global spectral_transform ${SYSTEM_LIBRARIES})
+TARGET_LINK_LIBRARIES(tarang_field_convert_double_float basis_basicfn global ${SYSTEM_LIBRARIES})
 
 ADD_CUSTOM_COMMAND(TARGET tarang_field_convert_double_float
                    POST_BUILD

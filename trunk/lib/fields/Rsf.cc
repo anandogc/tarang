@@ -99,18 +99,31 @@ void RSF::Inverse_transform(CSF csf)
 
 
 // field_kind = Tr
-void RSF::Write_real_field()
-{
-  string folder_name="real_" + To_string(global.time.now);
-
-  universal->Write(Fr, universal->H5_real, folder_name, field_name+".Fr");
-}
-
 
 void RSF::Read_real_field()
 {
-  universal->Read(Fr, universal->H5_real, field_name+".Fr");
+	Fr = 0;
+	universal->Read(Fr, universal->H5_real, field_name+".Fr");
 }
+
+void RSF::Write_real_field()
+{
+	string folder_name="real_" + To_string(global.time.now);
+
+	universal->Write(Fr, universal->H5_real , "w", folder_name, field_name+".Fr");
+}
+
+void RSF::Write_real_field_slice(unsigned int slice_file_counter)
+{
+	string file_name;
+
+	for (vector<h5::Plan>::size_type i=0; i<universal->H5_slices.size(); i++) {
+		file_name = "slice_" + To_string(i) + "_" + To_string(slice_file_counter);
+
+		universal->Write(Fr, universal->H5_slices[i], "w", "slices", file_name, "Fr");
+	}
+}
+
 
 
 //************************ END of RSF class Definitions ***************************************

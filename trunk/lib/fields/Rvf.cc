@@ -50,9 +50,9 @@ RVF::RVF(string field_name)
 {
 	this->field_name=field_name;
 	
-    V1r.resize(shape_real_array);
-    V2r.resize(shape_real_array);
-    V3r.resize(shape_real_array);
+	V1r.resize(shape_real_array);
+	V2r.resize(shape_real_array);
+	V3r.resize(shape_real_array);
 
 }
 
@@ -114,29 +114,49 @@ void RVF::Inverse_transform(CVF cvf)
 	universal->Inverse_transform(cvf.V3, V3r);
 }
 
-// field_kind = Ur or Wr
-void RVF::Write_real_field()
-{
-   	string folder_name="real_" + To_string(global.time.now);
-
-	universal->Write(V1r, universal->H5_real, folder_name, field_name+".V1r");
-
-    if (!global.program.two_dimension)
-		universal->Write(V2r, universal->H5_real, folder_name, field_name+".V2r");
-	
-	universal->Write(V3r, universal->H5_real, folder_name, field_name+".V3r");
-}
-
-
 void RVF::Read_real_field()
 {
+	V1r = 0;
+	V2r = 0;
+	V3r = 0;
 
 	universal->Read(V1r, universal->H5_real, field_name+".V1r");
 
-    if (!global.program.two_dimension)
+	if (!global.program.two_dimension)
 		universal->Read(V2r, universal->H5_real, field_name+".V2r");
 	
 	universal->Read(V3r, universal->H5_real, field_name+".V3r");
+}
+
+// field_kind = Ur or Wr
+void RVF::Write_real_field()
+{
+	string folder_name="real_" + To_string(global.time.now);
+
+	universal->Write(V1r, universal->H5_real, "w", folder_name, field_name+".V1r");
+
+	if (!global.program.two_dimension)
+		universal->Write(V2r, universal->H5_real, "w", folder_name, field_name+".V2r");
+	
+	universal->Write(V3r, universal->H5_real, "w", folder_name, field_name+".V3r");
+}
+
+
+
+void RVF::Write_real_field_slice(unsigned int slice_file_counter)
+{
+	string file_name;
+
+	for (vector<h5::Plan>::size_type i=0; i<universal->H5_slices.size(); i++) {
+		file_name = "slice_" + To_string(i) + "_" + To_string(slice_file_counter);
+
+		universal->Write(V1r, universal->H5_slices[i], "a", "slices", file_name, "V1r");
+
+		if (!global.program.two_dimension)
+			universal->Write(V2r, universal->H5_slices[i], "a", "slices", file_name, "V2r");
+
+		universal->Write(V3r, universal->H5_slices[i], "a", "slices", file_name, "V3r");
+	}
 }
 
 //**************************  End of RVF class definitions ************************************

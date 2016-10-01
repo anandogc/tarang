@@ -75,7 +75,7 @@ void FluidIO::Output_global(FluidVF& U)
     if (global.program.helicity_switch)
         U.cvf.Compute_total_helicity();
     
-    Real total_dissipation;
+    Real total_dissipation = 0;
     // energy dissipation due to hyperviscosity.
     if (U.hyper_dissipation_switch) {
         Real kn_energy;
@@ -146,7 +146,8 @@ void FluidIO::Output_global_scalar(FluidVF &U, FluidSF& T)
 	U.cvf.Compute_entropy(); 
 	T.csf.Compute_entropy();
     
-    Real total_dissipation, Ttotal_dissipation;
+    Real total_dissipation = 0;
+    Real Ttotal_dissipation = 0;
     
     // energy dissipation due to hyperviscosity.
     if (U.hyper_dissipation_switch) {
@@ -241,7 +242,8 @@ void FluidIO::Output_global_RBC(FluidVF& U, FluidSF& T)
 	
 	nusselt_no = Correlation::Get_Nusselt_no(U, T);
     
-    Real total_dissipation, Ttotal_dissipation;
+    Real total_dissipation = 0;
+    Real Ttotal_dissipation = 0;
     
     // Energy dissipation due to hyperviscosity.
     if (U.hyper_dissipation_switch) {
@@ -322,7 +324,9 @@ void FluidIO::Output_global(FluidVF &U, FluidSF& T1, FluidSF& T2)
 	T1.csf.Compute_entropy(); 
 	T1.csf.Compute_entropy();
     
-    Real total_dissipation, T1total_dissipation, T2total_dissipation;
+    Real total_dissipation = 0;
+    Real T1total_dissipation = 0;
+    Real T2total_dissipation = 0;
     
     // Add energy dissipation due to hyperviscosity.
     if (U.hyper_dissipation_switch) {
@@ -420,7 +424,8 @@ void FluidIO::Output_global(FluidVF& U, FluidVF& W)
 	U.cvf.Compute_entropy();
 	W.cvf.Compute_entropy();
 
-    Real total_dissipation, Wtotal_dissipation;
+    Real total_dissipation = 0;
+    Real Wtotal_dissipation = 0;
     
     // Energy dissipation due to hyperviscosity.
     if (U.hyper_dissipation_switch) {
@@ -525,7 +530,9 @@ void FluidIO::Output_global(FluidVF& U, FluidVF& W, FluidSF& T)
 	U.cvf.Compute_entropy();
 	W.cvf.Compute_entropy();
 	
-    Real total_dissipation, Wtotal_dissipation, Ttotal_dissipation;
+    Real total_dissipation = 0;
+    Real Wtotal_dissipation = 0;
+    Real Ttotal_dissipation = 0;
     
     // Energy dissipation due to hyperviscosity.
     if (U.hyper_dissipation_switch) {
@@ -644,7 +651,10 @@ void FluidIO::Output_global(FluidVF& U, FluidVF& W, FluidSF& T, FluidSF& C)
 	U.cvf.Compute_entropy();
 	W.cvf.Compute_entropy();
 	
-    Real total_dissipation, Wtotal_dissipation, Ttotal_dissipation, Ctotal_dissipation;
+    Real total_dissipation = 0;
+    Real Wtotal_dissipation = 0;
+    Real Ttotal_dissipation = 0;
+    Real Ctotal_dissipation = 0;
     
     // Energy dissipation due to hyperviscosity.
     if (U.hyper_dissipation_switch) {

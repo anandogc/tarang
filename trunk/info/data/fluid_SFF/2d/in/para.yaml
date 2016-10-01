@@ -1,7 +1,7 @@
 program:
     kind: FLUID_INCOMPRESS
-    basis_type: FFF 
-    decomposition: PENCIL        #PENCIL, SLAB
+    basis_type: SFF 
+    decomposition: SLAB        #PENCIL, SLAB
     iter_or_diag: ITERATION           #ITERATION, DIAGNOSTICS
     alias_option: DEALIAS
     integration_scheme: RK4
@@ -13,7 +13,7 @@ program:
     two_dimension: true       
     dt_option: 0               # 0=fixed; 1=dx/umax
     helicity_switch: false
-    sincostr_switch: FFF
+    sincostr_switch: SFF
     
 field:
     N: [8, 1, 8]
@@ -26,12 +26,6 @@ field:
     incompressible: true                #for now it can only be true
     waveno_switch: true
     anisotropy_dirn: 3                  #1,2,3
-
-fft:
-    fftw3D_switch: true
-    fftw_switch: true              #for fftw_original
-    transpose: false               #Should be always "true" for PENCIL
-    sincostr_switch: FFF                    #SINX, COSX, SCC, CSC, CCS, SSC, CSS, SCS
 
 time:
     init: 0

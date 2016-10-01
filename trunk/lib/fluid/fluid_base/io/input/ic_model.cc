@@ -236,7 +236,7 @@ void FluidIO::Model_initial_using_shell_spectrum_Pope(Real dissipation_coefficie
 	Real k;	// radius
 	Real L;	// size of the box
 	Real fL, feta, fL_arg, feta_arg;
-	Real p0=2;
+	Real p0 = 2;
 	Real cL = 6.78;
 	Real ceta = 0.40;
 	Real beta = 5.2;

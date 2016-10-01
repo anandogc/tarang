@@ -52,7 +52,6 @@
 //program
 string basis_type;
 bool fftw_switch;           // for fftw_original
-string decomposition;         // PENCIL, SLAB
 string sincostr_switch;     // SINX, COSX, SCC, CSC, CCS, SSC, CSS, SCS
 string sincostr_switch_Vx;
 string sincostr_switch_Vy;

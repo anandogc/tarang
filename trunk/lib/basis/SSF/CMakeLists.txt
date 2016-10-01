@@ -25,4 +25,4 @@
  #
 
 ADD_SUBDIRECTORY(pencil)
-#ADD_SUBDIRECTORY(slab)
+

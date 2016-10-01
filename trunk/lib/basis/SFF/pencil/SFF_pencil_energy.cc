@@ -67,10 +67,12 @@ Real SFF_PENCIL::Get_local_energy_real_space(Array<Real,3> Ar)
 Real SFF_PENCIL::Get_local_energy(Array<Complex,3> A)  
 {
 	Real total =  2*Array_sqr(A);
+
 	// subtractions from kz = 0 plane.
 	if (my_z_pcoord == 0) 
 		total -= Array_sqr(A(Range::all(), Range::all(), 0));
 	
+
 	// subtractions from kx = 0 plane.
 	if (my_x_pcoord == 0) {
 		total -= Array_sqr(A(0, Range::all(), Range::all()));

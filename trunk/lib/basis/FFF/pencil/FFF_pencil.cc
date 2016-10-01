@@ -88,10 +88,10 @@ FFF_PENCIL::FFF_PENCIL()
 	
 	//global.mpi.num_p_hor is set in global via mpirun argument
 
-	spectralTransform.Init("FFF", Nx, Ny, Nz, global.mpi.num_p_rows);
+	fftk.Init("FFF", Nx, Ny, Nz, global.mpi.num_p_rows);
 
-	global.field.shape_complex_array = spectralTransform.Get_FA_shape();
-	global.field.shape_real_array = spectralTransform.Get_RA_shape();
+	global.field.shape_complex_array = fftk.Get_FA_shape();
+	global.field.shape_real_array = fftk.Get_RA_shape();
 
 
 	//********
@@ -101,15 +101,15 @@ FFF_PENCIL::FFF_PENCIL()
 	global.mpi.num_z_procs = global.mpi.num_p_rows;
 	
 	global.mpi.my_x_pcoord = 0;
-	global.mpi.my_y_pcoord = spectralTransform.Get_col_id();
-	global.mpi.my_z_pcoord = spectralTransform.Get_row_id();
+	global.mpi.my_y_pcoord = fftk.Get_col_id();
+	global.mpi.my_z_pcoord = fftk.Get_row_id();
 	
 	global.mpi.num_x_procs_real = global.mpi.num_p_cols;
 	global.mpi.num_y_procs_real = global.mpi.num_p_rows;
 	global.mpi.num_z_procs_real = 1;
 	
-	global.mpi.my_x_pcoord_real = spectralTransform.Get_col_id();
-	global.mpi.my_y_pcoord_real = spectralTransform.Get_row_id();
+	global.mpi.my_x_pcoord_real = fftk.Get_col_id();
+	global.mpi.my_y_pcoord_real = fftk.Get_row_id();
 	global.mpi.my_z_pcoord_real = 0;
 	
 	
@@ -180,22 +180,17 @@ FFF_PENCIL::FFF_PENCIL()
     global.temp_array.Xr2.resize(shape_real_array);
 	global.temp_array.Xr_slab.resize(shape_real_array*shape(1,num_p_rows,1));
 
-    // temp arrays
-    // Being used in void ArrayOps::Get_XY_plane(Array<Complex,3> A, Array<Complex,2> plane_xy, int kz, string configuration)
-	global.temp_array.plane_xy.resize(Nx, Ny);
-	
-    global.temp_array.plane_xy_inproc.resize(Nx, maxly);
-	
+    BasicIO::Initialize(global.io.data_dir, fftk.Get_communicator("ROW")); 
 	
 	BasicIO::Array_properties<3> array_properties;
 	array_properties.shape_full_complex_array = Nx, Ny, Nz/2+1;
 	array_properties.shape_full_real_array = Nx, Ny, Nz+2;
 
-	array_properties.id_complex_array = my_x_pcoord_real, 0, my_z_pcoord_real;
-	array_properties.id_real_array = my_x_pcoord_real, 0, my_z_pcoord_real;
+	array_properties.id_complex_array = my_x_pcoord_real, 0, 0;
+	array_properties.id_real_array = my_x_pcoord_real, 0, 0;
 
-	array_properties.numprocs_complex_array = num_x_procs_real, 1, num_z_procs_real;
-	array_properties.numprocs_real_array = num_x_procs_real, 1, num_z_procs_real;
+	array_properties.numprocs_complex_array = num_x_procs_real, 1, 1;
+	array_properties.numprocs_real_array = num_x_procs_real, 1, 1;
 
 	if (global.io.N_in_reduced.size() == 3)
 		array_properties.shape_N_in_reduced = global.io.N_in_reduced[0], global.io.N_in_reduced[1], global.io.N_in_reduced[2]/2+1;
@@ -206,13 +201,16 @@ FFF_PENCIL::FFF_PENCIL()
 	array_properties.Fourier_directions = 1,1,1;
 	array_properties.Z = 2;
 
-	array_properties.datatype_complex_space = BasicIO::H5T_Complex;
-	array_properties.datatype_real_space = BasicIO::H5T_Real;
+	array_properties.datatype_complex_space = h5::Dtype(H5Complex);
+	array_properties.datatype_real_space = h5::Dtype(H5Real);
 
 	BasicIO::Set_H5_plans(array_properties, this);
 
 
 	//These are used by Get_XY_plane
+	global.temp_array.plane_xy.resize(Nx, Ny);
+    global.temp_array.plane_xy_inproc.resize(Nx, maxly);
+	
 	int count=Nx;
 	int blocklength=2*maxly;
 	int stride=2*Ny;

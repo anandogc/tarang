@@ -70,13 +70,13 @@ Array<Real,2> Correlation::cylindrical_ring_dissk2;
 
 void Correlation::Initialize()
 {
+	shell_ek1.resize(global.spectrum.shell.no_shells);
+	shell_ek2.resize(global.spectrum.shell.no_shells);
+	shell_ek3.resize(global.spectrum.shell.no_shells);
+
 	if (global.spectrum.shell.turnon){
 		shell_ek.resize(global.spectrum.shell.no_shells);
 		shell_dissk.resize(global.spectrum.shell.no_shells);
-
-		shell_ek1.resize(global.spectrum.shell.no_shells);
-		shell_ek2.resize(global.spectrum.shell.no_shells);
-		shell_ek3.resize(global.spectrum.shell.no_shells);
 
 		shell_dissk1.resize(global.spectrum.shell.no_shells);
 		shell_dissk2.resize(global.spectrum.shell.no_shells);

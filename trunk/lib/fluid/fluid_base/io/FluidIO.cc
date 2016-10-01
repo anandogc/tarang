@@ -41,6 +41,10 @@
 
 //*********************************************************************************************
 
+FluidIO::FluidIO() {
+	slice_file_counter = 0;
+}
+
 void FluidIO::Open_base_files()
 {
 	string filename;

@@ -239,9 +239,9 @@
 	Real AnisKvect_polar_angle(int lx, int ly, int lz);
 	Real AnisKvect_azimuthal_angle(int lx, int ly, int lz);
 
-    int Read(Array<Complex,3> A, BasicIO::H5_plan plan, string file_name, string dataset_name="");
-    int Read(Array<Real,3> Ar, BasicIO::H5_plan plan, string file_name, string dataset_name="");
+    int Read(Array<Complex,3> A, h5::Plan plan, string file_name, string dataset_name="");
+    int Read(Array<Real,3> Ar, h5::Plan plan, string file_name, string dataset_name="");
 
-    int Write(Array<Complex,3> A, BasicIO::H5_plan plan, string folder_name, string file_name, string dataset_name="");
-    int Write(Array<Real,3> Ar, BasicIO::H5_plan plan, string folder_name, string file_name, string dataset_name="");
+    int Write(Array<Complex,3> A, h5::Plan plan, string access_mode, string folder_name, string file_name, string dataset_name="");
+    int Write(Array<Real,3> Ar, h5::Plan plan, string access_mode, string folder_name, string file_name, string dataset_name="");
 

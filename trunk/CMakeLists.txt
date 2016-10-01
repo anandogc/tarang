@@ -1,15 +1,15 @@
  # Tarang-2
  # 
  # Copyright (C) 2008, 2009  Mahendra K. Verma
- #
+ # 
  # Mahendra K. Verma
  # Indian Institute of Technology, Kanpur-208016
  # UP, India
- #
+ # 
  # mkv@iitk.ac.in
- #
+ # 
  # This file is part of Tarang-2 .
- #
+ # 
  # Tarang-2 is free software; you can redistribute it and/or
  # modify it under the terms of the GNU General Public License
  # as published by the Free Software Foundation; either version 2
@@ -22,7 +22,7 @@
  # You should have received a copy of the GNU General Public License
  # along with Tarang-2; if not, write to the Free Software
  # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, U
- #
+ # 
 
  # \file  CMakeLists.txt
  # @author  M. K. Verma, A. G. Chatterjee
@@ -42,7 +42,7 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.8.2)
 ######################
 
 #CMake usage:
-#CXX=mpicxx cmake [-DREAL=FLOAT] [-DGROSSMANN_LOHSE=ON] [-DFIND_LIBRARIES=OFF] [-DPOSTFIX=".mic"] [-DCMAKE_BUILD_TYPE=DEBUG] [-DMMIC] [-DFFTW_PLAN=MEASURE] /path/to/CMakeLists.txt
+#CXX=mpicxx cmake [-DREAL=FLOAT] [-DGROSSMANN_LOHSE=ON] [-DFIND_LIBRARIES=OFF] [-DCMAKE_BUILD_TYPE=DEBUG] [-DFFTW_PLAN=MEASURE] /path/to/CMakeLists.txt
 
 #Example:
 #CC=mpicc CXX=mpicxx cmake ../tarang/trunk
@@ -64,9 +64,9 @@ SET (LIBRARY_DIRS
 
 
 #Required libraries, One of FFTW_FLOAT_LIBS or FFTW_DOUBLE_LIBS is selected depending on REAL
-SET (FFTW_FLOAT_LIBS fftw3f_mpi fftw3f)
-SET (FFTW_DOUBLE_LIBS fftw3_mpi fftw3)
-SET (OTHER_LIBS)
+SET (FFTW_FLOAT_LIBS fftkf fftw3f_mpi fftw3f)
+SET (FFTW_DOUBLE_LIBS fftk fftw3_mpi fftw3)
+SET (OTHER_LIBS blitz m hdf5 h5si dl yaml-cpp)
 
 
 #################################################
@@ -74,7 +74,7 @@ SET (OTHER_LIBS)
 #################################################
 
 #Set version
-SET (VERSION "2.5.0")
+SET (VERSION "2.5.2")
 
 SET (SPECTRAL_TRANSFORM_VERSION v2)
 
@@ -243,6 +243,7 @@ ${CMAKE_SOURCE_DIR}/lib/global
 ${CMAKE_SOURCE_DIR}/lib/basis
 ${CMAKE_SOURCE_DIR}/lib/basis/spectral_transform/
 ${CMAKE_SOURCE_DIR}/lib/basis/basicfn
+${CMAKE_SOURCE_DIR}/lib/basis/basicfn/h5si
 ${CMAKE_SOURCE_DIR}/lib/fields
 ${CMAKE_SOURCE_DIR}/lib/fluid
 ${CMAKE_SOURCE_DIR}/lib/fluid/fluid_base
@@ -259,6 +260,7 @@ ${FFTW3F_INCLUDE_DIRS}
 ${FFTW3_INCLUDE_DIRS}
 ${HDF5_INCLUDE_DIRS}
 ${INCLUDE_DIRS}
+${CACHED_INCLUDE_DIRS}
 )
 
 #Folders where libraries will be searched for
@@ -269,6 +271,7 @@ ${FFTW3F_LIBRARY_DIRS}
 ${FFTW3_LIBRARY_DIRS}
 ${HDF5_LIBRARY_DIRS}
 ${LIBRARY_DIRS}
+${CACHED_LIBRARY_DIRS}
 )
 
 ADD_DEFINITIONS(-DVERSION=${VERSION} ${HDF5_DEFINITIONS})
@@ -279,9 +282,22 @@ ELSEIF(REAL MATCHES "DOUBLE")
     SET(SYSTEM_LIBRARIES ${FFTW_DOUBLE_LIBS} ${FFTW3_LIBRARIES})
 ENDIF()
 
-SET(SYSTEM_LIBRARIES ${SYSTEM_LIBRARIES} ${OTHER_LIBS} ${HDF5_LIBRARIES} ${FFTW3_LIBRARIES} ${BLITZ_LIBRARIES} ${YAML_CPP_LIBRARIES})
+SET(SYSTEM_LIBRARIES ${SYSTEM_LIBRARIES} ${OTHER_LIBS} ${HDF5_LIBRARIES} ${FFTW3_LIBRARIES} ${BLITZ_LIBRARIES} ${YAML_CPP_LIBRARIES} ${CACHED_LIBRARIES} )
 
-#MESSAGE(STATUS "SYSTEM_LIBRARIES = ${SYSTEM_LIBRARIES}")
+# MESSAGE(STATUS "SYSTEM_LIBRARIES = ${SYSTEM_LIBRARIES}")
+# SET (SYSTEM_LIBRARIES CACHE BOOL "CMAKE_BUILD_TYPE_DISPLAYED")
+
+#  IF (NOT CACHED_INCLUDE_DIRS)
+#      SET (CACHED_INCLUDE_DIRS ${YAML_CPP_INCLUDE_DIRS} ${BLITZ_INCLUDE_DIRS} ${FFTW3F_INCLUDE_DIRS} ${FFTW3_INCLUDE_DIRS} ${HDF5_INCLUDE_DIRS} ${INCLUDE_DIRS} CACHE STRING "CACHED_INCLUDE_DIRS")
+#  ENDIF ()
+
+#  IF (NOT CACHED_LIBRARY_DIRS)
+#      SET (CACHED_LIBRARY_DIRS ${YAML_CPP_LIBRARY_DIRS} ${BLITZ_LIBRARY_DIRS} ${FFTW3F_LIBRARY_DIRS} ${FFTW3_LIBRARY_DIRS} ${HDF5_LIBRARY_DIRS} ${LIBRARY_DIRS} CACHE STRING "CACHED_LIBRARY_DIRS")
+#  ENDIF ()
+
+#  IF (NOT CACHED_LIBRARIES)
+#      SET (CACHED_LIBRARIES ${SYSTEM_LIBRARIES} CACHE STRING "CACHED_LIBRARIES")
+#  ENDIF ()
 
 
 #Build type
@@ -301,9 +317,9 @@ SET (CONFIGURE_OPTIONS '"CXX=${CMAKE_CXX_COMPILER} cmake -DREAL=${REAL} -DGROSSM
 SET(CMAKE_CXX_FLAGS "-DCONFIGURE_OPTIONS=${CONFIGURE_OPTIONS}")
 
 
-SET(CMAKE_CXX_FLAGS_DISTRIBUTION "-O3")
+SET(CMAKE_CXX_FLAGS_DISTRIBUTION "-O3 -DH5SI_ENABLE_MPI")
 
-SET(CMAKE_CXX_FLAGS_DEBUG "-g -O0")
+SET(CMAKE_CXX_FLAGS_DEBUG "-g -O0 -DH5SI_ENABLE_MPI")
 
 ADD_SUBDIRECTORY(lib)
 ADD_SUBDIRECTORY(src)

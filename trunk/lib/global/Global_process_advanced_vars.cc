@@ -43,16 +43,14 @@
 
 void Global::Process_advanced_vars()
 {
-	mpi.MPI_COMM_ROW = spectralTransform.Get_communicator("ROW");
-	mpi.MPI_COMM_COL = spectralTransform.Get_communicator("COL");
+	mpi.MPI_COMM_ROW = fftk.Get_communicator("ROW");
+	mpi.MPI_COMM_COL = fftk.Get_communicator("COL");
 
 	// Time
 	time.now = time.init;
 	
 	// force	
-	force.configuration_done = false;
 	force.configuration_done = false;   // default
-		
 	force.modes.read_done = false;
 	
 	

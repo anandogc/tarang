@@ -70,7 +70,6 @@ public:
 		string alias_option;
 		string integration_scheme;
 		string basis_type;
-		string decomposition;				// PENCIL, SLAB
 		bool LES_switch;
 		bool T_exists;
 		bool W_exists;
@@ -268,6 +267,8 @@ public:
 		Array<int,1> int_para;
 		Array<Real,1> double_para;
 		Array<string,1> string_para;
+
+		vector<h5::Expression> slice_save;
 		
 		struct init_cond_modes {
 			int number;
@@ -320,6 +321,7 @@ public:
 			Real field_frequent_save_next;
 			Real field_reduced_save_next;
 			Real real_field_save_next;
+			Real slice_save_next;
 			Real field_k_save_next;
 			Real field_r_save_next;
 			Real spectrum_save_next;
@@ -338,49 +340,50 @@ public:
 			Real cout_save_next;
 
 
-			Real	global_save_interval;	
-			Real	complex_field_save_interval; 
-			Real	field_frequent_save_interval;
-			Real	field_reduced_save_interval;
-			Real	real_field_save_interval;
-			Real	field_k_save_interval;				
-			Real	field_r_save_interval;	
-			Real  pressure_save_interval;
-			Real	spectrum_save_interval;
-			Real	pressure_spectrum_save_interval;
-			Real	flux_save_interval;
-			Real	shell_to_shell_save_interval;
-			Real	ring_spectrum_save_interval;
-			Real	ring_to_ring_save_interval;
-			Real	cylindrical_ring_spectrum_save_interval;
-			Real	cylindrical_ring_to_ring_save_interval;
-			Real	structure_fn_save_interval;
-			Real  Tk_shell_spectrum_save_interval;
-			Real  Tk_ring_spectrum_save_interval;
-			Real  Tk_cylindrical_ring_spectrum_save_interval;
-			Real	cout_save_interval;
+			Real global_save_interval;	
+			Real complex_field_save_interval; 
+			Real field_frequent_save_interval;
+			Real field_reduced_save_interval;
+			Real real_field_save_interval;
+			Real slice_save_interval; 
+			Real field_k_save_interval;				
+			Real field_r_save_interval;	
+			Real pressure_save_interval;
+			Real spectrum_save_interval;
+			Real pressure_spectrum_save_interval;
+			Real flux_save_interval;
+			Real shell_to_shell_save_interval;
+			Real ring_spectrum_save_interval;
+			Real ring_to_ring_save_interval;
+			Real cylindrical_ring_spectrum_save_interval;
+			Real cylindrical_ring_to_ring_save_interval;
+			Real structure_fn_save_interval;
+			Real Tk_shell_spectrum_save_interval;
+			Real Tk_ring_spectrum_save_interval;
+			Real Tk_cylindrical_ring_spectrum_save_interval;
+			Real cout_save_interval;
 			
-			bool	global_save_last;	
-			bool	complex_field_save_last; 
-			bool	field_frequent_save_last;
-			bool	field_reduced_save_last;
-			bool	real_field_save_last;
-			bool	field_k_save_last;				
-			bool	field_r_save_last;	
+			bool global_save_last;	
+			bool complex_field_save_last; 
+			bool field_frequent_save_last;
+			bool field_reduced_save_last;
+			bool real_field_save_last;
+			bool field_k_save_last;				
+			bool field_r_save_last;	
 			bool pressure_save_last;
-			bool	spectrum_save_last;
-			bool	pressure_spectrum_save_last;
-			bool	flux_save_last;
-			bool	shell_to_shell_save_last;
-			bool	ring_spectrum_save_last;
-			bool	ring_to_ring_save_last;
-			bool	cylindrical_ring_spectrum_save_last;
-			bool	cylindrical_ring_to_ring_save_last;
-			bool	structure_fn_save_last;
+			bool spectrum_save_last;
+			bool pressure_spectrum_save_last;
+			bool flux_save_last;
+			bool shell_to_shell_save_last;
+			bool ring_spectrum_save_last;
+			bool ring_to_ring_save_last;
+			bool cylindrical_ring_spectrum_save_last;
+			bool cylindrical_ring_to_ring_save_last;
+			bool structure_fn_save_last;
 			bool Tk_shell_spectrum_save_last;
 			bool Tk_ring_spectrum_save_last;
 			bool Tk_cylindrical_ring_spectrum_save_last;
-			bool	cout_save_last;
+			bool cout_save_last;
 			
 			void Print(int my_level);
 		} time;
@@ -525,21 +528,21 @@ public:
 
 
 	struct myconstant{
-		const Complex  I;
+		const Complex I;
 
 		/// minusI = -sqrt(-1).			
-		const Complex  minusI;
+		const Complex minusI;
 
 		/// minus2I = -2*sqrt(-1).			
-		const Complex  minus2I;	
+		const Complex minus2I;	
 
 		// Number of digits for output files
 		// NOTE:  for double only.. For float put MY_PRECISION = 6
 		//const int MY_PRECISION = 12;
 
 
-		const Real  MYEPS;
-		const Real  MYEPS2;
+		const Real MYEPS;
+		const Real MYEPS2;
 
 		const int MY_MAX_INT;
 		// cut off while reading diagnostic_procedure() array from input file and similar ops

@@ -46,7 +46,6 @@
 #define _DEF_VARS_H
 
 #include <mpi.h>
-#include <fftw3-mpi.h>
 
 #include <blitz/array.h>
 
@@ -74,6 +73,8 @@
 #include <random/chisquare.h>
 #include <random/F.h>
 
+#include <h5file.h>
+
 using namespace ranlib;
 // Random ends
 
@@ -90,8 +91,8 @@ using namespace blitz ;
 
 #define Real 								float
 #define MPI_Real							MPI_FLOAT
-#define H5T_Real 							H5T_FLOAT	 // for HDF5
-#define H5T_Complex							H5T_COMPLEX_FLOAT
+#define H5Real 								"float"		 // for HDF5
+#define H5Complex							"cfloat"     // for HDF5
 
 #define ZERO 0.0f
 #define ONE 1.0f
@@ -114,8 +115,8 @@ const int MY_PRECISION = 6;
 
 #define Real								double
 #define MPI_Real							MPI_DOUBLE
-#define H5T_Real 							H5T_DOUBLE   // for HDF5
-#define H5T_Complex							H5T_COMPLEX_DOUBLE
+#define H5Real 								"double"		 // for HDF5
+#define H5Complex							"cdouble"     // for HDF5
 
 #define ZERO 0.0
 #define ONE 1.0

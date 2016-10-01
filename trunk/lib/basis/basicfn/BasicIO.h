@@ -49,22 +49,13 @@
 #include "def_vars.h"
 #include "Global_extern_vars.h"
 
+#include "h5si.h"
+
 class BasicIO
 {
 
 	private:
-		static int num_p_rows;
-		static int num_p_cols;
-
-		static int my_row_id;
-		static int my_col_id;
-
-		static MPI_Comm MPI_COMM_ROW;
-		static MPI_Comm MPI_COMM_COL;
-
-		// define an info object to store MPI-IO information 
-		static MPI_Info FILE_INFO_TEMPLATE;
-		static hid_t acc_template;
+		static MPI_Comm MPI_COMMUNICATOR;
 		
 		static ofstream LOG_file;
 
@@ -73,29 +64,10 @@ class BasicIO
 
 	public:
 
-	static hid_t H5T_FLOAT;
-	static hid_t H5T_DOUBLE;
-
-	static hid_t H5T_COMPLEX_FLOAT;
-	static hid_t H5T_COMPLEX_DOUBLE;
-
-	struct H5_dataset_meta {
-		string name;
-		vector<hsize_t> dimensions;
-		H5T_class_t datatype;
-	};
-
-	struct H5_plan{
-		hid_t dataspace;
-		hid_t memspace;
-
-		hid_t datatype;
-	};
-
 	template<int rank>
 	struct Array_properties {
-		TinyVector<int,rank> shape_full_complex_array;
-		TinyVector<int,rank> shape_full_real_array;
+		TinyVector<hsize_t,rank> shape_full_complex_array;
+		TinyVector<hsize_t,rank> shape_full_real_array;
 
 		TinyVector<int,rank> id_complex_array;
 		TinyVector<int,rank> id_real_array;
@@ -103,8 +75,8 @@ class BasicIO
 		TinyVector<int,rank> numprocs_complex_array;
 		TinyVector<int,rank> numprocs_real_array;
 
-		TinyVector<int,rank> shape_N_in_reduced;
-		TinyVector<int,rank> shape_N_out_reduced;
+		TinyVector<hsize_t,rank> shape_N_in_reduced;
+		TinyVector<hsize_t,rank> shape_N_out_reduced;
 
 		TinyVector<int,rank> Fourier_directions;
 		int Z;
@@ -112,7 +84,7 @@ class BasicIO
 		hid_t datatype_complex_space;
 		hid_t datatype_real_space;
 
-		Array_properties():shape_N_in_reduced(0), shape_N_out_reduced(0){};
+		Array_properties() {shape_N_in_reduced = 0; shape_N_out_reduced = 0;}
 	};
 
 	static string data_in_folder, data_out_folder;
@@ -120,7 +92,14 @@ class BasicIO
 
 	public:
 
-		static void Initialize(string data_base_folder, int num_p_rows, int num_p_cols);
+		struct H5_dataset_meta {
+			string name;
+			vector<hsize_t> dimensions;
+			H5T_class_t datatype;
+		};
+
+
+		static void Initialize(string data_base_folder, MPI_Comm MPI_COMMUNICATOR);
 		static void Finalize();
 		static void Log(string message);
 		static void Begin_frequent();
@@ -135,14 +114,9 @@ class BasicIO
 		template<typename Planner, int rank>
     	static void Set_H5_plans(Array_properties<rank> array_properties, Planner* planner);
 
-    	static H5_plan Set_plan(int rank, int* my_id, int* numprocs, Array<int,1>* dataspace_filter, Array<int,1>* memspace_filter, hid_t datatype);
-    
-
-        static int Read(void *data, H5_plan plan, string file_name, string dataset_name="");
-		static int Write(const void* data, H5_plan plan, string folder_name, string file_name, string dataset_name="");
-
+        static int Read(void *data, h5::Plan plan, string file_name, string dataset_name="");
+		static int Write(const void* data, h5::Plan plan, string access_mode, string folder_name, string file_name, string dataset_name="");
 };
-
 
 #endif
 //========================= Class declaration of BasicIO ends ============================== 

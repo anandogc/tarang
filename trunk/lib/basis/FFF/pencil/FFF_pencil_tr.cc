@@ -44,7 +44,7 @@ void FFF_PENCIL::Forward_transform(Array<Real,3> Ar, Array<Complex,3> A)
 {
 	// Real local_energy = sum(sqr(Ar))/2;
 	// if (master) cout << "local_energy before Forward_transform = " << local_energy/(Nx*Ny*Nz) << endl;	
-	spectralTransform.Forward_transform("FFF", Ar, A);
+	fftk.Forward_transform("FFF", Ar, A);
 	// Print_large_Fourier_elements(A,"After Forward transform: A");
 	// local_energy = Array_sqr(A);
 	// if (master) cout << "local_energy after Forward_transform = " << local_energy << endl;
@@ -61,13 +61,13 @@ void FFF_PENCIL::Inverse_transform(Array<Complex,3> A, Array<Real,3> Ar)
 	// Real local_energy = Array_sqr(A);
 	// cout << "local_energy before Inverse_transform = " << my_id << " " << local_energy << endl;	
 	global.temp_array.X_transform = A;
-	spectralTransform.Inverse_transform("FFF", global.temp_array.X_transform, Ar);
+	fftk.Inverse_transform("FFF", global.temp_array.X_transform, Ar);
 	// local_energy = sum(sqr(Ar))/2;
 	// if (master) cout << "local_energy after Inverse_transform = " << local_energy/(Nx*Ny*Nz) << endl;
 
 	// Real local_energy = sum(sqr(Ar))/2;
 	// if (master) cout << "local_energy before Forward_transform = " << local_energy/(Nx*Ny*Nz) << endl;	
-	// spectralTransform.Forward_transform("FFF", Ar, A);
+	// fftk.Forward_transform("FFF", Ar, A);
 	// Print_large_Fourier_elements(A,"After Forward transform: A");
 	// local_energy = Array_sqr(A);
 	// cout << "local_energy After Forward_transform = " << my_id << " " << local_energy << endl;	
@@ -83,7 +83,7 @@ void FFF_PENCIL::Xderiv(Array<Complex,3> A, Array<Complex,3> B)
 	
 	for (int lx=0; lx<maxlx; lx++) {
 		Kx = Get_kx(lx)*kfactor[1];
-		
+
 		B(lx,Range::all(),Range::all()) = Complex(0,Kx)*A(lx,Range::all(),Range::all()); 	
 	}
 }

@@ -48,8 +48,8 @@
 //#include <memory>
 
 /********************************************************************************************* */
-#include "spectral_transform.h"
-extern SpectralTransform spectralTransform;
+#include "fftk.h"
+extern FFTK fftk;
 
 #include "universal.h"
 extern Universal *universal;

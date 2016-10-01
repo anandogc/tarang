@@ -84,6 +84,7 @@ void Nlin_incompress::Compute_nlin(FluidVF& U, FluidVF& W)
     // Output real field
    if (!global.io.output_real_field_done) {
 		fluidIO_incompress.Output_real_field(U, W);
+		fluidIO_incompress.Output_real_field_slice(U, W);
 		fluidIO_incompress.Output_field_r(U, W);
 		fluidIO_incompress.Output_global_real_space(U, W);  // Only for Cheby basis
 		fluidIO_incompress.Output_cout_real_space(U, W);	 // Only for Cheby basis

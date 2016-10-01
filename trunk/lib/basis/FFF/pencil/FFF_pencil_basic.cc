@@ -140,12 +140,12 @@ void FFF_PENCIL::Satisfy_strong_reality_condition_in_Array(Array<Complex,3> A)
 {
 	int array_index_minus_kx, array_index_minus_ky;
 	
-	// For a given (minuskx, minusky), locate (kx,ky) and then subst.
-	// A(minuskx, minusky, 0) = conj(A(kx,ky,0))
 	if (my_z_pcoord == 0) {
 		Get_XY_plane(A, global.temp_array.plane_xy, 0);
 
 		#pragma ivdep
+		// For a given (minuskx, minusky), locate (kx,ky) and then substitute.
+		// A(minuskx, minusky, 0) = conj(A(kx,ky,0))
 		for (int lx=Nx/2+1; lx<Nx; lx++)  {
 			array_index_minus_kx = -Get_kx(lx);         // kx<0; minuskx = -Get_kx(lx) > 0
 
@@ -157,11 +157,19 @@ void FFF_PENCIL::Satisfy_strong_reality_condition_in_Array(Array<Complex,3> A)
 
 					A(lx,ly,0) = conj(global.temp_array.plane_xy(array_index_minus_kx,array_index_minus_ky));
 				}
-				// for (ky=0,kz=0) line
-				if (Get_ky(ly) == 0)
-					A(0,ly,0) = conj(global.temp_array.plane_xy(0,array_index_minus_ky));
+
 			}
 		}
+	
+		// for (kx=0,kz=0) line
+		// For a given (0, minusky), locate (0,ky) and then substitute.
+		for (int ly=0; ly<maxly; ly++) {
+			if (Get_ky(ly) < 0) {
+				array_index_minus_ky =  Get_iy(-Get_ky(ly));  // minusky = -Get_ky(ly);
+				A(0,ly,0) = conj(global.temp_array.plane_xy(0,array_index_minus_ky));
+			}
+		}
+		
 	}
 
 	// for kz=Nz/2
@@ -243,33 +251,40 @@ void FFF_PENCIL::Assign_sub_array(Range x_range, Range y_range, Range z_range, A
 		A(x_range, y_apply, z_apply) = value;
 }
 
-int FFF_PENCIL::Read(Array<Complex,3> A, BasicIO::H5_plan plan, string file_name, string dataset_name)
+int FFF_PENCIL::Read(Array<Complex,3> A, h5::Plan plan, string file_name, string dataset_name)
 {
-	int err = BasicIO::Read(global.temp_array.Xr_slab.data(), plan, file_name, dataset_name);
-	spectralTransform.To_pencil(global.temp_array.Xr_slab, global.temp_array.Xr);
-	spectralTransform.Transpose(global.temp_array.Xr, A);
-	return err;
+    if (my_z_pcoord == 0)  
+	    BasicIO::Read(global.temp_array.Xr_slab.data(), plan, file_name, dataset_name);
+	fftk.To_pencil(global.temp_array.Xr_slab, global.temp_array.Xr);
+	fftk.Transpose(global.temp_array.Xr, A);
+	return 0;
 }
 
-int FFF_PENCIL::Read(Array<Real,3> Ar, BasicIO::H5_plan plan, string file_name, string dataset_name)
+int FFF_PENCIL::Read(Array<Real,3> Ar, h5::Plan plan, string file_name, string dataset_name)
 {
-	int err = BasicIO::Read(global.temp_array.Xr_slab.data(), plan, file_name, dataset_name);
-	spectralTransform.To_pencil(global.temp_array.Xr_slab, Ar);
-	return err;
+    if (my_y_pcoord == 0)  
+	    BasicIO::Read(global.temp_array.Xr_slab.data(), plan, file_name, dataset_name);
+	fftk.To_pencil(global.temp_array.Xr_slab, Ar);
+	return 0;
 }
 
 
-int FFF_PENCIL::Write(Array<Complex,3> A, BasicIO::H5_plan plan, string folder_name, string file_name, string dataset_name)
+int FFF_PENCIL::Write(Array<Complex,3> A, h5::Plan plan, string access_mode, string folder_name, string file_name, string dataset_name)
 {
-	spectralTransform.Transpose(A, global.temp_array.Xr);
-	spectralTransform.To_slab(global.temp_array.Xr, global.temp_array.Xr_slab);
-	return BasicIO::Write(global.temp_array.Xr_slab.data(), plan, folder_name, file_name, dataset_name);
+	fftk.Transpose(A, global.temp_array.Xr);
+	fftk.To_slab(global.temp_array.Xr, global.temp_array.Xr_slab);
+    if (my_z_pcoord == 0)  
+    	BasicIO::Write(global.temp_array.Xr_slab.data(), plan, access_mode, folder_name, file_name, dataset_name);
+
+    return 0;
 }
 
-int FFF_PENCIL::Write(Array<Real,3> Ar, BasicIO::H5_plan plan, string folder_name, string file_name, string dataset_name)
+int FFF_PENCIL::Write(Array<Real,3> Ar, h5::Plan plan, string access_mode, string folder_name, string file_name, string dataset_name)
 {
-	spectralTransform.To_slab(Ar, global.temp_array.Xr_slab);
-	return BasicIO::Write(global.temp_array.Xr_slab.data(), plan, folder_name, file_name, dataset_name);  
+	fftk.To_slab(Ar, global.temp_array.Xr_slab);
+    if (my_z_pcoord == 0)  
+	    BasicIO::Write(global.temp_array.Xr_slab.data(), plan, access_mode, folder_name, file_name, dataset_name); 
+    return 0;
 }
 
 

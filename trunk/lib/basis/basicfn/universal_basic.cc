@@ -86,12 +86,18 @@ int Universal::Get_number_modes_in_shell(Real inner_radius, Real outer_radius)
 
 void Universal::Print_large_Fourier_elements(Array<Complex,3> A, string array_name)
 {
-	for (int lx=0; lx<A.extent(0); lx++)
-		for (int ly=0; ly<A.extent(1); ly++)
-			for (int lz=0; lz<A.extent(2); lz++)
-				if (abs(A(lx, ly, lz)) > MYEPS2) {
-					cout << "my_id = " << my_id <<  " " << array_name <<"(" << Get_kx(lx) << "," << Get_ky(ly) << "," << Get_kz(lz) <<") = " << A(lx, ly, lz) << '\n';
-				}
+	MPI_Barrier(MPI_COMM_WORLD);
+	for (int p=0; p<numprocs; p++) {
+		if (p==my_id) {
+			for (int lx=0; lx<A.extent(0); lx++)
+				for (int ly=0; ly<A.extent(1); ly++)
+					for (int lz=0; lz<A.extent(2); lz++)
+						if (abs(A(lx, ly, lz)) > MYEPS2) {
+							cout << "my_id = " << my_id <<  " " << array_name <<"(" << (lx) << "," << (ly) << "," << (lz) <<") = " << A(lx, ly, lz) << '\n';
+						}
+		}
+		MPI_Barrier(MPI_COMM_WORLD);
+	}
 	
 	 if (master)
 		 cout << endl;
@@ -110,7 +116,6 @@ void Universal::Array_mult_ksqr(Array<Complex,3> A)
 	Real Kxysqr;
 	Real Ksqr;
 	
-	//#pragma omp parallel for private(Kysqr,Kyzsqr,Ksqr) 
 	for (int lx=0; lx<maxlx; lx++) {
 		Kxsqr = my_pow(Get_kx(lx)*kfactor[1],2);
 		
@@ -140,7 +145,6 @@ void Universal::Array_divide_ksqr(Array<Complex,3> A)
 	Real Kxysqr;
 	Real Ksqr;
    
-	//#pragma omp parallel for private(Kysqr,Kyzsqr,Ksqr) 
 	for (int lx=0; lx<maxlx; lx++) {
 		Kxsqr = my_pow(Get_kx(lx)*kfactor[1],2);
 		
@@ -175,7 +179,6 @@ void Universal::Array_exp_ksqr(Array<Complex,3> A, Real factor)
 	Real Kxysqr;
 	Real Ksqr;
 	
-	//#pragma omp parallel for private(Kysqr,Kyzsqr,Ksqr) 
 	for (int lx=0; lx<maxlx; lx++) {
 		Kxsqr = my_pow(Get_kx(lx)*kfactor[1],2);
 		
@@ -277,7 +280,7 @@ void Universal::Array_mult_V0_khat_sqr(Array<Complex,3> A, TinyVector<Real,3> V0
  *
  *  @return  \f$ *F = \mathcal{F}(D_i A_i) \f$. 
  */
-void Universal::Compute_divergence(Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az, Array<Complex,3> div, string field_or_nlin, Real &total_abs_div, bool print_switch)
+void Universal::Compute_divergence(Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az, Array<Complex,3> div, string field_or_nlin, Real &max_abs_div, bool print_switch)
 {	
 	global.program.sincostr_switch = sincostr_switch_Vx;
 	Xderiv(Ax, div);
@@ -288,11 +291,10 @@ void Universal::Compute_divergence(Array<Complex,3> Ax, Array<Complex,3> Ay, Arr
 	global.program.sincostr_switch = sincostr_switch_Vz;
 	Add_Zderiv(Az, div);
 	
-
 	if (field_or_nlin == "field") {
-		total_abs_div = max(abs(div))>MYEPS2;
+		max_abs_div = max(abs(div));
 		
-		if ((print_switch) && (total_abs_div > MYEPS2)) {
+		if ((print_switch) && (max_abs_div > MYEPS2)) {
 			if (master)
 				cout << "NON-ZERO DIVERGENCE for the following modes:"  << endl;
 			Print_large_Fourier_elements(div, "Divergence");
@@ -313,7 +315,6 @@ void Universal::Fill_Vz(Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,
 		if (my_z_pcoord==0)
 			lz_min=1;
 
-		//#pragma omp parallel for
 		for (int lx=0; lx<maxlx; lx++)
 			for (int ly=0; ly<maxly; ly++)
 				for (int lz=lz_min; lz<maxlz; lz++)
@@ -333,6 +334,5 @@ void Universal::Zero_modes(Array<Complex,3> F)
 {
 	// Do nothing
 }
-
 
 //*****************************  End of four_basic.cc **************************

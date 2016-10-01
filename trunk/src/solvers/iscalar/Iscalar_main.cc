@@ -36,6 +36,7 @@
 
 
  #include "Iscalar_main.h"
+ //#include <vector_ops.h>
 
 
 //****************************************************************************************					
@@ -59,7 +60,6 @@ int Iscalar_main()
 			
 			else if (global.PHYSICS.Pr_option == "PRLARGE") {
 				if (global.PHYSICS.Uscaling == "USMALL") {
-					cout << "Within If" << endl;
 					global.field.diss_coefficients[0] = global.PHYSICS.Prandtl;              //  Coeff of grad^2 u
 					global.field.diss_coefficients[1]  = 1.0;			// Coeff of grad^2 T
 				}
@@ -210,7 +210,7 @@ int Iscalar_main()
 		// EnergyTr	energytr;
 		
 		fluidIO_incompress.Read_init_cond(U, T);
-		
+
 		//cout << "Init energy: " << endl;
 		if (basis_type.find("Ch") != string::npos)
 			fluidIO_incompress.Output_cout_real_space(U,T);
@@ -250,7 +250,7 @@ int Iscalar_main()
 		// true mean print nonzero div modes
 		if (total_abs_div > MYEPS2) {
 			cout << "abs(sum(Divergence)) of the initial field U = " << total_abs_div << "is large. " << '\n' << "Therefore exiting the program." << endl;
-			return (0);
+			MPI_Abort(MPI_COMM_WORLD, 1);
 		} 
 		
 
@@ -291,14 +291,14 @@ int Iscalar_main()
 			U.Compute_divergence_field(global.temp_array.X2, total_abs_div, false);
 			// true mean print nonzero div modes
 			if (total_abs_div > MYEPS2) {
-				cout << "abs(sum(Divergence)) of  U = " << total_abs_div << "is large. " << '\n' << "Therefore exiting the program." << endl;
-				return (0); 
+				cout << "max(abs(Divergence)) of U = " << total_abs_div << "is large. " << '\n' << "Therefore exiting the program." << endl;
+				MPI_Abort(MPI_COMM_WORLD, 1); 
 			}
 			
 			fluidIO_incompress.Output_all_inloop(U, T, P);
 			
-			if ( (my_id == 0) && (isnan(U.cvf.total_energy) || (isnan(T.csf.total_energy))))  {
-				cout << "ERROR: Numerical Overflow " << endl;  break;
+			if ( (isnan(U.cvf.total_energy) || (isnan(T.csf.total_energy))))  {
+				cout << "ERROR: Numerical Overflow " << endl;  MPI_Abort(MPI_COMM_WORLD, 1);
 			}
 			
 		} 
@@ -318,7 +318,7 @@ int Iscalar_main()
 	else if (global.program.iter_or_diag == "DIAGNOSTICS") {
 		string filename;
 		
-		FluidVF  U(global.field.diss_coefficients[0], global.field.hyper_diss_coefficients[0], global.field.hyper_diss_exponents[0], global.force.U_switch, "U");
+		FluidVF U(global.field.diss_coefficients[0], global.field.hyper_diss_coefficients[0], global.field.hyper_diss_exponents[0], global.force.U_switch, "U");
 		
 		FluidSF T(global.field.diss_coefficients[1], global.field.hyper_diss_coefficients[1], global.field.hyper_diss_exponents[1], global.force.T_switch, "T");
 		
@@ -441,6 +441,79 @@ int Iscalar_main()
 					fluidIO_incompress.Close_files();
 					break;
 				}
+				/*case (15) : { //Output Vorticity Field
+					Array<Complex,3> curl_V_1(shape_complex_array);
+					Array<Complex,3> curl_V_2(shape_complex_array);
+					Array<Complex,3> curl_V_3(shape_complex_array);
+
+					Array<Real,3> curl_Vr_1(shape_real_array);
+					Array<Real,3> curl_Vr_2(shape_real_array);
+					Array<Real,3> curl_Vr_3(shape_real_array);
+
+					Array<Real,3> curl_Vr_mag(shape_real_array);
+
+					// global.temp_array.X.resize(shape_complex_array);
+
+					//Find (curl U)x
+					universal->Yderiv(U.cvf.V3, curl_V_1);
+					universal->Zderiv(U.cvf.V2, global.temp_array.X);
+					curl_V_1 -= global.temp_array.X;
+
+					//Find (curl U)y
+					universal->Zderiv(U.cvf.V1, curl_V_2);
+					universal->Xderiv(U.cvf.V3, global.temp_array.X);
+					curl_V_2 -= global.temp_array.X;
+
+					//Find (curl U)z
+					universal->Xderiv(U.cvf.V2, curl_V_3);
+					universal->Yderiv(U.cvf.V1, global.temp_array.X);
+					curl_V_3 -= global.temp_array.X;
+
+					fftk.Inverse_transform("SFF", curl_V_1, curl_Vr_1);
+					fftk.Inverse_transform("SFF", curl_V_2, curl_Vr_2);
+					fftk.Inverse_transform("SFF", curl_V_3, curl_Vr_3);
+
+					int redeuction_factor = global.io.int_para(0);  //redeuction_factor(rf), Output Size = Nx/rf, Ny/rf, Nz/rf
+
+					TinyVector<hsize_t,3> shape_input_real_array;
+					TinyVector<hsize_t,3> shape_output_real_array;
+
+					shape_input_real_array = Nx, Ny, Nz+2;
+					shape_output_real_array = Nx, Ny, Nz;
+					TinyVector<hsize_t,3> shape_reduced_real_array = shape_output_real_array/redeuction_factor;
+					shape_reduced_real_array(2) -= 2;
+
+					h5::Plan plan;
+					h5::Expression expr = h5::Select(Range(0,Nx-1,redeuction_factor), Range(0,Ny-1,redeuction_factor), Range(0,Nz-1,redeuction_factor));
+
+					plan.set_plan(MPI_COMM_WORLD, VecOps::to_vector(shape_real_array), expr, VecOps::to_vector(shape_reduced_real_array), h5::Select::all(3), h5::Dtype(H5Real));
+					
+
+
+
+					h5::File f1;
+					f1.mpioInit(MPI_COMM_WORLD);
+
+					f1.open(global.io.data_dir + "/out/curl_Vr_1.h5", "w");
+					h5::Dataset ds1 = f1.create_dataset("curl_Vr_1", plan);
+					ds1 << curl_Vr_1.data();
+
+					h5::File f2;
+					f2.mpioInit(MPI_COMM_WORLD);
+
+					f2.open(global.io.data_dir + "/out/curl_Vr_2.h5", "w");
+					h5::Dataset ds2 = f2.create_dataset("curl_Vr_2", plan);
+					ds2 << curl_Vr_2.data();
+
+					h5::File f3;
+					f3.mpioInit(MPI_COMM_WORLD);
+
+					f3.open(global.io.data_dir + "/out/curl_Vr_3.h5", "w");
+					h5::Dataset ds3 = f3.create_dataset("curl_Vr_3", plan);
+					ds3 << curl_Vr_3.data();
+
+					break;
+				}*/
 					
 			}
 			

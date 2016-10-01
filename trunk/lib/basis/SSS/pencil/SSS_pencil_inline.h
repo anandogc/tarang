@@ -59,7 +59,7 @@
  * \param lx  first local index of an array
 
  */
-inline int SSS_PENCIL::Get_kx(int lx) {return  (lx <= Nx/2) ? lx : (lx-Nx); } 
+inline int SSS_PENCIL::Get_kx(int lx) {return  lx; } 
  
 
 /*! @brief	Get local array index lx given grid waveno kx.
@@ -70,7 +70,7 @@ inline int SSS_PENCIL::Get_kx(int lx) {return  (lx <= Nx/2) ? lx : (lx-Nx); }
  * \param	kx  grid wavenumber along x
  * \return	lx  local array index along x
  */
-inline int SSS_PENCIL::Get_lx(int kx) {return (kx >= 0) ? kx : (kx + Nx); } 
+inline int SSS_PENCIL::Get_lx(int kx) {return kx; } 
 
 
 /*! @brief	Get array index ix given grid waveno kx.
@@ -80,7 +80,7 @@ inline int SSS_PENCIL::Get_lx(int kx) {return (kx >= 0) ? kx : (kx + Nx); }
  * \param	kx  grid wavenumber along x
  * \return	i1  array index along x
  */
-inline int SSS_PENCIL::Get_ix(int kx) {return  (kx >= 0) ? kx : (kx + Nx);  }		
+inline int SSS_PENCIL::Get_ix(int kx) {return  kx;  }
 
 
 /*! @brief	Get grid waveno ky given first local array index ly.
@@ -90,7 +90,7 @@ inline int SSS_PENCIL::Get_ix(int kx) {return  (kx >= 0) ? kx : (kx + Nx);  }
  * \param ly  second local index of an array
  * \return kx corresponding to lx
  */
-inline int SSS_PENCIL::Get_ky(int ly) {return  ((ly_start + ly) <= Ny/2) ? (ly_start + ly) : (ly_start + ly-Ny); }
+inline int SSS_PENCIL::Get_ky(int ly) {return  (ly_start + ly); }
 
 /*! @brief	Get local array index ly given grid waveno ky.
  * 
@@ -99,9 +99,9 @@ inline int SSS_PENCIL::Get_ky(int ly) {return  ((ly_start + ly) <= Ny/2) ? (ly_s
  * \param	ky  grid wavenumber along y
  * \return	ly  local array index along y
  */
-inline int SSS_PENCIL::Get_ly(int ky) { return  (ky >= 0) ? (ky-ly_start) : (ky + Ny-ly_start);  } 
+inline int SSS_PENCIL::Get_ly(int ky) { return  (ky-ly_start); } 
 
-inline int SSS_PENCIL::Get_iy(int ky) { return  (ky >= 0) ? ky : (ky + Ny); }
+inline int SSS_PENCIL::Get_iy(int ky) { return  ky; }
 
 inline int SSS_PENCIL::Get_kz(int lz)  {return lz + lz_start;} 
 
@@ -111,10 +111,11 @@ inline int SSS_PENCIL::Get_iz(int kz)  {return kz;}
 
 inline bool SSS_PENCIL::Probe_in_me(int kx, int ky, int kz) 
 {  
+	int lx = Get_lx(kx);
 	int ly = Get_ly(ky);
 	int lz = Get_lz(kz);
 	
-	return ( ((ly >= 0) && (ly < maxly)) && ((lz >= 0) && (lz < maxlz)) );
+	return ( ((lx >= 0) && (lx < maxlx)) && ((ly >= 0) && (ly < maxly)) && ((lz >= 0) && (lz < maxlz)) );
 }
 
 
@@ -127,7 +128,7 @@ inline Complex SSS_PENCIL::Get_spectral_field(int kx, int ky, int kz, Array<Comp
     int ly = Get_ly(ky);
     int lz = Get_lz(kz);
 	
-	if ( ((ly >= 0) && (ly < maxly)) && ((lz >= 0) && (lz < maxlz)) )
+	if ( ((lx >= 0) && (lx < maxlx)) && ((ly >= 0) && (ly < maxly)) && ((lz >= 0) && (lz < maxlz)) )
 		return A_real(lx, ly, lz);
 
 	return 0;
@@ -143,7 +144,7 @@ inline TinyVector<Complex,3> SSS_PENCIL::Get_spectral_field(int kx, int ky, int 
     int ly = Get_ly(ky);
     int lz = Get_lz(kz);
 	
-	if ( ((ly >= 0) && (ly < maxly)) && ((lz >= 0) && (lz < maxlz)) )
+	if ( ((lx >= 0) && (lx < maxlx)) && ((ly >= 0) && (ly < maxly)) && ((lz >= 0) && (lz < maxlz)) )
 		return TinyVector<Complex,3>(Ax_real(lx, ly, lz), Ay_real(lx, ly, lz), Az_real(lx, ly, lz));
 
 	return TinyVector<Complex,3>(0,0,0);
@@ -170,7 +171,7 @@ inline void SSS_PENCIL::Assign_spectral_field(int kx, int ky, int kz, Array<Comp
     int ly = Get_ly(ky);
     int lz = Get_lz(kz);
 	
-	if ( ((ly >= 0) && (ly < maxly)) && ((lz >= 0) && (lz < maxlz)) )
+	if ( ((lx >= 0) && (lx < maxlx)) && ((ly >= 0) && (ly < maxly)) && ((lz >= 0) && (lz < maxlz)) )
 		A_real(lx, ly, lz) = field;
 }
 
@@ -185,7 +186,7 @@ inline void SSS_PENCIL::Assign_spectral_field(int kx, int ky, int kz, Array<Comp
     int ly = Get_ly(ky);
     int lz = Get_lz(kz);
 	
-	if ( ((ly >= 0) && (ly < maxly)) && ((lz >= 0) && (lz < maxlz)) ) {
+	if ( ((lx >= 0) && (lx < maxlx)) && ((ly >= 0) && (ly < maxly)) && ((lz >= 0) && (lz < maxlz)) ) {
 		Ax_real(lx, ly, lz) = V(0);
         Ay_real(lx, ly, lz) = V(1);
         Az_real(lx, ly, lz) = V(2);
@@ -211,7 +212,7 @@ inline void SSS_PENCIL::Add_spectral_field(int kx, int ky, int kz, Array<Complex
     int ly = Get_ly(ky);
     int lz = Get_lz(kz);
 	
-	if ( ((ly >= 0) && (ly < maxly)) && ((lz >= 0) && (lz < maxlz)) )
+	if ( ((lx >= 0) && (lx < maxlx)) && ((ly >= 0) && (ly < maxly)) && ((lz >= 0) && (lz < maxlz)) )
 		A_real(lx, ly, lz) += field;
 }
 
@@ -226,7 +227,7 @@ inline void SSS_PENCIL::Add_spectral_field(int kx, int ky, int kz, Array<Complex
     int ly = Get_ly(ky);
     int lz = Get_lz(kz);
 	
-	if ( ((ly >= 0) && (ly < maxly)) && ((lz >= 0) && (lz < maxlz)) ) {
+	if ( ((lx >= 0) && (lx < maxlx)) && ((ly >= 0) && (ly < maxly)) && ((lz >= 0) && (lz < maxlz)) ) {
 		Ax_real(lx, ly, lz) += V(0);
         Ay_real(lx, ly, lz) += V(1);
         Az_real(lx, ly, lz) += V(2);
@@ -267,7 +268,7 @@ inline void SSS_PENCIL::Assign_local_spectral_field(int lx, int ly, int lz, Arra
 {
 	Array<Real,3> A_real(reinterpret_cast<Real*>(A.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 	
-	if ( ((ly >= 0) && (ly < maxly)) && ((lz >= 0) && (lz < maxlz)) )
+	if ( ((lx >= 0) && (lx < maxlx)) && ((ly >= 0) && (ly < maxly)) && ((lz >= 0) && (lz < maxlz)) )
 		A_real(lx, ly, lz) = field;
 }
 
@@ -277,7 +278,7 @@ inline void SSS_PENCIL::Assign_local_spectral_field(int lx, int ly, int lz, Arra
 	Array<Real,3> Ay_real(reinterpret_cast<Real*>(Ay.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 	Array<Real,3> Az_real(reinterpret_cast<Real*>(Az.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 	
-	if ( ((ly >= 0) && (ly < maxly)) && ((lz >= 0) && (lz < maxlz)) ) {
+	if ( ((lx >= 0) && (lx < maxlx)) && ((ly >= 0) && (ly < maxly)) && ((lz >= 0) && (lz < maxlz)) ) {
 		Ax_real(lx, ly, lz) = V(0);
         Ay_real(lx, ly, lz) = V(1);
         Az_real(lx, ly, lz) = V(2);
@@ -301,7 +302,7 @@ inline void SSS_PENCIL::Add_local_spectral_field(int lx, int ly, int lz, Array<C
 {
 	Array<Real,3> A_real(reinterpret_cast<Real*>(A.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 	
-	if ( ((ly >= 0) && (ly < maxly)) && ((lz >= 0) && (lz < maxlz)) )
+	if ( ((lx >= 0) && (lx < maxlx)) && ((ly >= 0) && (ly < maxly)) && ((lz >= 0) && (lz < maxlz)) )
 		A_real(lx, ly, lz) += field;
 }
 
@@ -312,7 +313,7 @@ inline void SSS_PENCIL::Add_local_spectral_field(int lx, int ly, int lz, Array<C
 	Array<Real,3> Ay_real(reinterpret_cast<Real*>(Ay.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 	Array<Real,3> Az_real(reinterpret_cast<Real*>(Az.data()), shape_complex_array*shape(1,1,2), neverDeleteData);
 	
-	if ( ((ly >= 0) && (ly < maxly)) && ((lz >= 0) && (lz < maxlz)) ) {
+	if ( ((lx >= 0) && (lx < maxlx)) && ((ly >= 0) && (ly < maxly)) && ((lz >= 0) && (lz < maxlz)) ) {
 		Ax_real(lx, ly, lz) += V(0);
         Ay_real(lx, ly, lz) += V(1);
         Az_real(lx, ly, lz) += V(2);

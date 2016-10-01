@@ -43,7 +43,7 @@
 // Ar: yxz, A: xyz
 void SSF_PENCIL::Forward_transform(Array<Real,3> Ar, Array<Complex,3> A)
 {
-	spectralTransform.Forward_transform(global.program.sincostr_switch,Ar,A);
+	fftk.Forward_transform(global.program.sincostr_switch,Ar,A);
 }
 
 
@@ -53,7 +53,7 @@ void SSF_PENCIL::Forward_transform(Array<Real,3> Ar, Array<Complex,3> A)
 void SSF_PENCIL::Inverse_transform(Array<Complex,3> A, Array<Real,3> Ar)
 {
 	global.temp_array.X_transform = A;	
-    spectralTransform.Inverse_transform(global.program.sincostr_switch,global.temp_array.X_transform, Ar);
+    fftk.Inverse_transform(global.program.sincostr_switch,global.temp_array.X_transform, Ar);
     
 }
 

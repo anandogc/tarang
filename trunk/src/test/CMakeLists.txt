@@ -26,8 +26,6 @@
  #
 
 
-ADD_SUBDIRECTORY(spectral_transform)
-
 ########################################
 #test_BasicIO
 ########################################
@@ -35,7 +33,7 @@ ADD_SUBDIRECTORY(spectral_transform)
 #	test_BasicIO
 #	)
 	
-#TARGET_LINK_LIBRARIES(test_BasicIO fff_pencil fff_slab  sff_pencil sff_slab ssf_pencil ssf_slab #sss_pencil sss_slab chff_slab basis_basicfn global spectral_transform ${SYSTEM_LIBRARIES})
+#TARGET_LINK_LIBRARIES(test_BasicIO fff_pencil fff_slab  sff_pencil sff_slab ssf_pencil ssf_slab #sss_pencil sss_slab chff_slab basis_basicfn global ${SYSTEM_LIBRARIES})
 
 #ADD_CUSTOM_COMMAND(TARGET test_BasicIO
 #                   POST_BUILD

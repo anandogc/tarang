@@ -363,17 +363,17 @@ use IOdir as global variable and control...
 // field_name = U or W
 void CVF::Write_complex_field()
 {
-	string folder_name="time_" + To_string(global.time.now);
+	string folder_name = "time_" + To_string(global.time.now);
 
-    universal->Write(V1, universal->H5_full, folder_name, field_name+".V1");
+    universal->Write(V1, universal->H5_full, "w", folder_name, field_name+".V1");
 	
     if (!global.program.two_dimension)
-        universal->Write(V2, universal->H5_full, folder_name, field_name+".V2");
+        universal->Write(V2, universal->H5_full, "w", folder_name, field_name+".V2");
 	
     if (global.field.incompressible && global.io.output_vx_vy_switch)
-        universal->Write(V3, universal->H5_kz0_full, folder_name, field_name+".V3kz0");
+        universal->Write(V3, universal->H5_kz0_full, "w", folder_name, field_name+".V3kz0");
     else
-        universal->Write(V3, universal->H5_full, folder_name, field_name+".V3");
+        universal->Write(V3, universal->H5_full, "w", folder_name, field_name+".V3");
 }
 
 
@@ -382,15 +382,15 @@ void CVF::Write_reduced_complex_field()
 {
 	string folder_name="reduced_" + To_string(global.time.now);
 
-    universal->Write(V1, universal->H5_out_reduced, folder_name, field_name+".V1");
+    universal->Write(V1, universal->H5_out_reduced, "w", folder_name, field_name+".V1");
     
     if (!global.program.two_dimension)
-        universal->Write(V2, universal->H5_out_reduced, folder_name, field_name+".V2");
+        universal->Write(V2, universal->H5_out_reduced, "w", folder_name, field_name+".V2");
 	
 	if (global.field.incompressible && global.io.output_vx_vy_switch)
-        universal->Write(V3, universal->H5_out_kz0_reduced, folder_name, field_name+".V3kz0");
+        universal->Write(V3, universal->H5_out_kz0_reduced, "w", folder_name, field_name+".V3kz0");
     else
-        universal->Write(V3, universal->H5_out_reduced, folder_name, field_name+".V3");
+        universal->Write(V3, universal->H5_out_reduced, "w", folder_name, field_name+".V3");
 }
 
 
@@ -398,7 +398,7 @@ void CVF::Write_reduced_complex_field()
 void CVF::Read_complex_field()
 {
 	universal->Read(V1, universal->H5_full, field_name+".V1");
-	
+
     if (!global.program.two_dimension)
         universal->Read(V2, universal->H5_full, field_name+".V2");
 

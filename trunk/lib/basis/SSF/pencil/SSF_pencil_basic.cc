@@ -233,33 +233,33 @@ void SSF_PENCIL::Assign_sub_array(Range x_range, Range y_range, Range z_range, A
 		A(x_range, y_apply, z_apply) = value;
 }
 
-int SSF_PENCIL::Read(Array<Complex,3> A, BasicIO::H5_plan plan, string file_name, string dataset_name)
+int SSF_PENCIL::Read(Array<Complex,3> A, h5::Plan plan, string file_name, string dataset_name)
 {
 	int err = BasicIO::Read(global.temp_array.Xr_slab.data(), plan, file_name, dataset_name);
-	spectralTransform.To_pencil(global.temp_array.Xr_slab, global.temp_array.Xr);
-	spectralTransform.Transpose(global.temp_array.Xr, A);
+	fftk.To_pencil(global.temp_array.Xr_slab, global.temp_array.Xr);
+	fftk.Transpose(global.temp_array.Xr, A);
 	return err;
 }
 
-int SSF_PENCIL::Read(Array<Real,3> Ar, BasicIO::H5_plan plan, string file_name, string dataset_name)
+int SSF_PENCIL::Read(Array<Real,3> Ar, h5::Plan plan, string file_name, string dataset_name)
 {
 	int err = BasicIO::Read(global.temp_array.Xr_slab.data(), plan, file_name, dataset_name);
-	spectralTransform.To_pencil(global.temp_array.Xr_slab, Ar);
+	fftk.To_pencil(global.temp_array.Xr_slab, Ar);
 	return err;
 }
 
 
-int SSF_PENCIL::Write(Array<Complex,3> A, BasicIO::H5_plan plan, string folder_name, string file_name, string dataset_name)
+int SSF_PENCIL::Write(Array<Complex,3> A, h5::Plan plan, string access_mode, string folder_name, string file_name, string dataset_name)
 {
-	spectralTransform.Transpose(A, global.temp_array.Xr);
-	spectralTransform.To_slab(global.temp_array.Xr, global.temp_array.Xr_slab);
-	return BasicIO::Write(global.temp_array.Xr_slab.data(), plan, folder_name, file_name, dataset_name);
+	fftk.Transpose(A, global.temp_array.Xr);
+	fftk.To_slab(global.temp_array.Xr, global.temp_array.Xr_slab);
+	return BasicIO::Write(global.temp_array.Xr_slab.data(), plan, access_mode, folder_name, file_name, dataset_name);
 }
 
-int SSF_PENCIL::Write(Array<Real,3> Ar, BasicIO::H5_plan plan, string folder_name, string file_name, string dataset_name)
+int SSF_PENCIL::Write(Array<Real,3> Ar, h5::Plan plan, string access_mode, string folder_name, string file_name, string dataset_name)
 {
-	spectralTransform.To_slab(Ar, global.temp_array.Xr_slab);
-	return BasicIO::Write(global.temp_array.Xr_slab.data(), plan, folder_name, file_name, dataset_name);  
+	fftk.To_slab(Ar, global.temp_array.Xr_slab);
+	return BasicIO::Write(global.temp_array.Xr_slab.data(), plan, access_mode, folder_name, file_name, dataset_name);  
 }
 //*********************************  End of scft_basic.cc *************************************
 

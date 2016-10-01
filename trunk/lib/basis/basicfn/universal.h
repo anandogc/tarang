@@ -48,15 +48,15 @@
 class Universal
 {				
 public:
-
     //HDF5 IO plans
-    BasicIO::H5_plan H5_real;
-    BasicIO::H5_plan H5_full;
-    BasicIO::H5_plan H5_kz0_full;
-    BasicIO::H5_plan H5_in_reduced;
-    BasicIO::H5_plan H5_out_reduced;
-    BasicIO::H5_plan H5_in_kz0_reduced;
-    BasicIO::H5_plan H5_out_kz0_reduced;
+    h5::Plan H5_real;
+    h5::Plan H5_full;
+    h5::Plan H5_kz0_full;
+    h5::Plan H5_in_reduced;
+    h5::Plan H5_out_reduced;
+    h5::Plan H5_in_kz0_reduced;
+    h5::Plan H5_out_kz0_reduced;
+    vector<h5::Plan> H5_slices;
 
     // basic
 	virtual int Get_number_modes_in_shell(Real inner_radius, Real outer_radius);
@@ -695,11 +695,11 @@ public:
 	virtual Real AnisKvect_azimuthal_angle(int lx, int ly, int lz) = 0;
 
 
-    virtual int Read(Array<Complex,3> A, BasicIO::H5_plan plan, string file_name, string dataset_name="") = 0;
-    virtual int Read(Array<Real,3> Ar, BasicIO::H5_plan plan, string file_name, string dataset_name="") = 0;
+    virtual int Read(Array<Complex,3> A, h5::Plan plan, string file_name, string dataset_name="") = 0;
+    virtual int Read(Array<Real,3> Ar, h5::Plan plan, string file_name, string dataset_name="") = 0;
 
-    virtual int Write(Array<Complex,3> A, BasicIO::H5_plan plan, string folder_name, string file_name, string dataset_name="") = 0;
-    virtual int Write(Array<Real,3> Ar, BasicIO::H5_plan plan, string folder_name, string file_name, string dataset_name="") = 0;
+    virtual int Write(Array<Complex,3> A, h5::Plan plan, string access_mode, string folder_name, string file_name, string dataset_name="") = 0;
+    virtual int Write(Array<Real,3> Ar, h5::Plan plan, string access_mode, string folder_name, string file_name, string dataset_name="") = 0;
 };
 
 #endif

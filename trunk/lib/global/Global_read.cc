@@ -47,11 +47,10 @@ void operator >> (const YAML::Node& node, vector<complex<T> >& vec) {
 	string str_tmp;
 	int n=node.size();  
 	node[0] >> str;
-	for (int i=1; i<n; i++)
-		{
+	for (int i=1; i<n; i++) {
 		node[i] >> str_tmp;
 		str+=", "+str_tmp;
-		}
+	}
 	
 	stringstream ss;
 	complex<T> c;
@@ -116,13 +115,12 @@ void operator >> (const YAML::Node& node, Array<complex<T>,1 >& bl_arr) {
 	string str;
 	string str_tmp;
 	vector<complex<T> > vec;
-	int n=node.size();  
+	int n=node.size();
 	node[0] >> str;
-	for (int i=1; i<n; i++)
-		{
+	for (int i=1; i<n; i++) {
 		node[i] >> str_tmp;
 		str+=", "+str_tmp;
-		}
+	}
 	
 	stringstream ss;
 	complex<T> c;
@@ -182,8 +180,7 @@ void operator >> (const YAML::Node& node, Array<complex<T>,1 >& bl_arr) {
 
 
 template < typename T >
-void Global::Assign_if_input_provided(const YAML::Node& node, const  string parameter, T &var, T default_value)
-{
+void Global::Assign_if_input_provided(const YAML::Node& node, const  string parameter, T &var, T default_value) {
 	if (Input_provided(node, parameter))
 		node[parameter] >> var;
 	else
@@ -324,7 +321,6 @@ void Global::Read()
 	// program
 	para["program"]["kind"] >> program.kind;
 	para["program"]["basis_type"] >> program.basis_type;
-	para["program"]["decomposition"] >> program.decomposition;
 	para["program"]["iter_or_diag"] >> program.iter_or_diag;
 	para["program"]["alias_option"] >> program.alias_option;
 	para["program"]["integration_scheme"] >> program.integration_scheme;
@@ -493,6 +489,17 @@ void Global::Read()
 	para["io"]["int_para"] >> io.int_para;
 	para["io"]["double_para"] >> io.double_para;
 	para["io"]["string_para"] >> io.string_para;
+
+
+	if (Input_provided(para["io"], "slice_save")) {
+		io.slice_save.resize(para["io"]["slice_save"].size());
+
+		string expression_str;
+		for (int i=0; i<para["io"]["slice_save"].size(); i++) {
+			para["io"]["slice_save"][i] >> expression_str;
+			io.slice_save[i] = h5::Expression(expression_str);
+		}
+	}
 	
 		// init cond modes
 	if (io.input_field_procedure==4) {
@@ -550,16 +557,12 @@ void Global::Read()
 		para["io"]["probes"]["real_space"][i]["coord"][2] >> io.probes.real_space.coords(i,3);
 	}
 	
-	Assign_if_input_provided(para["io"]["time"], "global_save_first", io.time.global_save_next, myconstant.INF_TIME);
-	
-	Assign_if_input_provided(para["io"]["time"], "complex_field_save_first", io.time.complex_field_save_next , myconstant.INF_TIME);
-	
+	Assign_if_input_provided(para["io"]["time"], "global_save_first"        , io.time.global_save_next, myconstant.INF_TIME);
+	Assign_if_input_provided(para["io"]["time"], "complex_field_save_first" , io.time.complex_field_save_next , myconstant.INF_TIME);
 	Assign_if_input_provided(para["io"]["time"], "field_frequent_save_first", io.time.field_frequent_save_next, myconstant.INF_TIME);
-	
-	Assign_if_input_provided(para["io"]["time"], "field_reduced_save_first", io.time.field_reduced_save_next , myconstant.INF_TIME);
-	
-	Assign_if_input_provided(para["io"]["time"], "real_field_save_first", io.time.real_field_save_next, myconstant.INF_TIME);
-	
+	Assign_if_input_provided(para["io"]["time"], "field_reduced_save_first" , io.time.field_reduced_save_next , myconstant.INF_TIME);
+	Assign_if_input_provided(para["io"]["time"], "real_field_save_first"    , io.time.real_field_save_next, myconstant.INF_TIME);
+	Assign_if_input_provided(para["io"]["time"], "slice_save_first"         , io.time.slice_save_next , myconstant.INF_TIME);
 	Assign_if_input_provided(para["io"]["time"], "field_k_save_first"       , io.time.field_k_save_next       , myconstant.INF_TIME);
 	Assign_if_input_provided(para["io"]["time"], "field_r_save_first"       , io.time.field_r_save_next       , myconstant.INF_TIME);
 	Assign_if_input_provided(para["io"]["time"], "spectrum_save_first"      , io.time.spectrum_save_next      , myconstant.INF_TIME);
@@ -577,12 +580,13 @@ void Global::Read()
 	Assign_if_input_provided(para["io"]["time"], "Tk_cylindrical_ring_spectrum_save_first"  , io.time.Tk_cylindrical_ring_spectrum_save_next  , myconstant.INF_TIME);
 	Assign_if_input_provided(para["io"]["time"], "cout_save_first"          , io.time.cout_save_next          , myconstant.INF_TIME);
 
-	//save_first are relative to time.init
+	//make save_first relative to time.init
 	io.time.global_save_next                        +=time.init;
 	io.time.complex_field_save_next                 +=time.init;
 	io.time.field_frequent_save_next                +=time.init;
 	io.time.field_reduced_save_next                 +=time.init;
 	io.time.real_field_save_next                    +=time.init;
+	io.time.slice_save_next                         +=time.init;
 	io.time.field_k_save_next                       +=time.init;
 	io.time.field_r_save_next                       +=time.init;
 	io.time.spectrum_save_next                      +=time.init;
@@ -606,6 +610,7 @@ void Global::Read()
 	Assign_if_input_provided(para["io"]["time"], "field_frequent_save_interval", io.time.field_frequent_save_interval, myconstant.INF_TIME);
 	Assign_if_input_provided(para["io"]["time"], "field_reduced_save_interval" , io.time.field_reduced_save_interval , myconstant.INF_TIME);
 	Assign_if_input_provided(para["io"]["time"], "real_field_save_interval"    , io.time.real_field_save_interval    , myconstant.INF_TIME);
+	Assign_if_input_provided(para["io"]["time"], "slice_save_interval"         , io.time.slice_save_interval         , myconstant.INF_TIME);
 	Assign_if_input_provided(para["io"]["time"], "field_k_save_interval"       , io.time.field_k_save_interval       , myconstant.INF_TIME);
 	Assign_if_input_provided(para["io"]["time"], "field_r_save_interval"       , io.time.field_r_save_interval       , myconstant.INF_TIME);
 	Assign_if_input_provided(para["io"]["time"], "spectrum_save_interval"      , io.time.spectrum_save_interval      , myconstant.INF_TIME);
@@ -617,11 +622,11 @@ void Global::Read()
 	Assign_if_input_provided(para["io"]["time"], "ring_to_ring_save_interval"  , io.time.ring_to_ring_save_interval  , myconstant.INF_TIME);
 	Assign_if_input_provided(para["io"]["time"], "cylindrical_ring_spectrum_save_interval", io.time.cylindrical_ring_spectrum_save_interval, myconstant.INF_TIME);
 	Assign_if_input_provided(para["io"]["time"], "cylindrical_ring_to_ring_save_interval", io.time.cylindrical_ring_to_ring_save_interval, myconstant.INF_TIME);
-	Assign_if_input_provided(para["io"]["time"], "structure_fn_save_interval"  , io.time.structure_fn_save_interval  , myconstant.INF_TIME);
+	Assign_if_input_provided(para["io"]["time"], "structure_fn_save_interval"       , io.time.structure_fn_save_interval       , myconstant.INF_TIME);
 	Assign_if_input_provided(para["io"]["time"], "Tk_shell_spectrum_save_interval"  , io.time.Tk_shell_spectrum_save_interval  , myconstant.INF_TIME);
-	Assign_if_input_provided(para["io"]["time"], "Tk_ring_spectrum_save_interval"  , io.time.Tk_ring_spectrum_save_interval  , myconstant.INF_TIME);
+	Assign_if_input_provided(para["io"]["time"], "Tk_ring_spectrum_save_interval"   , io.time.Tk_ring_spectrum_save_interval   , myconstant.INF_TIME);
 	Assign_if_input_provided(para["io"]["time"], "Tk_cylindrical_ring_spectrum_save_interval"  , io.time.Tk_cylindrical_ring_spectrum_save_interval  , myconstant.INF_TIME);
-	Assign_if_input_provided(para["io"]["time"], "cout_save_interval"          , io.time.cout_save_interval          , myconstant.INF_TIME);
+	Assign_if_input_provided(para["io"]["time"], "cout_save_interval"           , io.time.cout_save_interval         , myconstant.INF_TIME);
 	
 	//last
 	Assign_if_input_provided(para["io"]["time"], "global_save_last"        , io.time.global_save_last        , false);

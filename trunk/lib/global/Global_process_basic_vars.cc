@@ -45,7 +45,6 @@ void Global::Process_basic_vars()
 {
 		// Alias....
 	basis_type = program.basis_type;
-	decomposition=program.decomposition;         // PENCIL, SLAB
 	
 	N[0]=field.N[0];
 	N[1]=field.N[1];

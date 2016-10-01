@@ -64,16 +64,16 @@ int IMHD_main()
         Real total_abs_div;
         U.Compute_divergence_field(global.temp_array.X2, total_abs_div, true);
         // true mean print nonzero div modes
-        if (total_abs_div > MYEPS2) {
-            cout << "abs(sum(Divergence)) of the initial field U = " << total_abs_div << "is large. " << '\n' << "Therefore exiting the program." << endl;
-            return (0);
-        }
+            if (total_abs_div > MYEPS2) {
+                cout << "max(abs(Divergence)) of U = " << total_abs_div << "is large. " << '\n' << "Therefore exiting the program." << endl;
+                MPI_Abort(MPI_COMM_WORLD, 1); 
+            }
         
         B.Compute_divergence_field(global.temp_array.X2, total_abs_div, true);
-        if (total_abs_div > MYEPS2) {
-            cout << "abs(sum(Divergence)) of the initial field B = " << total_abs_div << "is large. " << '\n' << "Therefore exiting the program." << endl;
-            return (0);
-        }
+            if (total_abs_div > MYEPS2) {
+                cout << "max(abs(Divergence)) of B = " << total_abs_div << "is large. " << '\n' << "Therefore exiting the program." << endl;
+                MPI_Abort(MPI_COMM_WORLD, 1); 
+            }
 
         fluidIO_incompress.Output_all_inloop(U, B, P);  // for initial cond
         
@@ -100,18 +100,18 @@ int IMHD_main()
                 time_advance_incompress.Make_field_incompressible(B);
             }
             
-//            U.Compute_divergence_field(global.temp_array.X2, total_abs_div, true);
+            U.Compute_divergence_field(global.temp_array.X2, total_abs_div, true);
             // true mean print nonzero div modes
             if (total_abs_div > MYEPS2) {
-                cout << "abs(sum(Divergence)) of  U = " << total_abs_div << "is large. " << '\n' << "Therefore exiting the program." << endl;
-                return (0);
+                cout << "max(abs(Divergence)) of U = " << total_abs_div << "is large. " << '\n' << "Therefore exiting the program." << endl;
+                MPI_Abort(MPI_COMM_WORLD, 1); 
             }
             
             B.Compute_divergence_field(global.temp_array.X2, total_abs_div, true);
             // true mean print nonzero div modes
             if (total_abs_div > MYEPS2) {
-                cout << "abs(sum(Divergence)) of  B = " << total_abs_div << "is large. " << '\n' << "Therefore exiting the program." << endl;
-                return (0);
+                cout << "max(abs(Divergence)) of B = " << total_abs_div << "is large. " << '\n' << "Therefore exiting the program." << endl;
+                MPI_Abort(MPI_COMM_WORLD, 1); 
             }
         
             
@@ -119,8 +119,9 @@ int IMHD_main()
 
             fluidIO_incompress.Output_all_inloop(U, B, P);
             
-            if ( (my_id == 0) && (isnan(U.cvf.total_energy) || (isnan(B.cvf.total_energy))))  {
-                cout << "ERROR: Numerical Overflow " << endl;  break;
+            if ( (isnan(U.cvf.total_energy) || (isnan(B.cvf.total_energy))))  {
+                cout << "ERROR: Numerical Overflow " << endl;
+                MPI_Abort(MPI_COMM_WORLD, 1);
             }
         } 
         while ( (global.time.now < global.time.final) && (clock() < global.time.job_time_final) );

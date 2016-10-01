@@ -112,10 +112,11 @@ inline int FFF_PENCIL::Get_iz(int kz)  {return kz;}
 
 inline bool FFF_PENCIL::Probe_in_me(int kx, int ky, int kz) 
 {  
+	int lx = Get_lx(kx);
 	int ly = Get_ly(ky);
 	int lz = Get_lz(kz);
 	
-	return ( ((ly >= 0) && (ly < maxly)) && ((lz >= 0) && (lz < maxlz)) );
+	return ( ((lx >= 0) && (lx < maxlx)) && ((ly >= 0) && (ly < maxly)) && ((lz >= 0) && (lz < maxlz)) );
 }
 
 
@@ -125,7 +126,7 @@ inline Complex FFF_PENCIL::Get_spectral_field(int kx, int ky, int kz, Array<Comp
 	int ly = Get_ly(ky);
 	int lz = Get_lz(kz);
 	
-	if ( ((ly >= 0) && (ly < maxly)) && ((lz >= 0) && (lz < maxlz)) )
+	if ( ((lx >= 0) && (lx < maxlx)) && ((ly >= 0) && (ly < maxly)) && ((lz >= 0) && (lz < maxlz)) )
 		return A(lx, ly, lz);
 
 	return Complex(0,0);
@@ -138,7 +139,7 @@ inline TinyVector<Complex,3> FFF_PENCIL::Get_spectral_field(int kx, int ky, int 
 	int ly = Get_ly(ky);
 	int lz = Get_lz(kz);
 	
-	if ( ((ly >= 0) && (ly < maxly)) && ((lz >= 0) && (lz < maxlz)) )
+	if ( ((lx >= 0) && (lx < maxlx)) && ((ly >= 0) && (ly < maxly)) && ((lz >= 0) && (lz < maxlz)) )
 		return TinyVector<Complex,3>(Ax(lx, ly, lz), Ay(lx, ly, lz), Az(lx, ly, lz));
 
 	return TinyVector<Complex,3>(0,0,0);
@@ -153,7 +154,7 @@ inline void FFF_PENCIL::Assign_spectral_field(int kx, int ky, int kz, Array<Comp
 	int ly = Get_ly(ky);
 	int lz = Get_lz(kz);
 	
-	if ( ((ly >= 0) && (ly < maxly)) && ((lz >= 0) && (lz < maxlz)) )
+	if ( ((lx >= 0) && (lx < maxlx)) && ((ly >= 0) && (ly < maxly)) && ((lz >= 0) && (lz < maxlz)) )
 		A(lx, ly, lz) = field;
 
 }
@@ -165,7 +166,7 @@ inline void FFF_PENCIL::Assign_spectral_field(int kx, int ky, int kz, Array<Comp
 	int ly = Get_ly(ky);
 	int lz = Get_lz(kz);
 
-	if ( ((ly >= 0) && (ly < maxly)) && ((lz >= 0) && (lz < maxlz)) ) {
+	if ( ((lx >= 0) && (lx < maxlx)) && ((ly >= 0) && (ly < maxly)) && ((lz >= 0) && (lz < maxlz)) ) {
 		Ax(lx, ly, lz) = V(0);
 		Ay(lx, ly, lz) = V(1);
 		Az(lx, ly, lz) = V(2);
@@ -190,7 +191,7 @@ inline void FFF_PENCIL::Add_spectral_field(int kx, int ky, int kz, Array<Complex
 	int ly = Get_ly(ky);
 	int lz = Get_lz(kz);
 	
-	if ( ((ly >= 0) && (ly < maxly)) && ((lz >= 0) && (lz < maxlz)) )
+	if ( ((lx >= 0) && (lx < maxlx)) && ((ly >= 0) && (ly < maxly)) && ((lz >= 0) && (lz < maxlz)) )
 		A(lx, ly, lz) += field;
 
 }
@@ -202,7 +203,7 @@ inline void FFF_PENCIL::Add_spectral_field(int kx, int ky, int kz, Array<Complex
 	int ly = Get_ly(ky);
 	int lz = Get_lz(kz);
 	
-	if ( ((ly >= 0) && (ly < maxly)) && ((lz >= 0) && (lz < maxlz)) ) {
+	if ( ((lx >= 0) && (lx < maxlx)) && ((ly >= 0) && (ly < maxly)) && ((lz >= 0) && (lz < maxlz)) ) {
 		Ax(lx, ly, lz) += V(0);
 		Ay(lx, ly, lz) += V(1);
 		Az(lx, ly, lz) += V(2);
@@ -241,13 +242,13 @@ inline TinyVector<Complex,3> FFF_PENCIL::Get_local_spectral_field(int lx, int ly
 	//  Assign
 inline void FFF_PENCIL::Assign_local_spectral_field(int lx, int ly, int lz, Array<Complex,3> A, Complex field)
 { 
-	if ( ((ly >= 0) && (ly < maxly)) && ((lz >= 0) && (lz < maxlz)) )
+	if ( ((lx >= 0) && (lx < maxlx)) && ((ly >= 0) && (ly < maxly)) && ((lz >= 0) && (lz < maxlz)) )
 		A(lx, ly, lz) = field;
 }
 
 inline void FFF_PENCIL::Assign_local_spectral_field(int lx, int ly, int lz, Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az, TinyVector<Complex,3> V)
 {
-	if ( ((ly >= 0) && (ly < maxly)) && ((lz >= 0) && (lz < maxlz)) ) {
+	if ( ((lx >= 0) && (lx < maxlx)) && ((ly >= 0) && (ly < maxly)) && ((lz >= 0) && (lz < maxlz)) ) {
 		Ax(lx, ly, lz) = V(0);
 		Ay(lx, ly, lz) = V(1);
 		Az(lx, ly, lz) = V(2);
@@ -269,13 +270,13 @@ inline void FFF_PENCIL::Assign_local_spectral_field(int lx, int ly, int lz, Arra
 
 inline void FFF_PENCIL::Add_local_spectral_field(int lx, int ly, int lz, Array<Complex,3> A, Complex field)
 { 
-	if ( ((ly >= 0) && (ly < maxly)) && ((lz >= 0) && (lz < maxlz)) )
+	if ( ((lx >= 0) && (lx < maxlx)) && ((ly >= 0) && (ly < maxly)) && ((lz >= 0) && (lz < maxlz)) )
 		A(lx, ly, lz) += field;
 }
 
 inline void FFF_PENCIL::Add_local_spectral_field(int lx, int ly, int lz, Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az, TinyVector<Complex,3> V)
 {
-	if ( ((ly >= 0) && (ly < maxly)) && ((lz >= 0) && (lz < maxlz)) ) {
+	if ( ((lx >= 0) && (lx < maxlx)) && ((ly >= 0) && (ly < maxly)) && ((lz >= 0) && (lz < maxlz)) ) {
 		Ax(lx, ly, lz) += V(0);
 		Ay(lx, ly, lz) += V(1);
 		Az(lx, ly, lz) += V(2);

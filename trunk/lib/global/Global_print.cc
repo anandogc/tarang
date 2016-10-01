@@ -86,14 +86,14 @@ void Global::Print()
 {
 	if (mpi.master){
 		program.Print(0);
-		PHYSICS.Print(0);
-		field.Print(0);
-		time.Print(0);
-		force.Print(0);
-		io.Print(0);
-		energy_transfer.Print(0);
-		mpi.Print(0);
-		spectrum.Print(0);
+        mpi.Print(0);
+        PHYSICS.Print(0);
+        field.Print(0);
+        time.Print(0);
+        force.Print(0);
+        io.Print(0);
+        spectrum.Print(0);
+        energy_transfer.Print(0);
 		cout<<endl;
 	}
 }
@@ -105,7 +105,6 @@ void Global::program::Print(int my_level)
         <<'\n'<<Indent(my_level+1)<<"version: " << version
         <<'\n'<<Indent(my_level+1)<<"kind: " << kind
         <<'\n'<<Indent(my_level+1)<<"iter_or_diag: " << iter_or_diag
-		<<'\n'<<Indent(my_level+1)<<"decomposition: " << decomposition
 		<<'\n'<<Indent(my_level+1)<<"basis_type: " << basis_type
         <<'\n'<<Indent(my_level+1)<<"alias_option: " << alias_option
         <<'\n'<<Indent(my_level+1)<<"integration_scheme: " << integration_scheme
@@ -194,7 +193,16 @@ void Global::io::Print(int my_level)
         <<'\n'<<Indent(my_level+1)<<"N_out_reduced: "<<Print_vector(N_out_reduced)
         <<'\n'<<Indent(my_level+1)<<"int_para : "<<Print_linear_blitz_array<int>(int_para)
         <<'\n'<<Indent(my_level+1)<<"double_para : "<<Print_linear_blitz_array<Real>(double_para)
-        <<'\n'<<Indent(my_level+1)<<"string_para : "<<Print_linear_blitz_array<string>(string_para);
+        <<'\n'<<Indent(my_level+1)<<"string_para : "<<Print_linear_blitz_array<string>(string_para)
+        <<'\n'<<Indent(my_level+1)<<"slice_save : [";
+            if (slice_save.size()>0) {
+                cout  << " \"" << slice_save[0] << "\"";
+            }
+            for (vector<h5::Expression>::size_type i=1; i<slice_save.size(); i++) {
+                cout << ", \"" << slice_save[i] << "\"";
+            }
+            
+            cout << " ]" << endl;
 
         probes.Print(my_level+1);
         init_cond_modes.Print(my_level+1);
@@ -263,6 +271,7 @@ void Global::io::time::Print(int my_level)
         <<'\n'<<Indent(my_level+1)<<"field_frequent_save_next: "<<field_frequent_save_next
         <<'\n'<<Indent(my_level+1)<<"field_reduced_save_next: "<<field_reduced_save_next
         <<'\n'<<Indent(my_level+1)<<"real_field_save_next: "<<real_field_save_next
+        <<'\n'<<Indent(my_level+1)<<"slice_save_next: "<<slice_save_next
         <<'\n'<<Indent(my_level+1)<<"field_k_save_next: "<<field_k_save_next
         <<'\n'<<Indent(my_level+1)<<"field_r_save_next: "<<field_r_save_next
         <<'\n'<<Indent(my_level+1)<<"spectrum_save_next: "<<spectrum_save_next
@@ -282,6 +291,7 @@ void Global::io::time::Print(int my_level)
         <<'\n'<<Indent(my_level+1)<<"field_frequent_save_interval: "<<field_frequent_save_interval
         <<'\n'<<Indent(my_level+1)<<"field_reduced_save_interval: "<<field_reduced_save_interval
         <<'\n'<<Indent(my_level+1)<<"real_field_save_interval: "<<real_field_save_interval
+        <<'\n'<<Indent(my_level+1)<<"slice_save_interval: "<<slice_save_interval
         <<'\n'<<Indent(my_level+1)<<"field_k_save_interval: "<<field_k_save_interval
         <<'\n'<<Indent(my_level+1)<<"field_r_save_interval: "<<field_r_save_interval
         <<'\n'<<Indent(my_level+1)<<"spectrum_save_interval: "<<spectrum_save_interval

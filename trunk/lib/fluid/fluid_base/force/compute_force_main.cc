@@ -85,6 +85,7 @@ void FORCE::Compute_force(FluidVF& U, FluidSF& T)
 		case (4) : Compute_force_Taylor_Green(U, T); break;
 		case (5) : Compute_force_ABC(U, T); break;
 		case (6) : Compute_force_using_random_energy_helicity_spectrum(U, T); break;
+		case (11): Compute_force_const_energy_helicity_supply(U); break;
 		case (21) : Compute_force_Coriolis(U, T); break;	
 		case (51) : Compute_force_RBC(U, T); break;	
 		case (52) : Compute_force_RBC_rotation(U, T); break;

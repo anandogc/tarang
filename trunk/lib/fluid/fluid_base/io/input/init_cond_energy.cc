@@ -81,10 +81,11 @@ void  FluidIO::Initialize_using_energy_helicity_spectrum(FluidVF& U, Real epsilo
 					index = (int) ceil(Kmag);
 				
 					ek = Correlation::shell_ek1(index)/ universal->Approx_number_modes_in_shell(index);
-					amp = sqrt(2*ek);
-					
-					phase1 = 2*M_PI * SPECrand.random();
-					
+
+                    amp = sqrt(2*ek);
+                    
+                    phase1 = 2*M_PI * SPECrand.random();
+
 					if (abs(hk_by_kek) > MYEPS) {		// helical
 						phase2 = phase1 + M_PI/2.0;
 						phase3 = asin(hk_by_kek)/2.0;			// zeta
@@ -132,7 +133,7 @@ void  FluidIO::Initialize_using_energy_helicity_spectrum(FluidSF& T, Real epsilo
 
 //*********************************************************************************************
 
-void  FluidIO::Init_cond_energy_helicity_spectrum(FluidVF& U) 
+void FluidIO::Init_cond_energy_helicity_spectrum(FluidVF& U) 
 {
     Real epsilon, sk;
     Real Ux000 = 0.0;
@@ -155,7 +156,7 @@ void  FluidIO::Init_cond_energy_helicity_spectrum(FluidVF& U)
         cerr << "io.double_para can have only 2 or 5 values." << endl;
         MPI_Abort(MPI_COMM_WORLD, 1);
     }
-    
+
     Initialize_using_energy_helicity_spectrum(U, epsilon, sk);
     
     if (my_id == master_id) {
@@ -215,6 +216,10 @@ void  FluidIO::Init_cond_energy_helicity_spectrum_scalar(FluidVF& U, FluidSF& T)
         Uy000 = global.io.double_para(4);
         Uz000 = global.io.double_para(5);
         T000 = global.io.double_para(6);
+    }
+    else {
+        if (master)
+            throw std::invalid_argument("Number of parameters in io.double_para must be 3 or 7.");
     }
 	
 	Initialize_using_energy_helicity_spectrum(U, epsilon, sk);

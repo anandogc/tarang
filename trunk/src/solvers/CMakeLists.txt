@@ -29,9 +29,7 @@ INCLUDE_DIRECTORIES(
 	${CMAKE_SOURCE_DIR}/src/solvers
 )
 
-SET(EXECUTABLE_NAME "tarang${POSTFIX}")
-
-ADD_EXECUTABLE(${EXECUTABLE_NAME}
+ADD_EXECUTABLE(tarang
 	main.cc
 	GP/GP_main
 	ifluid/Ifluid_main
@@ -43,10 +41,10 @@ ADD_EXECUTABLE(${EXECUTABLE_NAME}
 	mem_usage
 	)
 
-#TARGET_LINK_LIBRARIES(${EXECUTABLE_NAME} fluid_incompressible fluid_base fields fff_pencil fff_slab  sff_pencil sff_slab ssf_pencil ssf_slab sss_pencil sss_slab chff_slab basis_basicfn global spectral_transform ${SYSTEM_LIBRARIES})
+#TARGET_LINK_LIBRARIES(tarang fluid_incompressible fluid_base fields fff_pencil fff_slab  sff_pencil sff_slab ssf_pencil ssf_slab sss_pencil sss_slab chff_slab basis_basicfn global ${SYSTEM_LIBRARIES})
 
 # To do fffw_slab cfff_slab
-TARGET_LINK_LIBRARIES(${EXECUTABLE_NAME} fluid_incompressible fluid_base fields sss_pencil ssf_pencil sff_pencil fff_pencil  basis_basicfn global spectral_transform ${SYSTEM_LIBRARIES})
+TARGET_LINK_LIBRARIES(tarang fluid_incompressible fluid_base fields sss_pencil ssf_pencil sff_pencil fff_pencil  basis_basicfn global ${SYSTEM_LIBRARIES})
 
 ADD_CUSTOM_TARGET(
     tarang_source_dir_message
@@ -54,12 +52,12 @@ ADD_CUSTOM_TARGET(
     COMMAND echo 'Compiling  from source directory: \"${PROJECT_SOURCE_DIR}\"'
     COMMAND echo 
 )
-add_dependencies(${EXECUTABLE_NAME} tarang_source_dir_message)
+ADD_DEPENDENCIES(tarang tarang_source_dir_message)
 
 
-ADD_CUSTOM_COMMAND(TARGET ${EXECUTABLE_NAME}
+ADD_CUSTOM_COMMAND(TARGET tarang
                    POST_BUILD
-                   COMMAND mv -f ${EXECUTABLE_NAME} ${PROJECT_BINARY_DIR}
+                   COMMAND mv -f tarang ${PROJECT_BINARY_DIR}
                    COMMENT "moving ${EXECUTABLE_NAME} executable to PROJECT_BINARY_DIR" )
 
 

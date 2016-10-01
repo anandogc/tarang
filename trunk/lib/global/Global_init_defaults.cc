@@ -49,7 +49,6 @@ void Global::Init_defaults()
 	program.alias_option = "DEALIAS";
 	program.integration_scheme = "RK4";
 	program.basis_type = "FFF";
-	program.decomposition = "SLAB";
 	program.LES_switch = false;
 	program.apply_strong_realitycond_alltime_switch = false;
     program.apply_weak_realitycond_alltime_switch = true;

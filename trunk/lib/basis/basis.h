@@ -43,30 +43,6 @@
 #include "basic_extern_vars.h"
 #include "Global_extern_vars.h"
 
-
-#include "CFFF/slab/CFFF_slab.h"
-#include "CFFF/slab/CFFF_slab_inline.h"
-
-#include "FFFW/slab/FFFW_slab.h"
-#include "FFFW/slab/FFFW_slab_inline.h"
-
-#include "FFF/slab/FFF_slab.h"
-#include "FFF/slab/FFF_slab_inline.h"
-
-
-#include "SFF/slab/SFF_slab.h"
-#include "SFF/slab/SFF_slab_inline.h"
-
-#include "SSF/slab/SSF_slab.h"
-#include "SSF/slab/SSF_slab_inline.h"
-
-#include "SSS/slab/SSS_slab.h"
-#include "SSS/slab/SSS_slab_inline.h"
-
-#include "ChFF/slab/ChFF_slab.h"
-#include "ChFF/slab/ChFF_slab_inline.h"
-
-
 #include "FFF/pencil/FFF_pencil.h"
 #include "FFF/pencil/FFF_pencil_inline.h"
 
@@ -78,7 +54,6 @@
 
 #include "SSS/pencil/SSS_pencil.h"
 #include "SSS/pencil/SSS_pencil_inline.h"
-
 
 #endif
 

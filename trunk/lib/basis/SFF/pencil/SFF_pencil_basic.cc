@@ -110,6 +110,25 @@ bool SFF_PENCIL::Is_dealiasing_necessary(Array<Complex,3> A, Real outer_radius)
 	return false;
 }
 
+void SFF_PENCIL::Get_XY_plane(Array<Complex,3> A, Array<Complex,2> plane_xy, int kz)
+{
+	if (num_y_procs == 1) {
+		plane_xy= A(Range::all(),Range::all(),kz);
+	}
+	
+	else if (num_y_procs > 1) {
+		int lz = Get_lz(kz);
+		
+		global.temp_array.plane_xy_inproc = A(Range::all(), Range::all(), lz);
+
+		int data_size = 2*maxly*Nx;
+		int full_data_size = 2*Ny*Nx;
+	
+		MPI_Gather(reinterpret_cast<Real*>(global.temp_array.plane_xy_inproc.data()), data_size, MPI_Real, reinterpret_cast<Real*>(plane_xy.data()), 1, MPI_Vector_resized_y_plane_block, 0, global.mpi.MPI_COMM_ROW);
+		
+		MPI_Bcast(reinterpret_cast<Real*>(global.temp_array.plane_xy.data()), full_data_size, MPI_Real, 0, global.mpi.MPI_COMM_ROW);
+	}
+}
 
 /**********************************************************************************************
  
@@ -124,20 +143,25 @@ f(m, -ky, 0) = conj(f(m, ky, 0))- do for kz=N[3]/2
 void SFF_PENCIL::Satisfy_strong_reality_condition_in_Array(Array<Complex,3> A)
 {
 	int array_index_minus_ky;
-    
-    // For a given (., minusky), locate (.,ky) and then subst.
-    // A(., minusky,0) = conj(A(.,ky,0))
-	if (my_z_pcoord == 0) {
-        for (int lx=0; lx<maxlx; lx++)
-            for (int ly=Ny/2+1; ly<Ny; ly++) {
-                array_index_minus_ky = -Get_ky(ly);        // minusky = Get_ky(ly)
-                
-                A(lx,ly,0) = conj(A(lx,array_index_minus_ky,0));
-            }
-            // for (ky=0,kz=0) line
-            imag(A(Range::all(),0,0)) = 0.0;
-	}
 	
+	if (my_z_pcoord == 0) {
+		Get_XY_plane(A, global.temp_array.plane_xy, 0);
+
+		// For a given (kx, minusky), locate (kx,ky) and then subst.
+		// A(kx, minusky, 0) = conj(A(kx,ky,0))
+		#pragma ivdep
+		for (int lx=0; lx<Nx; lx++)  {
+			for (int ly=0; ly<maxly; ly++) {
+				if (Get_ky(ly) <= 0) {
+			
+					array_index_minus_ky =  Get_iy(-Get_ky(ly));  // minusky = -Get_ky(ly);
+					
+					A(lx,ly,0) = conj(global.temp_array.plane_xy(lx,array_index_minus_ky));
+				}
+			}
+		}
+	}
+
 	if (my_z_pcoord == num_z_procs-1)
          A(Range::all(),Range::all(),maxlz-1) = 0.0;
 }
@@ -245,33 +269,47 @@ void SFF_PENCIL::Assign_sub_array(Range x_range, Range y_range, Range z_range, A
 }
 
 
-int SFF_PENCIL::Read(Array<Complex,3> A, BasicIO::H5_plan plan, string file_name, string dataset_name)
+int SFF_PENCIL::Read(Array<Complex,3> A, h5::Plan plan, string file_name, string dataset_name)
 {
-	int err = BasicIO::Read(global.temp_array.Xr_slab.data(), plan, file_name, dataset_name);
-	spectralTransform.To_pencil(global.temp_array.Xr_slab, global.temp_array.Xr);
-	spectralTransform.Transpose(global.temp_array.Xr, A);
-	return err;
+	if (global.mpi.my_z_pcoord == 0)
+		BasicIO::Read(global.temp_array.Xr_slab.data(), plan, file_name, dataset_name);
+
+	fftk.To_pencil(global.temp_array.Xr_slab, global.temp_array.Xr);
+	fftk.Transpose(global.temp_array.Xr, A);
+
+	return 0;
 }
 
-int SFF_PENCIL::Read(Array<Real,3> Ar, BasicIO::H5_plan plan, string file_name, string dataset_name)
+int SFF_PENCIL::Read(Array<Real,3> Ar, h5::Plan plan, string file_name, string dataset_name)
 {
-	int err = BasicIO::Read(global.temp_array.Xr_slab.data(), plan, file_name, dataset_name);
-	spectralTransform.To_pencil(global.temp_array.Xr_slab, Ar);
-	return err;
+	if (global.mpi.my_z_pcoord == 0)
+		BasicIO::Read(global.temp_array.Xr_slab.data(), plan, file_name, dataset_name);
+
+	fftk.To_pencil(global.temp_array.Xr_slab, Ar);
+
+	return 0;
 }
 
 
-int SFF_PENCIL::Write(Array<Complex,3> A, BasicIO::H5_plan plan, string folder_name, string file_name, string dataset_name)
+int SFF_PENCIL::Write(Array<Complex,3> A, h5::Plan plan, string access_mode, string folder_name, string file_name, string dataset_name)
 {
-	spectralTransform.Transpose(A, global.temp_array.Xr);
-	spectralTransform.To_slab(global.temp_array.Xr, global.temp_array.Xr_slab);
-	return BasicIO::Write(global.temp_array.Xr_slab.data(), plan, folder_name, file_name, dataset_name);
+	fftk.Transpose(A, global.temp_array.Xr);
+	fftk.To_slab(global.temp_array.Xr, global.temp_array.Xr_slab);
+
+	if (global.mpi.my_z_pcoord == 0)
+		BasicIO::Write(global.temp_array.Xr_slab.data(), plan, access_mode, folder_name, file_name, dataset_name);
+
+	return 0;
 }
 
-int SFF_PENCIL::Write(Array<Real,3> Ar, BasicIO::H5_plan plan, string folder_name, string file_name, string dataset_name)
+int SFF_PENCIL::Write(Array<Real,3> Ar, h5::Plan plan, string access_mode, string folder_name, string file_name, string dataset_name)
 {
-	spectralTransform.To_slab(Ar, global.temp_array.Xr_slab);
-	return BasicIO::Write(global.temp_array.Xr_slab.data(), plan, folder_name, file_name, dataset_name);  
+	fftk.To_slab(Ar, global.temp_array.Xr_slab);
+
+	if (global.mpi.my_z_pcoord == 0)
+		BasicIO::Write(global.temp_array.Xr_slab.data(), plan, access_mode, folder_name, file_name, dataset_name);  
+
+	return 0;
 }
 
 //*********************************  End of scft_basic.cc *************************************

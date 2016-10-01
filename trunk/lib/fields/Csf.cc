@@ -211,13 +211,13 @@ void CSF::Write_complex_field()
 {
    	string folder_name="time_" + To_string(global.time.now);
 	
-	universal->Write(F, universal->H5_full, folder_name, field_name+".F");
+	universal->Write(F, universal->H5_full, "w", folder_name, field_name+".F");
 }
 
 void CSF::Write_reduced_complex_field()
 {
    	string folder_name="reduced_" + To_string(global.time.now);
-    universal->Write(F, universal->H5_out_reduced, folder_name, field_name+".F");
+    universal->Write(F, universal->H5_out_reduced, "w", folder_name, field_name+".F");
 }
 
 

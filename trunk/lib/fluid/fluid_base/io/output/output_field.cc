@@ -273,6 +273,16 @@ void FluidIO::Output_real_field(FluidVF& U)
 	}
 }
 
+void FluidIO::Output_real_field_slice(FluidVF& U)
+{
+	if (global.time.now >= global.io.time.slice_save_next) {
+		U.rvf.Write_real_field_slice(slice_file_counter);
+
+		slice_file_counter++;
+		global.io.time.slice_save_next += global.io.time.slice_save_interval;
+	}
+}
+
 void FluidIO::Output_real_field(FluidVF& U, FluidSF& T)
 {
 	if (global.time.now >= global.io.time.real_field_save_next) {
@@ -280,6 +290,18 @@ void FluidIO::Output_real_field(FluidVF& U, FluidSF& T)
 		T.rsf.Write_real_field();
         
         global.io.time.real_field_save_next += global.io.time.real_field_save_interval;
+	}
+}
+
+
+void FluidIO::Output_real_field_slice(FluidVF& U, FluidSF& T)
+{
+	if (global.time.now >= global.io.time.slice_save_next) {
+		U.rvf.Write_real_field_slice(slice_file_counter);
+		T.rsf.Write_real_field_slice(slice_file_counter);
+
+		slice_file_counter++;
+		global.io.time.slice_save_next += global.io.time.slice_save_interval;
 	}
 }
 
@@ -301,6 +323,17 @@ void FluidIO::Output_real_field(FluidVF& U, FluidVF& W)
 		W.rvf.Write_real_field();
         
         global.io.time.real_field_save_next += global.io.time.real_field_save_interval;
+	}
+}
+
+void FluidIO::Output_real_field_slice(FluidVF& U, FluidVF& W)
+{
+	if (global.time.now >= global.io.time.real_field_save_next) {
+		U.rvf.Write_real_field_slice(slice_file_counter);	
+		W.rvf.Write_real_field_slice(slice_file_counter);
+        
+		slice_file_counter++;
+        global.io.time.slice_save_next += global.io.time.slice_save_interval;
 	}
 }
 

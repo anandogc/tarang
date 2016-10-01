@@ -10,7 +10,7 @@ program:
     apply_weak_realitycond_alltime_switch: false
     low_dimensional_switch: false
     two_and_half_dimension: false
-    two_dimension: false       
+    two_dimension: false
     dt_option: 0             # 0=fixed; 1=dx/umax
     helicity_switch: false
     sincostr_switch: SFF 
@@ -23,7 +23,7 @@ PHYSICS:
     temperature_grad: 1
     
 field:
-    N: [16, 16, 16]
+    N: [32, 32, 32]
     kfactor: #[1, 1, 1]
     L: [1, 1, 1]
     diss_coefficients: [0.0, 0.0]               
@@ -33,11 +33,6 @@ field:
     incompressible: true                #for now it can only be true
     waveno_switch: true
     anisotropy_dirn: 1                  #1,2,3
-
-fft:
-    fftw3D_switch: false              #for fftw_original
-    transpose: true                #Should be always "true" for PENCIL
-    sincostr_switch: SFF                    #SINX, COSX, SCC, CSC, CCS, SSC, CSS, SCS
 
 time:
     init: 1
@@ -63,14 +58,14 @@ force:
 #          mode:
         
 io:
-    input_field_procedure: 4
+    input_field_procedure: 5
     #1:complex field, 2: complex_reduced field, 3: real field, 4: modes, 5: Ek,Hk; 6: TG, 7:ABC
     input_vx_vy_switch: true
     output_vx_vy_switch: true
-    diagnostic_procedures: [0, 1]
+    diagnostic_procedures: [15]
     N_in_reduced: #[30, 30, 26]
     N_out_reduced: #[32, 32, 32]
-    int_para: 
+    int_para: [2]
     double_para: [0.0000001, 0, 0.0001]
     string_para:
 
@@ -178,9 +173,9 @@ io:
     time:
         global_save_first: 0.0
         complex_field_save_first: 
-        field_frequent_save_first: 0.0
+        field_frequent_save_first: 
         field_reduced_save_first:  
-        real_field_save_first: 50.0
+        real_field_save_first: 0
         field_k_save_first: 0.0
         field_r_save_first: 0.0
         spectrum_save_first: 0.0
@@ -199,10 +194,10 @@ io:
         cout_save_first: 0.0
 
         global_save_interval: 0.01
-        complex_field_save_interval: 1.0
-        field_frequent_save_interval: 1.0
+        complex_field_save_interval: 
+        field_frequent_save_interval: 
         field_reduced_save_interval: 
-        real_field_save_interval: 5.0
+        real_field_save_interval: 1
         field_k_save_interval: 0.01
         field_r_save_interval: 0.01
         pressure_save_interval: 
@@ -276,10 +271,10 @@ energy_transfer:
         radii:
 
     ring_to_ring:
-        turnon: false
-        no_shells: 8
-        no_sectors: 5
-        radii:
+        turnon: true
+        no_shells: 7
+        no_sectors: 10
+        radii: [0,3,4,5,6,7,.inf]
         sector_option:                  #EQUISPACED(default), EQUAL_NO_MODES, USER_DEFINED
         sector_angles: 
 

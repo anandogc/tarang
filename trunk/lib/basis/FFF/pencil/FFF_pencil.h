@@ -41,7 +41,7 @@
 
 #include "def_vars.h"
 #include "basicfn_inline.h"
-#include "spectral_transform.h"
+#include "fftk.h"
 #include "universal.h"
 #include "ArrayOps.h"
 

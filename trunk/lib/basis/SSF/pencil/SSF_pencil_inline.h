@@ -59,7 +59,7 @@
  * \param lx  first local index of an array
 
  */
-inline int SSF_PENCIL::Get_kx(int lx) {return  (lx <= Nx/2) ? lx : (lx-Nx); } 
+inline int SSF_PENCIL::Get_kx(int lx) {return  lx; } 
  
 
 /*! @brief	Get local array index lx given grid waveno kx.
@@ -70,7 +70,7 @@ inline int SSF_PENCIL::Get_kx(int lx) {return  (lx <= Nx/2) ? lx : (lx-Nx); }
  * \param	kx  grid wavenumber along x
  * \return	lx  local array index along x
  */
-inline int SSF_PENCIL::Get_lx(int kx) {return (kx >= 0) ? kx : (kx + Nx); } 
+inline int SSF_PENCIL::Get_lx(int kx) {return kx; } 
 
 
 /*! @brief	Get array index ix given grid waveno kx.
@@ -80,7 +80,7 @@ inline int SSF_PENCIL::Get_lx(int kx) {return (kx >= 0) ? kx : (kx + Nx); }
  * \param	kx  grid wavenumber along x
  * \return	i1  array index along x
  */
-inline int SSF_PENCIL::Get_ix(int kx) {return  (kx >= 0) ? kx : (kx + Nx);  }		
+inline int SSF_PENCIL::Get_ix(int kx) {return  kx;  }		
 
 
 /*! @brief	Get grid waveno ky given first local array index ly.
@@ -90,7 +90,7 @@ inline int SSF_PENCIL::Get_ix(int kx) {return  (kx >= 0) ? kx : (kx + Nx);  }
  * \param ly  second local index of an array
  * \return kx corresponding to lx
  */
-inline int SSF_PENCIL::Get_ky(int ly) {return  ((ly_start + ly) <= Ny/2) ? (ly_start + ly) : (ly_start + ly-Ny); }
+inline int SSF_PENCIL::Get_ky(int ly) {return  (ly_start + ly); }
 
 /*! @brief	Get local array index ly given grid waveno ky.
  * 
@@ -99,9 +99,9 @@ inline int SSF_PENCIL::Get_ky(int ly) {return  ((ly_start + ly) <= Ny/2) ? (ly_s
  * \param	ky  grid wavenumber along y
  * \return	ly  local array index along y
  */
-inline int SSF_PENCIL::Get_ly(int ky) { return  (ky >= 0) ? (ky-ly_start) : (ky + Ny-ly_start);  } 
+inline int SSF_PENCIL::Get_ly(int ky) { return  (ky-ly_start);  } 
 
-inline int SSF_PENCIL::Get_iy(int ky) { return  (ky >= 0) ? ky : (ky + Ny); }
+inline int SSF_PENCIL::Get_iy(int ky) { return  ky; }
 
 inline int SSF_PENCIL::Get_kz(int lz)  {return lz + lz_start;} 
 
@@ -111,10 +111,11 @@ inline int SSF_PENCIL::Get_iz(int kz)  {return kz;}
 
 inline bool SSF_PENCIL::Probe_in_me(int kx, int ky, int kz) 
 {  
+	int lx = Get_lx(kx);
 	int ly = Get_ly(ky);
 	int lz = Get_lz(kz);
 	
-	return ( ((ly >= 0) && (ly < maxly)) && ((lz >= 0) && (lz < maxlz)) );
+	return ( ((lx >= 0) && (lx < maxlx)) && ((ly >= 0) && (ly < maxly)) && ((lz >= 0) && (lz < maxlz)) );
 }
 
 
@@ -124,7 +125,7 @@ inline Complex SSF_PENCIL::Get_spectral_field(int kx, int ky, int kz, Array<Comp
 	int ly = Get_ly(ky);
 	int lz = Get_lz(kz);
 	
-	if ( ((ly >= 0) && (ly < maxly)) && ((lz >= 0) && (lz < maxlz)) )
+	if ( ((lx >= 0) && (lx < maxlx)) && ((ly >= 0) && (ly < maxly)) && ((lz >= 0) && (lz < maxlz)) )
 		return A(lx, ly, lz);
 
 	return Complex(0,0);
@@ -137,7 +138,7 @@ inline TinyVector<Complex,3> SSF_PENCIL::Get_spectral_field(int kx, int ky, int 
 	int ly = Get_ly(ky);
 	int lz = Get_lz(kz);
 	
-	if ( ((ly >= 0) && (ly < maxly)) && ((lz >= 0) && (lz < maxlz)) )
+	if ( ((lx >= 0) && (lx < maxlx)) && ((ly >= 0) && (ly < maxly)) && ((lz >= 0) && (lz < maxlz)) )
 		return TinyVector<Complex,3>(Ax(lx, ly, lz), Ay(lx, ly, lz), Az(lx, ly, lz));
 
 	return TinyVector<Complex,3>(0,0,0);
@@ -152,7 +153,7 @@ inline void SSF_PENCIL::Assign_spectral_field(int kx, int ky, int kz, Array<Comp
 	int ly = Get_ly(ky);
 	int lz = Get_lz(kz);
 	
-	if ( ((ly >= 0) && (ly < maxly)) && ((lz >= 0) && (lz < maxlz)) )
+	if ( ((lx >= 0) && (lx < maxlx)) && ((ly >= 0) && (ly < maxly)) && ((lz >= 0) && (lz < maxlz)) )
 		A(lx, ly, lz) = field;
 
 }
@@ -164,7 +165,7 @@ inline void SSF_PENCIL::Assign_spectral_field(int kx, int ky, int kz, Array<Comp
 	int ly = Get_ly(ky);
 	int lz = Get_lz(kz);
 
-	if ( ((ly >= 0) && (ly < maxly)) && ((lz >= 0) && (lz < maxlz)) ) {
+	if ( ((lx >= 0) && (lx < maxlx)) && ((ly >= 0) && (ly < maxly)) && ((lz >= 0) && (lz < maxlz)) ) {
 		Ax(lx, ly, lz) = V(0);
 		Ay(lx, ly, lz) = V(1);
 		Az(lx, ly, lz) = V(2);
@@ -189,7 +190,7 @@ inline void SSF_PENCIL::Add_spectral_field(int kx, int ky, int kz, Array<Complex
 	int ly = Get_ly(ky);
 	int lz = Get_lz(kz);
 	
-	if ( ((ly >= 0) && (ly < maxly)) && ((lz >= 0) && (lz < maxlz)) )
+	if ( ((lx >= 0) && (lx < maxlx)) && ((ly >= 0) && (ly < maxly)) && ((lz >= 0) && (lz < maxlz)) )
 		A(lx, ly, lz) += field;
 
 }
@@ -201,7 +202,7 @@ inline void SSF_PENCIL::Add_spectral_field(int kx, int ky, int kz, Array<Complex
 	int ly = Get_ly(ky);
 	int lz = Get_lz(kz);
 	
-	if ( ((ly >= 0) && (ly < maxly)) && ((lz >= 0) && (lz < maxlz)) ) {
+	if ( ((lx >= 0) && (lx < maxlx)) && ((ly >= 0) && (ly < maxly)) && ((lz >= 0) && (lz < maxlz)) ) {
 		Ax(lx, ly, lz) += V(0);
 		Ay(lx, ly, lz) += V(1);
 		Az(lx, ly, lz) += V(2);
@@ -240,13 +241,13 @@ inline TinyVector<Complex,3> SSF_PENCIL::Get_local_spectral_field(int lx, int ly
 	//  Assign
 inline void SSF_PENCIL::Assign_local_spectral_field(int lx, int ly, int lz, Array<Complex,3> A, Complex field)
 { 
-	if ( ((ly >= 0) && (ly < maxly)) && ((lz >= 0) && (lz < maxlz)) )
+	if ( ((lx >= 0) && (lx < maxlx)) && ((ly >= 0) && (ly < maxly)) && ((lz >= 0) && (lz < maxlz)) )
 		A(lx, ly, lz) = field;
 }
 
 inline void SSF_PENCIL::Assign_local_spectral_field(int lx, int ly, int lz, Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az, TinyVector<Complex,3> V)
 {
-	if ( ((ly >= 0) && (ly < maxly)) && ((lz >= 0) && (lz < maxlz)) ) {
+	if ( ((lx >= 0) && (lx < maxlx)) && ((ly >= 0) && (ly < maxly)) && ((lz >= 0) && (lz < maxlz)) ) {
 		Ax(lx, ly, lz) = V(0);
 		Ay(lx, ly, lz) = V(1);
 		Az(lx, ly, lz) = V(2);
@@ -268,13 +269,13 @@ inline void SSF_PENCIL::Assign_local_spectral_field(int lx, int ly, int lz, Arra
 
 inline void SSF_PENCIL::Add_local_spectral_field(int lx, int ly, int lz, Array<Complex,3> A, Complex field)
 { 
-	if ( ((ly >= 0) && (ly < maxly)) && ((lz >= 0) && (lz < maxlz)) )
+	if ( ((lx >= 0) && (lx < maxlx)) && ((ly >= 0) && (ly < maxly)) && ((lz >= 0) && (lz < maxlz)) )
 		A(lx, ly, lz) += field;
 }
 
 inline void SSF_PENCIL::Add_local_spectral_field(int lx, int ly, int lz, Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az, TinyVector<Complex,3> V)
 {
-	if ( ((ly >= 0) && (ly < maxly)) && ((lz >= 0) && (lz < maxlz)) ) {
+	if ( ((lx >= 0) && (lx < maxlx)) && ((ly >= 0) && (ly < maxly)) && ((lz >= 0) && (lz < maxlz)) ) {
 		Ax(lx, ly, lz) += V(0);
 		Ay(lx, ly, lz) += V(1);
 		Az(lx, ly, lz) += V(2);

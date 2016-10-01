@@ -174,10 +174,11 @@ public:
 	
 	//*****************************************************************************************	
 
-	void Write_complex_field();
-	void Write_reduced_complex_field();
 	void Read_complex_field();
 	void Read_reduced_complex_field();
+	void Write_complex_field();
+	void Write_reduced_complex_field();
+
 	
 }; 
 

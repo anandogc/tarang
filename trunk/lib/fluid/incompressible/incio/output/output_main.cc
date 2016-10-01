@@ -88,11 +88,11 @@ void FluidIO_incompress::Output_all_inloop(FluidVF& U, Pressure& P)
 		global.io.time.complex_field_save_next += global.io.time.complex_field_save_interval;
 	}	
 	
-	if (global.time.now >= global.io.time.field_frequent_save_next) {\
+	if (global.time.now >= global.io.time.field_frequent_save_next) {
 		Output_complex_field_frequent(U); 
 		global.io.time.field_frequent_save_next += global.io.time.field_frequent_save_interval;
 	}	
-	
+
 	if (global.time.now >= global.io.time.field_reduced_save_next) {
 		Output_reduced_complex_field(U);
 		global.io.time.field_reduced_save_next += global.io.time.field_reduced_save_interval;

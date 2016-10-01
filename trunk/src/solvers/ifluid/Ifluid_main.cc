@@ -63,14 +63,14 @@ int Ifluid_main()
 
 
 		// fluidIO_incompress.Output_cout(U);  // for initial cond
-		// exit(1);
+		// MPI_Abort(MPI_COMM_WORLD, 1);
 		// U.Inverse_transform();
 		// U.Forward_transform();
 		// //cout << U.rvf.V1r << endl;
 		// universal->Print_large_Fourier_elements(U.cvf.V1, "Ifluid main U.cvf.V1");
 		// universal->Print_large_Fourier_elements(U.cvf.V2, "Ifluid main U.cvf.V2");
 		// universal->Print_large_Fourier_elements(U.cvf.V3, "Ifluid main U.cvf.V3");
-		// exit(1);
+		// MPI_Abort(MPI_COMM_WORLD, 1);
 		
 		Real total_abs_div;
 		U.Compute_divergence_field(global.temp_array.X2, total_abs_div, true);
@@ -78,7 +78,7 @@ int Ifluid_main()
 		// true mean print nonzero div modes
 		if (total_abs_div > MYEPS2) {
 			cout << "abs(sum(Divergence)) of the initial field U = " << total_abs_div << "is large. " << '\n' << "Therefore exiting the program." << endl;
-			MPI_Abort(MPI_COMM_WORLD, 1);
+			// MPI_Abort(MPI_COMM_WORLD, 1);
 		}
 		
 		fluidIO_incompress.Output_all_inloop(U, P);  // for initial cond
@@ -111,14 +111,14 @@ int Ifluid_main()
 			U.Compute_divergence_field(global.temp_array.X2, total_abs_div, true);
 			// true mean print nonzero div modes
 			if (total_abs_div > MYEPS2) {
-				cout << "abs(sum(Divergence)) of U = " << total_abs_div << "is large. " << '\n' << "Therefore exiting the program." << endl;
-				break;
+				cout << "max(abs(Divergence)) of U = " << total_abs_div << "is large. " << '\n' << "Therefore exiting the program." << endl;
+				// MPI_Abort(MPI_COMM_WORLD, 1); 
 			}
 
 			fluidIO_incompress.Output_all_inloop(U, P);
 			
-			if ( (my_id == 0) && isnan(U.cvf.total_energy) )  { 
-				cout << "ERROR: Numerical Overflow " << endl;  break; 
+			if ( isnan(U.cvf.total_energy) )  { 
+				cout << "ERROR: Numerical Overflow " << endl;  MPI_Abort(MPI_COMM_WORLD, 1); 
 			}
 		}
 		while ( (global.time.now < global.time.final) && (clock() < global.time.job_time_final) );

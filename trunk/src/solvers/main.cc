@@ -46,7 +46,7 @@ Universal *universal = NULL;
 
 Global global;
 
-SpectralTransform spectralTransform;
+FFTK fftk;
 
 Uniform<Real> SPECrand;
 
@@ -59,6 +59,7 @@ int main(int argc, char** argv)
 {
 
 	MPI_Init(&argc, &argv);
+	h5::init();
 
 
 	MPI_Comm_rank(MPI_COMM_WORLD, &global.mpi.my_id);
@@ -69,56 +70,31 @@ int main(int argc, char** argv)
 
 	global.Process_basic_vars();
 	
-    BasicIO::Initialize(global.io.data_dir, global.mpi.num_p_rows, global.mpi.num_p_cols); 
-
-	if (global.program.basis_type == "FFFW"){
-		// if (global.program.decomposition == "SLAB")
-		// 	universal=new FFFW_SLAB;
-	}
-
-	else if (global.program.basis_type == "FFF"){
-		// if (global.program.decomposition == "SLAB")
-		// 	universal=new FFF_SLAB;
-		if (global.program.decomposition == "PENCIL")
+	if (global.program.basis_type == "FFF")
 			universal=new FFF_PENCIL;
-	}
-	
-   else if (global.program.basis_type == "SFF"){
-		// if (global.program.decomposition == "SLAB")
-			// universal=new SFF_SLAB;
-		if (global.program.decomposition == "PENCIL")
+
+	else if (global.program.basis_type == "SFF")
 			universal=new SFF_PENCIL;
-	}
-   else if (global.program.basis_type == "SSF"){
-		// if (global.program.decomposition == "SLAB")
-			// universal=new SSF_SLAB;
-		if (global.program.decomposition == "PENCIL")
+
+	else if (global.program.basis_type == "SSF")
 			universal=new SSF_PENCIL;
-	}
-	else if (global.program.basis_type == "SSS"){
-		// if (global.program.decomposition == "SLAB")
-			// universal=new SSS_SLAB;	
-		if (global.program.decomposition == "PENCIL")
+
+	else if (global.program.basis_type == "SSS")
 			universal=new SSS_PENCIL;
-	}
+
 /*    else if (global.program.basis_type == "ChFF"){
-		if (global.program.decomposition == "SLAB")
-			universal=new ChFF_SLAB;
 	} */
 /*    else if (global.program.basis_type == "CFFF"){
-//		if (global.program.decomposition == "SLAB")
-//			universal=new CFFF_SLAB;
 	}*/
 	
 	if (universal == NULL){
-			if(master) cerr << "program.basis_type must be one of FFF, SFF, SSF, SSS. And program.decomposition must be PENCIL"<< endl;
+			if(master) cerr << "program.basis_type must be one of FFF, SFF, SSF, SSS."<< endl;
 			MPI_Abort(MPI_COMM_WORLD, 1);
 	}
 
 	global.Process_advanced_vars();
 	global.Print();
 
-	
 	
 	Correlation::Initialize();
 	
@@ -178,6 +154,7 @@ int main(int argc, char** argv)
 	}
 
 	BasicIO::Finalize();
+	h5::finalize();
 	MPI_Finalize();
 
 	return 0;

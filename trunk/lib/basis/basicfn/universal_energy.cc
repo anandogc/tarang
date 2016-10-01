@@ -50,7 +50,6 @@
 
 Real Universal::Get_total_energy_real_space(Array<Real,3> Ar)
 {
-	
 	Real local_energy = Get_local_energy_real_space(Ar);
 	Real total_energy=0;
 

@@ -280,7 +280,7 @@ void Universal::Local_ring_mult_all
 					
 					AdotB = mydot(Ax(lx,ly,lz),Ay(lx,ly,lz),Az(lx,ly,lz),Bx(lx,ly,lz),By(lx,ly,lz),Bz(lx,ly,lz));
 					
-					local_result(shell_index, sector_index) +=  2* Multiplicity_factor(lx, ly, lz)* AdotB;  
+					local_result(shell_index, sector_index) += 0;// 2* Multiplicity_factor(lx, ly, lz)* AdotB;  
 				}											
 			}
 			
@@ -853,7 +853,6 @@ void Universal::Local_shell_mult_vector_potential_all
 					}
 				}							
 			}
-	
 }
 
 
