@@ -79,6 +79,13 @@ EnergyTr::EnergyTr()
 		
 		if (global.energy_transfer.ring_to_ring.turnon) {
 			ring_to_ring_self.resize(global.energy_transfer.ring_to_ring.no_shells+1,global.energy_transfer.ring_to_ring.no_sectors+1);
+            ring_to_ring_VF_UtoW.resize(global.energy_transfer.ring_to_ring.no_shells+1,global.energy_transfer.ring_to_ring.no_sectors+1);
+            ring_to_ring_VF_WtoU.resize(global.energy_transfer.ring_to_ring.no_shells+1,global.energy_transfer.ring_to_ring.no_sectors+1);
+            ring_to_ring_VF_UtoU.resize(global.energy_transfer.ring_to_ring.no_shells+1,global.energy_transfer.ring_to_ring.no_sectors+1);
+          
+            ring_to_ring_VF_BtoW.resize(global.energy_transfer.ring_to_ring.no_shells+1,global.energy_transfer.ring_to_ring.no_sectors+1);
+            ring_to_ring_VF_JtoU.resize(global.energy_transfer.ring_to_ring.no_shells+1,global.energy_transfer.ring_to_ring.no_sectors+1);
+            ring_to_ring_VF_BtoU.resize(global.energy_transfer.ring_to_ring.no_shells+1,global.energy_transfer.ring_to_ring.no_sectors+1);
 			
 			temp_ring_tr.resize(global.energy_transfer.ring_to_ring.no_shells+1,global.energy_transfer.ring_to_ring.no_sectors+1);
 

@@ -217,7 +217,7 @@ int IMHD_main()
                     filename = "/out/ring_to_ring.d";
                     filename = global.io.data_dir+ filename;
                     fluidIO_incompress.ring_to_ring_file.open(filename.c_str());
-                    fluidIO_incompress.Output_ring_to_ring(U, B, P);
+                    fluidIO_incompress.Output_ring_to_ring(U, B, P, helicalU, helicalW);
                     fluidIO_incompress.Close_files();
                     break;
                 }

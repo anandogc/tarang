@@ -426,6 +426,7 @@ public:
 		bool turnon;
 		bool helicity_flux_switch;
 		bool helicity_shell_to_shell_switch;
+        bool helicity_ring_to_ring_switch;
 		bool Elsasser;
 		bool Vpll_switch;  // for energy transfer of parallel diagnostics
 

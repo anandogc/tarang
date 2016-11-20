@@ -408,11 +408,43 @@ void FluidIO_incompress::Output_shell_to_shell(FluidVF& U, FluidVF& W, FluidSF& 
 } 
 
 
+void FluidIO_incompress::Output_ring_to_ring(FluidVF& U, Pressure& P)
+{
+  if (global.energy_transfer.ring_to_ring.turnon) {
+    
+    static Range ra1(1, global.energy_transfer.ring_to_ring.no_shells-1);
+    static Range ra2(1, global.energy_transfer.ring_to_ring.no_sectors);
+    
+    if (master)
+      ring_to_ring_file << "\n%% Time = " << global.time.now;
+    
+    energyTr->Compute_ring_tr(U);
+    Print_array(ring_to_ring_file, "ring_to_ring: U2U ", energyTr->ring_to_ring_self(ra1,ra2,ra1,ra2));
+    
+    energyTr->Power_supply_ring(U);
+    Print_array(ring_to_ring_file, "sum(Fv.v)", energyTr->ring_force_x_field(ra1,ra2));
+    
+    
+    // Vpll to Vpll shell-to-shell
+    if (global.energy_transfer.Vpll_switch) {
+      energyTr->Compute_ring_tr_Vpll(U, P);
+      Print_array(ring_to_ring_file, "pll2pll ring_to_ring: U2U ", energyTr->ring_to_ring_self(ra1,ra2,ra1,ra2));
+      
+      Print_array(ring_to_ring_file, "grad(p)*Vpll", energyTr->ring_force_x_field(ra1,ra2));
+    }
+    
+    if (master)
+      ring_to_ring_file.flush();
+    
+  }
+}
+
+
 //********************************************************************************************* 
 
 // ring-to-ring (spherical)
 
-void FluidIO_incompress::Output_ring_to_ring(FluidVF& U, Pressure& P)
+void FluidIO_incompress::Output_ring_to_ring(FluidVF& U, Pressure& P, FluidVF& helicalU)
 {
 	if (global.energy_transfer.ring_to_ring.turnon) {
 		
@@ -436,6 +468,14 @@ void FluidIO_incompress::Output_ring_to_ring(FluidVF& U, Pressure& P)
 			
 			Print_array(ring_to_ring_file, "grad(p)*Vpll", energyTr->ring_force_x_field(ra1,ra2));
 		}
+      
+        if (global.energy_transfer.helicity_ring_to_ring_switch){
+            energyTr->Compute_kinetic_helicity_ring_tr(U, helicalU);
+            Print_array(ring_to_ring_file, "ring_to_ring: U2W ", energyTr->ring_to_ring_VF_UtoW(ra1,ra2,ra1,ra2));
+            Print_array(ring_to_ring_file, "ring_to_ring: W2U ", energyTr->ring_to_ring_VF_WtoU(ra1,ra2,ra1,ra2));
+            Print_array(ring_to_ring_file, "ring_to_ring: U2U ", energyTr->ring_to_ring_VF_UtoU(ra1,ra2,ra1,ra2));
+
+        }
 		
 		if (master)
 			ring_to_ring_file.flush();
@@ -503,7 +543,7 @@ void FluidIO_incompress::Output_ring_to_ring_RBC(FluidVF& U, FluidSF& T, Pressur
 }
 
 //*********************************************************************************************
-void FluidIO_incompress::Output_ring_to_ring(FluidVF& U, FluidVF& W, Pressure& P)
+void FluidIO_incompress::Output_ring_to_ring(FluidVF& U, FluidVF& W, Pressure& P, FluidVF& helicalU, FluidVF& helicalW)
 {
 	if (global.energy_transfer.ring_to_ring.turnon) {
 		
@@ -549,6 +589,18 @@ void FluidIO_incompress::Output_ring_to_ring(FluidVF& U, FluidVF& W, Pressure& P
 			Print_array(ring_to_ring_file, "grad(p)*Vpll", energyTr->ring_force_x_field(ra1,ra2));
 		}
 		
+        if (global.energy_transfer.helicity_ring_to_ring_switch){
+          energyTr->Compute_kinetic_helicity_ring_tr(U, W, helicalU, helicalW);
+          Print_array(ring_to_ring_file, "Helicity ring_to_ring: U2W ", energyTr->ring_to_ring_VF_UtoW(ra1,ra2,ra1,ra2));
+          Print_array(ring_to_ring_file, "Helicity ring_to_ring: W2U ", energyTr->ring_to_ring_VF_WtoU(ra1,ra2,ra1,ra2));
+          Print_array(ring_to_ring_file, "Helicity ring_to_ring: U2U ", energyTr->ring_to_ring_VF_UtoU(ra1,ra2,ra1,ra2));
+          
+          Print_array(ring_to_ring_file, "Helicity ring_to_ring: B2W ", energyTr->ring_to_ring_VF_BtoW(ra1,ra2,ra1,ra2));
+          Print_array(ring_to_ring_file, "Helicity ring_to_ring: J2U ", energyTr->ring_to_ring_VF_JtoU(ra1,ra2,ra1,ra2));
+          Print_array(ring_to_ring_file, "Helicity ring_to_ring: B2U ", energyTr->ring_to_ring_VF_BtoU(ra1,ra2,ra1,ra2));
+          
+        }
+
 		if (master)
 			ring_to_ring_file.flush();
 	}	

@@ -191,6 +191,11 @@ public:
 	// Ring to ring
 	Array<Real,4>  ring_to_ring_VF_WtoW;			// from W to W
 	Array<Real,4>  ring_to_ring_VF_UtoW;			// from U to W
+  	Array<Real,4>  ring_to_ring_VF_WtoU;
+  	Array<Real,4>  ring_to_ring_VF_UtoU;
+    Array<Real,4>  ring_to_ring_VF_BtoW;			// from U to W
+    Array<Real,4>  ring_to_ring_VF_JtoU;
+    Array<Real,4>  ring_to_ring_VF_BtoU;
 	Array<Real,4>  ring_to_ring_Elsasser_plus;	// from Zplus to Zplus
 	Array<Real,4>  ring_to_ring_Elsasser_minus;	// from Zminus to Zminus
 	
@@ -258,10 +263,12 @@ public:
 	
 		// Ring_to_ring energy transfer
 	void Compute_ring_tr(FluidVF &U);
+    void Compute_kinetic_helicity_ring_tr(FluidVF& U,  FluidVF& helicalU);
 	void Compute_ring_tr(FluidVF &U, FluidSF& T);
 	void Compute_ring_tr_scalar(FluidVF &U, FluidSF& T);
 	void Compute_ring_tr_RBC(FluidVF &U, FluidSF& T);
 	void Compute_ring_tr(FluidVF &U, FluidVF& W);
+    void Compute_kinetic_helicity_ring_tr(FluidVF& U, FluidVF& W, FluidVF& helicalU, FluidVF& helicalW);
 	void Compute_ring_tr(FluidVF &U, FluidVF& W, FluidSF& T);
 	
 	

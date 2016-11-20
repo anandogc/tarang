@@ -700,6 +700,9 @@ void Global::Read()
 		Assign_if_input_provided(para["energy_transfer"], "helicity_flux_switch", energy_transfer.helicity_flux_switch, false);
 		
 		Assign_if_input_provided(para["energy_transfer"], "helicity_shell_to_shell_switch", energy_transfer.helicity_shell_to_shell_switch, false);
+      
+        Assign_if_input_provided(para["energy_transfer"], "helicity_ring_to_ring_switch", energy_transfer.helicity_ring_to_ring_switch, false);
+    
 		
 		Assign_if_input_provided(para["energy_transfer"], "Elsasser", energy_transfer.Elsasser, true);
 		
