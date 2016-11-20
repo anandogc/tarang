@@ -44,103 +44,117 @@
 EnergyTr::EnergyTr()						 
 {
 	
-if (global.energy_transfer.turnon) {
+	if (global.energy_transfer.turnon) {
 
-	// in global file.. set sphere radii, shells, etc.
-	
-	flux_self.resize(global.energy_transfer.flux.no_spheres+1);
-	sphere_force_x_field.resize(global.energy_transfer.flux.no_spheres+1);
+		// in global file.. set sphere radii, shells, etc.
+		
+		flux_self.resize(global.energy_transfer.flux.no_spheres+1);
+		sphere_force_x_field.resize(global.energy_transfer.flux.no_spheres+1);
 
-	flux_hk.resize(global.energy_transfer.flux.no_spheres+1);
-	
-	shelltoshell_self.resize(global.energy_transfer.shell_to_shell.no_shells+1,global.energy_transfer.shell_to_shell.no_shells+1); 
-	
-	shelltoshell_hk.resize(global.energy_transfer.shell_to_shell.no_shells+1,global.energy_transfer.shell_to_shell.no_shells+1); 
-	
-	temp_shell_tr.resize(global.energy_transfer.shell_to_shell.no_shells+1);
-	
-	
-	if (global.energy_transfer.ring_to_ring.turnon) {
-		ring_to_ring_self.resize(global.energy_transfer.ring_to_ring.no_shells+1,global.energy_transfer.ring_to_ring.no_sectors+1);
+		flux_hk.resize(global.energy_transfer.flux.no_spheres+1);
 		
-		temp_ring_tr.resize(global.energy_transfer.ring_to_ring.no_shells+1,global.energy_transfer.ring_to_ring.no_sectors+1);
+		shelltoshell_self.resize(global.energy_transfer.shell_to_shell.no_shells+1,global.energy_transfer.shell_to_shell.no_shells+1); 
+		
+		shelltoshell_hk.resize(global.energy_transfer.shell_to_shell.no_shells+1,global.energy_transfer.shell_to_shell.no_shells+1); 
+		
+		temp_shell_tr.resize(global.energy_transfer.shell_to_shell.no_shells+1);
+		
 
-		ring_force_x_field.resize(global.energy_transfer.ring_to_ring.no_shells+1,global.energy_transfer.ring_to_ring.no_sectors+1);
-	}
-		
-	
-	if (global.energy_transfer.cylindrical_ring_to_ring.turnon) {
-		cylindrical_ring_to_ring_self.resize(global.energy_transfer.cylindrical_ring_to_ring.no_shells+1,global.energy_transfer.cylindrical_ring_to_ring.no_slabs+1);
-		
-		temp_cylindrical_ring_tr.resize(global.energy_transfer.cylindrical_ring_to_ring.no_shells+1,global.energy_transfer.cylindrical_ring_to_ring.no_slabs+1);
-		
-		cylindrical_ring_force_x_field.resize(global.energy_transfer.cylindrical_ring_to_ring.no_shells+1,global.energy_transfer.cylindrical_ring_to_ring.no_slabs+1);
-	}
-	
-	
-	
-	// FOR SCALAR
-	if (global.program.T_exists) {
-		flux_SF.resize(global.energy_transfer.flux.no_spheres+1);
-				
-		shelltoshell_SF.resize(global.energy_transfer.shell_to_shell.no_shells+1,global.energy_transfer.shell_to_shell.no_shells+1); 
-		
-		if (global.energy_transfer.ring_to_ring.turnon) 
-			ring_to_ring_SF.resize(global.energy_transfer.ring_to_ring.no_shells+1,global.energy_transfer.ring_to_ring.no_sectors+1);
-		
-		if (global.energy_transfer.cylindrical_ring_to_ring.turnon) 
-			cylindrical_ring_to_ring_SF.resize(global.energy_transfer.cylindrical_ring_to_ring.no_shells+1,global.energy_transfer.cylindrical_ring_to_ring.no_slabs+1);
-	}
-	
-	// FOR VECTOR FIELD W
-	if (global.program.W_exists) {
-		flux_VF_Win_Wout.resize(global.energy_transfer.flux.no_spheres+1); 
-		flux_VF_Uin_Win.resize(global.energy_transfer.flux.no_spheres+1);
+		// For Enstrophy and Helicity transfers in Fluid and MHD
+        flux_VF_Uin_Uout.resize(global.energy_transfer.flux.no_spheres+1);
 		flux_VF_Uin_Wout.resize(global.energy_transfer.flux.no_spheres+1);
-		flux_VF_Win_Uout.resize(global.energy_transfer.flux.no_spheres+1);
-		flux_VF_Uout_Wout.resize(global.energy_transfer.flux.no_spheres+1);
-		flux_Elsasser_plus.resize(global.energy_transfer.flux.no_spheres+1);
-		flux_Elsasser_minus.resize(global.energy_transfer.flux.no_spheres+1);
+        flux_VF_Win_Uout.resize(global.energy_transfer.flux.no_spheres+1);
 
-		flux_Whk.resize(global.energy_transfer.flux.no_spheres+1);
-		
-		
-		shelltoshell_VF_WtoW.resize(global.energy_transfer.shell_to_shell.no_shells+1,global.energy_transfer.shell_to_shell.no_shells+1);
-		shelltoshell_VF_UtoW.resize(global.energy_transfer.shell_to_shell.no_shells+1,global.energy_transfer.shell_to_shell.no_shells+1);
-		shelltoshell_Elsasser_plus.resize(global.energy_transfer.shell_to_shell.no_shells+1,global.energy_transfer.shell_to_shell.no_shells+1);
-		shelltoshell_Elsasser_minus.resize(global.energy_transfer.shell_to_shell.no_shells+1,global.energy_transfer.shell_to_shell.no_shells+1);
-		
-		shelltoshell_Whk.resize(global.energy_transfer.shell_to_shell.no_shells+1,global.energy_transfer.shell_to_shell.no_shells+1);
-			
-		energy_tr_shell_B0.resize(global.energy_transfer.shell_to_shell.no_shells+1,global.energy_transfer.shell_to_shell.no_shells+1);
-		
+		flux_VF_Win_Wout.resize(global.energy_transfer.flux.no_spheres+1);
+        flux_VF_Bin_Wout.resize(global.energy_transfer.flux.no_spheres+1);
+		flux_VF_Bin_Uout.resize(global.energy_transfer.flux.no_spheres+1);
+
+        flux_VF_Jin_Uout.resize(global.energy_transfer.flux.no_spheres+1);
+
+
 		
 		if (global.energy_transfer.ring_to_ring.turnon) {
-			ring_to_ring_VF_WtoW.resize(global.energy_transfer.ring_to_ring.no_shells+1,global.energy_transfer.ring_to_ring.no_sectors+1);
+			ring_to_ring_self.resize(global.energy_transfer.ring_to_ring.no_shells+1,global.energy_transfer.ring_to_ring.no_sectors+1);
 			
-			ring_to_ring_VF_UtoW.resize(global.energy_transfer.ring_to_ring.no_shells+1,global.energy_transfer.ring_to_ring.no_sectors+1);
+			temp_ring_tr.resize(global.energy_transfer.ring_to_ring.no_shells+1,global.energy_transfer.ring_to_ring.no_sectors+1);
+
+			ring_force_x_field.resize(global.energy_transfer.ring_to_ring.no_shells+1,global.energy_transfer.ring_to_ring.no_sectors+1);
+		}
 			
-			ring_to_ring_Elsasser_plus.resize(global.energy_transfer.ring_to_ring.no_shells+1,global.energy_transfer.ring_to_ring.no_sectors+1);
+		
+		if (global.energy_transfer.cylindrical_ring_to_ring.turnon) {
+			cylindrical_ring_to_ring_self.resize(global.energy_transfer.cylindrical_ring_to_ring.no_shells+1,global.energy_transfer.cylindrical_ring_to_ring.no_slabs+1);
 			
-			ring_to_ring_Elsasser_minus.resize(global.energy_transfer.ring_to_ring.no_shells+1,global.energy_transfer.ring_to_ring.no_sectors+1);
+			temp_cylindrical_ring_tr.resize(global.energy_transfer.cylindrical_ring_to_ring.no_shells+1,global.energy_transfer.cylindrical_ring_to_ring.no_slabs+1);
 			
-			energy_tr_ring_B0.resize(global.energy_transfer.ring_to_ring.no_shells+1,global.energy_transfer.ring_to_ring.no_sectors+1);
+			cylindrical_ring_force_x_field.resize(global.energy_transfer.cylindrical_ring_to_ring.no_shells+1,global.energy_transfer.cylindrical_ring_to_ring.no_slabs+1);
 		}
 		
-		if (global.energy_transfer.cylindrical_ring_to_ring.turnon)  {	
-			cylindrical_ring_to_ring_VF_WtoW.resize(global.energy_transfer.cylindrical_ring_to_ring.no_shells+1,global.energy_transfer.cylindrical_ring_to_ring.no_slabs+1);
+		if (global.energy_transfer.helicity_flux_switch) {
 			
-			cylindrical_ring_to_ring_VF_UtoW .resize(global.energy_transfer.cylindrical_ring_to_ring.no_shells+1,global.energy_transfer.cylindrical_ring_to_ring.no_slabs+1);
-			
-			cylindrical_ring_to_ring_Elsasser_plus.resize(global.energy_transfer.cylindrical_ring_to_ring.no_shells+1,global.energy_transfer.cylindrical_ring_to_ring.no_slabs+1);
-			
-			cylindrical_ring_to_ring_Elsasser_minus.resize(global.energy_transfer.cylindrical_ring_to_ring.no_shells+1,global.energy_transfer.cylindrical_ring_to_ring.no_slabs+1);
-			
-			energy_tr_cylindrical_ring_B0.resize(global.energy_transfer.cylindrical_ring_to_ring.no_shells+1,global.energy_transfer.cylindrical_ring_to_ring.no_slabs+1);
 		}
 		
+		
+		// FOR SCALAR
+		if (global.program.T_exists) {
+			flux_SF.resize(global.energy_transfer.flux.no_spheres+1);
+					
+			shelltoshell_SF.resize(global.energy_transfer.shell_to_shell.no_shells+1,global.energy_transfer.shell_to_shell.no_shells+1); 
+			
+			if (global.energy_transfer.ring_to_ring.turnon) 
+				ring_to_ring_SF.resize(global.energy_transfer.ring_to_ring.no_shells+1,global.energy_transfer.ring_to_ring.no_sectors+1);
+			
+			if (global.energy_transfer.cylindrical_ring_to_ring.turnon) 
+				cylindrical_ring_to_ring_SF.resize(global.energy_transfer.cylindrical_ring_to_ring.no_shells+1,global.energy_transfer.cylindrical_ring_to_ring.no_slabs+1);
+		}
+		
+		// FOR VECTOR FIELD W
+		if (global.program.W_exists) {
+			flux_VF_Uin_Win.resize(global.energy_transfer.flux.no_spheres+1);
+			flux_VF_Win_Uout.resize(global.energy_transfer.flux.no_spheres+1);
+			flux_VF_Uout_Wout.resize(global.energy_transfer.flux.no_spheres+1);
+			flux_Elsasser_plus.resize(global.energy_transfer.flux.no_spheres+1);
+			flux_Elsasser_minus.resize(global.energy_transfer.flux.no_spheres+1);
+
+			flux_Whk.resize(global.energy_transfer.flux.no_spheres+1);
+			
+			
+			shelltoshell_VF_WtoW.resize(global.energy_transfer.shell_to_shell.no_shells+1,global.energy_transfer.shell_to_shell.no_shells+1);
+			shelltoshell_VF_UtoW.resize(global.energy_transfer.shell_to_shell.no_shells+1,global.energy_transfer.shell_to_shell.no_shells+1);
+			shelltoshell_Elsasser_plus.resize(global.energy_transfer.shell_to_shell.no_shells+1,global.energy_transfer.shell_to_shell.no_shells+1);
+			shelltoshell_Elsasser_minus.resize(global.energy_transfer.shell_to_shell.no_shells+1,global.energy_transfer.shell_to_shell.no_shells+1);
+			
+			shelltoshell_Whk.resize(global.energy_transfer.shell_to_shell.no_shells+1,global.energy_transfer.shell_to_shell.no_shells+1);
+				
+			energy_tr_shell_B0.resize(global.energy_transfer.shell_to_shell.no_shells+1,global.energy_transfer.shell_to_shell.no_shells+1);
+			
+			
+			if (global.energy_transfer.ring_to_ring.turnon) {
+				ring_to_ring_VF_WtoW.resize(global.energy_transfer.ring_to_ring.no_shells+1,global.energy_transfer.ring_to_ring.no_sectors+1);
+				
+				ring_to_ring_VF_UtoW.resize(global.energy_transfer.ring_to_ring.no_shells+1,global.energy_transfer.ring_to_ring.no_sectors+1);
+				
+				ring_to_ring_Elsasser_plus.resize(global.energy_transfer.ring_to_ring.no_shells+1,global.energy_transfer.ring_to_ring.no_sectors+1);
+				
+				ring_to_ring_Elsasser_minus.resize(global.energy_transfer.ring_to_ring.no_shells+1,global.energy_transfer.ring_to_ring.no_sectors+1);
+				
+				energy_tr_ring_B0.resize(global.energy_transfer.ring_to_ring.no_shells+1,global.energy_transfer.ring_to_ring.no_sectors+1);
+			}
+			
+			if (global.energy_transfer.cylindrical_ring_to_ring.turnon)  {	
+				cylindrical_ring_to_ring_VF_WtoW.resize(global.energy_transfer.cylindrical_ring_to_ring.no_shells+1,global.energy_transfer.cylindrical_ring_to_ring.no_slabs+1);
+				
+				cylindrical_ring_to_ring_VF_UtoW .resize(global.energy_transfer.cylindrical_ring_to_ring.no_shells+1,global.energy_transfer.cylindrical_ring_to_ring.no_slabs+1);
+				
+				cylindrical_ring_to_ring_Elsasser_plus.resize(global.energy_transfer.cylindrical_ring_to_ring.no_shells+1,global.energy_transfer.cylindrical_ring_to_ring.no_slabs+1);
+				
+				cylindrical_ring_to_ring_Elsasser_minus.resize(global.energy_transfer.cylindrical_ring_to_ring.no_shells+1,global.energy_transfer.cylindrical_ring_to_ring.no_slabs+1);
+				
+				energy_tr_cylindrical_ring_B0.resize(global.energy_transfer.cylindrical_ring_to_ring.no_shells+1,global.energy_transfer.cylindrical_ring_to_ring.no_slabs+1);
+			}
+			
+		}
 	}
-}
 }
 
 

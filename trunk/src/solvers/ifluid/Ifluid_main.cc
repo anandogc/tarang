@@ -50,8 +50,10 @@ int Ifluid_main()
 		fluidIO_incompress.Open_files();
 		fluidIO_incompress.Init_energy_transfer();
 		
-		FluidVF  U(global.field.diss_coefficients[0], global.field.hyper_diss_coefficients[0], global.field.hyper_diss_exponents[0], global.force.U_switch, "U");
+		FluidVF U(global.field.diss_coefficients[0], global.field.hyper_diss_coefficients[0], global.field.hyper_diss_exponents[0], global.force.U_switch, "U");
 		
+        FluidVF helicalU("helicalU");
+
 		Pressure P;
 
 		FORCE  Force;
@@ -81,7 +83,7 @@ int Ifluid_main()
 			// MPI_Abort(MPI_COMM_WORLD, 1);
 		}
 		
-		fluidIO_incompress.Output_all_inloop(U, P);  // for initial cond
+		fluidIO_incompress.Output_all_inloop(U, P, helicalU);  // for initial cond
 
 
 		if (master)  
@@ -115,7 +117,7 @@ int Ifluid_main()
 				// MPI_Abort(MPI_COMM_WORLD, 1); 
 			}
 
-			fluidIO_incompress.Output_all_inloop(U, P);
+			fluidIO_incompress.Output_all_inloop(U, P, helicalU);
 			
 			if ( isnan(U.cvf.total_energy) )  { 
 				cout << "ERROR: Numerical Overflow " << endl;  MPI_Abort(MPI_COMM_WORLD, 1); 
@@ -126,7 +128,7 @@ int Ifluid_main()
 		Time_iterate_fluid_gpu();
 #endif
 		
-		fluidIO_incompress.Output_last(U, P);
+		fluidIO_incompress.Output_last(U, P, helicalU);
 		
 		fluidIO_incompress.Close_files();
 	}
@@ -136,7 +138,9 @@ int Ifluid_main()
 	else if (global.program.iter_or_diag == "DIAGNOSTICS") {
 		string filename;
 		
-		FluidVF  U(global.field.diss_coefficients[0], global.field.hyper_diss_coefficients[0], global.field.hyper_diss_exponents[0], global.force.U_switch, "U");
+		FluidVF U(global.field.diss_coefficients[0], global.field.hyper_diss_coefficients[0], global.field.hyper_diss_exponents[0], global.force.U_switch, "U");
+        
+        FluidVF helicalU("helicalU");
 		
 		Pressure P;
 		
@@ -190,7 +194,7 @@ int Ifluid_main()
 					filename = "/out/flux.d";
 					filename = global.io.data_dir+ filename;   
 					fluidIO_incompress.flux_file.open(filename.c_str());
-					fluidIO_incompress.Output_flux(U, P);
+					fluidIO_incompress.Output_flux(U, P, helicalU);
 					fluidIO_incompress.Close_files();
 					break;  
 				}

@@ -59,6 +59,7 @@ public:
     vector<h5::Plan> H5_slices;
 
     // basic
+
 	virtual int Get_number_modes_in_shell(Real inner_radius, Real outer_radius);
 	virtual void Print_large_Fourier_elements(Array<Complex,3> A, string array_name="Array");
 	virtual void Array_mult_ksqr(Array<Complex,3> A);
@@ -114,6 +115,13 @@ public:
 	virtual Real Get_local_energy_real_space(Array<Real,3> Ar, Array<Real,3> Br) = 0;
 	virtual Real Get_local_energy(Array<Complex,3> A, Array<Complex,3> B) = 0;
 	
+    virtual void Compute_vorticity
+    (
+        Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
+        Array<Complex,3> Bx, Array<Complex,3> By, Array<Complex,3> Bz,  
+        Real inner_radius, Real outer_radius
+    );
+
 	virtual void Compute_local_helicity
     (
 	 Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,

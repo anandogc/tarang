@@ -46,6 +46,25 @@
 	
 ***********************************************************************************************/
 
+void Universal::Compute_vorticity
+(
+    Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
+    Array<Complex,3> Bx, Array<Complex,3> By, Array<Complex,3> Bz,  
+    Real inner_radius, Real outer_radius
+)
+{
+	TinyVector<Complex,3> vorticity;
+
+	for (int lx=0; lx<maxlx; lx++)
+        for (int ly=0; ly<maxly; ly++)
+            for (int lz=0; lz<maxlz; lz++) {
+					Compute_Modal_vorticity(lx, ly, lz, Ax, Ay, Az, vorticity);
+					Bx(lx, ly, lz) = vorticity(0);
+					By(lx, ly, lz) = vorticity(1);
+					Bz(lx, ly, lz) = vorticity(2);
+				}
+}
+
 
 int Universal::Get_number_modes_in_shell(Real inner_radius, Real outer_radius)
 {

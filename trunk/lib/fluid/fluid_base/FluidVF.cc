@@ -46,6 +46,20 @@
    
 **********************************************************************************************/
 
+FluidVF::FluidVF(string field_name): PlainFluidVF(field_name) {
+	nlin1.resize(shape_complex_array);
+    nlin2.resize(shape_complex_array);
+	nlin3.resize(shape_complex_array);
+	
+	
+	// Memory allocation if force_switch is on
+	if (force_switch) {
+        Force1.resize(shape_complex_array);
+        Force2.resize(shape_complex_array);
+        Force3.resize(shape_complex_array);
+	}
+}
+
 FluidVF::FluidVF
 (
 	Real dissipation_coefficient, 

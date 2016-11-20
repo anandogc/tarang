@@ -71,16 +71,16 @@ public:
 	void Open_files();
     void Close_files();
 	
-	void Output_all_inloop(FluidVF& U, Pressure& P);
+	void Output_all_inloop(FluidVF& U, Pressure& P, FluidVF& helicalU);
 	void Output_all_inloop(FluidVF& U, FluidSF& T, Pressure& P);
-	void Output_all_inloop(FluidVF& U, FluidVF& W, Pressure& P);
+	void Output_all_inloop(FluidVF& U, FluidVF& W, Pressure& P, FluidVF& helicalU, FluidVF& helicalW);
 	void Output_all_inloop(FluidVF& U, FluidVF& W, FluidSF& T, Pressure& P);
 	void Output_all_inloop(FluidVF& U, FluidVF& W, FluidSF& T, FluidSF& C, Pressure& P);
 	void Output_all_inloop(FluidVF& U, FluidSF& T1, FluidSF& T2, Pressure& P);
 	
-	void Output_last(FluidVF& U, Pressure& P);
+	void Output_last(FluidVF& U, Pressure& P, FluidVF& helicalU);
 	void Output_last(FluidVF& U, FluidSF& T, Pressure& P);
-	void Output_last(FluidVF& U, FluidVF& W, Pressure& P);
+	void Output_last(FluidVF& U, FluidVF& W, Pressure& P, FluidVF& helicalU, FluidVF& helicalW);
 	void Output_last(FluidVF& U, FluidVF& W, FluidSF& T, Pressure& P);
 	void Output_last(FluidVF& U, FluidVF& W, FluidSF& T, FluidSF& C, Pressure& P);
 	void Output_last(FluidVF& U, FluidSF& T1, FluidSF& T2, Pressure& P);
@@ -89,9 +89,9 @@ public:
 	void Output_pressure(Pressure& P);
 	void Output_pressure_spectrum(Pressure& P);
 		
-	void Output_flux(FluidVF& U, Pressure& P);
+	void Output_flux(FluidVF& U, Pressure& P, FluidVF& helicalU);
 	void Output_flux(FluidVF& U, FluidSF& T, Pressure& P);
-	void Output_flux(FluidVF& U, FluidVF& W, Pressure& P);
+	void Output_flux(FluidVF& U, FluidVF& W, Pressure& P, FluidVF& helicalU, FluidVF& helicalW);
 	void Output_flux(FluidVF& U, FluidVF& W, FluidSF& T, Pressure& P);
 	
 	void Output_shell_to_shell(FluidVF& U, Pressure& P);

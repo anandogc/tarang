@@ -101,7 +101,6 @@ class EnergyTr
  public:
 	
 	PlainFluidVF Giver;  // Gr_i, G_i
-	
 
 public:
 
@@ -155,11 +154,17 @@ public:
 	Array<Real,4>  cylindrical_ring_to_ring_SF;				// theta->theta
 	
 	
-	// FOR MHD
+	// FOR MHD and Enstrophy calculation
 	// fluxes
 	Array<Real,1>  flux_VF_Win_Wout;				// from Win to Wout
-	Array<Real,1>  flux_VF_Uin_Win;				// from Uin to Win
 	Array<Real,1>  flux_VF_Uin_Wout;				// from Uin to Wout
+	Array<Real,1>  flux_VF_Uin_Uout;                // U giver U receiver
+	Array<Real,1>  flux_VF_Bin_Wout;                // B giver W receiver
+	Array<Real,1>  flux_VF_Bin_Uout;                // B giver U receiver
+	Array<Real,1>  flux_VF_Jin_Uout;                // J giver U receiver
+
+	// FOR MHD
+	Array<Real,1>  flux_VF_Uin_Win;				// from Uin to Win
 	Array<Real,1>  flux_VF_Win_Uout;				// from Win to Uout
 	Array<Real,1>  flux_VF_Uout_Wout;			// from Wout to Uout
 	Array<Real,1>  flux_Elsasser_plus;			// From Zplus_in to Zplus_out
@@ -221,8 +226,11 @@ public:
     
 	
 	void Compute_kinetic_helicity_flux(FluidVF& U);
-	void Compute_magnetic_helicity_flux(FluidVF& U, FluidVF& W);
 	void Compute_enstrophy_flux(FluidVF& U);
+
+    void Compute_kinetic_helicity_flux(FluidVF& U, FluidVF& helicalU);
+    void Compute_kinetic_helicity_flux(FluidVF& U, FluidVF& W, FluidVF& helicalU, FluidVF& helicalW);
+	void Compute_magnetic_helicity_flux(FluidVF& U, FluidVF& W);
 	void Compute_magnetic_enstrophy_flux(FluidVF& U, FluidVF& W);
 	
 	// Shell-to-shell

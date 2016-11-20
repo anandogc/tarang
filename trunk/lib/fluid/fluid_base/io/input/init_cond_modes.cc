@@ -343,11 +343,24 @@ void  FluidIO::Init_cond_modes(FluidVF& U, FluidVF& W)
 			Vy_complex = global.io.init_cond_modes.field_array_complex(mode,1); 
 			
 			if (global.field.incompressible) {
+              if (kx==0 && ky==0 && kz==0)
+              {
+                Vx_complex = 0;
+                Vy_complex = 0;
+                Vz_complex = global.io.init_cond_modes.field_array_complex(mode,0);
+                
+                Wx_complex = 0;
+                Wy_complex = 0;
+                Wz_complex = global.io.init_cond_modes.field_array_complex(mode,2);
+                
+              }
+              else{
 				universal->Last_component(kx, ky, kz, Vx_complex, Vy_complex, Vz_complex);
 				
 				Wx_complex = global.io.init_cond_modes.field_array_complex(mode,2); 
 				Wy_complex = global.io.init_cond_modes.field_array_complex(mode,3);
 				universal->Last_component(kx, ky, kz, Wx_complex, Wy_complex, Wz_complex);
+              }
 			}
 			
 			else {

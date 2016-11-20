@@ -43,7 +43,7 @@
 
 //*********************************************************************************************
 
-void FluidIO_incompress::Output_flux(FluidVF& U, Pressure& P)
+void FluidIO_incompress::Output_flux(FluidVF& U, Pressure& P, FluidVF& helicalU)
 {
 	
 	if (master)
@@ -55,14 +55,22 @@ void FluidIO_incompress::Output_flux(FluidVF& U, Pressure& P)
 	energyTr->Power_supply_within_sphere(U); 
 	Print_array(flux_file, "sum(Fv.v)", energyTr->sphere_force_x_field);
 	
-/*	if (global.energy_transfer.helicity_flux_switch) {
-		if (Ny > 1) // 3D
-			energyTr->Compute_kinetic_helicity_flux(U);
-		else if (Ny==1)	// 2D
-			energyTr->Compute_enstrophy_flux(U);
+	if (global.energy_transfer.helicity_flux_switch) {
+		// if (Ny > 1) // 3D
+			// energyTr->Compute_kinetic_helicity_flux(U);
+			// energyTr->Compute_enstrophy_flux(U);
+		// else if (Ny==1)	// 2D
+		energyTr->Compute_enstrophy_flux(U);
 		
-		Print_array(flux_file, "flux: U2U_hk", energyTr->flux_hk);
-	} */
+		Print_array(flux_file, "flux: W2W_enstrophy", energyTr->flux_VF_Win_Wout);
+		Print_array(flux_file, "flux: U2W_enstrophy", energyTr->flux_VF_Uin_Wout);
+      
+        energyTr->Compute_kinetic_helicity_flux(U, helicalU);
+        Print_array(flux_file, "flux: U2W_helicity", energyTr->flux_VF_Uin_Wout);
+        Print_array(flux_file, "flux: W2U_helicity", energyTr->flux_VF_Win_Uout);
+        Print_array(flux_file, "flux: U2U_helicity", energyTr->flux_VF_Uin_Uout);
+
+	}
     
     
     // Vpll to Vpll flux
@@ -127,7 +135,7 @@ void FluidIO_incompress::Output_flux(FluidVF& U, FluidSF& T, Pressure& P)
 //*********************************************************************************************
 // Vector
   
-void FluidIO_incompress::Output_flux(FluidVF& U, FluidVF& W, Pressure& P)
+void FluidIO_incompress::Output_flux(FluidVF& U, FluidVF& W, Pressure& P, FluidVF& helicalU, FluidVF& helicalW)
 {
 	
 	if (master)
@@ -142,6 +150,15 @@ void FluidIO_incompress::Output_flux(FluidVF& U, FluidVF& W, Pressure& P)
 	Print_array(flux_file, "flux: flux_VF_Uout_Wout ", energyTr->flux_VF_Uout_Wout);
 	Print_array(flux_file, "flux: flux_Elsasser_plus ", energyTr->flux_Elsasser_plus);
 	Print_array(flux_file, "flux: flux_Elsasser_minus ", energyTr->flux_Elsasser_minus);
+
+
+	energyTr->Compute_kinetic_helicity_flux(U, W, helicalU, helicalW);
+	Print_array(flux_file, "flux: kinetic_helicity_flux_U_to_W ", energyTr->flux_VF_Uin_Wout);
+	Print_array(flux_file, "flux: kinetic_helicity_flux_B_to_W  ", energyTr->flux_VF_Bin_Wout);
+	Print_array(flux_file, "flux: kinetic_helicity_flux_W_to_U  ", energyTr->flux_VF_Win_Uout);
+	Print_array(flux_file, "flux: kinetic_helicity_flux_U_to_U  ", energyTr->flux_VF_Uin_Uout);
+	Print_array(flux_file, "flux: kinetic_helicity_flux_B_to_U ", energyTr->flux_VF_Bin_Uout);
+	Print_array(flux_file, "flux: kinetic_helicity_flux_J_to_U  ", energyTr->flux_VF_Jin_Uout);
 
 	
 	energyTr->Power_supply_within_sphere(U);

@@ -104,9 +104,7 @@ public:
 	
 	bool force_switch;
                                                                                         
-	
-public:
-
+                                                                                        
 	/*! A constructor; 
 	 *
 	 *  Allocation for Vi, Ek etc. 
@@ -118,6 +116,11 @@ public:
 		Real hyper_dissipation_coefficient, 
 		int hyper_dissipation_exponent,
 		bool force_switch,
+		string field_name
+	);
+
+	FluidVF
+	(
 		string field_name
 	);
 	

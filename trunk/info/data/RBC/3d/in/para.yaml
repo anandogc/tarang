@@ -34,6 +34,11 @@ field:
     waveno_switch: true
     anisotropy_dirn: 1                  #1,2,3
 
+fft:
+    fftw3D_switch: false              #for fftw_original
+    transpose: true                #Should be always "true" for PENCIL
+    sincostr_switch: SFF                    #SINX, COSX, SCC, CSC, CCS, SSC, CSS, SCS
+
 time:
     init: 1
     final: 5
