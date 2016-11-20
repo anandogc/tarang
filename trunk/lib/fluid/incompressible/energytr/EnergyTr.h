@@ -174,7 +174,14 @@ public:
 	
 	// shell-to-shell
 	Array<Real,2>  shelltoshell_VF_WtoW;			// from W to W
-	Array<Real,2>  shelltoshell_VF_UtoW;			// from U to W
+	Array<Real,2>  shelltoshell_VF_UtoW;
+  	Array<Real,2>  shelltoshell_VF_WtoU;
+  	Array<Real,2>  shelltoshell_VF_UtoU;
+  
+    Array<Real,2>  shelltoshell_VF_BtoW;
+    Array<Real,2>  shelltoshell_VF_JtoU;
+    Array<Real,2>  shelltoshell_VF_BtoU;
+  
 	Array<Real,2>  shelltoshell_Elsasser_plus;	// from Zplus to Zplus
 	Array<Real,2>  shelltoshell_Elsasser_minus;	// from Zminus to Zminus
 	
@@ -243,6 +250,8 @@ public:
 	
 	
 	void Compute_kinetic_helicity_shell_tr(FluidVF &U);
+  	void Compute_kinetic_helicity_shell_tr(FluidVF &U, FluidVF &helicalU);
+    void Compute_kinetic_helicity_shell_tr(FluidVF& U, FluidVF& W, FluidVF& helicalU, FluidVF& helicalW);
 	void Compute_magnetic_helicity_shell_tr(FluidVF &U, FluidVF& W);
 	void Compute_enstrophy_shell_tr(FluidVF &U);
 	void Compute_magnetic_enstrophy_shell_tr(FluidVF &U, FluidVF& W);

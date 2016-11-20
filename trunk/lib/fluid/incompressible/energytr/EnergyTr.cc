@@ -53,7 +53,11 @@ EnergyTr::EnergyTr()
 
 		flux_hk.resize(global.energy_transfer.flux.no_spheres+1);
 		
-		shelltoshell_self.resize(global.energy_transfer.shell_to_shell.no_shells+1,global.energy_transfer.shell_to_shell.no_shells+1); 
+		shelltoshell_self.resize(global.energy_transfer.shell_to_shell.no_shells+1,global.energy_transfer.shell_to_shell.no_shells+1);
+      
+        shelltoshell_VF_UtoW.resize(global.energy_transfer.shell_to_shell.no_shells+1,global.energy_transfer.shell_to_shell.no_shells+1);
+        shelltoshell_VF_WtoU.resize(global.energy_transfer.shell_to_shell.no_shells+1,global.energy_transfer.shell_to_shell.no_shells+1);
+        shelltoshell_VF_UtoU.resize(global.energy_transfer.shell_to_shell.no_shells+1,global.energy_transfer.shell_to_shell.no_shells+1);
 		
 		shelltoshell_hk.resize(global.energy_transfer.shell_to_shell.no_shells+1,global.energy_transfer.shell_to_shell.no_shells+1); 
 		
@@ -121,6 +125,10 @@ EnergyTr::EnergyTr()
 			
 			shelltoshell_VF_WtoW.resize(global.energy_transfer.shell_to_shell.no_shells+1,global.energy_transfer.shell_to_shell.no_shells+1);
 			shelltoshell_VF_UtoW.resize(global.energy_transfer.shell_to_shell.no_shells+1,global.energy_transfer.shell_to_shell.no_shells+1);
+            shelltoshell_VF_BtoW.resize(global.energy_transfer.shell_to_shell.no_shells+1,global.energy_transfer.shell_to_shell.no_shells+1);
+            shelltoshell_VF_JtoU.resize(global.energy_transfer.shell_to_shell.no_shells+1,global.energy_transfer.shell_to_shell.no_shells+1);
+            shelltoshell_VF_BtoU.resize(global.energy_transfer.shell_to_shell.no_shells+1,global.energy_transfer.shell_to_shell.no_shells+1);
+          
 			shelltoshell_Elsasser_plus.resize(global.energy_transfer.shell_to_shell.no_shells+1,global.energy_transfer.shell_to_shell.no_shells+1);
 			shelltoshell_Elsasser_minus.resize(global.energy_transfer.shell_to_shell.no_shells+1,global.energy_transfer.shell_to_shell.no_shells+1);
 			

@@ -245,7 +245,7 @@ void FluidIO_incompress::Output_flux(FluidVF& U, FluidVF& W, FluidSF& T, Pressur
 //*********************************************************************************************
 // Shell-to-shell
 
-void FluidIO_incompress::Output_shell_to_shell(FluidVF& U, Pressure& P)
+void FluidIO_incompress::Output_shell_to_shell(FluidVF& U, Pressure& P, FluidVF& helicalU)
 {
 	static Range ra1(1,global.energy_transfer.shell_to_shell.no_shells-1);
 	static Range ra2(1,global.energy_transfer.shell_to_shell.no_shells);
@@ -255,6 +255,20 @@ void FluidIO_incompress::Output_shell_to_shell(FluidVF& U, Pressure& P)
 	
 	energyTr->Compute_shell_tr(U);
 	Print_array(shell_to_shell_file, "shell_to_shell: U2U ", energyTr->shelltoshell_self(ra1,ra2));
+
+    if (global.energy_transfer.helicity_flux_switch) {
+      // if (Ny > 1) // 3D
+      // energyTr->Compute_kinetic_helicity_flux(U);
+      // energyTr->Compute_enstrophy_flux(U);
+      // else if (Ny==1)	// 2D
+
+      
+      energyTr->Compute_kinetic_helicity_shell_tr(U, helicalU);
+      Print_array(shell_to_shell_file, "Shell: U2W_helicity", energyTr->shelltoshell_VF_UtoW(ra1,ra2));
+      Print_array(shell_to_shell_file, "Shell: W2U_helicity", energyTr->shelltoshell_VF_WtoU(ra1,ra2));
+      Print_array(shell_to_shell_file, "Shell: U2U_helicity", energyTr->shelltoshell_VF_UtoU(ra1,ra2));
+      
+    }
 	
     
     // Vpll to Vpll shell-to-shell
@@ -262,6 +276,8 @@ void FluidIO_incompress::Output_shell_to_shell(FluidVF& U, Pressure& P)
         energyTr->Compute_shell_tr_Vpll(U, P);
 		Print_array(shell_to_shell_file, "pll2pll shell_to_shell: U2U ", energyTr->shelltoshell_self(ra1,ra2));
     }
+  
+  
 	
 	if (master)
 		shell_to_shell_file.flush();
@@ -299,7 +315,7 @@ void FluidIO_incompress::Output_shell_to_shell(FluidVF& U, FluidSF& T, Pressure&
 //*********************************************************************************************
 // MHD
 
-void FluidIO_incompress::Output_shell_to_shell(FluidVF& U, FluidVF& W, Pressure& P)
+void FluidIO_incompress::Output_shell_to_shell(FluidVF& U, FluidVF& W, Pressure& P,  FluidVF& helicalU, FluidVF& helicalW)
 {
 
 	
@@ -327,6 +343,18 @@ void FluidIO_incompress::Output_shell_to_shell(FluidVF& U, FluidVF& W, Pressure&
 		Print_array(shell_to_shell_file, "pll2pll shell_to_shell: shelltoshell_Elsasser_minus ", energyTr->shelltoshell_Elsasser_minus(ra1,ra2));
     }
 	
+  if (global.energy_transfer.helicity_flux_switch) {
+    energyTr->Compute_kinetic_helicity_shell_tr(U, W, helicalU, helicalW);
+    Print_array(shell_to_shell_file, "Shell: U2W_helicity", energyTr->shelltoshell_VF_UtoW(ra1,ra2));
+    Print_array(shell_to_shell_file, "Shell: W2U_helicity", energyTr->shelltoshell_VF_WtoU(ra1,ra2));
+    Print_array(shell_to_shell_file, "Shell: U2U_helicity", energyTr->shelltoshell_VF_UtoU(ra1,ra2));
+    Print_array(shell_to_shell_file, "Shell: B2W_helicity", energyTr->shelltoshell_VF_BtoW(ra1,ra2));
+    Print_array(shell_to_shell_file, "Shell: J2U_helicity", energyTr->shelltoshell_VF_JtoU(ra1,ra2));
+    Print_array(shell_to_shell_file, "Shell: B2U_helicity", energyTr->shelltoshell_VF_BtoU(ra1,ra2));
+    
+  }
+  
+  
 	
 	Real B0mag = W.Get_mag_V0();
 	

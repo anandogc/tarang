@@ -208,7 +208,7 @@ int IMHD_main()
                     filename = "/out/shell_to_shell.d";
                     filename = global.io.data_dir+ filename;
                     fluidIO_incompress.shell_to_shell_file.open(filename.c_str());
-                    fluidIO_incompress.Output_shell_to_shell(U, B, P);
+                    fluidIO_incompress.Output_shell_to_shell(U, B, P, helicalU, helicalW);
                     fluidIO_incompress.Close_files();
                     break;
                 }
