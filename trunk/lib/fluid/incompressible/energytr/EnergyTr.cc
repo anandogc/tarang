@@ -55,6 +55,10 @@ EnergyTr::EnergyTr()
 		
 		shelltoshell_self.resize(global.energy_transfer.shell_to_shell.no_shells+1,global.energy_transfer.shell_to_shell.no_shells+1);
       
+        shelltoshell_hk_helicalU_to_helicalU.resize(global.energy_transfer.shell_to_shell.no_shells+1,global.energy_transfer.shell_to_shell.no_shells+1);
+		shelltoshell_hk_U_to_helicalU.resize(global.energy_transfer.shell_to_shell.no_shells+1,global.energy_transfer.shell_to_shell.no_shells+1);
+
+
         shelltoshell_VF_UtoW.resize(global.energy_transfer.shell_to_shell.no_shells+1,global.energy_transfer.shell_to_shell.no_shells+1);
         shelltoshell_VF_WtoU.resize(global.energy_transfer.shell_to_shell.no_shells+1,global.energy_transfer.shell_to_shell.no_shells+1);
         shelltoshell_VF_UtoU.resize(global.energy_transfer.shell_to_shell.no_shells+1,global.energy_transfer.shell_to_shell.no_shells+1);
@@ -79,6 +83,8 @@ EnergyTr::EnergyTr()
 		
 		if (global.energy_transfer.ring_to_ring.turnon) {
 			ring_to_ring_self.resize(global.energy_transfer.ring_to_ring.no_shells+1,global.energy_transfer.ring_to_ring.no_sectors+1);
+			ring_to_ring_U_to_helicalU.resize(global.energy_transfer.ring_to_ring.no_shells+1,global.energy_transfer.ring_to_ring.no_sectors+1);
+			ring_to_ring_helicalU_to_helicalU.resize(global.energy_transfer.ring_to_ring.no_shells+1,global.energy_transfer.ring_to_ring.no_sectors+1);
             ring_to_ring_VF_UtoW.resize(global.energy_transfer.ring_to_ring.no_shells+1,global.energy_transfer.ring_to_ring.no_sectors+1);
             ring_to_ring_VF_WtoU.resize(global.energy_transfer.ring_to_ring.no_shells+1,global.energy_transfer.ring_to_ring.no_sectors+1);
             ring_to_ring_VF_UtoU.resize(global.energy_transfer.ring_to_ring.no_shells+1,global.energy_transfer.ring_to_ring.no_sectors+1);

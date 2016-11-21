@@ -132,9 +132,13 @@ public:
 	// Isotropic shell-to-shell
 	Array<Real,2>  shelltoshell_self;
 	Array<Real,2>  shelltoshell_hk;
+	Array<Real,2> shelltoshell_hk_U_to_helicalU;
+	Array<Real,2> shelltoshell_hk_helicalU_to_helicalU;
 	
 	// Ring to ring
 	Array<Real,4>  ring_to_ring_self;
+	Array<Real,4> ring_to_ring_U_to_helicalU;
+	Array<Real,4> ring_to_ring_helicalU_to_helicalU;
 	
 	// Cylinderical ring to ring
 	Array<Real,4>  cylindrical_ring_to_ring_self;
@@ -258,11 +262,12 @@ public:
   	void Compute_kinetic_helicity_shell_tr(FluidVF &U, FluidVF &helicalU);
     void Compute_kinetic_helicity_shell_tr(FluidVF& U, FluidVF& W, FluidVF& helicalU, FluidVF& helicalW);
 	void Compute_magnetic_helicity_shell_tr(FluidVF &U, FluidVF& W);
-	void Compute_enstrophy_shell_tr(FluidVF &U);
+	void Compute_enstrophy_shell_tr(FluidVF &U, FluidVF &helicalU);
 	void Compute_magnetic_enstrophy_shell_tr(FluidVF &U, FluidVF& W);
 	
 		// Ring_to_ring energy transfer
 	void Compute_ring_tr(FluidVF &U);
+	void Compute_enstrophy_ring_tr(FluidVF& U, FluidVF& helicalU);
     void Compute_kinetic_helicity_ring_tr(FluidVF& U,  FluidVF& helicalU);
 	void Compute_ring_tr(FluidVF &U, FluidSF& T);
 	void Compute_ring_tr_scalar(FluidVF &U, FluidSF& T);

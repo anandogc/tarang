@@ -29,7 +29,7 @@ field:
 
 time:
     init: 0
-    final: 0.01
+    final: 0.001
     dt_fixed: 0.0001
     Courant_no: 0.1
     job_time:                       # 00:00:20
@@ -106,10 +106,10 @@ io:
         spectrum_save_first: 
         pressure_save_first: 
         pressure_spectrum_save_first:
-        flux_save_first: 
-        shell_to_shell_save_first: 
+        flux_save_first: 0
+        shell_to_shell_save_first: 0
         ring_spectrum_save_first: 
-        ring_to_ring_save_first: 
+        ring_to_ring_save_first: 0
         cylindrical_ring_spectrum_save_first: 
         cylindrical_ring_to_ring_save_first:
         structure_fn_save_first:
@@ -131,8 +131,8 @@ io:
         pressure_spectrum_save_interval: 
         flux_save_interval: 0.0001
         shell_to_shell_save_interval: 0.0001
-        ring_spectrum_save_interval: 0.0001
-        ring_to_ring_save_interval:
+        ring_spectrum_save_interval: 
+        ring_to_ring_save_interval: 0.0001
         cylindrical_ring_spectrum_save_interval: 
         cylindrical_ring_to_ring_save_interval: 
         structure_fn_save_interval: 
@@ -181,8 +181,9 @@ spectrum:
 
 energy_transfer:
     turnon: true
-    helicity_flux_switch: false
-    helicity_shell_to_shell_switch: false
+    helicity_flux_switch: true
+    helicity_shell_to_shell_switch: true
+    helicity_ring_to_ring_switch: true
     Elsasser: true
     Vpll_switch: false
 

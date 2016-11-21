@@ -451,8 +451,46 @@ void EnergyTr::Compute_magnetic_helicity_shell_tr(FluidVF& U, FluidVF& W)
 //*********************************************************************************************
 // Fluid: 2D
 //
-void EnergyTr::Compute_enstrophy_shell_tr(FluidVF& U)
+void EnergyTr::Compute_enstrophy_shell_tr(FluidVF& U, FluidVF& helicalU)
 {
+	if (Ny > 1)
+	{
+		universal->Compute_vorticity(U.cvf.V1, U.cvf.V2, U.cvf.V3, helicalU.cvf.V1, helicalU.cvf.V2, helicalU.cvf.V3, 0, universal->Max_radius_inside());
+
+		shelltoshell_hk_helicalU_to_helicalU = 0.0;
+		shelltoshell_hk_U_to_helicalU = 0.0;
+		
+		for (int shell_from_index = 1; shell_from_index < global.energy_transfer.shell_to_shell.no_shells; shell_from_index++) 
+		{
+			
+			Fill_shell(shell_from_index, U);	
+			// G = i k x u(k): 2D
+			
+			Nlin_incompress::Compute_nlin(helicalU, Giver);										
+			// U.nlin = U.grad omega	
+			
+			universal->Shell_mult_all(U.nlin1, U.nlin2, U.nlin3, helicalU.cvf.V1, helicalU.cvf.V2, helicalU.cvf.V3,global.energy_transfer.shell_to_shell.radii, temp_shell_tr);
+
+//			Shell_mult_vorticity_all(U.nlin1, U.nlin2, U.nlin3, helicalU.cvf.V1, helicalU.cvf.V2, heU.nlin1, U.nlin2, U.nlin3, helicalU.cvf.V1, helicalU.cvf.V2, helicalU.cvf.V3,//licalU.cvf.V3, temp_shell_tr);
+			
+			shelltoshell_hk_U_to_helicalU(shell_from_index, Range::all()) += temp_shell_tr;
+
+
+			
+
+			Fill_shell(shell_from_index, helicalU);	
+			// G = i k x u(k): 2D
+			
+			Nlin_incompress::Compute_nlin(U, Giver);										
+			// U.nlin = U.grad omega	
+
+			universal->Shell_mult_all(U.nlin1, U.nlin2, U.nlin3, helicalU.cvf.V1, helicalU.cvf.V2, helicalU.cvf.V3, global.energy_transfer.shell_to_shell.radii, temp_shell_tr);
+			
+//			Shell_mult_vorticity_all(U.nlin1, U.nlin2, U.nlin3, helicalU.cvf.V1, helicalU.cvf.V2, helicalU.cvf.V3, temp_shell_tr);
+			
+			shelltoshell_hk_helicalU_to_helicalU(shell_from_index, Range::all()) -= temp_shell_tr;
+		}
+	}
 	/*
 	if (N[2] == 1)
 	{
