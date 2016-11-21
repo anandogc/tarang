@@ -252,10 +252,11 @@ public:
 	void Output_shell_spectrum(FluidVF& U, FluidVF& W, FluidSF& T);
 	
 	void Output_ring_spectrum(FluidVF& U);
+	void Output_ring_spectrum(FluidVF& U, FluidVF& helicalU);
 	void Output_ring_spectrum(FluidVF& U, FluidSF& T);
 	void Output_ring_spectrum_scalar(FluidVF& U, FluidSF& T);
 	void Output_ring_spectrum_RBC(FluidVF& U, FluidSF& T);
-	void Output_ring_spectrum(FluidVF& U, FluidVF& W);
+	void Output_ring_spectrum(FluidVF& U, FluidVF& W, FluidVF& helicalU, FluidVF& helicalW);
 	void Output_ring_spectrum(FluidVF& U, FluidVF& W, FluidSF& T);
 	
 	void Output_cylindrical_ring_spectrum(FluidVF& U);

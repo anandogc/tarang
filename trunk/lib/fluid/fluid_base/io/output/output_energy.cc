@@ -1097,6 +1097,41 @@ void FluidIO::Output_ring_spectrum(FluidVF& U)
 	}
 }  
  
+ 
+void FluidIO::Output_ring_spectrum(FluidVF& U, FluidVF& helicalU)
+{
+	if (global.spectrum.ring.turnon) {
+	
+		if (global.mpi.master)
+			ring_spectrum_file << "%% Time = " << global.time.now << endl; 	
+
+		Correlation::Compute_ring_spectrum(U);
+		Print_array(ring_spectrum_file, "Uek", Correlation::ring_ek1, Correlation::ring_ek2, Correlation::ring_ek3);
+		Print_array(ring_spectrum_file, "UDk", Correlation::ring_dissk1, Correlation::ring_dissk2, Correlation::ring_dissk3);
+
+
+		universal->Compute_vorticity(U.cvf.V1, U.cvf.V2, U.cvf.V3, helicalU.cvf.V1, helicalU.cvf.V2, helicalU.cvf.V3, 0, universal->Max_radius_inside());
+
+		Correlation::Compute_helical_ring_spectrum(U, helicalU);
+		Print_array(ring_spectrum_file, "Hek", Correlation::ring_hk1, Correlation::ring_hk2, Correlation::ring_hk3);
+		Print_array(ring_spectrum_file, "HDk", Correlation::ring_dissk1, Correlation::ring_dissk2, Correlation::ring_dissk3);		
+
+		
+		if (U.force_switch) {
+			Correlation::Compute_force_ring_spectrum(U);
+			Print_array(ring_spectrum_file, "(Fv.v)(k)", Correlation::ring_ek1, Correlation::ring_ek2, Correlation::ring_ek3);
+		}
+		
+		if (global.program.helicity_switch) {
+			Correlation::Compute_ring_spectrum_helicity(U);
+			Print_array(ring_spectrum_file, "hk", Correlation::ring_ek1, Correlation::ring_ek2, Correlation::ring_ek3);
+		}
+		
+		if (master)
+			spectrum_file.flush();
+	}
+}  
+ 
 
 //*********************************************************************************************  
 // scalar
@@ -1161,7 +1196,7 @@ void FluidIO::Output_ring_spectrum_RBC(FluidVF& U, FluidSF& T)
 //********************************************************************************************* 
 // Vector
   
-void FluidIO::Output_ring_spectrum(FluidVF& U, FluidVF& W)
+void FluidIO::Output_ring_spectrum(FluidVF& U, FluidVF& W, FluidVF& helicalU, FluidVF& helicalW)
 {
 	if (global.spectrum.ring.turnon) {
 		

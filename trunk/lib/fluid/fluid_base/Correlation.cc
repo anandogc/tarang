@@ -54,6 +54,10 @@ Array<Real,2> Correlation::ring_ek1;
 Array<Real,2> Correlation::ring_ek2;
 Array<Real,2> Correlation::ring_ek3;
 
+Array<Real,2> Correlation::ring_hk1;
+Array<Real,2> Correlation::ring_hk2;
+Array<Real,2> Correlation::ring_hk3;
+
 Array<Real,2> Correlation::ring_dissk1;
 Array<Real,2> Correlation::ring_dissk2;
 Array<Real,2> Correlation::ring_dissk3;
@@ -90,6 +94,10 @@ void Correlation::Initialize()
 		ring_ek1.resize(global.spectrum.ring.no_shells, global.spectrum.ring.no_sectors+1);
 		ring_ek2.resize(global.spectrum.ring.no_shells, global.spectrum.ring.no_sectors+1);
 		ring_ek3.resize(global.spectrum.ring.no_shells, global.spectrum.ring.no_sectors+1);
+
+		ring_hk1.resize(global.spectrum.ring.no_shells, global.spectrum.ring.no_sectors+1);
+		ring_hk2.resize(global.spectrum.ring.no_shells, global.spectrum.ring.no_sectors+1);
+		ring_hk3.resize(global.spectrum.ring.no_shells, global.spectrum.ring.no_sectors+1);
 
 		ring_dissk1.resize(global.spectrum.ring.no_shells, global.spectrum.ring.no_sectors+1);
 		ring_dissk2.resize(global.spectrum.ring.no_shells, global.spectrum.ring.no_sectors+1);
@@ -273,7 +281,6 @@ void Correlation::Compute_ring_spectrum(FluidVF& U)
 	ring_dissk3 *= TWO;
 }
 
-
 void Correlation::Compute_ring_spectrum(FluidVF& U, FluidVF& W)
 {		
 	universal->Compute_ring_spectrum(U.cvf.V1, U.cvf.V2, U.cvf.V3, W.cvf.V1, W.cvf.V2, W.cvf.V3, 0, ring_ek1, ring_ek2, ring_ek3);
@@ -290,6 +297,22 @@ void Correlation::Compute_ring_spectrum(FluidVF&U, FluidSF& T)
 	
 	universal->Compute_ring_spectrum(U.cvf.V3, T.csf.F, 0, ring_ek3);
 }
+
+
+//Helical_ring
+
+void Correlation::Compute_helical_ring_spectrum(FluidVF& U, FluidVF& helicalU)
+{
+		
+	universal->Compute_helical_ring_spectrum(U.cvf.V1, U.cvf.V2, U.cvf.V3, helicalU.cvf.V1, helicalU.cvf.V2, helicalU.cvf.V3, 0, ring_hk1, ring_hk2, ring_hk3);
+	
+	universal->Compute_helical_ring_spectrum(U.cvf.V1, U.cvf.V2, U.cvf.V3, helicalU.cvf.V1, helicalU.cvf.V2, helicalU.cvf.V3, 2, ring_dissk1, ring_dissk2, ring_dissk3);
+	
+	ring_dissk1 *= TWO;
+	ring_dissk2 *= TWO;
+	ring_dissk3 *= TWO;
+}
+
 
 
 //***cylindrical_ring

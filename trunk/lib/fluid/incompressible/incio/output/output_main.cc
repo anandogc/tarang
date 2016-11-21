@@ -116,7 +116,7 @@ void FluidIO_incompress::Output_all_inloop(FluidVF& U, Pressure& P, FluidVF& hel
 	
 
 	if ((global.time.now >= global.io.time.ring_spectrum_save_next) && (global.spectrum.ring.turnon)) {  
-		Output_ring_spectrum(U);
+		Output_ring_spectrum(U, helicalU);
 		global.io.time.ring_spectrum_save_next += global.io.time.ring_spectrum_save_interval;
 	}	
 	
@@ -186,7 +186,7 @@ void FluidIO_incompress::Output_last(FluidVF& U, Pressure& P, FluidVF& helicalU)
 	
 	
 	if ((global.spectrum.ring.turnon) && (global.io.time.ring_spectrum_save_last)) 
-		Output_ring_spectrum(U); 
+		Output_ring_spectrum(U, helicalU); 
 	
 	if ((global.energy_transfer.turnon) && (global.energy_transfer.ring_to_ring.turnon) && (global.io.time.ring_to_ring_save_last))
 		Output_ring_to_ring(U, P);
@@ -389,7 +389,7 @@ void FluidIO_incompress::Output_all_inloop(FluidVF& U, FluidVF& W, Pressure& P, 
 	}	
 	
 	if ((global.time.now >= global.io.time.ring_spectrum_save_next) && (global.spectrum.ring.turnon)) {  
-		Output_ring_spectrum(U, W); 
+		Output_ring_spectrum(U, W, helicalU, helicalW); 
 		global.io.time.ring_spectrum_save_next += global.io.time.ring_spectrum_save_interval;
 	}	
 	

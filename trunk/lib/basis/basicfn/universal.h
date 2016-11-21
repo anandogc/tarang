@@ -48,17 +48,17 @@
 class Universal
 {				
 public:
-    //HDF5 IO plans
-    h5::Plan H5_real;
-    h5::Plan H5_full;
-    h5::Plan H5_kz0_full;
-    h5::Plan H5_in_reduced;
-    h5::Plan H5_out_reduced;
-    h5::Plan H5_in_kz0_reduced;
-    h5::Plan H5_out_kz0_reduced;
-    vector<h5::Plan> H5_slices;
+	//HDF5 IO plans
+	h5::Plan H5_real;
+	h5::Plan H5_full;
+	h5::Plan H5_kz0_full;
+	h5::Plan H5_in_reduced;
+	h5::Plan H5_out_reduced;
+	h5::Plan H5_in_kz0_reduced;
+	h5::Plan H5_out_kz0_reduced;
+	vector<h5::Plan> H5_slices;
 
-    // basic
+	// basic
 
 	virtual int Get_number_modes_in_shell(Real inner_radius, Real outer_radius);
 	virtual void Print_large_Fourier_elements(Array<Complex,3> A, string array_name="Array");
@@ -67,32 +67,32 @@ public:
 	virtual void Array_exp_ksqr(Array<Complex,3> A, Real factor);
 	virtual void Array_exp_ksqr(Array<Complex,3> A, Real factor, Real hyper_factor, int hyper_exponent);
 	virtual void Array_mult_V0_khat_sqr(Array<Complex,3> A, TinyVector<Real,3> V0);
-    virtual void Fill_Vz(Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az);
-    virtual void Compute_divergence(Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az, Array<Complex,3> div, string field_or_nlin, Real &total_abs_div, bool print_switch);
+	virtual void Fill_Vz(Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az);
+	virtual void Compute_divergence(Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az, Array<Complex,3> div, string field_or_nlin, Real &total_abs_div, bool print_switch);
 	virtual void Zero_modes(Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az);
-    virtual void Zero_modes(Array<Complex,3> F);
-    
+	virtual void Zero_modes(Array<Complex,3> F);
+	
 
 	// Local functions...
-    virtual void Last_component(int kx, int ky, int kz, Real &Vx, Real &Vy, Real &Vz) = 0;
-    virtual void Last_component(int kx, int ky, int kz, Complex& Vx, Complex& Vy, Complex& Vz) = 0;
-    virtual void Dealias(Array<Complex,3> A) = 0;
-    virtual bool Is_dealiasing_necessary(Array<Complex,3> A, Real outer_radius) = 0;
-    virtual void Satisfy_strong_reality_condition_in_Array(Array<Complex,3> A) = 0;
-    virtual void Satisfy_weak_reality_condition_in_Array(Array<Complex,3> A) = 0;
-    virtual void Test_reality_condition_in_Array(Array<Complex,3> A) = 0;
+	virtual void Last_component(int kx, int ky, int kz, Real &Vx, Real &Vy, Real &Vz) = 0;
+	virtual void Last_component(int kx, int ky, int kz, Complex& Vx, Complex& Vy, Complex& Vz) = 0;
+	virtual void Dealias(Array<Complex,3> A) = 0;
+	virtual bool Is_dealiasing_necessary(Array<Complex,3> A, Real outer_radius) = 0;
+	virtual void Satisfy_strong_reality_condition_in_Array(Array<Complex,3> A) = 0;
+	virtual void Satisfy_weak_reality_condition_in_Array(Array<Complex,3> A) = 0;
+	virtual void Test_reality_condition_in_Array(Array<Complex,3> A) = 0;
 
-    
-    // transform
-    
+	
+	// transform
+	
 	virtual void Forward_transform(Array<Real,3> Ar, Array<Complex,3> A) = 0;
 	virtual void Inverse_transform(Array<Complex,3> A, Array<Real,3> Ar) = 0;
-    
+	
 	virtual void Xderiv(Array<Complex,3> A, Array<Complex,3> B) = 0;
-    virtual void Yderiv(Array<Complex,3> A, Array<Complex,3> B) = 0;
-    virtual void Zderiv(Array<Complex,3> A, Array<Complex,3> B) = 0;
+	virtual void Yderiv(Array<Complex,3> A, Array<Complex,3> B) = 0;
+	virtual void Zderiv(Array<Complex,3> A, Array<Complex,3> B) = 0;
 
-    virtual void Add_Xderiv(Array<Complex,3> A, Array<Complex,3> B) = 0;
+	virtual void Add_Xderiv(Array<Complex,3> A, Array<Complex,3> B) = 0;
 	virtual void Add_Yderiv(Array<Complex,3> A, Array<Complex,3> B) = 0;
 	virtual void Add_Zderiv(Array<Complex,3> A, Array<Complex,3> B) = 0;
 	
@@ -101,9 +101,9 @@ public:
 	virtual void Laplacian(Real factor, Array<Complex,3> A, Array<Complex,3> B) = 0;
 	virtual void Subtract_Laplacian(Real factor, Array<Complex,3> A, Array<Complex,3> B) = 0;
 	// Energy
-    
-    //virtual Real Get_local_energy_XZ_plane(Array<Complex,3> A, int ny) = 0;
-    
+	
+	//virtual Real Get_local_energy_XZ_plane(Array<Complex,3> A, int ny) = 0;
+	
  //    virtual Real Get_local_energy_XZ_plane
 	// (
 	// 	Array<Complex,3> A, Array<Complex,3> B, 
@@ -115,34 +115,34 @@ public:
 	virtual Real Get_local_energy_real_space(Array<Real,3> Ar, Array<Real,3> Br) = 0;
 	virtual Real Get_local_energy(Array<Complex,3> A, Array<Complex,3> B) = 0;
 	
-    virtual void Compute_vorticity
-    (
-        Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
-        Array<Complex,3> Bx, Array<Complex,3> By, Array<Complex,3> Bz,  
-        Real inner_radius, Real outer_radius
-    );
+	virtual void Compute_vorticity
+	(
+		Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
+		Array<Complex,3> Bx, Array<Complex,3> By, Array<Complex,3> Bz,  
+		Real inner_radius, Real outer_radius
+	);
 
 	virtual void Compute_local_helicity
-    (
+	(
 	 Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
 	 Real &local_helicity1, Real &local_helicity2,
 	 Real &local_dissipation_H1, Real &local_dissipation_H2
 	 ) = 0;
-    
+	
 	virtual void Compute_total_helicity
-    (
+	(
 	 Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
 	 Real &total_helicity1, Real &total_helicity2,
 	 Real &total_dissipation_H1, Real &total_dissipation_H2
-     ) = 0;
-    
+	 ) = 0;
+	
 	virtual void Compute_local_shell_spectrum_helicity
-    (
+	(
 	 Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
 	 Array<Real,1> local_H1k1, Array<Real,1> local_H1k2, Array<Real,1> local_H1k3,
 	 Array<Real,1> local_H1k_count
 	 ) = 0;
-    
+	
 	virtual void Compute_shell_spectrum_helicity
 	(
 	 Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
@@ -150,445 +150,461 @@ public:
 	 ) = 0;
 	
 	virtual void Compute_local_ring_spectrum_helicity
-    (
+	(
 	 Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
 	 Array<Real,2> local_H1k1, Array<Real,2> local_H1k2, Array<Real,2> local_H1k3
 	 ) = 0;
 	
 	
 	virtual void Compute_ring_spectrum_helicity
-    (
+	(
 	 Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
 	 Array<Real,2> local_H1k1, Array<Real,2> local_H1k2, Array<Real,2> local_H1k3
 	 ) = 0;
 	
 	virtual void Compute_local_cylindrical_ring_spectrum_helicity
-    (
+	(
 	 Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
 	 Array<Real,2> local_H1k1, Array<Real,2> local_H1k2
 	 ) = 0;
-    
+	
 	virtual void Compute_cylindrical_ring_spectrum_helicity
-    (
+	(
 	 Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
-     Array<Real,2> local_H1k1, Array<Real,2> local_H1k2
+	 Array<Real,2> local_H1k1, Array<Real,2> local_H1k2
 	 ) = 0;
 
 
 
 	
 	virtual Real Get_total_energy_real_space(Array<Real,3> Ar);
-    virtual Real Get_total_energy(Array<Complex,3> A);
+	virtual Real Get_total_energy(Array<Complex,3> A);
 	virtual Real Get_total_energy_real_space(Array<Real,3> Ar, Array<Real,3> Br);
-    virtual Real Get_total_energy(Array<Complex,3> A, Array<Complex,3> B);
-    
-    virtual Real Get_local_Sn(Array<Complex,3> A, Real n);
-    virtual Real Get_total_Sn(Array<Complex,3> A, Real n);
+	virtual Real Get_total_energy(Array<Complex,3> A, Array<Complex,3> B);
 	
-    virtual Real Get_local_Sn(Array<Complex,3> A, Array<Complex,3> B, Real n);
-    virtual Real Get_total_Sn(Array<Complex,3> A, Array<Complex,3> B, Real n);
-    
+	virtual Real Get_local_Sn(Array<Complex,3> A, Real n);
+	virtual Real Get_total_Sn(Array<Complex,3> A, Real n);
+	
+	virtual Real Get_local_Sn(Array<Complex,3> A, Array<Complex,3> B, Real n);
+	virtual Real Get_total_Sn(Array<Complex,3> A, Array<Complex,3> B, Real n);
+	
 	virtual void Compute_local_shell_spectrum
-    (  
-        Array<Complex,3> A, 
-        int n, 
-        Array<Real,1> local_Sk, 
-        Array<Real,1> local_Sk_count
-    );
+	(  
+		Array<Complex,3> A, 
+		int n, 
+		Array<Real,1> local_Sk, 
+		Array<Real,1> local_Sk_count
+	);
 
 	virtual void Compute_shell_spectrum
-    (  
-        Array<Complex,3> A, 
-        int n, 
-        Array<Real,1> local_Sk
-    );
+	(  
+		Array<Complex,3> A, 
+		int n, 
+		Array<Real,1> local_Sk
+	);
 
 	virtual void Compute_local_shell_spectrum
-    (
-        Array<Complex,3> A,  Array<Complex,3> B,
-        int n, 
-        Array<Real,1> local_Sk, 
-        Array<Real,1> local_Sk_count
-    );
+	(
+		Array<Complex,3> A,  Array<Complex,3> B,
+		int n, 
+		Array<Real,1> local_Sk, 
+		Array<Real,1> local_Sk_count
+	);
 
 	virtual void Compute_shell_spectrum
-    (  
-     Array<Complex,3> A, Array<Complex,3> B, 
-        int n, 
-        Array<Real,1> Sk
-    );
-    
-    virtual Real Get_local_entropy(Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az);
-    virtual Real Get_entropy(Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az);
-    
-    virtual Real Get_local_entropy_scalar(Array<Complex,3> A);
-    virtual Real Get_entropy_scalar(Array<Complex,3> A);
-    
+	(  
+	 Array<Complex,3> A, Array<Complex,3> B, 
+		int n, 
+		Array<Real,1> Sk
+	);
+	
+	virtual Real Get_local_entropy(Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az);
+	virtual Real Get_entropy(Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az);
+	
+	virtual Real Get_local_entropy_scalar(Array<Complex,3> A);
+	virtual Real Get_entropy_scalar(Array<Complex,3> A);
+	
 	virtual void Compute_local_ring_spectrum
-    (
-        Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az, 
-        int n, Array<Real,2> local_E1k, Array<Real,2> local_E2k, Array<Real,2> local_E3k
-    );
-    
+	(
+		Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az, 
+		int n, Array<Real,2> local_E1k, Array<Real,2> local_E2k, Array<Real,2> local_E3k
+	);
+	
 	virtual void Compute_ring_spectrum
-    (
-        Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az, 
-        int n, Array<Real,2> E1k, Array<Real,2> E2k, Array<Real,2> E3k
-    );
-    
+	(
+		Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az, 
+		int n, Array<Real,2> E1k, Array<Real,2> E2k, Array<Real,2> E3k
+	);
+	
 	virtual void Compute_local_ring_spectrum
-    (
-        Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az, 
-        Array<Complex,3> Bx, Array<Complex,3> By, Array<Complex,3> Bz,
-        int n, Array<Real,2> local_E1k, Array<Real,2> local_E2k, Array<Real,2> local_E3k
-    );
-    
+	(
+		Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az, 
+		Array<Complex,3> Bx, Array<Complex,3> By, Array<Complex,3> Bz,
+		int n, Array<Real,2> local_E1k, Array<Real,2> local_E2k, Array<Real,2> local_E3k
+	);
+	
 	virtual void Compute_ring_spectrum
-    (
-        Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az, 
-        Array<Complex,3> Bx, Array<Complex,3> By, Array<Complex,3> Bz,
-        int n, Array<Real,2> E1k, Array<Real,2> E2k, Array<Real,2> E3k
-     );
-    
+	(
+		Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az, 
+		Array<Complex,3> Bx, Array<Complex,3> By, Array<Complex,3> Bz,
+		int n, Array<Real,2> E1k, Array<Real,2> E2k, Array<Real,2> E3k
+	 );
+	
 	virtual void Compute_local_ring_spectrum
-    (
-        Array<Complex,3> F, 
-        int n, Array<Real,2> local_Sk
-    );
-    
+	(
+		Array<Complex,3> F, 
+		int n, Array<Real,2> local_Sk
+	);
+	
 	virtual void Compute_ring_spectrum
-    ( 
-        Array<Complex,3> F, 
-        int n, Array<Real,2> Sk
-    );
-    
+	( 
+		Array<Complex,3> F, 
+		int n, Array<Real,2> Sk
+	);
+	
    virtual void Compute_local_ring_spectrum
-    (
-        Array<Complex,3> F, Array<Complex,3> G, 
-        int n, Array<Real,2> local_Sk
-    );	
-    
-   virtual void Compute_ring_spectrum
-    (
-        Array<Complex,3> F, Array<Complex,3> G,  
-        int n, Array<Real,2> Sk
-    );
-    
+	(
+		Array<Complex,3> F, Array<Complex,3> G, 
+		int n, Array<Real,2> local_Sk
+	);	
+	
+	virtual void Compute_ring_spectrum
+	(
+		Array<Complex,3> F, Array<Complex,3> G,  
+		int n, Array<Real,2> Sk
+	);
+
+	virtual void Compute_local_helical_ring_spectrum
+	(
+	 Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
+	 Array<Complex,3> helicalAx, Array<Complex,3> helicalAy, Array<Complex,3> helicalAz,
+	 int n,
+	 Array<Real,2> local_hk1, Array<Real,2> local_hk2, Array<Real,2> local_hk3
+	);
+
+	virtual void Compute_helical_ring_spectrum
+	(
+	 Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
+	 Array<Complex,3> helicalAx, Array<Complex,3> helicalAy, Array<Complex,3> helicalAz,
+	 int n,
+	 Array<Real,2> hk1, Array<Real,2> hk2, Array<Real,2> hk3
+	);
+	
 	virtual void Compute_local_cylindrical_ring_spectrum
-    (
+	(
 	 Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
 	 int n, Array<Real,2> local_S1k, Array<Real,2> local_S2k
-	 );
-    
+	);
+	
 	virtual void Compute_cylindrical_ring_spectrum
-    (
+	(
 	 Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
 	 int n, Array<Real,2> S1k, Array<Real,2> S2k
+	);
+	
+	
+	
+	virtual void Compute_local_cylindrical_ring_spectrum
+	(
+		Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az, 
+		Array<Complex,3> Bx, Array<Complex,3> By, Array<Complex,3> Bz,
+		int n, Array<Real,2> local_S1k, Array<Real,2> local_S2k
+	);
+	
+   virtual void Compute_cylindrical_ring_spectrum
+	( 
+		Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az, 
+		Array<Complex,3> Bx, Array<Complex,3> By, Array<Complex,3> Bz,  
+		int n, Array<Real,2> S1k, Array<Real,2> S2k
 	 );
 	
+	virtual void Compute_local_cylindrical_ring_spectrum
+	(
+		Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az, 
+		Array<Complex,3> F,
+		int n, Array<Real,2> local_S1k, Array<Real,2> local_S2k
+	);
 	
-    
-	virtual void Compute_local_cylindrical_ring_spectrum
-    (
-        Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az, 
-        Array<Complex,3> Bx, Array<Complex,3> By, Array<Complex,3> Bz,
-        int n, Array<Real,2> local_S1k, Array<Real,2> local_S2k
-    );
-    
    virtual void Compute_cylindrical_ring_spectrum
-    ( 
-        Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az, 
-        Array<Complex,3> Bx, Array<Complex,3> By, Array<Complex,3> Bz,  
-        int n, Array<Real,2> S1k, Array<Real,2> S2k
-     );
-    
-    virtual void Compute_local_cylindrical_ring_spectrum
-    (
-        Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az, 
-        Array<Complex,3> F,
-        int n, Array<Real,2> local_S1k, Array<Real,2> local_S2k
-    );
-    
-   virtual void Compute_cylindrical_ring_spectrum
-    ( 
-        Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az, 
-        Array<Complex,3> F,  
-        int n, Array<Real,2> S1k, Array<Real,2> S2k
-     );
-    
+	( 
+		Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az, 
+		Array<Complex,3> F,  
+		int n, Array<Real,2> S1k, Array<Real,2> S2k
+	 );
+	
 	virtual void Compute_local_cylindrical_ring_spectrum
-    (
-        Array<Complex,3> F, 
-        int n, Array<Real,2> local_Sk
-    );
-    
+	(
+		Array<Complex,3> F, 
+		int n, Array<Real,2> local_Sk
+	);
+	
 	virtual void Compute_cylindrical_ring_spectrum
-    (
-        Array<Complex,3> F, 
-        int n, Array<Real,2> Sk
-    );
-    
+	(
+		Array<Complex,3> F, 
+		int n, Array<Real,2> Sk
+	);
+	
 	virtual void Compute_local_cylindrical_ring_spectrum
-    (
-        Array<Complex,3> F, Array<Complex,3> G,
-        int n, Array<Real,2> local_Sk
-    );
-    
+	(
+		Array<Complex,3> F, Array<Complex,3> G,
+		int n, Array<Real,2> local_Sk
+	);
+	
 	virtual void Compute_cylindrical_ring_spectrum
-    (
-        Array<Complex,3> F, Array<Complex,3> G,
-        int n, Array<Real,2> Sk
-    );
-    
+	(
+		Array<Complex,3> F, Array<Complex,3> G,
+		int n, Array<Real,2> Sk
+	);
+	
 
-    
+	
 	virtual void Compute_local_imag_shell_spectrum_B0
-    ( 
-        TinyVector<Real,3> B0,
-        Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
-        Array<Complex,3> Bx, Array<Complex,3> By, Array<Complex,3> Bz, 
-        Array<Real,1> local_Sk
-    );
-    
+	( 
+		TinyVector<Real,3> B0,
+		Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
+		Array<Complex,3> Bx, Array<Complex,3> By, Array<Complex,3> Bz, 
+		Array<Real,1> local_Sk
+	);
+	
 	virtual void Compute_imag_shell_spectrum_B0
-    (
-        TinyVector<Real,3> B0,
-        Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
-        Array<Complex,3> Bx, Array<Complex,3> By, Array<Complex,3> Bz, 
-        Array<Real,1> Sk
-    );
-    
+	(
+		TinyVector<Real,3> B0,
+		Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
+		Array<Complex,3> Bx, Array<Complex,3> By, Array<Complex,3> Bz, 
+		Array<Real,1> Sk
+	);
+	
 	virtual void Compute_local_imag_ring_spectrum_B0
-    (
-        TinyVector<Real,3> B0,
-        Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
-        Array<Complex,3> Bx, Array<Complex,3> By, Array<Complex,3> Bz, 
-        Array<Real,2> local_Sk
-    );
-    
+	(
+		TinyVector<Real,3> B0,
+		Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
+		Array<Complex,3> Bx, Array<Complex,3> By, Array<Complex,3> Bz, 
+		Array<Real,2> local_Sk
+	);
+	
 	virtual void Compute_imag_ring_spectrum_B0
-    (
-        TinyVector<Real,3> B0,
-        Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
-        Array<Complex,3> Bx, Array<Complex,3> By, Array<Complex,3> Bz, 
-        Array<Real,2> Sk
-    );
-    
+	(
+		TinyVector<Real,3> B0,
+		Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
+		Array<Complex,3> Bx, Array<Complex,3> By, Array<Complex,3> Bz, 
+		Array<Real,2> Sk
+	);
+	
 	virtual void Compute_local_imag_cylindrical_ring_spectrum_B0
-    (
-        TinyVector<Real,3> B0,
-        Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
-        Array<Complex,3> Bx, Array<Complex,3> By, Array<Complex,3> Bz, 
-        Array<Real,2> local_Sk
-    );
-    
+	(
+		TinyVector<Real,3> B0,
+		Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
+		Array<Complex,3> Bx, Array<Complex,3> By, Array<Complex,3> Bz, 
+		Array<Real,2> local_Sk
+	);
+	
 	virtual void Compute_imag_cylindrical_ring_spectrum_B0
-    (
-        TinyVector<Real,3> B0,
-        Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
-        Array<Complex,3> Bx, Array<Complex,3> By, Array<Complex,3> Bz,  
-        Array<Real,2> Sk
-    );
-    
-    // EnergyTr
-    
-    virtual Real Local_shell_mult_single
-    ( 
-        Array<Complex,3> A, Array<Complex,3> B, 
-        Real inner_radius, Real outer_radius
-    );
-    
-    virtual Real Shell_mult_single
-    ( 
-        Array<Complex,3> A, Array<Complex,3> B, 
-        Real inner_radius, Real outer_radius
-    );
-    
+	(
+		TinyVector<Real,3> B0,
+		Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
+		Array<Complex,3> Bx, Array<Complex,3> By, Array<Complex,3> Bz,  
+		Array<Real,2> Sk
+	);
+	
+	// EnergyTr
+	
+	virtual Real Local_shell_mult_single
+	( 
+		Array<Complex,3> A, Array<Complex,3> B, 
+		Real inner_radius, Real outer_radius
+	);
+	
+	virtual Real Shell_mult_single
+	( 
+		Array<Complex,3> A, Array<Complex,3> B, 
+		Real inner_radius, Real outer_radius
+	);
+	
 	virtual void Local_shell_mult_all
-    ( 
-        Array<Complex,3> A, Array<Complex,3> B, 
+	( 
+		Array<Complex,3> A, Array<Complex,3> B, 
 		Array<Real, 1> shell_radius_array,
-        Array<Real,1> local_result
-    );
-    
+		Array<Real,1> local_result
+	);
+	
 	virtual void Shell_mult_all
-    ( 
-        Array<Complex,3> A, Array<Complex,3> B, 
+	( 
+		Array<Complex,3> A, Array<Complex,3> B, 
 		Array<Real, 1> shell_radius_array,
-        Array<Real,1> result
-    );
-    
+		Array<Real,1> result
+	);
+	
 	virtual void Local_shell_mult_all
-    (	 
-        Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
-        Array<Complex,3> Bx, Array<Complex,3> By, Array<Complex,3> Bz,
+	(	 
+		Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
+		Array<Complex,3> Bx, Array<Complex,3> By, Array<Complex,3> Bz,
 		Array<Real, 1> shell_radius_array,
-        Array<Real,1> local_result
-    );
-    
+		Array<Real,1> local_result
+	);
+	
 	virtual void Shell_mult_all
-    (
-        Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
-        Array<Complex,3> Bx, Array<Complex,3> By, Array<Complex,3> Bz,
+	(
+		Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
+		Array<Complex,3> Bx, Array<Complex,3> By, Array<Complex,3> Bz,
 		Array<Real, 1> shell_radius_array,
-        Array<Real,1> result
-    );
-    
+		Array<Real,1> result
+	);
+	
 	virtual void Local_ring_mult_all
 	( 
-        Array<Complex,3> A, Array<Complex,3> B, 
-        Array<Real,2> local_result
-    );
-    
-    
+		Array<Complex,3> A, Array<Complex,3> B, 
+		Array<Real,2> local_result
+	);
+	
+	
 	virtual void Ring_mult_all
-    ( 
-        Array<Complex,3> A, Array<Complex,3> B, 
-        Array<Real,2> result
-    );
-    
+	( 
+		Array<Complex,3> A, Array<Complex,3> B, 
+		Array<Real,2> result
+	);
+	
 	virtual void Local_ring_mult_all
-    (
-        Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
-        Array<Complex,3> Bx, Array<Complex,3> By, Array<Complex,3> Bz, 
-        Array<Real,2> local_result
-    );
-    
+	(
+		Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
+		Array<Complex,3> Bx, Array<Complex,3> By, Array<Complex,3> Bz, 
+		Array<Real,2> local_result
+	);
+	
 	virtual void Ring_mult_all
-    (
-        Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
-        Array<Complex,3> Bx, Array<Complex,3> By, Array<Complex,3> Bz,  
-        Array<Real,2> result
-    );
-    
+	(
+		Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
+		Array<Complex,3> Bx, Array<Complex,3> By, Array<Complex,3> Bz,  
+		Array<Real,2> result
+	);
+	
 	virtual void Local_cyl_ring_mult_all
-    (
-        Array<Complex,3> A, Array<Complex,3> B, 
-        Array<Real,2> local_result
-    );
-    
+	(
+		Array<Complex,3> A, Array<Complex,3> B, 
+		Array<Real,2> local_result
+	);
+	
 	virtual void Cyl_ring_mult_all
-    (
-        Array<Complex,3> A, Array<Complex,3> B, 
-        Array<Real,2> result
-    );
-    
+	(
+		Array<Complex,3> A, Array<Complex,3> B, 
+		Array<Real,2> result
+	);
+	
 	virtual void Local_cyl_ring_mult_all
-    (
-        Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
-        Array<Complex,3> Bx, Array<Complex,3> By, Array<Complex,3> Bz,  
-        Array<Real,2> local_result
-    );
-    
+	(
+		Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
+		Array<Complex,3> Bx, Array<Complex,3> By, Array<Complex,3> Bz,  
+		Array<Real,2> local_result
+	);
+	
 	virtual void Cyl_ring_mult_all
-    (
-        Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
-        Array<Complex,3> Bx, Array<Complex,3> By, Array<Complex,3> Bz, 
-        Array<Real,2> result
-    );
-    
+	(
+		Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
+		Array<Complex,3> Bx, Array<Complex,3> By, Array<Complex,3> Bz, 
+		Array<Real,2> result
+	);
+	
 	virtual void Local_shell_mult_all_imagVW_B0
-    (
-        TinyVector<Real,3> B0,
-        Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
-        Array<Complex,3> Bx, Array<Complex,3> By, Array<Complex,3> Bz, 
-        Array<Real,1> local_result
-    );
-    
+	(
+		TinyVector<Real,3> B0,
+		Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
+		Array<Complex,3> Bx, Array<Complex,3> By, Array<Complex,3> Bz, 
+		Array<Real,1> local_result
+	);
+	
 	virtual void Shell_mult_all_imagVW_B0
-    ( 
-        TinyVector<Real,3> B0,
-        Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
-        Array<Complex,3> Bx, Array<Complex,3> By, Array<Complex,3> Bz,  
-        Array<Real,1> result
-    );
-    
+	( 
+		TinyVector<Real,3> B0,
+		Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
+		Array<Complex,3> Bx, Array<Complex,3> By, Array<Complex,3> Bz,  
+		Array<Real,1> result
+	);
+	
 	virtual void Local_ring_mult_all_imagVW_B0
-    (
-        TinyVector<Real,3> B0,
-        Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
-        Array<Complex,3> Bx, Array<Complex,3> By, Array<Complex,3> Bz, 
-        Array<Real,2> local_result
-    );
-    
+	(
+		TinyVector<Real,3> B0,
+		Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
+		Array<Complex,3> Bx, Array<Complex,3> By, Array<Complex,3> Bz, 
+		Array<Real,2> local_result
+	);
+	
 	virtual void Ring_mult_all_imagVW_B0
-    (
-        TinyVector<Real,3> B0,
-        Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
-        Array<Complex,3> Bx, Array<Complex,3> By, Array<Complex,3> Bz,  
-        Array<Real,2> result
-    );
-    
+	(
+		TinyVector<Real,3> B0,
+		Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
+		Array<Complex,3> Bx, Array<Complex,3> By, Array<Complex,3> Bz,  
+		Array<Real,2> result
+	);
+	
 	virtual void Local_cyl_ring_mult_all_imagVW_B0
-    ( 
-        TinyVector<Real,3> B0,
-        Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
-        Array<Complex,3> Bx, Array<Complex,3> By, Array<Complex,3> Bz, 
-        Array<Real,2> local_result
-    );
-    
+	( 
+		TinyVector<Real,3> B0,
+		Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
+		Array<Complex,3> Bx, Array<Complex,3> By, Array<Complex,3> Bz, 
+		Array<Real,2> local_result
+	);
+	
 	virtual void Cyl_ring_mult_all_imagVW_B0
-    (
-        TinyVector<Real,3> B0,
-        Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
-        Array<Complex,3> Bx, Array<Complex,3> By, Array<Complex,3> Bz, 
-        Array<Real,2> result
-    );
-    
-    virtual Real Local_shell_mult_vorticity
-    (
-        Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
-        Array<Complex,3> Bx, Array<Complex,3> By, Array<Complex,3> Bz,  
-        Real inner_radius, Real outer_radius
-    );
-    
+	(
+		TinyVector<Real,3> B0,
+		Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
+		Array<Complex,3> Bx, Array<Complex,3> By, Array<Complex,3> Bz, 
+		Array<Real,2> result
+	);
+	
+	virtual Real Local_shell_mult_vorticity
+	(
+		Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
+		Array<Complex,3> Bx, Array<Complex,3> By, Array<Complex,3> Bz,  
+		Real inner_radius, Real outer_radius
+	);
+	
 	virtual  Real Shell_mult_vorticity
-    (
-        Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
-        Array<Complex,3> Bx, Array<Complex,3> By, Array<Complex,3> Bz,  
-        Real inner_radius, Real outer_radius
-    );
-    
-    virtual Real Local_shell_mult_vector_potential
-    (
-        Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
-        Array<Complex,3> Bx, Array<Complex,3> By, Array<Complex,3> Bz,  
-        Real inner_radius, Real outer_radius
-    );
-    
-    virtual Real Shell_mult_vector_potential
-    ( 
-        Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
-        Array<Complex,3> Bx, Array<Complex,3> By, Array<Complex,3> Bz,  
-        Real inner_radius, Real outer_radius
-    );
-    
+	(
+		Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
+		Array<Complex,3> Bx, Array<Complex,3> By, Array<Complex,3> Bz,  
+		Real inner_radius, Real outer_radius
+	);
+	
+	virtual Real Local_shell_mult_vector_potential
+	(
+		Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
+		Array<Complex,3> Bx, Array<Complex,3> By, Array<Complex,3> Bz,  
+		Real inner_radius, Real outer_radius
+	);
+	
+	virtual Real Shell_mult_vector_potential
+	( 
+		Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
+		Array<Complex,3> Bx, Array<Complex,3> By, Array<Complex,3> Bz,  
+		Real inner_radius, Real outer_radius
+	);
+	
 	virtual void Local_shell_mult_vorticity_all
-    ( 
-        Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
-        Array<Complex,3> Bx, Array<Complex,3> By, Array<Complex,3> Bz,
-        Array<Real,1> result
-    );
-    
+	( 
+		Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
+		Array<Complex,3> Bx, Array<Complex,3> By, Array<Complex,3> Bz,
+		Array<Real,1> result
+	);
+	
 	virtual void Shell_mult_vorticity_all
-    (
-        Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
-        Array<Complex,3> Bx, Array<Complex,3> By, Array<Complex,3> Bz,
-        Array<Real,1> result
-    );
-    
+	(
+		Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
+		Array<Complex,3> Bx, Array<Complex,3> By, Array<Complex,3> Bz,
+		Array<Real,1> result
+	);
+	
 	virtual void Local_shell_mult_vector_potential_all
-    (
-         Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
-         Array<Complex,3> Bx, Array<Complex,3> By, Array<Complex,3> Bz,  
-         Array<Real,1> result
-    );
-    
+	(
+		 Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
+		 Array<Complex,3> Bx, Array<Complex,3> By, Array<Complex,3> Bz,  
+		 Array<Real,1> result
+	);
+	
 	virtual void Shell_mult_vector_potential_all
-    (
-        Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
-        Array<Complex,3> Bx, Array<Complex,3> By, Array<Complex,3> Bz,
-        Array<Real,1> result
+	(
+		Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
+		Array<Complex,3> Bx, Array<Complex,3> By, Array<Complex,3> Bz,
+		Array<Real,1> result
 	);
 	
 	virtual void Fill_array_shell(Array<Complex,3> A, Array<Complex,3> B, Real inner_radius, Real outer_radius);
@@ -620,10 +636,10 @@ public:
 	virtual void Assign_spectral_field(int kx, int ky, int kz, Array<Complex,3> A, Real field) = 0;
 	virtual void Assign_spectral_field(int kx, int ky, int kz, Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az, TinyVector<Real,3> V) = 0;
 	
-    virtual void Add_spectral_field(int kx, int ky, int kz, Array<Complex,3> A,Complex field) = 0;
-    virtual void Add_spectral_field(int kx, int ky, int kz, Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az, TinyVector<Complex,3> V) = 0;
-    virtual void Add_spectral_field(int kx, int ky, int kz, Array<Complex,3> A, Real field) = 0;
-    virtual void Add_spectral_field(int kx, int ky, int kz, Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az, TinyVector<Real,3> V) = 0;
+	virtual void Add_spectral_field(int kx, int ky, int kz, Array<Complex,3> A,Complex field) = 0;
+	virtual void Add_spectral_field(int kx, int ky, int kz, Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az, TinyVector<Complex,3> V) = 0;
+	virtual void Add_spectral_field(int kx, int ky, int kz, Array<Complex,3> A, Real field) = 0;
+	virtual void Add_spectral_field(int kx, int ky, int kz, Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az, TinyVector<Real,3> V) = 0;
 
 	virtual Complex Get_local_spectral_field(int lx, int ly, int lz, Array<Complex,3> A) = 0;
 	virtual TinyVector<Complex,3> Get_local_spectral_field(int lx, int ly, int lz, Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az) = 0;
@@ -635,10 +651,10 @@ public:
 	virtual void Assign_local_spectral_field(int lx, int ly, int lz, Array<Complex,3> A, Real field) = 0;
 	virtual void Assign_local_spectral_field(int lx, int ly, int lz, Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az, TinyVector<Real,3> V) = 0;
 
-    virtual void Add_local_spectral_field(int lx, int ly, int lz, Array<Complex,3> A,Complex field) = 0;
-    virtual void Add_local_spectral_field(int lx, int ly, int lz, Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az, TinyVector<Complex,3> V) = 0;
-    virtual void Add_local_spectral_field(int lx, int ly, int lz, Array<Complex,3> A, Real field) = 0;
-    virtual void Add_local_spectral_field(int lx, int ly, int lz, Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az, TinyVector<Real,3> V) = 0;
+	virtual void Add_local_spectral_field(int lx, int ly, int lz, Array<Complex,3> A,Complex field) = 0;
+	virtual void Add_local_spectral_field(int lx, int ly, int lz, Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az, TinyVector<Complex,3> V) = 0;
+	virtual void Add_local_spectral_field(int lx, int ly, int lz, Array<Complex,3> A, Real field) = 0;
+	virtual void Add_local_spectral_field(int lx, int ly, int lz, Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az, TinyVector<Real,3> V) = 0;
 	
 	
 	virtual	int Get_lx_real_space(int rx) = 0;
@@ -661,7 +677,7 @@ public:
 	
 	virtual Real Kmagnitude(int lx, int ly, int lz) = 0;
 	
-    virtual int Min_radius_outside() = 0;
+	virtual int Min_radius_outside() = 0;
 	virtual int Max_radius_inside() = 0;
 	
 	virtual Real Approx_number_modes_in_shell(int radius) = 0;
@@ -703,11 +719,11 @@ public:
 	virtual Real AnisKvect_azimuthal_angle(int lx, int ly, int lz) = 0;
 
 
-    virtual int Read(Array<Complex,3> A, h5::Plan plan, string file_name, string dataset_name="") = 0;
-    virtual int Read(Array<Real,3> Ar, h5::Plan plan, string file_name, string dataset_name="") = 0;
+	virtual int Read(Array<Complex,3> A, h5::Plan plan, string file_name, string dataset_name="") = 0;
+	virtual int Read(Array<Real,3> Ar, h5::Plan plan, string file_name, string dataset_name="") = 0;
 
-    virtual int Write(Array<Complex,3> A, h5::Plan plan, string access_mode, string folder_name, string file_name, string dataset_name="") = 0;
-    virtual int Write(Array<Real,3> Ar, h5::Plan plan, string access_mode, string folder_name, string file_name, string dataset_name="") = 0;
+	virtual int Write(Array<Complex,3> A, h5::Plan plan, string access_mode, string folder_name, string file_name, string dataset_name="") = 0;
+	virtual int Write(Array<Real,3> Ar, h5::Plan plan, string access_mode, string folder_name, string file_name, string dataset_name="") = 0;
 };
 
 #endif
