@@ -67,7 +67,10 @@ void  FORCE::Compute_force_using_random_energy_helicity_spectrum_basic(FluidVF& 
 {
 	Real Kmag, ek, amp, phase1, phase2, phase3;
 	int index;
-    
+    static Real random_next = 0, random_interval = 0.01;
+
+    if (global.time.now >=random_next)
+    {
 	Model_force_spectrum(force_spectrum_amplitude, force_spectrum_exponent, Correlation::shell_ek);
     
 	int kx_max, ky_max, kz_max, kx_min, ky_min, kz_min;
@@ -117,14 +120,26 @@ void  FORCE::Compute_force_using_random_energy_helicity_spectrum_basic(FluidVF& 
 							phase2 = 2*M_PI * SPECrand.random();
 							phase3 = 2*M_PI * SPECrand.random();
 						}
-						
+                      //cout <<" global.time.next = "<<global.io.time.cout_save_interval<<endl;
+
+
 						Put_force_amp_phase_comp_conj(U, lx, ly, lz, amp, phase1, phase2, phase3, add_flag);
-                        
+                      //global.io.time.global_save_next += global.io.time.global_save_interval;
+
+                      //global.io.time.global_save_next += global.io.time.global_save_interval;
+
+                     
+
+                      }
                     //    cout << "li, amp = " << lx << " " << ly << " " << lz << " " << Kmag << " " << amp << endl;
 						
 					} // of if(Kmag > MYEPS)
 				}
+                random_next += random_interval;
+                cout <<" time random_next  = "<<global.time.now<<" "<<random_next << " " << random_interval << endl;
+
 			}
+  
 }
 
 void  FORCE::Compute_force_using_random_energy_helicity_spectrum_basic_assign(FluidVF& U, Real inner_radius, Real outer_radius, Real force_spectrum_amplitude, Real force_spectrum_exponent, Real hk_by_kek)
