@@ -16,7 +16,7 @@ program:
     sincostr_switch: FFF
     
 field:
-    N: [64, 64, 64]
+    N: [64, 1, 64]
     kfactor: [1, 1, 1]
     L: 
     diss_coefficients: [0.01]               
@@ -51,7 +51,7 @@ force:
 #          mode:
         
 io:
-    input_field_procedure: 5
+    input_field_procedure: 1
     #1:complex field, 2: complex_reduced field, 3: real field, 4: modes, 5: Ek,Hk; 6: TG, 7:ABC
     input_vx_vy_switch: true
     output_vx_vy_switch: true
@@ -65,26 +65,26 @@ io:
 
     #if probes/init_cond not provided, comment "- coord" lines.
     init_cond_modes:
-            - coord: [1,1,1]
+            - coord: [1,0,1]
               mode: [ (0.1,0), (0,-0.1)]
               
-            - coord: [1,-1,1]
+            - coord: [1,0,1]
               mode: [ (0.1,0), (0,0.1) ]
  
-            - coord: [2,0,2]
-              mode: [ (0.1,0), (0,0.1) ]
+            # - coord: [2,0,2]
+            #   mode: [ (0.1,0), (0,0.1) ]
                
-            - coord: [2,1,1]
-              mode: [ (0.1,0), (0,-0.1) ]
+            # - coord: [2,1,1]
+            #   mode: [ (0.1,0), (0,-0.1) ]
                
-            - coord: [2,-1,1]
-              mode: [ (0.1,0), (0,0.1) ]
+            # - coord: [2,-1,1]
+            #   mode: [ (0.1,0), (0,0.1) ]
                
-            - coord: [3,2,2]
-              mode: [ (0.1,0), (0,-0.1) ]
+            # - coord: [3,2,2]
+            #   mode: [ (0.1,0), (0,-0.1) ]
                
-            - coord: [3,-2,2]
-              mode: [ (0.1,0), (0,0.1) ]
+            # - coord: [3,-2,2]
+            #   mode: [ (0.1,0), (0,0.1) ]
 
               
     probes:
@@ -96,7 +96,7 @@ io:
               
     time:
         global_save_first: 0
-        complex_field_save_first: 0
+        complex_field_save_first: 
         field_frequent_save_first: 
         field_reduced_save_first: 
         real_field_save_first: 
@@ -106,10 +106,10 @@ io:
         spectrum_save_first: 
         pressure_save_first: 
         pressure_spectrum_save_first:
-        flux_save_first: 0
-        shell_to_shell_save_first: 0
+        flux_save_first: 
+        shell_to_shell_save_first: 
         ring_spectrum_save_first: 
-        ring_to_ring_save_first: 0
+        ring_to_ring_save_first: 
         cylindrical_ring_spectrum_save_first: 
         cylindrical_ring_to_ring_save_first:
         structure_fn_save_first:
@@ -118,8 +118,8 @@ io:
         Tk_cylindrical_ring_spectrum_save_first:
         cout_save_first: 0.0
 
-        global_save_interval: 1
-        complex_field_save_interval:
+        global_save_interval: 0.0001
+        complex_field_save_interval: 
         field_frequent_save_interval: 
         field_reduced_save_interval: 
         real_field_save_interval: 
@@ -142,7 +142,7 @@ io:
         cout_save_interval: 0.0001
         
         global_save_last: true
-        complex_field_save_last: 
+        complex_field_save_last: true
         slice_save_last: 
         field_frequent_save_last:
         field_reduced_save_last: 
@@ -161,7 +161,7 @@ io:
         Tk_shell_spectrum_save_last:
         Tk_ring_spectrum_save_last:
         Tk_cylindrical_ring_spectrum_save_last:
-        cout_save_last:
+        cout_save_last: true
 
 spectrum:
     shell:

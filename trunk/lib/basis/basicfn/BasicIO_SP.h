@@ -47,21 +47,29 @@ void BasicIO::Set_H5_plans(Array_properties<rank> ap, Plans* plans)
 {
 
 
-	// if (master) cerr <<" Full: " << endl;
-	plans->H5_full.set_plan(ap.id_complex_array, ap.numprocs_complex_array, ap.shape_full_complex_array, h5::Select::all(3), ap.shape_full_complex_array, h5::Select::all(3), ap.datatype_complex_space);
+	if (master) cerr <<" Full: " << endl;
+	plans->H5_full.set_plan(ap.id_complex_array, ap.numprocs_complex_array, ap.shape_full_complex_array, h5::Select::all(rank), ap.shape_full_complex_array, h5::Select::all(rank), ap.datatype_complex_space);
 
 	//Kz0_full
 	TinyVector<hsize_t,rank> Kz0_filespace_shape = ap.shape_full_complex_array;
-	Kz0_filespace_shape(2) = 1;
+	Kz0_filespace_shape(rank-1) = 1;
 
+	if (rank==3) {
+		if (master) cerr <<" kz0 Full: " << endl;
+		plans->H5_kz0_full.set_plan(ap.id_complex_array, ap.numprocs_complex_array, ap.shape_full_complex_array, h5::Select(Range::all(), Range::all(), Range(0)), Kz0_filespace_shape, h5::Select::all(rank), ap.datatype_complex_space);
 
-	// if (master) cerr <<" kz0 Full: " << endl;
-	plans->H5_kz0_full.set_plan(ap.id_complex_array, ap.numprocs_complex_array, ap.shape_full_complex_array, h5::Select(Range::all(), Range::all(), Range(0)), Kz0_filespace_shape, h5::Select::all(3), ap.datatype_complex_space);
+		//Real
+		if (master) cerr <<" Real: " << endl;
+		plans->H5_real.set_plan(ap.id_real_array, ap.numprocs_real_array, ap.shape_full_real_array, h5::Select(Range::all(), Range::all(), Range(0, Nz-1)), ap.shape_cropped_real_array, h5::Select::all(rank), ap.datatype_real_space);
+	}
+	else if (rank==2) {
+		if (master) cerr <<" kz0 Full: " << endl;
+		plans->H5_kz0_full.set_plan(ap.id_complex_array, ap.numprocs_complex_array, ap.shape_full_complex_array, h5::Select(Range::all(), Range(0)), Kz0_filespace_shape, h5::Select::all(rank), ap.datatype_complex_space);
 
-	//Real
-	// if (master) cerr <<" Real: " << endl;
-	TinyVector<hsize_t,rank> Real_filespace_shape = shape(Nx, Ny, Nz);
-	plans->H5_real.set_plan(ap.id_real_array, ap.numprocs_real_array, ap.shape_full_real_array, h5::Select(Range::all(), Range::all(), Range(0, Nz-1)), Real_filespace_shape, h5::Select::all(3), ap.datatype_real_space);
+		//Real
+		if (master) cerr <<" Real: " << endl;
+		plans->H5_real.set_plan(ap.id_real_array, ap.numprocs_real_array, ap.shape_full_real_array, h5::Select(Range::all(), Range(0, Nz-1)), ap.shape_cropped_real_array, h5::Select::all(rank), ap.datatype_real_space);
+	}
 
 	// if (master) cerr <<" Slices: " << endl;
 /*	plans->H5_slices.resize(global.io.slice_save.size());
