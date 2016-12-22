@@ -42,18 +42,12 @@
 // Ar: yxz, A: xyz
 void FFF_PENCIL::Forward_transform(Array<Real,3> Ar, Array<Complex,3> A)
 {
-	// Real local_energy = sum(sqr(Ar))/2;
-	// if (master) cout << "local_energy before Forward_transform = " << local_energy/(Nx*Ny*Nz) << endl;	
-
 	if ( Ny>1 ) {
-		// fftk.Forward_transform("FFF", Ar, A);
+		fftk.Forward_transform("FFF", Ar, A);
 	}
 	else if (Ny == 1) {
-		// fftk.Forward_transform("FFF", Ar(Range::all(),0,Range::all()), A(Range::all(),0,Range::all()));
+		fftk.Forward_transform("FFF", Ar(Range::all(),0,Range::all()), A(Range::all(),0,Range::all()));
 	}
-	// Print_large_Fourier_elements(A,"After Forward transform: A");
-	// local_energy = Array_sqr(A);
-	// if (master) cout << "local_energy after Forward_transform = " << local_energy << endl;
 }
 
 
@@ -62,9 +56,13 @@ void FFF_PENCIL::Forward_transform(Array<Real,3> Ar, Array<Complex,3> A)
 
 void FFF_PENCIL::Inverse_transform(Array<Complex,3> A, Array<Real,3> Ar)
 {
-	// cerr << "A = " << A.shape() << " " << "X_t = " << global.temp_array.X_transform.shape() << endl;
 	global.temp_array.X_transform = A;
-	// fftk.Inverse_transform("FFF", global.temp_array.X_transform(Range::all(),0,Range::all()), Ar(Range::all(),0,Range::all()));
+	if ( Ny>1 ) {
+		fftk.Inverse_transform("FFF", global.temp_array.X_transform, Ar);
+	}
+	else if (Ny == 1) {
+		fftk.Inverse_transform("FFF", global.temp_array.X_transform(Range::all(),0,Range::all()), Ar(Range::all(),0,Range::all()));
+	}
 }
 
 //*********************************************************************************************

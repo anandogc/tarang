@@ -43,7 +43,6 @@
  
 int Ifluid_main()
 {
-		
 	// ITERATION...
 	if (global.program.iter_or_diag == "ITERATION") {
 		
@@ -63,7 +62,6 @@ int Ifluid_main()
 		
 		fluidIO_incompress.Read_init_cond(U);
 
-
 		// fluidIO_incompress.Output_cout(U);  // for initial cond
 		// MPI_Abort(MPI_COMM_WORLD, 1);
 		// U.Inverse_transform();
@@ -82,7 +80,7 @@ int Ifluid_main()
 			cout << "abs(sum(Divergence)) of the initial field U = " << total_abs_div << "is large. " << '\n' << "Therefore exiting the program." << endl;
 			// MPI_Abort(MPI_COMM_WORLD, 1);
 		}
-		
+
 		fluidIO_incompress.Output_all_inloop(U, P, helicalU);  // for initial cond
 
 
@@ -91,7 +89,6 @@ int Ifluid_main()
 		int  iter=0;  // iterations 
 
 		global.time.now = global.time.init;
-		
 		
 		if (basis_type=="ChFF")
 			time_advance_incompress.Compute_homgeneous_soln_influence_matrix(U,P);

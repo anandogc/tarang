@@ -395,7 +395,7 @@ void FluidIO_incompress::Output_all_inloop(FluidVF& U, FluidVF& W, Pressure& P, 
 	
 	if ((global.energy_transfer.turnon) && (global.time.now >= global.io.time.ring_to_ring_save_next) 
 				&& (global.energy_transfer.ring_to_ring.turnon))  {  
-		// Output_ring_to_ring(U, W, P, helicalU); 
+		//Output_ring_to_ring(U, W, P, helicalU); 
 		global.io.time.ring_to_ring_save_next += global.io.time.ring_to_ring_save_interval;
 	}
 	

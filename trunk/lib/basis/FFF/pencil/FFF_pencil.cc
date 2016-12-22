@@ -95,22 +95,44 @@ FFF_PENCIL::FFF_PENCIL()
 
 
 	//********
-	
-	global.mpi.num_x_procs = 1;
-	global.mpi.num_y_procs = global.mpi.num_p_cols;
-	global.mpi.num_z_procs = global.mpi.num_p_rows;
-	
-	global.mpi.my_x_pcoord = 0;
-	global.mpi.my_y_pcoord = fftk.Get_col_id();
-	global.mpi.my_z_pcoord = fftk.Get_row_id();
-	
-	global.mpi.num_x_procs_real = global.mpi.num_p_cols;
-	global.mpi.num_y_procs_real = global.mpi.num_p_rows;
-	global.mpi.num_z_procs_real = 1;
-	
-	global.mpi.my_x_pcoord_real = fftk.Get_col_id();
-	global.mpi.my_y_pcoord_real = fftk.Get_row_id();
-	global.mpi.my_z_pcoord_real = 0;
+
+	if (Ny>1) {
+
+		global.mpi.num_x_procs = 1;
+		global.mpi.num_y_procs = global.mpi.num_p_cols;
+		global.mpi.num_z_procs = global.mpi.num_p_rows;
+		
+		global.mpi.my_x_pcoord = 0;
+		global.mpi.my_y_pcoord = fftk.Get_col_id();
+		global.mpi.my_z_pcoord = fftk.Get_row_id();
+		
+		global.mpi.num_x_procs_real = global.mpi.num_p_cols;
+		global.mpi.num_y_procs_real = global.mpi.num_p_rows;
+		global.mpi.num_z_procs_real = 1;
+		
+		global.mpi.my_x_pcoord_real = fftk.Get_col_id();
+		global.mpi.my_y_pcoord_real = fftk.Get_row_id();
+		global.mpi.my_z_pcoord_real = 0;
+	}
+	else {
+
+		global.mpi.num_x_procs = 1;
+		global.mpi.num_y_procs = 1;
+		global.mpi.num_z_procs = global.mpi.num_p_cols;
+		
+		global.mpi.my_x_pcoord = 0;
+		global.mpi.my_y_pcoord = 0;
+		global.mpi.my_z_pcoord = fftk.Get_col_id();
+		
+		global.mpi.num_x_procs_real = global.mpi.num_p_cols;
+		global.mpi.num_y_procs_real = 1;
+		global.mpi.num_z_procs_real = 1;
+		
+		global.mpi.my_x_pcoord_real = fftk.Get_col_id();
+		global.mpi.my_y_pcoord_real = 0;
+		global.mpi.my_z_pcoord_real = 0;
+
+	}
 	
 	
 	global.field.maxlx = global.field.shape_complex_array(0);
@@ -143,9 +165,12 @@ FFF_PENCIL::FFF_PENCIL()
 	num_y_procs = global.mpi.num_y_procs;
 	num_z_procs = global.mpi.num_z_procs;
 
+
 	my_x_pcoord = global.mpi.my_x_pcoord;
 	my_y_pcoord = global.mpi.my_y_pcoord;
 	my_z_pcoord = global.mpi.my_z_pcoord;
+
+	cerr << " my_z_pcoord = " << my_z_pcoord << endl;
 
 	num_x_procs_real = global.mpi.num_x_procs_real;
 	num_y_procs_real = global.mpi.num_y_procs_real;

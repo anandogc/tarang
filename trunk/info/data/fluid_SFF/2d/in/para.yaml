@@ -57,7 +57,7 @@ force:
 #          mode:
         
 io:
-    input_field_procedure: 1
+    input_field_procedure: 4
     #1:complex field, 2: complex_reduced field, 3: real field, 4: modes, 5: Ek,Hk; 6: TG, 7:ABC
     input_vx_vy_switch: true
     output_vx_vy_switch: true

@@ -212,9 +212,16 @@ void SSF_PENCIL::Assign_sub_array(Range x_range, Range y_range, Range z_range, A
 	static Array<int,1> y_filter(Ny);
 	static Array<int,1> z_filter(Nz/2+1);
 	
+	//Sanitize ranges. if last index is less than first index, modify the range (this happens for 2D)
+	if (y_range.last() < y_range.first())
+		y_range = Range(y_range.first(), y_range.first());
+
+	if (z_range.last() < z_range.first())
+		z_range = Range(z_range.first(), z_range.first());
+
 	y_filter = 0;
 	z_filter = 0;
-	
+
 	y_filter(y_range)=1;
 	z_filter(z_range)=1;
 
@@ -230,7 +237,7 @@ void SSF_PENCIL::Assign_sub_array(Range x_range, Range y_range, Range z_range, A
 	
 	
 	if ( (y_apply(0)>=0) && (z_apply(0)>=0))
-		A(x_range, y_apply, z_apply) = value;
+			A(x_range, y_apply, z_apply) = value;
 }
 
 int SSF_PENCIL::Read(Array<Complex,3> A, h5::Plan plan, string file_name, string dataset_name)

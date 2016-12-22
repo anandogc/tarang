@@ -449,6 +449,7 @@ void Time_advance_incompress::Compute_force_TO_rhs(FluidVF& U, Pressure& P, FORC
 
 	P.Compute_pressure(U);									// Compute pressure using V(t+dt/2)
 	Compute_rhs(U, P);
+	
 }
 
 void Time_advance_incompress::Compute_force_TO_rhs(FluidVF& U, FluidSF& T, Pressure& P, FORCE& Force)

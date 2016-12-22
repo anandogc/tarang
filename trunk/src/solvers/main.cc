@@ -92,7 +92,14 @@ int main(int argc, char** argv)
 			MPI_Abort(MPI_COMM_WORLD, 1);
 	}
 
+	cerr << "efwerew m 1" << endl;
+
+
 	global.Process_advanced_vars();
+
+	cerr << "efwerew m 2" << endl;
+
+
 	global.Print();
 
 	

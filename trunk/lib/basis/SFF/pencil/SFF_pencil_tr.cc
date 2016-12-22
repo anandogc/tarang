@@ -42,7 +42,13 @@
 // Ar: yxz, A: xyz
 void SFF_PENCIL::Forward_transform(Array<Real,3> Ar, Array<Complex,3> A)
 {
-	fftk.Forward_transform(global.program.sincostr_switch,Ar,A);
+	if ( Ny>1 ) {
+		fftk.Forward_transform("SFF", Ar, A);
+	}
+	else if (Ny == 1) {
+		fftk.Forward_transform("SFF", Ar(Range::all(),0,Range::all()), A(Range::all(),0,Range::all()));
+	}
+
 }
 
 
@@ -52,7 +58,13 @@ void SFF_PENCIL::Forward_transform(Array<Real,3> Ar, Array<Complex,3> A)
 void SFF_PENCIL::Inverse_transform(Array<Complex,3> A, Array<Real,3> Ar)
 {
 	global.temp_array.X_transform = A;
-    fftk.Inverse_transform(global.program.sincostr_switch,global.temp_array.X_transform, Ar);
+
+    if ( Ny>1 ) {
+		fftk.Inverse_transform("SFF", global.temp_array.X_transform, Ar);
+	}
+	else if (Ny == 1) {
+		fftk.Inverse_transform("SFF", global.temp_array.X_transform(Range::all(),0,Range::all()), Ar(Range::all(),0,Range::all()));
+	}
 }
 
 

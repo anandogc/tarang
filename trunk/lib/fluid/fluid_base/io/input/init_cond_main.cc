@@ -77,8 +77,6 @@ void FluidIO::Read_init_cond(FluidVF& U)
 	if (master)
 		cout  << "Reading of field configurations ended successfully" << endl;
 
-	Output_complex_field(U);
-
     // preprocess the data
     int input_proc = global.io.input_field_procedure;
 
