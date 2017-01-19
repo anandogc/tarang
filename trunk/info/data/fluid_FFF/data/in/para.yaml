@@ -51,7 +51,7 @@ force:
 #          mode:
         
 io:
-    input_field_procedure: 4
+    input_field_procedure: 1
     #1:complex field, 2: complex_reduced field, 3: real field, 4: modes, 5: Ek,Hk; 6: TG, 7:ABC
     input_vx_vy_switch: true
     output_vx_vy_switch: true
@@ -103,7 +103,7 @@ io:
         slice_save_first: 
         field_k_save_first: 
         field_r_save_first:
-        spectrum_save_first: 
+        spectrum_save_first: 0
         pressure_save_first: 
         pressure_spectrum_save_first:
         flux_save_first: 

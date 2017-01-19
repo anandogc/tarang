@@ -170,7 +170,6 @@ FFF_PENCIL::FFF_PENCIL()
 	my_y_pcoord = global.mpi.my_y_pcoord;
 	my_z_pcoord = global.mpi.my_z_pcoord;
 
-	cerr << " my_z_pcoord = " << my_z_pcoord << endl;
 
 	num_x_procs_real = global.mpi.num_x_procs_real;
 	num_y_procs_real = global.mpi.num_y_procs_real;
