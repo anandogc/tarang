@@ -160,6 +160,16 @@ void FluidIO_incompress::Output_flux(FluidVF& U, FluidVF& W, Pressure& P, FluidV
 	Print_array(flux_file, "flux: kinetic_helicity_flux_B_to_U ", energyTr->flux_VF_Bin_Uout);
 	Print_array(flux_file, "flux: kinetic_helicity_flux_J_to_U  ", energyTr->flux_VF_Jin_Uout);
 
+// For magnetic helicity flux
+    energyTr->Compute_magnetic_helicity_flux(U, W, helicalW);
+	Print_array(flux_file, "flux: magnetic_helicity_flux_B_to_A ", energyTr->flux_VF_Bin_Aout);
+	Print_array(flux_file, "flux: magnetic_helicity_flux_U_to_A_1  ", energyTr->flux_VF_Uin_Aout_1);
+	Print_array(flux_file, "flux: magnetic_helicity_flux_A_to_B  ", energyTr->flux_VF_Ain_Bout);
+	Print_array(flux_file, "flux: magnetic_helicity_flux_U_to_A_2  ", energyTr->flux_VF_Uin_Aout_2);
+    
+	
+	
+
 	
 	energyTr->Power_supply_within_sphere(U);
 	Print_array(flux_file, "sum(Fv.v)", energyTr->sphere_force_x_field);

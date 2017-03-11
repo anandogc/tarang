@@ -166,6 +166,13 @@ public:
 	Array<Real,1>  flux_VF_Bin_Wout;                // B giver W receiver
 	Array<Real,1>  flux_VF_Bin_Uout;                // B giver U receiver
 	Array<Real,1>  flux_VF_Jin_Uout;                // J giver U receiver
+	
+	// For magnetic helicity fluxes
+	Array<Real,1>  flux_VF_Bin_Aout;				// from Win to Aout
+	Array<Real,1>  flux_VF_Uin_Aout_1;				// from Uin to Aout
+	Array<Real,1>  flux_VF_Ain_Bout;                // A giver W receiver
+	Array<Real,1>  flux_VF_Uin_Aout_2;                // U giver A receiver
+	
 
 	// FOR MHD
 	Array<Real,1>  flux_VF_Uin_Win;				// from Uin to Win
@@ -246,7 +253,7 @@ public:
 
     void Compute_kinetic_helicity_flux(FluidVF& U, FluidVF& helicalU);
     void Compute_kinetic_helicity_flux(FluidVF& U, FluidVF& W, FluidVF& helicalU, FluidVF& helicalW);
-	void Compute_magnetic_helicity_flux(FluidVF& U, FluidVF& W);
+	void Compute_magnetic_helicity_flux(FluidVF& U, FluidVF& W, FluidVF& helicalW);
 	void Compute_magnetic_enstrophy_flux(FluidVF& U, FluidVF& W);
 	
 	// Shell-to-shell

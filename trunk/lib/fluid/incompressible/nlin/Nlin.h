@@ -74,11 +74,12 @@ public:
 	
 	static void Compute_nlin_VxT(FluidVF& U, FluidSF& T);
 	
+	static void Compute_nlin_vector_potential(FluidVF& U, PlainFluidVF& W);
 	
 	static void Compute_nlin(FluidVF& U);							/// nlin[i] = FT[v.grad(v)][i]
 	static void Compute_nlin(FluidVF& U, FluidSF& T);					///  nlin[i] = FT[v.grad(v)][i]; T.nlin= FT[v.grad(T)]
 	
-	static  void Compute_nlin_scalar(FluidVF& U, FluidSF& T);				// scalar convection
+	static void Compute_nlin_scalar(FluidVF& U, FluidSF& T);				// scalar convection
 	static void Compute_nlin_RBC(FluidVF& U, FluidSF& T);					// RB convection
 	
 	static void Compute_nlin(FluidVF& U, FluidSF& T1, FluidSF& T2);

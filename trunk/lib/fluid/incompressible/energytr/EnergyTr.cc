@@ -78,6 +78,13 @@ EnergyTr::EnergyTr()
 		flux_VF_Bin_Uout.resize(global.energy_transfer.flux.no_spheres+1);
 
         flux_VF_Jin_Uout.resize(global.energy_transfer.flux.no_spheres+1);
+        
+        // For magnetic helicity in MHD
+		flux_VF_Bin_Aout.resize(global.energy_transfer.flux.no_spheres+1);
+		flux_VF_Uin_Aout_1.resize(global.energy_transfer.flux.no_spheres+1);
+		flux_VF_Ain_Bout.resize(global.energy_transfer.flux.no_spheres+1);
+		flux_VF_Uin_Aout_2.resize(global.energy_transfer.flux.no_spheres+1);
+
 
 
 		

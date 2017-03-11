@@ -358,8 +358,68 @@ void EnergyTr::Compute_kinetic_helicity_flux(FluidVF& U, FluidVF& W, FluidVF& he
 
 //
 // Vector
-void EnergyTr::Compute_magnetic_helicity_flux(FluidVF& U, FluidVF& W)
+void EnergyTr::Compute_magnetic_helicity_flux(FluidVF& U, FluidVF& W, FluidVF& helicalW)
 {
+	// New part added on 13th Feb. 2017
+	// Here helicalW --> Magnetic vector field(A)
+	universal->Compute_vorticity(W.cvf.V1, W.cvf.V2, W.cvf.V3, helicalW.cvf.V1, helicalW.cvf.V2, helicalW.cvf.V3, 0, universal->Max_radius_inside());
+	
+	helicalW.cvf.Divide_ksqr();
+	
+	// First we need to compute "A" from an universal function defined properly in specific place. Do it here!!!!!!!
+	
+	// Initializations of variables, defined and resized properly
+	flux_VF_Bin_Aout = 0.0;
+	flux_VF_Uin_Aout_1 = 0.0;
+	flux_VF_Ain_Bout = 0.0;
+	flux_VF_Uin_Aout_2 = 0.0;
+	
+	for (int sphere_index = 1; sphere_index <= global.energy_transfer.flux.no_spheres; sphere_index++) {
+
+		// (U.grad B<). helicalW>
+		Fill_in_sphere(sphere_index, W);
+		// nlin = U.grad B<
+		Nlin_incompress::Compute_nlin(U, Giver);
+		flux_VF_Bin_Aout(sphere_index) = -0.5 * Prod_out_sphere_nlinV(sphere_index, U, helicalW);
+
+
+
+		// (B.graad U<). helicalW>
+		Fill_in_sphere(sphere_index, U);
+		// nlin = B.grad U<
+		Nlin_incompress::Compute_nlin(W, Giver);
+		flux_VF_Uin_Aout_1(sphere_index) = 0.5 * Prod_out_sphere_nlinV(sphere_index, W, helicalW);
+		
+		// (U.graad A<). W>
+		Fill_in_sphere(sphere_index, helicalW);
+		// nlin = U.grad A<
+		Nlin_incompress::Compute_nlin(U, Giver);
+		
+	//	universal->Print_large_Fourier_elements(U.nlin1, "Nlin1");
+	//	universal->Print_large_Fourier_elements(U.nlin2, "Nlin2");
+	//	universal->Print_large_Fourier_elements(U.nlin3, "Nlin3");
+				
+		
+		flux_VF_Ain_Bout(sphere_index) = -0.5 * Prod_out_sphere_nlinV(sphere_index, U, W);
+		
+		
+       // A little different nonlinear term //
+       // Appropriate nonlinear calculator should be called //
+       
+		// (U_j.del_iA_j<). W>
+		Fill_in_sphere(sphere_index, helicalW);
+		// nlin = U_j.del_iA_j<
+		Nlin_incompress::Compute_nlin_vector_potential(U, Giver); // Allready exist or not
+		
+	//	universal->Print_large_Fourier_elements(U.nlin1, "Nlin1");
+	//	universal->Print_large_Fourier_elements(U.nlin2, "Nlin2");
+	//	universal->Print_large_Fourier_elements(U.nlin3, "Nlin3");
+				
+		flux_VF_Uin_Aout_2(sphere_index) = 0.5 * Prod_out_sphere_nlinV(sphere_index, U, W); // Question regarding the arguments
+		
+	}  
+	
+	// Previously exsisting part //
 	/*
 	
 	flux_Whk = 0.0;			// magnetic helicity
