@@ -156,6 +156,8 @@ public:
 	void Put_vector_amp_phase_comp_conj(FluidVF U, int lx, int ly, int lz,  Real amp, Real phase1, Real phase2, Real phase3);
 	
 	void Put_scalar_amp_phase_comp_conj(FluidSF& T, int lx, int ly, int lz, Real amp, Real phase);
+
+	void Put_vector_amp_phase_comp_conj_cross_helicity(FluidVF U, int lx, int ly, int lz,  Real u_plus_mod, Real u_minus_mod, Real phase_plus, Real phase_minus);
 	
 	void Initialize_using_energy_helicity_spectrum(FluidVF& U, Real spectrum_amp, Real hk_by_kek);
 	void Initialize_using_energy_helicity_spectrum(FluidSF& T, Real spectrum_amp);

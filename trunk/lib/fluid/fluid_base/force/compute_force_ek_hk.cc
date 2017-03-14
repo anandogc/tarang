@@ -423,7 +423,7 @@ void FORCE::Compute_force_const_energy_helicity(FluidVF& U, FluidVF& W)
 		Force_energy_helicity_supply_or_level_basic_assign(U, "CONSTANT_ENERGY", inner_radius, outer_radius, energy_level, h_by_k_E);
 	
 	if (W.force_switch) 
-		Force_energy_helicity_supply_or_level_basic_assign(U, "CONSTANT_ENERGY", inner_radius, outer_radius, energy_level_W, h_by_k_E_W);
+		Force_energy_helicity_supply_or_level_basic_assign(W, "CONSTANT_ENERGY", inner_radius, outer_radius, energy_level_W, h_by_k_E_W);
 }
 
 //*********************************************************************************************
@@ -443,7 +443,7 @@ void FORCE::Compute_force_const_energy_helicity(FluidVF& U, FluidVF& W, FluidSF&
 		
 	
 	if (W.force_switch) 
-		Force_energy_helicity_supply_or_level_basic_assign(U, "CONSTANT_ENERGY", inner_radius, outer_radius, energy_level_W, h_by_k_E_W);
+		Force_energy_helicity_supply_or_level_basic_assign(W, "CONSTANT_ENERGY", inner_radius, outer_radius, energy_level_W, h_by_k_E_W);
 		
 	if (T.force_switch) 
 		Force_energy_helicity_supply_or_level_basic_assign(T, "CONSTANT_ENERGY", inner_radius, outer_radius, energy_level_scalar);

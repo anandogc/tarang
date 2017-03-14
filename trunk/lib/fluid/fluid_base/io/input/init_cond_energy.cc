@@ -321,7 +321,7 @@ void  FluidIO::Init_cond_energy_helicity_spectrum_RBC(FluidVF& U, FluidSF& T)
  */
 void  FluidIO::Init_cond_energy_helicity_spectrum(FluidVF& U, FluidVF& W)
 {
-    Real epsilon, sk, Wepsilon, Wsk, h;
+    Real epsilon, sk, Wepsilon, Wsk, hc;
     
     Real Ux000 = 0.0;
     Real Uy000 = 0.0;
@@ -337,7 +337,7 @@ void  FluidIO::Init_cond_energy_helicity_spectrum(FluidVF& U, FluidVF& W)
         
         Wepsilon = global.io.double_para(2);
         Wsk = global.io.double_para(3);  // sk = HkW/(k*ekW) = IC(2)
-        h = global.io.double_para(4);	 // = 2*Hc/(amp*ampW)
+        hc = global.io.double_para(4);	 // = 2*Hc/(amp*ampW)
     }
     
     else if (global.io.double_para.size() == 11) {
@@ -345,7 +345,7 @@ void  FluidIO::Init_cond_energy_helicity_spectrum(FluidVF& U, FluidVF& W)
         sk = global.io.double_para(1);
         Wepsilon = global.io.double_para(2);
         Wsk = global.io.double_para(3);  
-        h = global.io.double_para(4);
+        hc = global.io.double_para(4);
         
         Ux000 = global.io.double_para(5);
         Uy000 = global.io.double_para(6);
@@ -359,7 +359,7 @@ void  FluidIO::Init_cond_energy_helicity_spectrum(FluidVF& U, FluidVF& W)
 	int index;
 	Real temp;
 	
-	if (abs(h) < MYEPS) {  // zero cross helicity
+	if (abs(hc) < MYEPS) {  // zero cross helicity
 		Initialize_using_energy_helicity_spectrum(U, epsilon, sk);
 		Initialize_using_energy_helicity_spectrum(W, Wepsilon, Wsk);
 	}
@@ -368,8 +368,10 @@ void  FluidIO::Init_cond_energy_helicity_spectrum(FluidVF& U, FluidVF& W)
 		Model_initial_using_shell_spectrum_Pope(U.dissipation_coefficient, epsilon, Correlation::shell_ek1);
 		Model_initial_using_shell_spectrum_Pope(W.dissipation_coefficient, Wepsilon, Correlation::shell_ek2);
 		
-		Real Kmag, ek, amp, phase1, phase2, phase3;
-		Real ekW, ampW, phase1W, phase2W, phase3W;
+		Real Kmag, ek, hk_by_k, u_plus_mod, u_minus_mod;
+		Real eWk, hWk_times_k, W_plus_mod, W_minus_mod;
+		Real Hck, phi_u_plus, phi_u_minus, phi_W_plus, phi_W_minus;
+		Real alpha, delta_plus, delta_minus, corrected_phi_u_plus, corrected_phi_u_minus, corrected_phi_W_plus, corrected_phi_W_minus;
 		
         for (int lx=0; lx<global.field.maxlx; lx++)
             for (int ly=0; ly<global.field.maxly; ly++)
@@ -381,26 +383,41 @@ void  FluidIO::Init_cond_energy_helicity_spectrum(FluidVF& U, FluidVF& W)
 						index = int(ceil(Kmag));
 						
 						ek = Correlation::shell_ek1(index)/ universal->Approx_number_modes_in_shell(index);
-						amp = sqrt(2*ek);
+						hk_by_k = sk*ek;
 						
-						phase1 = 2*M_PI * SPECrand.random();
-						phase2 = phase1 + M_PI/2.0;
-						phase3 = asin(sk)/2.0;			// zeta
+						eWk = Correlation::shell_ek2(index)/ universal->Approx_number_modes_in_shell(index);
+						hWk_times_k = Wsk*eWk;
 						
-						Put_vector_amp_phase_comp_conj(U, lx, ly, lz, amp, phase1, phase2, phase3);
-					
-						// W field
-						ekW = Correlation::shell_ek2(index)/ universal->Approx_number_modes_in_shell(index);
-						ampW = sqrt(2*ekW);
+						u_plus_mod = sqrt((ek + hk_by_k)/2);
+						u_minus_mod = sqrt(fabs((ek - hk_by_k)/2));
 						
-						phase3W = asin(Wsk)/2.0;			// zeta_b				
-						temp = h / cos(phase3-phase3W);
-						// cos(phase1 - phase1W)
-											 
-						phase1W = phase1 - acos(temp);
-						phase2W = phase1W + M_PI/2.0;
+						W_plus_mod = sqrt((eWk + hWk_times_k)/2);
+						W_minus_mod = sqrt(fabs((eWk - hWk_times_k)/2));
 						
-						Put_vector_amp_phase_comp_conj(W, lx, ly, lz, ampW, phase1W, phase2W, phase3W);
+						Hck = hc*(ek + eWk)/2.0;
+						
+						phi_u_plus = 2*M_PI * SPECrand.random();
+						phi_u_minus = 2*M_PI * SPECrand.random();
+						phi_W_plus = 2*M_PI * SPECrand.random();
+						phi_W_minus = 2*M_PI * SPECrand.random();
+
+						alpha = acos(Hck/(u_plus_mod * W_plus_mod + u_minus_mod * W_minus_mod));
+						delta_plus = 0.5*(alpha + phi_W_plus - phi_u_plus);
+						delta_minus = 0.5*(alpha + phi_W_minus - phi_u_minus);
+
+						corrected_phi_u_plus = phi_u_plus + delta_plus;
+						corrected_phi_u_minus = phi_u_minus + delta_minus;
+						corrected_phi_W_plus = phi_W_plus - delta_plus;
+						corrected_phi_W_minus = phi_W_minus - delta_minus;
+						
+						// phi_W_minus = -acos((Hck - fabs(u_plus_mod) * fabs(W_plus_mod) * cos(phi_u_plus - phi_W_plus))/(fabs(u_minus_mod) * fabs(W_minus_mod))) + phi_u_plus;
+						// phi_W_minus = -acos((- fabs(u_plus_mod) * fabs(W_plus_mod) * cos(phi_u_plus - phi_W_plus))/(fabs(u_minus_mod) * fabs(W_minus_mod))) + phi_u_minus;
+						
+						// cout << Kmag << " " << u_plus_mod << " " << u_minus_mod << " " << W_plus_mod << " " << W_minus_mod << endl;
+						// cout << Kmag << " " << ((Hck - fabs(u_plus_mod) * fabs(W_plus_mod) * cos(phi_u_plus - phi_W_plus))/(fabs(u_minus_mod) * fabs(W_minus_mod))) << " " << phi_W_minus << " " << - fabs(u_plus_mod) << " " << fabs(W_plus_mod) << " " << cos(phi_u_plus - phi_W_plus) << " " << fabs(u_minus_mod) << " " << fabs(W_minus_mod)  << " " << phi_u_minus << endl;
+
+						Put_vector_amp_phase_comp_conj_cross_helicity(U, lx, ly, lz, u_plus_mod, u_minus_mod, corrected_phi_u_plus, corrected_phi_u_minus);
+						Put_vector_amp_phase_comp_conj_cross_helicity(W, lx, ly, lz, W_plus_mod, W_minus_mod, corrected_phi_W_plus, corrected_phi_W_minus);
 					}	// of if (kkmax > MYEPS)		
 				}  // of for loop
 	}
