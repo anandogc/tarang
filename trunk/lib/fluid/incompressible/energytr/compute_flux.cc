@@ -259,7 +259,28 @@ void EnergyTr::Compute_flux(FluidVF& U, FluidVF& W, FluidSF& T)
 ***********************************************************************************************/
 
 // Fluid
+
 void EnergyTr::Compute_kinetic_helicity_flux(FluidVF& U, FluidVF& helicalU)
+{
+  universal->Compute_vorticity(U.cvf.V1, U.cvf.V2, U.cvf.V3, helicalU.cvf.V1, helicalU.cvf.V2, helicalU.cvf.V3, 0, universal->Max_radius_inside());
+  
+  
+  
+  flux_VF = 0.0;
+  
+  
+  for (int sphere_index = 1; sphere_index <= global.energy_transfer.flux.no_spheres; sphere_index++) {
+    
+    Fill_in_sphere(sphere_index, helicalU);
+    // nlin = U.grad B<
+    Nlin_incompress::Compute_nlin_helical(U, Giver);
+    flux_VF(sphere_index) = Prod_out_sphere_nlinV(sphere_index, U, helicalU);
+  }
+  
+}
+
+
+void EnergyTr::Compute_kinetic_helicity_flux_old(FluidVF& U, FluidVF& helicalU)
 {
 	universal->Compute_vorticity(U.cvf.V1, U.cvf.V2, U.cvf.V3, helicalU.cvf.V1, helicalU.cvf.V2, helicalU.cvf.V3, 0, universal->Max_radius_inside());
 
@@ -294,7 +315,7 @@ void EnergyTr::Compute_kinetic_helicity_flux(FluidVF& U, FluidVF& helicalU)
 // Satyajit ** 31st Oct. 2016.
 
 
-void EnergyTr::Compute_kinetic_helicity_flux(FluidVF& U, FluidVF& W, FluidVF& helicalU, FluidVF& helicalW)
+void EnergyTr::Compute_kinetic_helicity_flux(FluidVF& U, FluidVF& W, FluidVF& helicalU, FluidVF& helicalW)//Rename this to old
 {
 	universal->Compute_vorticity(U.cvf.V1, U.cvf.V2, U.cvf.V3, helicalU.cvf.V1, helicalU.cvf.V2, helicalU.cvf.V3, 0, universal->Max_radius_inside());
 	universal->Compute_vorticity(W.cvf.V1, W.cvf.V2, W.cvf.V3, helicalW.cvf.V1, helicalW.cvf.V2, helicalW.cvf.V3, 0, universal->Max_radius_inside());
@@ -356,50 +377,83 @@ void EnergyTr::Compute_kinetic_helicity_flux(FluidVF& U, FluidVF& W, FluidVF& he
 
 //*********************************************************************************************
 
-//
-// Vector
+//**************************** Magnetic Helicity in MHD ****************************************
+// Satyajit and Abhishek ** 14th April 2017.
+
 void EnergyTr::Compute_magnetic_helicity_flux(FluidVF& U, FluidVF& W)
 {
-	/*
+
+  flux_HM = 0.0;
+  
+  
+  for (int sphere_index = 1; sphere_index <= global.energy_transfer.flux.no_spheres; sphere_index++) {
+
+    Fill_in_sphere(sphere_index, W);
+    // nlin = U.grad B<
+    Nlin_incompress::Compute_nlin_helical(U, Giver);
+    flux_HM(sphere_index) = Prod_out_sphere_nlinV(sphere_index, U, W);
+  }  
+  
+  
+}
+
+void EnergyTr::Compute_magnetic_helicity_flux(FluidVF& U, FluidVF& W, FluidVF& helicalW)//Old
+{
+	// New part added on 13th Feb. 2017
+	// Here helicalW --> Magnetic vector field(A)
+	universal->Compute_vorticity(W.cvf.V1, W.cvf.V2, W.cvf.V3, helicalW.cvf.V1, helicalW.cvf.V2, helicalW.cvf.V3, 0, universal->Max_radius_inside());
 	
-	flux_Whk = 0.0;			// magnetic helicity
+	helicalW.cvf.Divide_ksqr();
 	
-	for (int sphere_index = 1; sphere_index <= global.energy_transfer.flux.no_spheres; sphere_index++) 
-	{
+	// First we need to compute "A" from an universal function defined properly in specific place. Do it here!!!!!!!
+	
+	// Initializations of variables, defined and resized properly
+	flux_VF_Bin_Aout = 0.0;
+	flux_VF_Uin_Aout_1 = 0.0;
+	flux_VF_Ain_Bout = 0.0;
+	flux_VF_Uin_Aout_2 = 0.0;
+	
+	for (int sphere_index = 1; sphere_index <= global.energy_transfer.flux.no_spheres; sphere_index++) {
+
+		// (U.grad B<). helicalW>
+		Fill_in_sphere(sphere_index, W);
+		// nlin = U.grad B<
+		Nlin_incompress::Compute_nlin(U, Giver);
+		flux_VF_Bin_Aout(sphere_index) = -0.5 * Prod_out_sphere_nlinV(sphere_index, U, helicalW);
+
+
+
+		// (B.graad U<). helicalW>
+		Fill_in_sphere(sphere_index, U);
+		// nlin = B.grad U<
+		Nlin_incompress::Compute_nlin(W, Giver);
+		flux_VF_Uin_Aout_1(sphere_index) = 0.5 * Prod_out_sphere_nlinV(sphere_index, W, helicalW);
 		
-		Fill_in_sphere(sphere_index, U);								
-		// G = U<
+		// (U.graad A<). W>
+		Fill_in_sphere(sphere_index, helicalW);
+		// nlin = U.grad A<
+		Nlin_incompress::Compute_nlin(U, Giver);
 		
-		Compute_nlin(W);	
-		// W.nlin = W.grad U<
+
+				
 		
-		
-		flux_Whk(sphere_index) = Prod_out_sphere_nlin_vector_potential(sphere_index, W, W)/2;	
-		// flux_hm = W.grad U<. a>
-		
-		
-		Fill_in_sphere(sphere_index, W);								
-		// G = W<
-		
-		Compute_nlin(U);	
-		// U.nlin = U.grad W<
-		
-		flux_Whk(sphere_index) += -Prod_out_sphere_nlin_vector_potential(sphere_index, U, W)/2;	
-		// add -(U.graad W<). a>
+		flux_VF_Ain_Bout(sphere_index) = -0.5 * Prod_out_sphere_nlinV(sphere_index, U, W);
 		
 		
+       // A little different nonlinear term //
+       // Appropriate nonlinear calculator should be called //
+       
+		// (U_j.del_iA_j<). W>
+		Fill_in_sphere(sphere_index, helicalW);
+		// nlin = U_j.del_iA_j<
+		Nlin_incompress::Compute_nlin_vector_potential(U, Giver); // Allready exist or not
+
+				
+		flux_VF_Uin_Aout_2(sphere_index) = 0.5 * Prod_out_sphere_nlinV(sphere_index, U, W); // Question regarding the arguments
 		
-		Fill_in_sphere(sphere_index, W);								
-		// G = W<
-		
-		Compute_nlin_UcrossB(U);
-		// U.nlin = u x W<
-		
-		flux_Whk(sphere_index) += Prod_out_sphere_nlinV(sphere_index, U, W)/2;		
-		// add (U x W<). B>
-		
-	}
-	*/
+	}  
+	
+
 }
 
 

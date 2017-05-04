@@ -47,7 +47,7 @@ void FluidIO_incompress::Output_flux(FluidVF& U, Pressure& P, FluidVF& helicalU)
 {
 	
 	if (master)
-		flux_file << "\n%% Time = " << global.time.now; 	
+		flux_file << "\n%% Time = " << global.time.now << "\n"; 	
 
 	energyTr->Compute_flux(U);
 	Print_array(flux_file, "flux: U2U ", energyTr->flux_self);
@@ -66,9 +66,11 @@ void FluidIO_incompress::Output_flux(FluidVF& U, Pressure& P, FluidVF& helicalU)
 		Print_array(flux_file, "flux: U2W_enstrophy", energyTr->flux_VF_Uin_Wout);
       
         energyTr->Compute_kinetic_helicity_flux(U, helicalU);
+        Print_array(flux_file, "flux: kinetic_helicity", energyTr->flux_VF);
+        /*energyTr->Compute_kinetic_helicity_flux_old(U, helicalU);
         Print_array(flux_file, "flux: U2W_helicity", energyTr->flux_VF_Uin_Wout);
         Print_array(flux_file, "flux: W2U_helicity", energyTr->flux_VF_Win_Uout);
-        Print_array(flux_file, "flux: U2U_helicity", energyTr->flux_VF_Uin_Uout);
+        Print_array(flux_file, "flux: U2U_helicity", energyTr->flux_VF_Uin_Uout);*/
 
 	}
     
@@ -95,7 +97,7 @@ void FluidIO_incompress::Output_flux(FluidVF& U, FluidSF& T, Pressure& P)
 {
 	
 	if (master)
-		flux_file << "\n%% Time = " << global.time.now;
+		flux_file << "\n%% Time = " << global.time.now << "\n";
 	
 	energyTr->Compute_flux(U,T);
 	Print_array(flux_file, "flux: U2U ", energyTr->flux_self);
@@ -139,7 +141,7 @@ void FluidIO_incompress::Output_flux(FluidVF& U, FluidVF& W, Pressure& P, FluidV
 {
 	
 	if (master)
-		flux_file << "\n%% Time = " << global.time.now;
+		flux_file << "\n%% Time = " << global.time.now << "\n";
 	
 	energyTr->Compute_flux(U, W);
 	Print_array(flux_file, "flux: U2U ", energyTr->flux_self);
@@ -159,6 +161,19 @@ void FluidIO_incompress::Output_flux(FluidVF& U, FluidVF& W, Pressure& P, FluidV
 	Print_array(flux_file, "flux: kinetic_helicity_flux_U_to_U  ", energyTr->flux_VF_Uin_Uout);
 	Print_array(flux_file, "flux: kinetic_helicity_flux_B_to_U ", energyTr->flux_VF_Bin_Uout);
 	Print_array(flux_file, "flux: kinetic_helicity_flux_J_to_U  ", energyTr->flux_VF_Jin_Uout);
+
+// For magnetic helicity flux
+    energyTr->Compute_magnetic_helicity_flux(U,W);
+    Print_array(flux_file, "flux: magnetic_helicity_flux ", energyTr->flux_HM);
+  
+    /*energyTr->Compute_magnetic_helicity_flux(U, W, helicalW);
+	Print_array(flux_file, "flux: magnetic_helicity_flux_B_to_A ", energyTr->flux_VF_Bin_Aout);
+	Print_array(flux_file, "flux: magnetic_helicity_flux_U_to_A_1  ", energyTr->flux_VF_Uin_Aout_1);
+	Print_array(flux_file, "flux: magnetic_helicity_flux_A_to_B  ", energyTr->flux_VF_Ain_Bout);
+	Print_array(flux_file, "flux: magnetic_helicity_flux_U_to_A_2  ", energyTr->flux_VF_Uin_Aout_2);*/
+    
+	
+	
 
 	
 	energyTr->Power_supply_within_sphere(U);
@@ -207,7 +222,7 @@ void FluidIO_incompress::Output_flux(FluidVF& U, FluidVF& W, FluidSF& T, Pressur
 {
 	
 	if (master)
-		flux_file << "\n%% Time = " << global.time.now;
+		flux_file << "\n%% Time = " << global.time.now << "\n";
 	
 	energyTr->Compute_flux(U, W, T);
 	Print_array(flux_file, "flux: U2U ", energyTr->flux_self);
@@ -245,16 +260,35 @@ void FluidIO_incompress::Output_flux(FluidVF& U, FluidVF& W, FluidSF& T, Pressur
 //*********************************************************************************************
 // Shell-to-shell
 
-void FluidIO_incompress::Output_shell_to_shell(FluidVF& U, Pressure& P)
+void FluidIO_incompress::Output_shell_to_shell(FluidVF& U, Pressure& P, FluidVF& helicalU)
 {
 	static Range ra1(1,global.energy_transfer.shell_to_shell.no_shells-1);
 	static Range ra2(1,global.energy_transfer.shell_to_shell.no_shells);
 	
 	if (master)
-		shell_to_shell_file << "\n%% Time = " << global.time.now;
+		shell_to_shell_file << "\n%% Time = " << global.time.now << "\n";
 	
 	energyTr->Compute_shell_tr(U);
 	Print_array(shell_to_shell_file, "shell_to_shell: U2U ", energyTr->shelltoshell_self(ra1,ra2));
+
+    if (global.energy_transfer.helicity_flux_switch) {
+      // if (Ny > 1) // 3D
+      // energyTr->Compute_kinetic_helicity_flux(U);
+      // energyTr->Compute_enstrophy_flux(U);
+      // else if (Ny==1)	// 2D
+
+      
+		energyTr->Compute_kinetic_helicity_shell_tr(U, helicalU);
+		Print_array(shell_to_shell_file, "Shell: U2W_helicity", energyTr->shelltoshell_VF_UtoW(ra1,ra2));
+		Print_array(shell_to_shell_file, "Shell: W2U_helicity", energyTr->shelltoshell_VF_WtoU(ra1,ra2));
+		Print_array(shell_to_shell_file, "Shell: U2U_helicity", energyTr->shelltoshell_VF_UtoU(ra1,ra2));
+      
+
+		energyTr->Compute_enstrophy_shell_tr(U, helicalU);
+		Print_array(shell_to_shell_file, "Shell: W2W_enstrophy", energyTr->shelltoshell_hk_helicalU_to_helicalU(ra1,ra2));
+		Print_array(shell_to_shell_file, "Shell: U2W_enstrophy", energyTr->shelltoshell_hk_U_to_helicalU(ra1,ra2));
+
+    }
 	
     
     // Vpll to Vpll shell-to-shell
@@ -262,6 +296,8 @@ void FluidIO_incompress::Output_shell_to_shell(FluidVF& U, Pressure& P)
         energyTr->Compute_shell_tr_Vpll(U, P);
 		Print_array(shell_to_shell_file, "pll2pll shell_to_shell: U2U ", energyTr->shelltoshell_self(ra1,ra2));
     }
+  
+  
 	
 	if (master)
 		shell_to_shell_file.flush();
@@ -278,7 +314,7 @@ void FluidIO_incompress::Output_shell_to_shell(FluidVF& U, FluidSF& T, Pressure&
 	static Range ra2(1,global.energy_transfer.shell_to_shell.no_shells);
 	
 	if (master)
-		shell_to_shell_file << "\n%% Time = " << global.time.now;
+		shell_to_shell_file << "\n%% Time = " << global.time.now << "\n";
 	
 	energyTr->Compute_shell_tr(U, T);
 	Print_array(shell_to_shell_file, "shell_to_shell: U2U ", energyTr->shelltoshell_self(ra1,ra2));
@@ -299,7 +335,7 @@ void FluidIO_incompress::Output_shell_to_shell(FluidVF& U, FluidSF& T, Pressure&
 //*********************************************************************************************
 // MHD
 
-void FluidIO_incompress::Output_shell_to_shell(FluidVF& U, FluidVF& W, Pressure& P)
+void FluidIO_incompress::Output_shell_to_shell(FluidVF& U, FluidVF& W, Pressure& P,  FluidVF& helicalU, FluidVF& helicalW)
 {
 
 	
@@ -307,7 +343,7 @@ void FluidIO_incompress::Output_shell_to_shell(FluidVF& U, FluidVF& W, Pressure&
 	static Range ra2(1,global.energy_transfer.shell_to_shell.no_shells);
 	
 	if (master)
-		shell_to_shell_file << "\n%% Time = " << global.time.now;
+		shell_to_shell_file << "\n%% Time = " << global.time.now << "\n";
 	
 	energyTr->Compute_shell_tr(U, W);
 	Print_array(shell_to_shell_file, "shell_to_shell: U2U ", energyTr->shelltoshell_self(ra1,ra2));
@@ -327,6 +363,18 @@ void FluidIO_incompress::Output_shell_to_shell(FluidVF& U, FluidVF& W, Pressure&
 		Print_array(shell_to_shell_file, "pll2pll shell_to_shell: shelltoshell_Elsasser_minus ", energyTr->shelltoshell_Elsasser_minus(ra1,ra2));
     }
 	
+  if (global.energy_transfer.helicity_flux_switch) {
+    energyTr->Compute_kinetic_helicity_shell_tr(U, W, helicalU, helicalW);
+    Print_array(shell_to_shell_file, "Shell: U2W_helicity", energyTr->shelltoshell_VF_UtoW(ra1,ra2));
+    Print_array(shell_to_shell_file, "Shell: W2U_helicity", energyTr->shelltoshell_VF_WtoU(ra1,ra2));
+    Print_array(shell_to_shell_file, "Shell: U2U_helicity", energyTr->shelltoshell_VF_UtoU(ra1,ra2));
+    Print_array(shell_to_shell_file, "Shell: B2W_helicity", energyTr->shelltoshell_VF_BtoW(ra1,ra2));
+    Print_array(shell_to_shell_file, "Shell: J2U_helicity", energyTr->shelltoshell_VF_JtoU(ra1,ra2));
+    Print_array(shell_to_shell_file, "Shell: B2U_helicity", energyTr->shelltoshell_VF_BtoU(ra1,ra2));
+    
+  }
+  
+  
 	
 	Real B0mag = W.Get_mag_V0();
 	
@@ -352,7 +400,7 @@ void FluidIO_incompress::Output_shell_to_shell(FluidVF& U, FluidVF& W, FluidSF& 
 	static Range ra2(1,global.energy_transfer.shell_to_shell.no_shells);
 	
 	if (master)
-		shell_to_shell_file << "\n%% Time = " << global.time.now;
+		shell_to_shell_file << "\n%% Time = " << global.time.now << "\n";
 	
 	energyTr->Compute_shell_tr(U, W, T);
 	Print_array(shell_to_shell_file, "shell_to_shell: U2U ", energyTr->shelltoshell_self(ra1,ra2));
@@ -380,11 +428,43 @@ void FluidIO_incompress::Output_shell_to_shell(FluidVF& U, FluidVF& W, FluidSF& 
 } 
 
 
+void FluidIO_incompress::Output_ring_to_ring(FluidVF& U, Pressure& P)
+{
+  if (global.energy_transfer.ring_to_ring.turnon) {
+    
+    static Range ra1(1, global.energy_transfer.ring_to_ring.no_shells-1);
+    static Range ra2(1, global.energy_transfer.ring_to_ring.no_sectors);
+    
+    if (master)
+      ring_to_ring_file << "\n%% Time = " << global.time.now;
+    
+    energyTr->Compute_ring_tr(U);
+    Print_array(ring_to_ring_file, "ring_to_ring: U2U ", energyTr->ring_to_ring_self(ra1,ra2,ra1,ra2));
+    
+    energyTr->Power_supply_ring(U);
+    Print_array(ring_to_ring_file, "sum(Fv.v)", energyTr->ring_force_x_field(ra1,ra2));
+    
+    
+    // Vpll to Vpll shell-to-shell
+    if (global.energy_transfer.Vpll_switch) {
+      energyTr->Compute_ring_tr_Vpll(U, P);
+      Print_array(ring_to_ring_file, "pll2pll ring_to_ring: U2U ", energyTr->ring_to_ring_self(ra1,ra2,ra1,ra2));
+      
+      Print_array(ring_to_ring_file, "grad(p)*Vpll", energyTr->ring_force_x_field(ra1,ra2));
+    }
+    
+    if (master)
+      ring_to_ring_file.flush();
+    
+  }
+}
+
+
 //********************************************************************************************* 
 
 // ring-to-ring (spherical)
 
-void FluidIO_incompress::Output_ring_to_ring(FluidVF& U, Pressure& P)
+void FluidIO_incompress::Output_ring_to_ring(FluidVF& U, Pressure& P, FluidVF& helicalU)
 {
 	if (global.energy_transfer.ring_to_ring.turnon) {
 		
@@ -392,11 +472,16 @@ void FluidIO_incompress::Output_ring_to_ring(FluidVF& U, Pressure& P)
 		static Range ra2(1, global.energy_transfer.ring_to_ring.no_sectors);
 		
 		if (master)
-			ring_to_ring_file << "\n%% Time = " << global.time.now;
+			ring_to_ring_file << "\n%% Time = " << global.time.now << "\n";
 		
 		energyTr->Compute_ring_tr(U);
 		Print_array(ring_to_ring_file, "ring_to_ring: U2U ", energyTr->ring_to_ring_self(ra1,ra2,ra1,ra2));
 		
+
+		energyTr->Compute_enstrophy_ring_tr(U, helicalU);
+		Print_array(ring_to_ring_file, "ring_to_ring: U2W ", energyTr->ring_to_ring_U_to_helicalU(ra1,ra2,ra1,ra2));
+		Print_array(ring_to_ring_file, "ring_to_ring: W2W ", energyTr->ring_to_ring_helicalU_to_helicalU(ra1,ra2,ra1,ra2));
+
 		energyTr->Power_supply_ring(U);
 		Print_array(ring_to_ring_file, "sum(Fv.v)", energyTr->ring_force_x_field(ra1,ra2));
 
@@ -408,6 +493,14 @@ void FluidIO_incompress::Output_ring_to_ring(FluidVF& U, Pressure& P)
 			
 			Print_array(ring_to_ring_file, "grad(p)*Vpll", energyTr->ring_force_x_field(ra1,ra2));
 		}
+      
+        if (global.energy_transfer.helicity_ring_to_ring_switch){
+            energyTr->Compute_kinetic_helicity_ring_tr(U, helicalU);
+            Print_array(ring_to_ring_file, "ring_to_ring: U2W ", energyTr->ring_to_ring_VF_UtoW(ra1,ra2,ra1,ra2));
+            Print_array(ring_to_ring_file, "ring_to_ring: W2U ", energyTr->ring_to_ring_VF_WtoU(ra1,ra2,ra1,ra2));
+            Print_array(ring_to_ring_file, "ring_to_ring: U2U ", energyTr->ring_to_ring_VF_UtoU(ra1,ra2,ra1,ra2));
+
+        }
 		
 		if (master)
 			ring_to_ring_file.flush();
@@ -436,7 +529,7 @@ void FluidIO_incompress::Output_ring_to_ring_scalar(FluidVF& U, FluidSF& T, Pres
 		static Range ra2(1, global.energy_transfer.ring_to_ring.no_sectors);
 		
 		if (master)
-			ring_to_ring_file << "\n%% Time = " << global.time.now;
+			ring_to_ring_file << "\n%% Time = " << global.time.now << "\n";
 		
 		energyTr->Compute_ring_tr(U, T);
 		Print_array(ring_to_ring_file, "ring_to_ring: U2U ", energyTr->ring_to_ring_self(ra1,ra2,ra1,ra2));
@@ -475,7 +568,7 @@ void FluidIO_incompress::Output_ring_to_ring_RBC(FluidVF& U, FluidSF& T, Pressur
 }
 
 //*********************************************************************************************
-void FluidIO_incompress::Output_ring_to_ring(FluidVF& U, FluidVF& W, Pressure& P)
+void FluidIO_incompress::Output_ring_to_ring(FluidVF& U, FluidVF& W, Pressure& P, FluidVF& helicalU, FluidVF& helicalW)
 {
 	if (global.energy_transfer.ring_to_ring.turnon) {
 		
@@ -483,7 +576,7 @@ void FluidIO_incompress::Output_ring_to_ring(FluidVF& U, FluidVF& W, Pressure& P
 		static Range ra2(1, global.energy_transfer.ring_to_ring.no_sectors);
 		
 		if (master)
-			ring_to_ring_file << "\n%% Time = " << global.time.now;
+			ring_to_ring_file << "\n%% Time = " << global.time.now << "\n";
 		
 		energyTr->Compute_ring_tr(U, W);
 		Print_array(ring_to_ring_file, "ring_to_ring: U2U ", energyTr->ring_to_ring_self(ra1,ra2,ra1,ra2));
@@ -521,6 +614,18 @@ void FluidIO_incompress::Output_ring_to_ring(FluidVF& U, FluidVF& W, Pressure& P
 			Print_array(ring_to_ring_file, "grad(p)*Vpll", energyTr->ring_force_x_field(ra1,ra2));
 		}
 		
+        if (global.energy_transfer.helicity_ring_to_ring_switch){
+          energyTr->Compute_kinetic_helicity_ring_tr(U, W, helicalU, helicalW);
+          Print_array(ring_to_ring_file, "Helicity ring_to_ring: U2W ", energyTr->ring_to_ring_VF_UtoW(ra1,ra2,ra1,ra2));
+          Print_array(ring_to_ring_file, "Helicity ring_to_ring: W2U ", energyTr->ring_to_ring_VF_WtoU(ra1,ra2,ra1,ra2));
+          Print_array(ring_to_ring_file, "Helicity ring_to_ring: U2U ", energyTr->ring_to_ring_VF_UtoU(ra1,ra2,ra1,ra2));
+          
+          Print_array(ring_to_ring_file, "Helicity ring_to_ring: B2W ", energyTr->ring_to_ring_VF_BtoW(ra1,ra2,ra1,ra2));
+          Print_array(ring_to_ring_file, "Helicity ring_to_ring: J2U ", energyTr->ring_to_ring_VF_JtoU(ra1,ra2,ra1,ra2));
+          Print_array(ring_to_ring_file, "Helicity ring_to_ring: B2U ", energyTr->ring_to_ring_VF_BtoU(ra1,ra2,ra1,ra2));
+          
+        }
+
 		if (master)
 			ring_to_ring_file.flush();
 	}	
@@ -538,7 +643,7 @@ void FluidIO_incompress::Output_ring_to_ring(FluidVF& U, FluidVF& W, FluidSF& T,
 		static Range ra2(1, global.energy_transfer.ring_to_ring.no_sectors);
 		
 		if (master)
-			ring_to_ring_file << "\n%% Time = " << global.time.now;
+			ring_to_ring_file << "\n%% Time = " << global.time.now << "\n";
 		
 		energyTr->Compute_ring_tr(U, W, T);
 		Print_array(ring_to_ring_file, "ring_to_ring: U2U ", energyTr->ring_to_ring_self(ra1,ra2,ra1,ra2));
@@ -591,7 +696,7 @@ void FluidIO_incompress::Output_cylindrical_ring_to_ring(FluidVF& U, Pressure& P
 		static Range ra2(1, global.energy_transfer.cylindrical_ring_to_ring.no_slabs);
 		
 		if (master)
-			cylindrical_ring_to_ring_file << "\n%% Time = " << global.time.now;
+			cylindrical_ring_to_ring_file << "\n%% Time = " << global.time.now << "\n";
 		
 		energyTr->Compute_cylindrical_ring_tr(U);
 		Print_array(cylindrical_ring_to_ring_file, "cyl_ring_to_ring: U2U ", energyTr->cylindrical_ring_to_ring_self(ra1,ra2,ra1,ra2));
@@ -636,7 +741,7 @@ void FluidIO_incompress::Output_cylindrical_ring_to_ring_scalar(FluidVF& U, Flui
 		static Range ra2(1, global.energy_transfer.cylindrical_ring_to_ring.no_slabs);
 		
 		if (master)
-			cylindrical_ring_to_ring_file << "\n%% Time = " << global.time.now;
+			cylindrical_ring_to_ring_file << "\n%% Time = " << global.time.now << "\n";
 		
 		energyTr->Compute_cylindrical_ring_tr(U, T);
 		Print_array(cylindrical_ring_to_ring_file, "cyl_ring_to_ring: U2U ", energyTr->cylindrical_ring_to_ring_self(ra1,ra2,ra1,ra2));
@@ -682,7 +787,7 @@ void FluidIO_incompress::Output_cylindrical_ring_to_ring(FluidVF& U, FluidVF& W,
 		static Range ra2(1, global.energy_transfer.cylindrical_ring_to_ring.no_slabs);
 		
 		if (master)
-			cylindrical_ring_to_ring_file << "\n%% Time = " << global.time.now;
+			cylindrical_ring_to_ring_file << "\n%% Time = " << global.time.now << "\n";
 		
 		energyTr->Compute_cylindrical_ring_tr(U, W);
 		Print_array(cylindrical_ring_to_ring_file, "cyl_ring_to_ring: U2U ", energyTr->cylindrical_ring_to_ring_self(ra1,ra2,ra1,ra2));
@@ -725,7 +830,7 @@ void FluidIO_incompress::Output_cylindrical_ring_to_ring(FluidVF& U, FluidVF& W,
 		static Range ra2(1, global.energy_transfer.cylindrical_ring_to_ring.no_slabs);
 		
 		if (master)
-			cylindrical_ring_to_ring_file << "\n%% Time = " << global.time.now;
+			cylindrical_ring_to_ring_file << "\n%% Time = " << global.time.now << "\n";
 		
 		energyTr->Compute_cylindrical_ring_tr(U, W, T);
 		Print_array(cylindrical_ring_to_ring_file, "cyl_ring_to_ring: U2U ", energyTr->cylindrical_ring_to_ring_self(ra1,ra2,ra1,ra2));

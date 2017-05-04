@@ -132,9 +132,13 @@ public:
 	// Isotropic shell-to-shell
 	Array<Real,2>  shelltoshell_self;
 	Array<Real,2>  shelltoshell_hk;
+	Array<Real,2> shelltoshell_hk_U_to_helicalU;
+	Array<Real,2> shelltoshell_hk_helicalU_to_helicalU;
 	
 	// Ring to ring
 	Array<Real,4>  ring_to_ring_self;
+	Array<Real,4> ring_to_ring_U_to_helicalU;
+	Array<Real,4> ring_to_ring_helicalU_to_helicalU;
 	
 	// Cylinderical ring to ring
 	Array<Real,4>  cylindrical_ring_to_ring_self;
@@ -156,12 +160,21 @@ public:
 	
 	// FOR MHD and Enstrophy calculation
 	// fluxes
+    Array<Real,1>  flux_VF;
 	Array<Real,1>  flux_VF_Win_Wout;				// from Win to Wout
 	Array<Real,1>  flux_VF_Uin_Wout;				// from Uin to Wout
 	Array<Real,1>  flux_VF_Uin_Uout;                // U giver U receiver
 	Array<Real,1>  flux_VF_Bin_Wout;                // B giver W receiver
 	Array<Real,1>  flux_VF_Bin_Uout;                // B giver U receiver
 	Array<Real,1>  flux_VF_Jin_Uout;                // J giver U receiver
+	
+	// For magnetic helicity fluxes
+	Array<Real,1>  flux_VF_Bin_Aout;				// from Win to Aout
+	Array<Real,1>  flux_VF_Uin_Aout_1;				// from Uin to Aout
+	Array<Real,1>  flux_VF_Ain_Bout;                // A giver W receiver
+	Array<Real,1>  flux_VF_Uin_Aout_2;                // U giver A receiver
+    Array<Real,1>  flux_HM;
+	
 
 	// FOR MHD
 	Array<Real,1>  flux_VF_Uin_Win;				// from Uin to Win
@@ -174,7 +187,14 @@ public:
 	
 	// shell-to-shell
 	Array<Real,2>  shelltoshell_VF_WtoW;			// from W to W
-	Array<Real,2>  shelltoshell_VF_UtoW;			// from U to W
+	Array<Real,2>  shelltoshell_VF_UtoW;
+  	Array<Real,2>  shelltoshell_VF_WtoU;
+  	Array<Real,2>  shelltoshell_VF_UtoU;
+  
+    Array<Real,2>  shelltoshell_VF_BtoW;
+    Array<Real,2>  shelltoshell_VF_JtoU;
+    Array<Real,2>  shelltoshell_VF_BtoU;
+  
 	Array<Real,2>  shelltoshell_Elsasser_plus;	// from Zplus to Zplus
 	Array<Real,2>  shelltoshell_Elsasser_minus;	// from Zminus to Zminus
 	
@@ -184,6 +204,11 @@ public:
 	// Ring to ring
 	Array<Real,4>  ring_to_ring_VF_WtoW;			// from W to W
 	Array<Real,4>  ring_to_ring_VF_UtoW;			// from U to W
+  	Array<Real,4>  ring_to_ring_VF_WtoU;
+  	Array<Real,4>  ring_to_ring_VF_UtoU;
+    Array<Real,4>  ring_to_ring_VF_BtoW;			// from U to W
+    Array<Real,4>  ring_to_ring_VF_JtoU;
+    Array<Real,4>  ring_to_ring_VF_BtoU;
 	Array<Real,4>  ring_to_ring_Elsasser_plus;	// from Zplus to Zplus
 	Array<Real,4>  ring_to_ring_Elsasser_minus;	// from Zminus to Zminus
 	
@@ -229,8 +254,10 @@ public:
 	void Compute_enstrophy_flux(FluidVF& U);
 
     void Compute_kinetic_helicity_flux(FluidVF& U, FluidVF& helicalU);
+    void Compute_kinetic_helicity_flux_old(FluidVF& U, FluidVF& helicalU);
     void Compute_kinetic_helicity_flux(FluidVF& U, FluidVF& W, FluidVF& helicalU, FluidVF& helicalW);
-	void Compute_magnetic_helicity_flux(FluidVF& U, FluidVF& W);
+    void Compute_magnetic_helicity_flux(FluidVF& U, FluidVF& W);
+	void Compute_magnetic_helicity_flux(FluidVF& U, FluidVF& W, FluidVF& helicalW);
 	void Compute_magnetic_enstrophy_flux(FluidVF& U, FluidVF& W);
 	
 	// Shell-to-shell
@@ -243,16 +270,21 @@ public:
 	
 	
 	void Compute_kinetic_helicity_shell_tr(FluidVF &U);
+  	void Compute_kinetic_helicity_shell_tr(FluidVF &U, FluidVF &helicalU);
+    void Compute_kinetic_helicity_shell_tr(FluidVF& U, FluidVF& W, FluidVF& helicalU, FluidVF& helicalW);
 	void Compute_magnetic_helicity_shell_tr(FluidVF &U, FluidVF& W);
-	void Compute_enstrophy_shell_tr(FluidVF &U);
+	void Compute_enstrophy_shell_tr(FluidVF &U, FluidVF &helicalU);
 	void Compute_magnetic_enstrophy_shell_tr(FluidVF &U, FluidVF& W);
 	
 		// Ring_to_ring energy transfer
 	void Compute_ring_tr(FluidVF &U);
+	void Compute_enstrophy_ring_tr(FluidVF& U, FluidVF& helicalU);
+    void Compute_kinetic_helicity_ring_tr(FluidVF& U,  FluidVF& helicalU);
 	void Compute_ring_tr(FluidVF &U, FluidSF& T);
 	void Compute_ring_tr_scalar(FluidVF &U, FluidSF& T);
 	void Compute_ring_tr_RBC(FluidVF &U, FluidSF& T);
 	void Compute_ring_tr(FluidVF &U, FluidVF& W);
+    void Compute_kinetic_helicity_ring_tr(FluidVF& U, FluidVF& W, FluidVF& helicalU, FluidVF& helicalW);
 	void Compute_ring_tr(FluidVF &U, FluidVF& W, FluidSF& T);
 	
 	

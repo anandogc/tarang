@@ -71,6 +71,7 @@ public:
 	void Compute_force_pressure_grad(FluidVF& U);
 	
 	void Const_energy_supply_alpha_beta(FluidVF& U, int lx, int ly, int lz, Real alpha, Real beta, bool add_flag);
+	void Const_energy_supply_alpha_beta(FluidVF& U, FluidVF& W, int lx, int ly, int lz, Real alpha, Real beta, bool add_flag);
 	void Const_energy_alpha_beta(FluidVF& U, int lx, int ly, int lz, Real alpha, Real beta, bool add_flag);
 	
 	void Const_energy_supply_alpha(FluidSF& T, int lx, int ly, int lz, Real alpha, bool add_flag);
@@ -82,10 +83,16 @@ public:
 	void Force_energy_helicity_supply_or_level_basic_add(FluidVF& U, string force_type, Real inner_radius, Real outer_radius, Real para1, Real para2);
 	void Force_energy_helicity_supply_or_level_basic_assign(FluidSF& T, string force_type, Real inner_radius, Real outer_radius, Real para);
 	void Force_energy_helicity_supply_or_level_basic_add(FluidSF& T, string force_type, Real inner_radius, Real outer_radius, Real para);
+	void Force_energy_crosshelicity_supply_or_level_basic_assign(FluidVF& U, FluidVF& W, Real inner_radius, Real outer_radius, Real para1, Real para2);
+	void Force_energy_crosshelicity_supply_or_level_basic_add(FluidVF& U, FluidVF& W, Real inner_radius, Real outer_radius, Real para1, Real para2);
+
+
 
 	void Force_energy_helicity_supply_or_level(FluidVF& U, string force_type, Real inner_radius, Real outer_radius, Real para1, Real para2);
 	void Force_energy_helicity_supply_or_level(FluidSF& T, string force_type, Real inner_radius, Real outer_radius, Real para);
+	void Force_energy_crosshelicity_supply_or_level_basic(FluidVF& U, FluidVF& W, Real inner_radius, Real outer_radius, Real para1, Real para2, bool add_flag);
 	
+	void Compute_force_crosshelicity_supply(FluidVF& U, FluidVF& W);	
 	void Compute_force_const_energy_helicity_supply(FluidVF& U);
 	void Compute_force_const_energy_helicity_supply(FluidVF& U, FluidSF& T);
 	void Compute_force_const_energy_helicity_supply(FluidVF& U, FluidVF& W);

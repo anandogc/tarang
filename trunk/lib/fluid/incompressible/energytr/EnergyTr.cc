@@ -53,7 +53,15 @@ EnergyTr::EnergyTr()
 
 		flux_hk.resize(global.energy_transfer.flux.no_spheres+1);
 		
-		shelltoshell_self.resize(global.energy_transfer.shell_to_shell.no_shells+1,global.energy_transfer.shell_to_shell.no_shells+1); 
+		shelltoshell_self.resize(global.energy_transfer.shell_to_shell.no_shells+1,global.energy_transfer.shell_to_shell.no_shells+1);
+      
+        shelltoshell_hk_helicalU_to_helicalU.resize(global.energy_transfer.shell_to_shell.no_shells+1,global.energy_transfer.shell_to_shell.no_shells+1);
+		shelltoshell_hk_U_to_helicalU.resize(global.energy_transfer.shell_to_shell.no_shells+1,global.energy_transfer.shell_to_shell.no_shells+1);
+
+
+        shelltoshell_VF_UtoW.resize(global.energy_transfer.shell_to_shell.no_shells+1,global.energy_transfer.shell_to_shell.no_shells+1);
+        shelltoshell_VF_WtoU.resize(global.energy_transfer.shell_to_shell.no_shells+1,global.energy_transfer.shell_to_shell.no_shells+1);
+        shelltoshell_VF_UtoU.resize(global.energy_transfer.shell_to_shell.no_shells+1,global.energy_transfer.shell_to_shell.no_shells+1);
 		
 		shelltoshell_hk.resize(global.energy_transfer.shell_to_shell.no_shells+1,global.energy_transfer.shell_to_shell.no_shells+1); 
 		
@@ -61,6 +69,7 @@ EnergyTr::EnergyTr()
 		
 
 		// For Enstrophy and Helicity transfers in Fluid and MHD
+        flux_VF.resize(global.energy_transfer.flux.no_spheres+1);
         flux_VF_Uin_Uout.resize(global.energy_transfer.flux.no_spheres+1);
 		flux_VF_Uin_Wout.resize(global.energy_transfer.flux.no_spheres+1);
         flux_VF_Win_Uout.resize(global.energy_transfer.flux.no_spheres+1);
@@ -70,11 +79,28 @@ EnergyTr::EnergyTr()
 		flux_VF_Bin_Uout.resize(global.energy_transfer.flux.no_spheres+1);
 
         flux_VF_Jin_Uout.resize(global.energy_transfer.flux.no_spheres+1);
+        
+        // For magnetic helicity in MHD
+		flux_VF_Bin_Aout.resize(global.energy_transfer.flux.no_spheres+1);
+		flux_VF_Uin_Aout_1.resize(global.energy_transfer.flux.no_spheres+1);
+		flux_VF_Ain_Bout.resize(global.energy_transfer.flux.no_spheres+1);
+		flux_VF_Uin_Aout_2.resize(global.energy_transfer.flux.no_spheres+1);
+        flux_HM.resize(global.energy_transfer.flux.no_spheres+1);
+
 
 
 		
 		if (global.energy_transfer.ring_to_ring.turnon) {
 			ring_to_ring_self.resize(global.energy_transfer.ring_to_ring.no_shells+1,global.energy_transfer.ring_to_ring.no_sectors+1);
+			ring_to_ring_U_to_helicalU.resize(global.energy_transfer.ring_to_ring.no_shells+1,global.energy_transfer.ring_to_ring.no_sectors+1);
+			ring_to_ring_helicalU_to_helicalU.resize(global.energy_transfer.ring_to_ring.no_shells+1,global.energy_transfer.ring_to_ring.no_sectors+1);
+            ring_to_ring_VF_UtoW.resize(global.energy_transfer.ring_to_ring.no_shells+1,global.energy_transfer.ring_to_ring.no_sectors+1);
+            ring_to_ring_VF_WtoU.resize(global.energy_transfer.ring_to_ring.no_shells+1,global.energy_transfer.ring_to_ring.no_sectors+1);
+            ring_to_ring_VF_UtoU.resize(global.energy_transfer.ring_to_ring.no_shells+1,global.energy_transfer.ring_to_ring.no_sectors+1);
+          
+            ring_to_ring_VF_BtoW.resize(global.energy_transfer.ring_to_ring.no_shells+1,global.energy_transfer.ring_to_ring.no_sectors+1);
+            ring_to_ring_VF_JtoU.resize(global.energy_transfer.ring_to_ring.no_shells+1,global.energy_transfer.ring_to_ring.no_sectors+1);
+            ring_to_ring_VF_BtoU.resize(global.energy_transfer.ring_to_ring.no_shells+1,global.energy_transfer.ring_to_ring.no_sectors+1);
 			
 			temp_ring_tr.resize(global.energy_transfer.ring_to_ring.no_shells+1,global.energy_transfer.ring_to_ring.no_sectors+1);
 
@@ -121,6 +147,10 @@ EnergyTr::EnergyTr()
 			
 			shelltoshell_VF_WtoW.resize(global.energy_transfer.shell_to_shell.no_shells+1,global.energy_transfer.shell_to_shell.no_shells+1);
 			shelltoshell_VF_UtoW.resize(global.energy_transfer.shell_to_shell.no_shells+1,global.energy_transfer.shell_to_shell.no_shells+1);
+            shelltoshell_VF_BtoW.resize(global.energy_transfer.shell_to_shell.no_shells+1,global.energy_transfer.shell_to_shell.no_shells+1);
+            shelltoshell_VF_JtoU.resize(global.energy_transfer.shell_to_shell.no_shells+1,global.energy_transfer.shell_to_shell.no_shells+1);
+            shelltoshell_VF_BtoU.resize(global.energy_transfer.shell_to_shell.no_shells+1,global.energy_transfer.shell_to_shell.no_shells+1);
+          
 			shelltoshell_Elsasser_plus.resize(global.energy_transfer.shell_to_shell.no_shells+1,global.energy_transfer.shell_to_shell.no_shells+1);
 			shelltoshell_Elsasser_minus.resize(global.energy_transfer.shell_to_shell.no_shells+1,global.energy_transfer.shell_to_shell.no_shells+1);
 			

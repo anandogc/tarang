@@ -274,6 +274,13 @@ void SSS_PENCIL::Assign_sub_array(Range x_range, Range y_range, Range z_range, A
 
 	static Array<int,1> y_filter(Ny);
 	static Array<int,1> z_filter(Nz);
+
+	//Sanitize ranges. if last index is less than first index, modify the range (this happens for 2D)
+	if (y_range.last() < y_range.first())
+		y_range = Range(y_range.first(), y_range.first());
+
+	if (z_range.last() < z_range.first())
+		z_range = Range(z_range.first(), z_range.first());
 	
 	y_filter = 0;
 	z_filter = 0;
@@ -509,31 +516,66 @@ void SSS_PENCIL::Fill_Vz(Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex
 
 int SSS_PENCIL::Read(Array<Complex,3> A, h5::Plan plan, string file_name, string dataset_name)
 {
-	int err = BasicIO::Read(global.temp_array.Xr_slab.data(), plan, file_name, dataset_name);
-	fftk.To_pencil(global.temp_array.Xr_slab, global.temp_array.Xr);
-	fftk.Transpose(global.temp_array.Xr, A);
-	return err;
+	if (Ny > 1) {
+		if (my_z_pcoord == 0)  
+			BasicIO::Read(global.temp_array.Xr_slab.data(), plan, file_name, dataset_name);
+
+		fftk.To_pencil(global.temp_array.Xr_slab, global.temp_array.Xr);
+		fftk.Transpose(global.temp_array.Xr, A);
+
+	}
+	if (Ny == 1) {
+		BasicIO::Read(global.temp_array.Xr.data(), plan, file_name, dataset_name);
+		fftk.Transpose(global.temp_array.Xr(Range::all(),0,Range::all()), A(Range::all(),0,Range::all()));
+	}
+	return 0;
 }
 
 int SSS_PENCIL::Read(Array<Real,3> Ar, h5::Plan plan, string file_name, string dataset_name)
 {
-	int err = BasicIO::Read(global.temp_array.Xr_slab.data(), plan, file_name, dataset_name);
-	fftk.To_pencil(global.temp_array.Xr_slab, Ar);
-	return err;
+	if (Ny > 1) {
+		if (my_z_pcoord == 0)  
+			BasicIO::Read(global.temp_array.Xr_slab.data(), plan, file_name, dataset_name);
+
+		fftk.To_pencil(global.temp_array.Xr_slab, Ar);
+	}
+	if (Ny == 1) {
+		BasicIO::Read(Ar.data(), plan, file_name, dataset_name);
+	}
+	return 0;
 }
 
 
 int SSS_PENCIL::Write(Array<Complex,3> A, h5::Plan plan, string access_mode, string folder_name, string file_name, string dataset_name)
 {
-	fftk.Transpose(A, global.temp_array.Xr);
-	fftk.To_slab(global.temp_array.Xr, global.temp_array.Xr_slab);
-	return BasicIO::Write(global.temp_array.Xr_slab.data(), plan, access_mode, folder_name, file_name, dataset_name);
+	if (Ny > 1) {
+		fftk.Transpose(A, global.temp_array.Xr);
+		fftk.To_slab(global.temp_array.Xr, global.temp_array.Xr_slab);
+		if (my_z_pcoord == 0)  
+			BasicIO::Write(global.temp_array.Xr_slab.data(), plan, access_mode, folder_name, file_name, dataset_name);
+
+	}
+	if (Ny == 1) {
+		fftk.Transpose(A(Range::all(),0,Range::all()), global.temp_array.Xr(Range::all(),0,Range::all()));
+		BasicIO::Write(global.temp_array.Xr.data(), plan, access_mode, folder_name, file_name, dataset_name);
+
+	}
+
+	return 0;
 }
 
 int SSS_PENCIL::Write(Array<Real,3> Ar, h5::Plan plan, string access_mode, string folder_name, string file_name, string dataset_name)
 {
-	fftk.To_slab(Ar, global.temp_array.Xr_slab);
-	return BasicIO::Write(global.temp_array.Xr_slab.data(), plan, access_mode, folder_name, file_name, dataset_name);  
+	if (Ny > 1) {
+		fftk.To_slab(Ar, global.temp_array.Xr_slab);
+		if (my_z_pcoord == 0)  
+			BasicIO::Write(global.temp_array.Xr_slab.data(), plan, access_mode, folder_name, file_name, dataset_name);
+
+	}
+	if (Ny == 1) {
+		BasicIO::Write(Ar.data(), plan, access_mode, folder_name, file_name, dataset_name);
+	}
+	return 0;
 }
 
 //*********************************  End of scft_basic.cc *************************************

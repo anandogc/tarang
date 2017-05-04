@@ -84,6 +84,56 @@ void FORCE::Const_energy_supply_alpha_beta(FluidVF& U, int lx, int ly, int lz, R
 }
 
 //*********************************************************************************************
+/** @brief Assign a force vector at (kx, ky, kz) given alpha and beta,
+ *					and its complex conj at \f$ -\vec{K} \f$. 
+ * 
+ *  @param kx, ky
+ *	@param alpha, beta
+ *
+ *  @return  F(k) = alpha * V(k)  + beta(k) * Omega(k)
+ */
+void FORCE::Const_energy_supply_alpha_beta(FluidVF& U, FluidVF& W, int lx, int ly, int lz, Real alpha, Real beta, bool add_flag)
+{
+	if (basis_type == "SSS") { // Hk =0
+	/*
+  		TinyVector<Real,3> localV_real, localForce_real;
+		
+		localV_real = real(universal->Get_local_spectral_field(lx, ly, lz, U.cvf.V1, U.cvf.V2, U.cvf.V3));
+		localForce_real = alpha*localV_real;
+		
+		if (!add_flag)
+			universal->Assign_local_spectral_field(lx, ly, lz, U.Force1, U.Force2, U.Force3, localForce_real);
+		else
+			universal->Add_local_spectral_field(lx, ly, lz, U.Force1, U.Force2, U.Force3, localForce_real);
+	*/
+		cerr << "FORCE::Const_energy_supply_alpha_beta(FluidVF& U, FluidVF& W, int lx, int ly, int lz, Real alpha, Real beta, bool add_flag): Not implemented for SSS basis" << endl;
+
+	}
+		
+	else {
+		static int index=0;
+		TinyVector<Complex,3> localV, localForce, localW;
+		
+		localV = universal->Get_local_spectral_field(lx, ly, lz, U.cvf.V1, U.cvf.V2, U.cvf.V3);
+		localW = universal->Get_local_spectral_field(lx, ly, lz, W.cvf.V1, W.cvf.V2, W.cvf.V3);
+		localForce = alpha*localV + beta*localW;
+
+		/*localForce = localV;
+		cout << "alpha*localV = " << localForce << endl;
+		localForce = localW;
+		cout << "beta*localW = " << localForce << endl;
+		localForce = alpha*localV + beta*localW;
+		cout << "localForce = " << localForce << endl;
+        */
+		
+		if (!add_flag)
+			universal->Assign_local_spectral_field(lx, ly, lz, U.Force1, U.Force2, U.Force3, localForce);
+		else 
+			universal->Add_local_spectral_field(lx, ly, lz, U.Force1, U.Force2, U.Force3, localForce);
+	}
+}
+
+//*********************************************************************************************
 
 /** @brief Assign a force vector at (kx, ky, kz) given alpha,
  *					and its complex conj at \f$ -\vec{K} \f$. 

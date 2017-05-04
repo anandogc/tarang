@@ -257,51 +257,139 @@ void EnergyTr::Compute_shell_tr(FluidVF& U, FluidVF& W, FluidSF& T)
 
 // Fluid
 //
-void EnergyTr::Compute_kinetic_helicity_shell_tr(FluidVF& U)
+void EnergyTr::Compute_kinetic_helicity_shell_tr(FluidVF& U, FluidVF& helicalU)
 {
-/*
-	shelltoshell_hk = 0.0;
-	
-	for (int shell_from_index = 1; shell_from_index < global.energy_transfer.shell_to_shell.no_shells; shell_from_index++) 
-	{
-		Fill_shell(shell_from_index, U);	
-		
-		Compute_nlin(U);								
-		// U.nlin = U.grad U<	
+  universal->Compute_vorticity(U.cvf.V1, U.cvf.V2, U.cvf.V3, helicalU.cvf.V1, helicalU.cvf.V2, helicalU.cvf.V3, 0, universal->Max_radius_inside());
+  
+  shelltoshell_VF_UtoW = 0.0;
+  shelltoshell_VF_WtoU = 0.0;
+  shelltoshell_VF_UtoU = 0.0;
 
-		
-		Shell_mult_vorticity_all(U.nlin1, U.nlin2, U.nlin3, U.cvf.V1, U.cvf.V2, U.cvf.V3, temp_shell_tr);
-								
-		shelltoshell_hk(shell_from_index, Range::all()) = - temp_shell_tr/2;	
-		
-		
-		Fill_shell_vorticity(shell_from_index, U);	
-		
-		Compute_nlin(U);										
-		// U.nlin = U.grad omega	
-		
-		universal->Shell_mult_all(U.nlin1, U.nlin2, U.nlin3, U.cvf.V1, U.cvf.V2, U.cvf.V3, global.energy_transfer.shell_to_shell.radii, temp_shell_tr);
-		
-		shelltoshell_hk(shell_from_index, Range::all()) 
-			= shelltoshell_hk(shell_from_index, Range::all()) - temp_shell_tr/2;
-		
-		
-		Fill_shell(shell_from_index, U);	
-		
-		Compute_nlin_vorticity_helper(U);										
-		// U.nlin = omega.grad U<
-		
-		
-		universal->Shell_mult_all(U.nlin1, U.nlin2, U.nlin3, U.cvf.V1, U.cvf.V2, U.cvf.V3, global.energy_transfer.shell_to_shell.radii, temp_shell_tr);
-		
-		shelltoshell_hk(shell_from_index, Range::all()) 
-			= shelltoshell_hk(shell_from_index, Range::all()) + temp_shell_tr/2;
-			
-	}
- */
+
+  
+  for (int shell_from_index = 1; shell_from_index < global.energy_transfer.shell_to_shell.no_shells; shell_from_index++)  {
+    Fill_shell(shell_from_index, U);
+    
+    Nlin_incompress::Compute_nlin(U, Giver);
+    // U.nlin = U.grad Um
+    
+    universal->Shell_mult_all(U.nlin1, U.nlin2, U.nlin3, helicalU.cvf.V1, helicalU.cvf.V2, helicalU.cvf.V3, global.energy_transfer.shell_to_shell.radii, temp_shell_tr);
+    // results(shell_index) in (*temp_shell_tr)(index)
+				
+    shelltoshell_VF_UtoW(shell_from_index, Range::all()) = -0.5*temp_shell_tr;
+    
+    /************************************************************************************/
+    Fill_shell(shell_from_index, helicalU);
+    
+    Nlin_incompress::Compute_nlin(U, Giver);
+    // U.nlin = U.grad Um
+    
+    universal->Shell_mult_all(U.nlin1, U.nlin2, U.nlin3, U.cvf.V1, U.cvf.V2, U.cvf.V3, global.energy_transfer.shell_to_shell.radii, temp_shell_tr);
+    // results(shell_index) in (*temp_shell_tr)(index)
+				
+    shelltoshell_VF_WtoU(shell_from_index, Range::all()) = -0.5*temp_shell_tr;
+    
+    /************************************************************************************/
+    Fill_shell(shell_from_index, U);
+    
+    Nlin_incompress::Compute_nlin(helicalU, Giver);
+    // U.nlin = U.grad Um
+    
+    universal->Shell_mult_all(helicalU.nlin1, helicalU.nlin2, helicalU.nlin3, U.cvf.V1, U.cvf.V2, U.cvf.V3, global.energy_transfer.shell_to_shell.radii, temp_shell_tr);
+    // results(shell_index) in (*temp_shell_tr)(index)
+				
+    shelltoshell_VF_UtoU(shell_from_index, Range::all()) = 0.5*temp_shell_tr;
+    
+    }
 
 }
 	
+
+
+void EnergyTr::Compute_kinetic_helicity_shell_tr(FluidVF& U, FluidVF& W, FluidVF& helicalU, FluidVF& helicalW)
+{
+  universal->Compute_vorticity(U.cvf.V1, U.cvf.V2, U.cvf.V3, helicalU.cvf.V1, helicalU.cvf.V2, helicalU.cvf.V3, 0, universal->Max_radius_inside());
+  universal->Compute_vorticity(W.cvf.V1, W.cvf.V2, W.cvf.V3, helicalW.cvf.V1, helicalW.cvf.V2, helicalW.cvf.V3, 0, universal->Max_radius_inside());
+  
+  shelltoshell_VF_UtoW = 0.0;
+  shelltoshell_VF_WtoU = 0.0;
+  shelltoshell_VF_UtoU = 0.0;
+  
+  shelltoshell_VF_BtoW = 0.0;
+  shelltoshell_VF_JtoU = 0.0;
+  shelltoshell_VF_BtoU = 0.0;
+  
+  
+  
+  for (int shell_from_index = 1; shell_from_index < global.energy_transfer.shell_to_shell.no_shells; shell_from_index++)  {
+    Fill_shell(shell_from_index, U);
+    
+    Nlin_incompress::Compute_nlin(U, Giver);
+    // U.nlin = U.grad Um
+    
+    universal->Shell_mult_all(U.nlin1, U.nlin2, U.nlin3, helicalU.cvf.V1, helicalU.cvf.V2, helicalU.cvf.V3, global.energy_transfer.shell_to_shell.radii, temp_shell_tr);
+    // results(shell_index) in (*temp_shell_tr)(index)
+				
+    shelltoshell_VF_UtoW(shell_from_index, Range::all()) = -0.5*temp_shell_tr;
+    
+    /************************************************************************************/
+    Fill_shell(shell_from_index, helicalU);
+    
+    Nlin_incompress::Compute_nlin(U, Giver);
+    // U.nlin = U.grad Um
+    
+    universal->Shell_mult_all(U.nlin1, U.nlin2, U.nlin3, U.cvf.V1, U.cvf.V2, U.cvf.V3, global.energy_transfer.shell_to_shell.radii, temp_shell_tr);
+    // results(shell_index) in (*temp_shell_tr)(index)
+				
+    shelltoshell_VF_WtoU(shell_from_index, Range::all()) = -0.5*temp_shell_tr;
+    
+    /************************************************************************************/
+    Fill_shell(shell_from_index, U);
+    
+    Nlin_incompress::Compute_nlin(helicalU, Giver);
+    // U.nlin = U.grad Um
+    
+    universal->Shell_mult_all(helicalU.nlin1, helicalU.nlin2, helicalU.nlin3, U.cvf.V1, U.cvf.V2, U.cvf.V3, global.energy_transfer.shell_to_shell.radii, temp_shell_tr);
+    // results(shell_index) in (*temp_shell_tr)(index)
+				
+    shelltoshell_VF_UtoU(shell_from_index, Range::all()) = 0.5*temp_shell_tr;
+    
+    /************************************************************************************/
+    Fill_shell(shell_from_index, W);
+    
+    Nlin_incompress::Compute_nlin(W, Giver);
+    // U.nlin = U.grad Um
+    
+    universal->Shell_mult_all(W.nlin1, W.nlin2, W.nlin3, helicalU.cvf.V1, helicalU.cvf.V2, helicalU.cvf.V3, global.energy_transfer.shell_to_shell.radii, temp_shell_tr);
+    // results(shell_index) in (*temp_shell_tr)(index)
+				
+    shelltoshell_VF_BtoW(shell_from_index, Range::all()) = 0.5*temp_shell_tr;
+    
+    /************************************************************************************/
+    Fill_shell(shell_from_index, helicalW);
+    
+    Nlin_incompress::Compute_nlin(W, Giver);
+    // U.nlin = U.grad Um
+    
+    universal->Shell_mult_all(W.nlin1, W.nlin2, W.nlin3,  U.cvf.V1, U.cvf.V2, U.cvf.V3, global.energy_transfer.shell_to_shell.radii, temp_shell_tr);
+    // results(shell_index) in (*temp_shell_tr)(index)
+				
+    shelltoshell_VF_JtoU(shell_from_index, Range::all()) = 0.5*temp_shell_tr;
+    
+    /************************************************************************************/
+    Fill_shell(shell_from_index, W);
+    
+    Nlin_incompress::Compute_nlin(helicalW, Giver);
+    // U.nlin = U.grad Um
+    
+    universal->Shell_mult_all(helicalW.nlin1, helicalW.nlin2, helicalW.nlin3,  U.cvf.V1, U.cvf.V2, U.cvf.V3, global.energy_transfer.shell_to_shell.radii, temp_shell_tr);
+    // results(shell_index) in (*temp_shell_tr)(index)
+				
+    shelltoshell_VF_BtoU(shell_from_index, Range::all()) = -0.5*temp_shell_tr;
+    
+  }
+  
+}
 
 
 //*********************************************************************************************
@@ -363,8 +451,46 @@ void EnergyTr::Compute_magnetic_helicity_shell_tr(FluidVF& U, FluidVF& W)
 //*********************************************************************************************
 // Fluid: 2D
 //
-void EnergyTr::Compute_enstrophy_shell_tr(FluidVF& U)
+void EnergyTr::Compute_enstrophy_shell_tr(FluidVF& U, FluidVF& helicalU)
 {
+	if (Ny > 1)
+	{
+		universal->Compute_vorticity(U.cvf.V1, U.cvf.V2, U.cvf.V3, helicalU.cvf.V1, helicalU.cvf.V2, helicalU.cvf.V3, 0, universal->Max_radius_inside());
+
+		shelltoshell_hk_helicalU_to_helicalU = 0.0;
+		shelltoshell_hk_U_to_helicalU = 0.0;
+		
+		for (int shell_from_index = 1; shell_from_index < global.energy_transfer.shell_to_shell.no_shells; shell_from_index++) 
+		{
+			
+			Fill_shell(shell_from_index, U);	
+			// G = i k x u(k): 2D
+			
+			Nlin_incompress::Compute_nlin(helicalU, Giver);										
+			// U.nlin = U.grad omega	
+			
+			universal->Shell_mult_all(U.nlin1, U.nlin2, U.nlin3, helicalU.cvf.V1, helicalU.cvf.V2, helicalU.cvf.V3,global.energy_transfer.shell_to_shell.radii, temp_shell_tr);
+
+//			Shell_mult_vorticity_all(U.nlin1, U.nlin2, U.nlin3, helicalU.cvf.V1, helicalU.cvf.V2, heU.nlin1, U.nlin2, U.nlin3, helicalU.cvf.V1, helicalU.cvf.V2, helicalU.cvf.V3,//licalU.cvf.V3, temp_shell_tr);
+			
+			shelltoshell_hk_U_to_helicalU(shell_from_index, Range::all()) += temp_shell_tr;
+
+
+			
+
+			Fill_shell(shell_from_index, helicalU);	
+			// G = i k x u(k): 2D
+			
+			Nlin_incompress::Compute_nlin(U, Giver);										
+			// U.nlin = U.grad omega	
+
+			universal->Shell_mult_all(U.nlin1, U.nlin2, U.nlin3, helicalU.cvf.V1, helicalU.cvf.V2, helicalU.cvf.V3, global.energy_transfer.shell_to_shell.radii, temp_shell_tr);
+			
+//			Shell_mult_vorticity_all(U.nlin1, U.nlin2, U.nlin3, helicalU.cvf.V1, helicalU.cvf.V2, helicalU.cvf.V3, temp_shell_tr);
+			
+			shelltoshell_hk_helicalU_to_helicalU(shell_from_index, Range::all()) -= temp_shell_tr;
+		}
+	}
 	/*
 	if (N[2] == 1)
 	{

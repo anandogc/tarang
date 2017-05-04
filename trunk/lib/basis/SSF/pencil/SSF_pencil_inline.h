@@ -222,8 +222,33 @@ inline void SSF_PENCIL::Add_spectral_field(int kx, int ky, int kz, Array<Complex
 }
 
 
+inline void SSF_PENCIL::Craya_to_helical(Complex U1, Complex U2, Complex &U_plus, Complex &U_minus)
+{
+}
+
+inline void SSF_PENCIL::Helical_to_Craya(Complex U_plus, Complex U_minus, Complex &U1, Complex &U2)
+{
+}
 
 
+inline void SSF_PENCIL::Craya_to_cartesian(int lx, int ly, int lz, Complex U1, Complex U2, Complex &vpll, Complex &vh1, Complex &vh2)
+{
+}
+
+inline void SSF_PENCIL::Cartesian_to_Craya(int lx, int ly, int lz, Complex vpll, Complex vh1, Complex vh2, Complex &U1, Complex &U2)
+{
+}
+//Shubhadeep
+inline void SSF_PENCIL::Helical_to_cartesian(int lx, int ly, int lz, Complex U_plus, Complex U_minus, Complex &vpll, Complex &vh1, Complex &vh2)
+{
+
+}
+
+inline void SSF_PENCIL::Cartesian_to_helical(int lx, int ly, int lz, Complex vpll, Complex vh1, Complex vh2, Complex &U_plus, Complex &U_minus)
+{
+
+}
+//Shubhadeep
 // Local field given local lx,ly,lz
 
 inline Complex SSF_PENCIL::Get_local_spectral_field(int lx, int ly, int lz, Array<Complex,3> A)

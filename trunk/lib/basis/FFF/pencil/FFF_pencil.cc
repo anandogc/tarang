@@ -95,22 +95,44 @@ FFF_PENCIL::FFF_PENCIL()
 
 
 	//********
-	
-	global.mpi.num_x_procs = 1;
-	global.mpi.num_y_procs = global.mpi.num_p_cols;
-	global.mpi.num_z_procs = global.mpi.num_p_rows;
-	
-	global.mpi.my_x_pcoord = 0;
-	global.mpi.my_y_pcoord = fftk.Get_col_id();
-	global.mpi.my_z_pcoord = fftk.Get_row_id();
-	
-	global.mpi.num_x_procs_real = global.mpi.num_p_cols;
-	global.mpi.num_y_procs_real = global.mpi.num_p_rows;
-	global.mpi.num_z_procs_real = 1;
-	
-	global.mpi.my_x_pcoord_real = fftk.Get_col_id();
-	global.mpi.my_y_pcoord_real = fftk.Get_row_id();
-	global.mpi.my_z_pcoord_real = 0;
+
+	if (Ny>1) {
+
+		global.mpi.num_x_procs = 1;
+		global.mpi.num_y_procs = global.mpi.num_p_cols;
+		global.mpi.num_z_procs = global.mpi.num_p_rows;
+		
+		global.mpi.my_x_pcoord = 0;
+		global.mpi.my_y_pcoord = fftk.Get_col_id();
+		global.mpi.my_z_pcoord = fftk.Get_row_id();
+		
+		global.mpi.num_x_procs_real = global.mpi.num_p_cols;
+		global.mpi.num_y_procs_real = global.mpi.num_p_rows;
+		global.mpi.num_z_procs_real = 1;
+		
+		global.mpi.my_x_pcoord_real = fftk.Get_col_id();
+		global.mpi.my_y_pcoord_real = fftk.Get_row_id();
+		global.mpi.my_z_pcoord_real = 0;
+	}
+	else {
+
+		global.mpi.num_x_procs = 1;
+		global.mpi.num_y_procs = 1;
+		global.mpi.num_z_procs = global.mpi.num_p_cols;
+		
+		global.mpi.my_x_pcoord = 0;
+		global.mpi.my_y_pcoord = 0;
+		global.mpi.my_z_pcoord = fftk.Get_col_id();
+		
+		global.mpi.num_x_procs_real = global.mpi.num_p_cols;
+		global.mpi.num_y_procs_real = 1;
+		global.mpi.num_z_procs_real = 1;
+		
+		global.mpi.my_x_pcoord_real = fftk.Get_col_id();
+		global.mpi.my_y_pcoord_real = 0;
+		global.mpi.my_z_pcoord_real = 0;
+
+	}
 	
 	
 	global.field.maxlx = global.field.shape_complex_array(0);
@@ -143,9 +165,11 @@ FFF_PENCIL::FFF_PENCIL()
 	num_y_procs = global.mpi.num_y_procs;
 	num_z_procs = global.mpi.num_z_procs;
 
+
 	my_x_pcoord = global.mpi.my_x_pcoord;
 	my_y_pcoord = global.mpi.my_y_pcoord;
 	my_z_pcoord = global.mpi.my_z_pcoord;
+
 
 	num_x_procs_real = global.mpi.num_x_procs_real;
 	num_y_procs_real = global.mpi.num_y_procs_real;
@@ -182,29 +206,58 @@ FFF_PENCIL::FFF_PENCIL()
 
     BasicIO::Initialize(global.io.data_dir, fftk.Get_communicator("ROW")); 
 	
-	BasicIO::Array_properties<3> array_properties;
-	array_properties.shape_full_complex_array = Nx, Ny, Nz/2+1;
-	array_properties.shape_full_real_array = Nx, Ny, Nz+2;
+	if (Ny>1) {
+		BasicIO::Array_properties<3> array_properties;
+		array_properties.shape_full_complex_array = Nx, Ny, Nz/2+1;
+		array_properties.shape_full_real_array = Nx, Ny, Nz+2;
+		array_properties.shape_cropped_real_array = Nx, Ny, Nz;
 
-	array_properties.id_complex_array = my_x_pcoord_real, 0, 0;
-	array_properties.id_real_array = my_x_pcoord_real, 0, 0;
+		array_properties.id_complex_array = my_x_pcoord_real, 0, 0;
+		array_properties.id_real_array = my_x_pcoord_real, 0, 0;
 
-	array_properties.numprocs_complex_array = num_x_procs_real, 1, 1;
-	array_properties.numprocs_real_array = num_x_procs_real, 1, 1;
+		array_properties.numprocs_complex_array = num_x_procs_real, 1, 1;
+		array_properties.numprocs_real_array = num_x_procs_real, 1, 1;
 
-	if (global.io.N_in_reduced.size() == 3)
-		array_properties.shape_N_in_reduced = global.io.N_in_reduced[0], global.io.N_in_reduced[1], global.io.N_in_reduced[2]/2+1;
-	
-	if (global.io.N_out_reduced.size() == 3)
-		array_properties.shape_N_out_reduced = global.io.N_out_reduced[0], global.io.N_out_reduced[1], global.io.N_out_reduced[2]/2+1;
+		if (global.io.N_in_reduced.size() == 3)
+			array_properties.shape_N_in_reduced = global.io.N_in_reduced[0], global.io.N_in_reduced[1], global.io.N_in_reduced[2]/2+1;
+		
+		if (global.io.N_out_reduced.size() == 3)
+			array_properties.shape_N_out_reduced = global.io.N_out_reduced[0], global.io.N_out_reduced[1], global.io.N_out_reduced[2]/2+1;
 
-	array_properties.Fourier_directions = 1,1,1;
-	array_properties.Z = 2;
+		array_properties.Fourier_directions = 1,1,1;
+		array_properties.Z = 2;
 
-	array_properties.datatype_complex_space = h5::Dtype(H5Complex);
-	array_properties.datatype_real_space = h5::Dtype(H5Real);
+		array_properties.datatype_complex_space = h5::Dtype(H5Complex);
+		array_properties.datatype_real_space = h5::Dtype(H5Real);
 
-	BasicIO::Set_H5_plans(array_properties, this);
+		BasicIO::Set_H5_plans(array_properties, this);
+	}
+	else if (Ny == 1) {
+		BasicIO::Array_properties<2> array_properties;
+		array_properties.shape_full_complex_array = Nx, Nz/2+1;
+		array_properties.shape_full_real_array = Nx, Nz+2;
+		array_properties.shape_cropped_real_array = Nx, Nz;
+
+		array_properties.id_complex_array = my_x_pcoord_real, 0;
+		array_properties.id_real_array = my_x_pcoord_real, 0;
+
+		array_properties.numprocs_complex_array = num_x_procs_real, 1;
+		array_properties.numprocs_real_array = num_x_procs_real, 1;
+
+		if (global.io.N_in_reduced.size() == 2)
+			array_properties.shape_N_in_reduced = global.io.N_in_reduced[0], global.io.N_in_reduced[2]/2+1;
+		
+		if (global.io.N_out_reduced.size() == 2)
+			array_properties.shape_N_out_reduced = global.io.N_out_reduced[0], global.io.N_out_reduced[2]/2+1;
+
+		array_properties.Fourier_directions = 1,1;
+		array_properties.Z = 1;
+
+		array_properties.datatype_complex_space = h5::Dtype(H5Complex);
+		array_properties.datatype_real_space = h5::Dtype(H5Real);
+
+		BasicIO::Set_H5_plans(array_properties, this);		
+	}
 
 
 	//These are used by Get_XY_plane

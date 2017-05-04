@@ -183,7 +183,8 @@ void FORCE::Force_energy_helicity_supply_or_level_basic(FluidVF& U, string force
 				}	//  of if (Probe_in_me())						
 			}		// of for
 						
-}				
+}
+
 
 void FORCE::Force_energy_helicity_supply_or_level_basic_assign(FluidVF& U, string force_type, Real inner_radius, Real outer_radius, Real para1, Real para2)
 {
@@ -193,6 +194,86 @@ void FORCE::Force_energy_helicity_supply_or_level_basic_assign(FluidVF& U, strin
 void FORCE::Force_energy_helicity_supply_or_level_basic_add(FluidVF& U, string force_type, Real inner_radius, Real outer_radius, Real para1, Real para2)
 {
 	Force_energy_helicity_supply_or_level_basic(U, force_type, inner_radius, outer_radius, para1, para2, true);
+}
+			
+//New crosshelical forsing (15/03/2017) which wa written with Stepanov R
+void FORCE::Force_energy_crosshelicity_supply_or_level_basic(FluidVF& U, FluidVF& W, Real inner_radius, Real outer_radius, Real para1, Real para2, bool add_flag)
+{ 
+	Real eps = para1;
+	Real eps_hc = para2;
+	
+	//cout << "para1,2 = " << para1 << " " << para2 << endl;
+	
+	int nf; 
+	int kx_max, ky_max, kz_max, kx_min, ky_min, kz_min;
+	Real modal_energy;
+	Real temp, temp1, temp2, temp3;
+	
+	nf = universal->Get_number_modes_in_shell(inner_radius, outer_radius);
+
+	kx_max = (int) ceil(outer_radius/kfactor[1]);
+	
+	if (Ny > 1)
+		ky_max = (int) ceil(outer_radius/kfactor[2]);
+	else
+		ky_max = 0;	
+	
+	kz_max = (int) ceil(outer_radius/kfactor[3]);
+	
+	kx_min = ky_min = kz_min = 0;
+	
+	if (basis_type == "FFF" || basis_type == "FFFW")
+		kx_min = -kx_max;
+	
+	if ((basis_type == "FFF" || basis_type == "FFFW") || (basis_type == "SFF"))
+		ky_min = -ky_max; 
+	
+	int lx, ly, lz;
+	Real Kmag, alpha_k, beta_k, sk;
+	Real eu, eb, hc, delta_c = 0.000000001; // With small delta_c forcing will work.
+	
+	for (int kx = kx_min; kx <= kx_max; kx++)
+		for (int ky = ky_min; ky <= ky_max; ky++)  
+			for (int kz = 0; kz <= kz_max; kz++) {
+
+				if (universal->Probe_in_me(kx,ky,kz))  { //if this mode exists for this proc
+					lx = universal->Get_lx(kx);
+					ly = universal->Get_ly(ky);
+					lz = universal->Get_kz(kz);
+				
+					Kmag = universal->Kmagnitude(lx, ly, lz);
+					if ((Kmag > inner_radius) && (Kmag <= outer_radius)) {
+						eu = U.cvf.Modal_energy(lx, ly, lz);
+						eb = W.cvf.Modal_energy(lx, ly, lz);
+						hc = 0.5*mydot(U.cvf.V1(lx, ly, lz), U.cvf.V2(lx, ly, lz), U.cvf.V3(lx, ly, lz), W.cvf.V1(lx, ly, lz), W.cvf.V2(lx, ly, lz), W.cvf.V3(lx, ly, lz));
+						
+						if (fabs(eu*eb - hc*hc) > MYEPS) {
+							alpha_k = (0.5*eps*eb - eps_hc*hc)/(eu*eb - hc*hc);
+							beta_k = (0.5*eps*hc - eps_hc*eu)/(hc*hc - eu*eb);	
+						}
+						else {
+							alpha_k = (0.5*eps*eb - eps_hc*hc)/(delta_c);
+							beta_k = (0.5*eps*hc - eps_hc*eu)/(delta_c);
+						}
+
+						
+						
+						Const_energy_supply_alpha_beta(U, W, lx, ly, lz, alpha_k, beta_k, add_flag);						
+					}
+				}	//  of if (Probe_in_me())						
+			}		// of for					
+
+}				
+
+
+void FORCE::Force_energy_crosshelicity_supply_or_level_basic_assign(FluidVF& U, FluidVF& W, Real inner_radius, Real outer_radius, Real para1, Real para2)
+{
+	Force_energy_crosshelicity_supply_or_level_basic(U, W, inner_radius, outer_radius, para1, para2, false);
+}
+
+void FORCE::Force_energy_crosshelicity_supply_or_level_basic_add(FluidVF& U, FluidVF& W, Real inner_radius, Real outer_radius, Real para1, Real para2)
+{
+	Force_energy_crosshelicity_supply_or_level_basic(U, W, inner_radius, outer_radius, para1, para2, true);
 }
 
 //*********************************************************************************************
@@ -352,6 +433,21 @@ void FORCE::Compute_force_const_energy_helicity_supply(FluidVF& U, FluidVF& W)
 		Force_energy_helicity_supply_or_level_basic_assign(W, "ENERGY_SUPPLY", inner_radius, outer_radius, energy_supply_W, epsh_by_k_epse_W);
 }
 
+
+//*********************************************************************************************
+// derived fn
+void FORCE::Compute_force_crosshelicity_supply(FluidVF& U, FluidVF& W)
+{
+		
+	Real inner_radius = global.force.double_para(0);
+	Real outer_radius = global.force.double_para(1);
+	Real eps = global.force.double_para(2);
+	Real eps_hc = global.force.double_para(3);				// epsh(k)/(k*eps(k))
+	
+	if (U.force_switch) 
+		Force_energy_crosshelicity_supply_or_level_basic_assign(U, W, inner_radius, outer_radius, eps, eps_hc);
+}
+
 //*********************************************************************************************
 // derived fn
 void FORCE::Compute_force_const_energy_helicity_supply(FluidVF& U, FluidVF& W, FluidSF& T)
@@ -423,7 +519,7 @@ void FORCE::Compute_force_const_energy_helicity(FluidVF& U, FluidVF& W)
 		Force_energy_helicity_supply_or_level_basic_assign(U, "CONSTANT_ENERGY", inner_radius, outer_radius, energy_level, h_by_k_E);
 	
 	if (W.force_switch) 
-		Force_energy_helicity_supply_or_level_basic_assign(U, "CONSTANT_ENERGY", inner_radius, outer_radius, energy_level_W, h_by_k_E_W);
+		Force_energy_helicity_supply_or_level_basic_assign(W, "CONSTANT_ENERGY", inner_radius, outer_radius, energy_level_W, h_by_k_E_W);
 }
 
 //*********************************************************************************************
@@ -443,7 +539,7 @@ void FORCE::Compute_force_const_energy_helicity(FluidVF& U, FluidVF& W, FluidSF&
 		
 	
 	if (W.force_switch) 
-		Force_energy_helicity_supply_or_level_basic_assign(U, "CONSTANT_ENERGY", inner_radius, outer_radius, energy_level_W, h_by_k_E_W);
+		Force_energy_helicity_supply_or_level_basic_assign(W, "CONSTANT_ENERGY", inner_radius, outer_radius, energy_level_W, h_by_k_E_W);
 		
 	if (T.force_switch) 
 		Force_energy_helicity_supply_or_level_basic_assign(T, "CONSTANT_ENERGY", inner_radius, outer_radius, energy_level_scalar);

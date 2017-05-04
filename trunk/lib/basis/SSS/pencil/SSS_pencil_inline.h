@@ -118,8 +118,32 @@ inline bool SSS_PENCIL::Probe_in_me(int kx, int ky, int kz)
 	return ( ((lx >= 0) && (lx < maxlx)) && ((ly >= 0) && (ly < maxly)) && ((lz >= 0) && (lz < maxlz)) );
 }
 
+inline void SSS_PENCIL::Craya_to_helical(Complex U1, Complex U2, Complex &U_plus, Complex &U_minus)
+{
+}
 
+inline void SSS_PENCIL::Helical_to_Craya(Complex U_plus, Complex U_minus, Complex &U1, Complex &U2)
+{
+}
 
+inline void SSS_PENCIL::Craya_to_cartesian(int lx, int ly, int lz, Complex U1, Complex U2, Complex &vpll, Complex &vh1, Complex &vh2)
+{
+}
+
+inline void SSS_PENCIL::Cartesian_to_Craya(int lx, int ly, int lz, Complex vpll, Complex vh1, Complex vh2, Complex &U1, Complex &U2)
+{
+}
+//Shubhadeep
+inline void SSS_PENCIL::Helical_to_cartesian(int lx, int ly, int lz, Complex U_plus, Complex U_minus, Complex &vpll, Complex &vh1, Complex &vh2)
+{
+
+}
+
+inline void SSS_PENCIL::Cartesian_to_helical(int lx, int ly, int lz, Complex vpll, Complex vh1, Complex vh2, Complex &U_plus, Complex &U_minus)
+{
+
+}
+//Shubhadeep
 inline Complex SSS_PENCIL::Get_spectral_field(int kx, int ky, int kz, Array<Complex,3> A)
 {
 	Array<Real,3> A_real(reinterpret_cast<Real*>(A.data()), shape_complex_array*shape(1,1,2), neverDeleteData);

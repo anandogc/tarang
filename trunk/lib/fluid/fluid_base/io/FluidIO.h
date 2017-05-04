@@ -146,6 +146,8 @@ public:
 	void Init_cond_ABC(FluidVF& U, FluidSF& T);
 	void Init_cond_ABC(FluidVF& U, FluidVF& W);
 	void Init_cond_ABC(FluidVF& U, FluidVF& W, FluidSF& T);
+  
+    void Init_cond_non_helical_to_helical(FluidVF& U);
 	
 	void Init_cond_Rayleigh_Taylor(FluidVF&U, FluidSF& T);
 	
@@ -154,8 +156,12 @@ public:
 	void Init_cond_DYNAMO_SIX_MODE(FluidVF& U, FluidVF& W);
 	
 	void Put_vector_amp_phase_comp_conj(FluidVF U, int lx, int ly, int lz,  Real amp, Real phase1, Real phase2, Real phase3);
+  
+    void Put_vector_amp_phase_comp_conj_helicity(FluidVF U, int lx, int ly, int lz,  Real ek, Real hk_by_k, Real phase_plus, Real phase_minus);
 	
 	void Put_scalar_amp_phase_comp_conj(FluidSF& T, int lx, int ly, int lz, Real amp, Real phase);
+
+	void Put_vector_amp_phase_comp_conj_cross_helicity(FluidVF U, int lx, int ly, int lz,  Real u_plus_mod, Real u_minus_mod, Real phase_plus, Real phase_minus);
 	
 	void Initialize_using_energy_helicity_spectrum(FluidVF& U, Real spectrum_amp, Real hk_by_kek);
 	void Initialize_using_energy_helicity_spectrum(FluidSF& T, Real spectrum_amp);
@@ -252,10 +258,11 @@ public:
 	void Output_shell_spectrum(FluidVF& U, FluidVF& W, FluidSF& T);
 	
 	void Output_ring_spectrum(FluidVF& U);
+	void Output_ring_spectrum(FluidVF& U, FluidVF& helicalU);
 	void Output_ring_spectrum(FluidVF& U, FluidSF& T);
 	void Output_ring_spectrum_scalar(FluidVF& U, FluidSF& T);
 	void Output_ring_spectrum_RBC(FluidVF& U, FluidSF& T);
-	void Output_ring_spectrum(FluidVF& U, FluidVF& W);
+	void Output_ring_spectrum(FluidVF& U, FluidVF& W, FluidVF& helicalU, FluidVF& helicalW);
 	void Output_ring_spectrum(FluidVF& U, FluidVF& W, FluidSF& T);
 	
 	void Output_cylindrical_ring_spectrum(FluidVF& U);

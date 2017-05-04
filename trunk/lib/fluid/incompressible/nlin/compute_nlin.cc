@@ -43,7 +43,7 @@
  *  @sa RSprod.cc
  *  @sa compute_derivative.cc
  *
- * @author  M. K. Verma
+ * @author  M. K. Verma, Satyajit Barman
  * @version 4.0 MPI
  * @date Sept 2008
  *
@@ -86,7 +86,6 @@ void Nlin_incompress::Compute_nlin(FluidVF& U)
 	Compute_nlin_diag(U);
 	
 	Compute_nlin_offdiag(U);
-
 	
 	/*if (master) cout << "nlin1 " << sum(abs(U.nlin1)) << endl;
 	universal->Print_large_Fourier_elements(U.nlin1);
@@ -109,6 +108,79 @@ void Nlin_incompress::Compute_nlin(FluidVF& U)
 	}
 }
 
+// Code for nonlinear part //
+
+void Nlin_incompress::Compute_nlin_vector_potential(FluidVF& U, PlainFluidVF& W)         
+{
+	U.Inverse_transform();		// Vir = Inv_transform(Vi)//This is important ; we missed it first
+	//W.Inverse_transform();		// Wir = Inv_transform(Wi)
+// To compute nonlinaer_1 --> u_j*del_x*A_j //
+	universal->Xderiv(W.cvf.V1, global.temp_array.X);   
+	universal->Inverse_transform(global.temp_array.X, global.temp_array.Xr);
+	ArrayOps::Real_space_multiply(U.rvf.V1r, global.temp_array.Xr, global.temp_array.Xr);
+	universal->Forward_transform(global.temp_array.Xr, U.nlin1);
+
+
+	universal->Xderiv(W.cvf.V2, global.temp_array.X);   
+	universal->Inverse_transform(global.temp_array.X, global.temp_array.Xr);
+	ArrayOps::Real_space_multiply(U.rvf.V2r, global.temp_array.Xr, global.temp_array.Xr);
+	universal->Forward_transform(global.temp_array.Xr, global.temp_array.X);
+	
+	U.nlin1 = U.nlin1 + global.temp_array.X;
+
+	universal->Xderiv(W.cvf.V3, global.temp_array.X);
+	universal->Inverse_transform(global.temp_array.X, global.temp_array.Xr);
+	ArrayOps::Real_space_multiply(U.rvf.V3r, global.temp_array.Xr, global.temp_array.Xr);
+	universal->Forward_transform(global.temp_array.Xr, global.temp_array.X);
+	
+	U.nlin1 = U.nlin1 + global.temp_array.X;
+	
+//	cout << U.nlin1 << "\n";
+	
+// To compute nonlinaer_2 --> u_j*del_y*A_j //
+	universal->Yderiv(W.cvf.V1, global.temp_array.X);   
+	universal->Inverse_transform(global.temp_array.X, global.temp_array.Xr);
+	ArrayOps::Real_space_multiply(U.rvf.V1r, global.temp_array.Xr, global.temp_array.Xr);
+	universal->Forward_transform(global.temp_array.Xr, U.nlin2);
+
+
+	universal->Yderiv(W.cvf.V2, global.temp_array.X);   
+	universal->Inverse_transform(global.temp_array.X, global.temp_array.Xr);
+	ArrayOps::Real_space_multiply(U.rvf.V2r, global.temp_array.Xr, global.temp_array.Xr);
+	universal->Forward_transform(global.temp_array.Xr, global.temp_array.X);
+	
+	U.nlin2 = U.nlin2 + global.temp_array.X;
+
+	universal->Yderiv(W.cvf.V3, global.temp_array.X);
+	universal->Inverse_transform(global.temp_array.X, global.temp_array.Xr);
+	ArrayOps::Real_space_multiply(U.rvf.V3r, global.temp_array.Xr, global.temp_array.Xr);
+	universal->Forward_transform(global.temp_array.Xr, global.temp_array.X);
+	
+	U.nlin2 = U.nlin2 + global.temp_array.X;
+	
+// To compute nonlinaer_3 --> u_j*del_z*A_j //
+	universal->Zderiv(W.cvf.V1, global.temp_array.X);   
+	universal->Inverse_transform(global.temp_array.X, global.temp_array.Xr);
+	ArrayOps::Real_space_multiply(U.rvf.V1r, global.temp_array.Xr, global.temp_array.Xr);
+	universal->Forward_transform(global.temp_array.Xr, U.nlin3);
+
+
+	universal->Zderiv(W.cvf.V2, global.temp_array.X);   
+	universal->Inverse_transform(global.temp_array.X, global.temp_array.Xr);
+	ArrayOps::Real_space_multiply(U.rvf.V2r, global.temp_array.Xr, global.temp_array.Xr);
+	universal->Forward_transform(global.temp_array.Xr, global.temp_array.X);
+	
+	U.nlin3 = U.nlin3 + global.temp_array.X;
+
+	universal->Zderiv(W.cvf.V3, global.temp_array.X);
+	universal->Inverse_transform(global.temp_array.X, global.temp_array.Xr);
+	ArrayOps::Real_space_multiply(U.rvf.V3r, global.temp_array.Xr, global.temp_array.Xr);
+	universal->Forward_transform(global.temp_array.Xr, global.temp_array.X);
+	
+	U.nlin3 = U.nlin3 + global.temp_array.X;
+	 
+
+}
 
 
 //*********************************  End of compute_nlin.cc  **********************************

@@ -94,16 +94,17 @@ public:
 	void Output_flux(FluidVF& U, FluidVF& W, Pressure& P, FluidVF& helicalU, FluidVF& helicalW);
 	void Output_flux(FluidVF& U, FluidVF& W, FluidSF& T, Pressure& P);
 	
-	void Output_shell_to_shell(FluidVF& U, Pressure& P);
+  	void Output_shell_to_shell(FluidVF& U, Pressure& P, FluidVF& helicalU);
 	void Output_shell_to_shell(FluidVF& U, FluidSF& T, Pressure& P);
-	void Output_shell_to_shell(FluidVF& U, FluidVF& W, Pressure& P);
+	void Output_shell_to_shell(FluidVF& U, FluidVF& W, Pressure& P, FluidVF& helicalU, FluidVF& helicalW);
 	void Output_shell_to_shell(FluidVF& U, FluidVF& W, FluidSF& T, Pressure& P);
-	
-	void Output_ring_to_ring(FluidVF& U, Pressure& P);
+
+  	void Output_ring_to_ring(FluidVF& U, Pressure& P);
+	void Output_ring_to_ring(FluidVF& U, Pressure& P, FluidVF& helicalU);
 	void Output_ring_to_ring(FluidVF& U, FluidSF& T, Pressure& P);
 	void Output_ring_to_ring_scalar(FluidVF& U, FluidSF& T, Pressure& P);
 	void Output_ring_to_ring_RBC(FluidVF& U, FluidSF& T, Pressure& P);
-	void Output_ring_to_ring(FluidVF& U, FluidVF& W, Pressure& P);
+	void Output_ring_to_ring(FluidVF& U, FluidVF& W, Pressure& P, FluidVF& helicalU, FluidVF& helicalW);
 	void Output_ring_to_ring(FluidVF& U, FluidVF& W, FluidSF& T, Pressure& P);
 	
 	void Output_cylindrical_ring_to_ring(FluidVF& U, Pressure& P);

@@ -39,7 +39,7 @@
  *	@version 4.0 MPI
  *	@date Sept 2008
  */
-//test2
+
 #include "main.h"
 
 Universal *universal = NULL;
@@ -93,6 +93,7 @@ int main(int argc, char** argv)
 	}
 
 	global.Process_advanced_vars();
+
 	global.Print();
 
 	

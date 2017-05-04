@@ -56,8 +56,83 @@ void  FluidIO::Init_cond_complex_field(FluidVF& U)
 		// Vz(lx,ly,lz=0) already read; construct for lz>=1.
 
 }
+//Non-Helical to Helical for Hydro
+//Date 25-April-2017
+void  FluidIO::Init_cond_non_helical_to_helical(FluidVF& U)
+{
+  Real ek_old, sk;
+  Complex vpll, vh1, vh2,phase_u_plus,phase_u_minus,u_plus,u_minus;
+  Real u_plus_mod,u_minus_mod;
+  U.cvf.Read_complex_field();
+  
+  if (global.io.input_vx_vy_switch && global.field.incompressible)
+    universal->Fill_Vz(U.cvf.V1, U.cvf.V2, U.cvf.V3);
+		// Vz(lx,ly,lz=0) already read; construct for lz>=1.
+  sk = global.io.double_para(0); //sk = Hk/(k*ek)
 
-//*********************************************************************************************
+  
+  
+  for (int lx=0; lx<global.field.maxlx; lx++)
+    for (int ly=0; ly<global.field.maxly; ly++)
+      for (int lz=0; lz<global.field.maxlz; lz++) {
+        
+        if (global.field.anisotropy_dirn == 1){
+         vpll = U.cvf.V1(lx,ly,lz);
+         vh1 = U.cvf.V2(lx,ly,lz);
+         vh2 = U.cvf.V3(lx,ly,lz);
+         }
+         
+         else if (global.field.anisotropy_dirn == 2){
+         vpll = U.cvf.V2(lx,ly,lz);
+         vh1 = U.cvf.V1(lx,ly,lz);
+         vh2 = U.cvf.V3(lx,ly,lz);
+         }
+         
+         
+         else if (global.field.anisotropy_dirn == 3){
+         vpll = U.cvf.V3(lx,ly,lz);
+         vh1 = U.cvf.V1(lx,ly,lz);
+         vh2 = U.cvf.V2(lx,ly,lz);
+         }
+        
+        ek_old = universal->Modal_energy(lx, ly, lz,U.cvf.V1) + universal->Modal_energy(lx, ly, lz,U.cvf.V2) + universal->Modal_energy(lx, ly, lz,U.cvf.V3);
+ 
+
+        
+        universal->Cartesian_to_helical(lx,ly,lz,vpll,vh1,vh2,u_plus, u_minus);
+        phase_u_plus = u_plus/abs(u_plus);
+        phase_u_minus = u_minus/abs(u_minus);
+        u_plus_mod =sqrt((1+sk)*ek_old/2);
+        u_minus_mod = sqrt((1-sk)/(1+sk))*u_plus_mod;
+        u_plus = u_plus_mod*phase_u_plus;
+        u_minus = u_minus_mod*phase_u_minus;
+        
+        universal->Helical_to_cartesian(lx,ly,lz,u_plus,u_minus,vpll,vh1,vh2);
+        if (global.field.anisotropy_dirn == 1){
+         U.cvf.V1(lx,ly,lz)= vpll;
+         U.cvf.V2(lx,ly,lz)= vh1;
+         U.cvf.V3(lx,ly,lz) = vh2;
+         }
+         
+         else if (global.field.anisotropy_dirn == 2){
+         U.cvf.V1(lx,ly,lz) = vh1;
+         U.cvf.V2(lx,ly,lz) = vpll;
+         U.cvf.V3(lx,ly,lz) = vh2;
+         }
+         
+         
+         else if (global.field.anisotropy_dirn == 3){
+         U.cvf.V1(lx,ly,lz) = vh1;
+         U.cvf.V2(lx,ly,lz) = vh2;
+         U.cvf.V3(lx,ly,lz) = vpll;
+         }
+      }
+
+}
+
+//************************
+
+/*********************************************************************/
 
 void  FluidIO::Init_cond_complex_field(FluidVF& U, FluidSF& T)
 {

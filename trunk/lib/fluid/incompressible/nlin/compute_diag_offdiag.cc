@@ -457,6 +457,43 @@ void Nlin_incompress::Compute_nlin_Tsqr(FluidSF& T)
 
 
 
+void Nlin_incompress::Compute_nlin_helical(FluidVF& U, PlainFluidVF& W)
+{
+  if (!global.program.two_dimension) {  // for 3d and 2.5d
+    
+    U.Inverse_transform();
+    W.Inverse_transform();
+
+    
+    
+    ArrayOps::Real_space_multiply(U.rvf.V2r, W.rvf.V3r, global.temp_array.Xr);	// V1r = V1r*W2r
+    ArrayOps::Real_space_multiply(U.rvf.V3r, W.rvf.V2r, global.temp_array.Xr2);
+    
+    global.temp_array.Xr = global.temp_array.Xr-global.temp_array.Xr2;
+    universal->Forward_transform(global.temp_array.Xr, U.nlin1);
+    
+    
+    ArrayOps::Real_space_multiply(U.rvf.V3r, W.rvf.V1r, global.temp_array.Xr);
+    ArrayOps::Real_space_multiply(U.rvf.V1r, W.rvf.V3r, global.temp_array.Xr2);
+    
+    global.temp_array.Xr = global.temp_array.Xr-global.temp_array.Xr2;
+    universal->Forward_transform(global.temp_array.Xr, U.nlin2);
+    
+    ArrayOps::Real_space_multiply(U.rvf.V1r, W.rvf.V2r, global.temp_array.Xr);
+    ArrayOps::Real_space_multiply(U.rvf.V2r, W.rvf.V1r, global.temp_array.Xr2);
+    
+    global.temp_array.Xr = global.temp_array.Xr-global.temp_array.Xr2;
+    universal->Forward_transform(global.temp_array.Xr, U.nlin3);
+    
+  }
+  
+  // 2D...
+  else {
+    cout<<"2D will be implemented latter. "<<endl;
+
+  }
+}
+
 //****************************  End of RSprod.cc **********************************************
 
 

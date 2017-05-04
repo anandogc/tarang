@@ -43,7 +43,6 @@
  
 int Ifluid_main()
 {
-		
 	// ITERATION...
 	if (global.program.iter_or_diag == "ITERATION") {
 		
@@ -63,7 +62,6 @@ int Ifluid_main()
 		
 		fluidIO_incompress.Read_init_cond(U);
 
-
 		// fluidIO_incompress.Output_cout(U);  // for initial cond
 		// MPI_Abort(MPI_COMM_WORLD, 1);
 		// U.Inverse_transform();
@@ -82,7 +80,7 @@ int Ifluid_main()
 			cout << "abs(sum(Divergence)) of the initial field U = " << total_abs_div << "is large. " << '\n' << "Therefore exiting the program." << endl;
 			// MPI_Abort(MPI_COMM_WORLD, 1);
 		}
-		
+
 		fluidIO_incompress.Output_all_inloop(U, P, helicalU);  // for initial cond
 
 
@@ -91,7 +89,6 @@ int Ifluid_main()
 		int  iter=0;  // iterations 
 
 		global.time.now = global.time.init;
-		
 		
 		if (basis_type=="ChFF")
 			time_advance_incompress.Compute_homgeneous_soln_influence_matrix(U,P);
@@ -204,7 +201,7 @@ int Ifluid_main()
 					filename = "/out/shell_to_shell.d";
 					filename = global.io.data_dir+ filename;   
 					fluidIO_incompress.shell_to_shell_file.open(filename.c_str());
-					fluidIO_incompress.Output_shell_to_shell(U, P);
+					fluidIO_incompress.Output_shell_to_shell(U, P, helicalU);
 					fluidIO_incompress.Close_files();
 					break;
 				}
@@ -213,7 +210,7 @@ int Ifluid_main()
 					filename = "/out/ring_to_ring.d";
 					filename = global.io.data_dir+ filename;   
 					fluidIO_incompress.ring_to_ring_file.open(filename.c_str());
-					fluidIO_incompress.Output_ring_to_ring(U, P);
+					fluidIO_incompress.Output_ring_to_ring(U, P, helicalU);
 					fluidIO_incompress.Close_files();
 					break;	
 				}

@@ -62,10 +62,13 @@ void FluidIO::Read_init_cond(FluidVF& U)
 		
 		case (5) : Init_cond_energy_helicity_spectrum(U); break;	
 		// given energy and hel spectrum
+        
 		
 		case (6) : Init_cond_Taylor_Green(U); break;
 		
 		case (7) : Init_cond_ABC(U); break;
+        
+        case (8) : Init_cond_non_helical_to_helical(U); break;
         
         case (400): Init_cond_vortex(U); break;
             
@@ -76,8 +79,6 @@ void FluidIO::Read_init_cond(FluidVF& U)
 	
 	if (master)
 		cout  << "Reading of field configurations ended successfully" << endl;
-
-	Output_complex_field(U);
 
     // preprocess the data
     int input_proc = global.io.input_field_procedure;

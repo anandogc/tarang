@@ -74,7 +74,7 @@ SET (OTHER_LIBS blitz m hdf5 h5si dl yaml-cpp)
 #################################################
 
 #Set version
-SET (VERSION "2.5.2")
+SET (VERSION "2.5.2-dev")
 
 SET (SPECTRAL_TRANSFORM_VERSION v2)
 

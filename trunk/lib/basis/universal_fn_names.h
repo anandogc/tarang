@@ -176,7 +176,19 @@
 	void Add_local_spectral_field(int lx, int ly, int lz, Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az, TinyVector<Complex,3> V);
 	void Add_local_spectral_field(int lx, int ly, int lz, Array<Complex,3> A, Real field);
 	void Add_local_spectral_field(int lx, int ly, int lz, Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az, TinyVector<Real,3> V);
+
+	void Craya_to_helical(Complex U1, Complex U2, Complex &U_plus, Complex &U_minus);
+	void Helical_to_Craya(Complex U_plus, Complex U_minus, Complex &U1, Complex &U2);
 	
+	void Craya_to_cartesian(int lx, int ly, int lz, Complex U1, Complex U2, Complex &vpll, Complex &vh1, Complex &vh2);
+	void Cartesian_to_Craya(int lx, int ly, int lz, Complex vpll, Complex vh1, Complex vh2, Complex &U1, Complex &U2);
+	
+	// shubhadeep //
+	void Helical_to_cartesian(int lx, int ly, int lz, Complex U_plus, Complex U_minus, Complex &vpll, Complex &vh1, Complex &vh2);
+	void Cartesian_to_helical(int lx, int ly, int lz, Complex vpll, Complex vh1, Complex vh2, Complex &U_plus, Complex &U_minus);
+	//shubhadeep //
+
+
 	int Get_lx_real_space(int rx);
 	int Get_ly_real_space(int ry);
 	int Get_lz_real_space(int rz);

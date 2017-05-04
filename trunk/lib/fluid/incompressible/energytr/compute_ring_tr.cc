@@ -78,6 +78,90 @@ void EnergyTr::Compute_ring_tr(FluidVF& U)
 		}
 }
 
+void EnergyTr::Compute_kinetic_helicity_ring_tr(FluidVF& U,  FluidVF& helicalU)
+{
+  universal->Compute_vorticity(U.cvf.V1, U.cvf.V2, U.cvf.V3, helicalU.cvf.V1, helicalU.cvf.V2, helicalU.cvf.V3, 0, universal->Max_radius_inside());
+
+  ring_to_ring_VF_UtoW = 0.0;
+  ring_to_ring_VF_WtoU = 0.0;
+  ring_to_ring_VF_UtoU = 0.0;
+  
+  // skip the last shell -- outer rad = infty
+  for (int ring_shell_from_i = 1; ring_shell_from_i < global.energy_transfer.ring_to_ring.no_shells; ring_shell_from_i++)
+    for (int sector_from_i = 1; sector_from_i <= global.energy_transfer.ring_to_ring.no_sectors; sector_from_i++)
+    {
+      
+      Fill_ring(ring_shell_from_i, sector_from_i, U);
+      
+      Nlin_incompress::Compute_nlin(U, Giver);
+      // U.nlin = U.grad Um
+      
+      universal->Ring_mult_all(U.nlin1, U.nlin2, U.nlin3, helicalU.cvf.V1, helicalU.cvf.V2, helicalU.cvf.V3, temp_ring_tr);
+      
+      ring_to_ring_VF_UtoW(ring_shell_from_i, sector_from_i, Range::all(), Range::all()) = -0.5*temp_ring_tr;
+      
+      /*****************************************************************************************/
+      Fill_ring(ring_shell_from_i, sector_from_i, helicalU);
+      
+      Nlin_incompress::Compute_nlin(U, Giver);
+      // U.nlin = U.grad Um
+      
+      universal->Ring_mult_all(U.nlin1, U.nlin2, U.nlin3, U.cvf.V1, U.cvf.V2, U.cvf.V3, temp_ring_tr);
+      
+      ring_to_ring_VF_WtoU(ring_shell_from_i, sector_from_i, Range::all(), Range::all()) = -0.5*temp_ring_tr;
+      
+      /*****************************************************************************************/
+      Fill_ring(ring_shell_from_i, sector_from_i, U);
+      
+      Nlin_incompress::Compute_nlin(helicalU, Giver);
+      // U.nlin = U.grad Um
+      
+      universal->Ring_mult_all(helicalU.nlin1, helicalU.nlin2, helicalU.nlin3, U.cvf.V1, U.cvf.V2, U.cvf.V3, temp_ring_tr);
+      
+      ring_to_ring_VF_UtoU(ring_shell_from_i, sector_from_i, Range::all(), Range::all()) = 0.5*temp_ring_tr;
+      
+    }
+}
+
+
+void EnergyTr::Compute_enstrophy_ring_tr(FluidVF& U, FluidVF& helicalU)
+{
+	
+	universal->Compute_vorticity(U.cvf.V1, U.cvf.V2, U.cvf.V3, helicalU.cvf.V1, helicalU.cvf.V2, helicalU.cvf.V3, 0, universal->Max_radius_inside());
+
+	ring_to_ring_U_to_helicalU = 0.0;
+	ring_to_ring_helicalU_to_helicalU = 0.0;	
+	// skip the last shell -- outer rad = infty			
+	for (int ring_shell_from_i = 1; ring_shell_from_i < global.energy_transfer.ring_to_ring.no_shells; ring_shell_from_i++) 
+		for (int sector_from_i = 1; sector_from_i <= global.energy_transfer.ring_to_ring.no_sectors; sector_from_i++)
+		{	
+				
+					Fill_ring(ring_shell_from_i, sector_from_i, U);
+		
+					Nlin_incompress::Compute_nlin(helicalU, Giver);												
+					// U.nlin = U.grad Um	
+
+					universal->Ring_mult_all(U.nlin1, U.nlin2, U.nlin3, helicalU.cvf.V1, helicalU.cvf.V2, helicalU.cvf.V3, temp_ring_tr);
+															
+					ring_to_ring_U_to_helicalU(ring_shell_from_i, sector_from_i, Range::all(), Range::all()) += temp_ring_tr;
+		
+
+					Fill_ring(ring_shell_from_i, sector_from_i, helicalU);
+		
+					Nlin_incompress::Compute_nlin(U, Giver);												
+					// U.nlin = U.grad Um	
+
+					universal->Ring_mult_all(U.nlin1, U.nlin2, U.nlin3, helicalU.cvf.V1, helicalU.cvf.V2, helicalU.cvf.V3, temp_ring_tr);
+															
+					ring_to_ring_helicalU_to_helicalU (ring_shell_from_i, sector_from_i, Range::all(), Range::all()) = -temp_ring_tr;
+
+
+		}
+
+}
+
+
+
 
 
 //*********************************************************************************************
@@ -251,6 +335,85 @@ void EnergyTr::Compute_ring_tr(FluidVF& U, FluidVF& W)
 	
 }
 
+void EnergyTr::Compute_kinetic_helicity_ring_tr(FluidVF& U, FluidVF& W, FluidVF& helicalU, FluidVF& helicalW)
+{
+  universal->Compute_vorticity(U.cvf.V1, U.cvf.V2, U.cvf.V3, helicalU.cvf.V1, helicalU.cvf.V2, helicalU.cvf.V3, 0, universal->Max_radius_inside());
+  universal->Compute_vorticity(W.cvf.V1, W.cvf.V2, W.cvf.V3, helicalW.cvf.V1, helicalW.cvf.V2, helicalW.cvf.V3, 0, universal->Max_radius_inside());
+  
+  ring_to_ring_VF_UtoW = 0.0;
+  ring_to_ring_VF_WtoU = 0.0;
+  ring_to_ring_VF_UtoU = 0.0;
+  
+  ring_to_ring_VF_BtoW = 0.0;
+  ring_to_ring_VF_JtoU = 0.0;
+  ring_to_ring_VF_BtoU = 0.0;
+  
+  // skip the last shell -- outer rad = infty
+  for (int ring_shell_from_i = 1; ring_shell_from_i < global.energy_transfer.ring_to_ring.no_shells; ring_shell_from_i++)
+    for (int sector_from_i = 1; sector_from_i <= global.energy_transfer.ring_to_ring.no_sectors; sector_from_i++)
+    {
+      
+      Fill_ring(ring_shell_from_i, sector_from_i, U);
+      
+      Nlin_incompress::Compute_nlin(U, Giver);
+      // U.nlin = U.grad Um
+      
+      universal->Ring_mult_all(U.nlin1, U.nlin2, U.nlin3, helicalU.cvf.V1, helicalU.cvf.V2, helicalU.cvf.V3, temp_ring_tr);
+      
+      ring_to_ring_VF_UtoW(ring_shell_from_i, sector_from_i, Range::all(), Range::all()) = -0.5*temp_ring_tr;
+      
+      /*****************************************************************************************/
+      Fill_ring(ring_shell_from_i, sector_from_i, helicalU);
+      
+      Nlin_incompress::Compute_nlin(U, Giver);
+      // U.nlin = U.grad Um
+      
+      universal->Ring_mult_all(U.nlin1, U.nlin2, U.nlin3, U.cvf.V1, U.cvf.V2, U.cvf.V3, temp_ring_tr);
+      
+      ring_to_ring_VF_WtoU(ring_shell_from_i, sector_from_i, Range::all(), Range::all()) = -0.5*temp_ring_tr;
+      
+      /*****************************************************************************************/
+      Fill_ring(ring_shell_from_i, sector_from_i, U);
+      
+      Nlin_incompress::Compute_nlin(helicalU, Giver);
+      // U.nlin = U.grad Um
+      
+      universal->Ring_mult_all(helicalU.nlin1, helicalU.nlin2, helicalU.nlin3, U.cvf.V1, U.cvf.V2, U.cvf.V3, temp_ring_tr);
+      
+      ring_to_ring_VF_UtoU(ring_shell_from_i, sector_from_i, Range::all(), Range::all()) = 0.5*temp_ring_tr;
+      
+      /*****************************************************************************************/
+      Fill_ring(ring_shell_from_i, sector_from_i, W);
+      
+      Nlin_incompress::Compute_nlin(W, Giver);
+      // U.nlin = U.grad Um
+      
+      universal->Ring_mult_all(W.nlin1, W.nlin2, W.nlin3, helicalU.cvf.V1, helicalU.cvf.V2, helicalU.cvf.V3, temp_ring_tr);
+      
+      ring_to_ring_VF_BtoW(ring_shell_from_i, sector_from_i, Range::all(), Range::all()) = 0.5*temp_ring_tr;
+      
+      /*****************************************************************************************/
+      Fill_ring(ring_shell_from_i, sector_from_i, helicalW);
+      
+      Nlin_incompress::Compute_nlin(W, Giver);
+      // U.nlin = U.grad Um
+      
+      universal->Ring_mult_all(W.nlin1, W.nlin2, W.nlin3, U.cvf.V1, U.cvf.V2, U.cvf.V3, temp_ring_tr);
+      
+      ring_to_ring_VF_JtoU(ring_shell_from_i, sector_from_i, Range::all(), Range::all()) = 0.5*temp_ring_tr;
+      
+      /*****************************************************************************************/
+      Fill_ring(ring_shell_from_i, sector_from_i, W);
+      
+      Nlin_incompress::Compute_nlin(helicalW, Giver);
+      // U.nlin = U.grad Um
+      
+      universal->Ring_mult_all(helicalW.nlin1, helicalW.nlin2, helicalW.nlin3, U.cvf.V1, U.cvf.V2, U.cvf.V3, temp_ring_tr);
+      
+      ring_to_ring_VF_BtoU(ring_shell_from_i, sector_from_i, Range::all(), Range::all()) = -0.5*temp_ring_tr;
+      
+    }
+}
 
 
 //*********************************************************************************************

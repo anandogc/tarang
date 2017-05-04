@@ -139,6 +139,7 @@ void FORCE::Compute_force(FluidVF& U, FluidVF& W)
 		case (21) : Compute_force_Coriolis(U, W); break;
 		case (22) : Compute_force_Keplerian(U, W); break;
 		case (23) : Compute_force_Keplerian_SB(U, W); break;
+		case (24) : Compute_force_crosshelicity_supply(U, W); break;
 		case (101): Compute_force_DYNAMO_SIX_MODE(U, W); break;
 	}
 	

@@ -223,7 +223,74 @@ inline void FFF_PENCIL::Add_spectral_field(int kx, int ky, int kz, Array<Complex
 }
 
 
+//Satyajit et al. 26/03/17
+inline void FFF_PENCIL::Craya_to_helical(Complex U1, Complex U2, Complex &U_plus, Complex &U_minus)
+{
+	U_plus = (U2+I*U1)/TWO;
+	U_minus = (U2-I*U1)/TWO;
+}
 
+inline void FFF_PENCIL::Helical_to_Craya(Complex U_plus, Complex U_minus, Complex &U1, Complex &U2)
+{
+	U1 = I*(U_minus - U_plus);
+	U2 = (U_minus + U_plus);
+}
+
+inline void FFF_PENCIL::Craya_to_cartesian(int lx, int ly, int lz, Complex U1, Complex U2, Complex &vpll, Complex &vh1, Complex &vh2)
+{
+	Real theta = universal->AnisKvect_polar_angle(lx, ly, lz);
+    Real phi = universal->AnisKvect_azimuthal_angle(lx, ly, lz);
+    
+    vpll = -U2*sin(theta);
+    vh1 = U1*sin(phi) + U2*cos(theta)*cos(phi);
+    vh2 = -U1*cos(phi) + U2*sin(phi)*cos(theta);
+}
+
+inline void FFF_PENCIL::Cartesian_to_Craya(int lx, int ly, int lz, Complex vpll, Complex vh1, Complex vh2, Complex &U1, Complex &U2)
+{
+	Real theta = universal->AnisKvect_polar_angle(lx, ly, lz);
+    Real phi = universal->AnisKvect_azimuthal_angle(lx, ly, lz);
+ 
+	U1 = (vh1*sin(phi) - vh2*cos(phi));
+	
+	if (fabs(sin(theta)) > 0.1) {	
+		U2 = - vpll/sin(theta);
+	}
+	else {
+		U2 = (vh1*cos(phi)+vh2*sin(phi))/cos(theta);
+	}
+}
+
+inline void FFF_PENCIL::Helical_to_cartesian(int lx, int ly, int lz, Complex U_plus, Complex U_minus, Complex &vpll, Complex &vh1, Complex &vh2)
+{
+	complex <double> U1,U2;
+
+	Real theta = universal->AnisKvect_polar_angle(lx, ly, lz);
+    Real phi = universal->AnisKvect_azimuthal_angle(lx, ly, lz);
+    U1 = I*(U_minus - U_plus);
+	U2 = (U_minus + U_plus);
+	vpll = -U2*sin(theta);
+    vh1 = U1*sin(phi) + U2*cos(theta)*cos(phi);
+    vh2 = -U1*cos(phi) + U2*sin(phi)*cos(theta);
+}
+
+inline void FFF_PENCIL::Cartesian_to_helical(int lx, int ly, int lz, Complex vpll, Complex vh1, Complex vh2, Complex &U_plus, Complex &U_minus)
+{
+	Real theta = universal->AnisKvect_polar_angle(lx, ly, lz);
+    Real phi = universal->AnisKvect_azimuthal_angle(lx, ly, lz);
+    complex <double> U1,U2;
+    U1 = (vh1*sin(phi) - vh2*cos(phi));
+	if (fabs(sin(theta)) > 0.1) 
+	{	
+		U2 = - vpll/sin(theta);
+	}
+	else 
+	{
+		U2 = (vh1*cos(phi) + vh2*sin(phi))/cos(theta);
+	}
+	U_plus=(U2+I*U1)/2.0;
+	U_minus=(U2-I*U1)/2.0;
+}
 
 // Local field given local lx,ly,lz
 
@@ -483,7 +550,6 @@ inline Real FFF_PENCIL::Approx_number_modes_in_shell(int radius)
 	   return (4*M_PI*radius*radius);
 }
 
-
 //*********************************************************************************************
 
 
@@ -649,7 +715,7 @@ inline Real FFF_PENCIL::AnisKperp(int lx, int ly, int lz)
 inline Real FFF_PENCIL::AnisKh1(int lx, int ly, int lz)
 {	
 	if (global.field.anisotropy_dirn == 1)
-		return (Get_ky(ly) * kfactor[2]);  
+		return (Get_ky(ly) * kfactor[2]);
 	
 	else if (global.field.anisotropy_dirn == 2)
 		return (Get_kz(lz) * kfactor[3]);

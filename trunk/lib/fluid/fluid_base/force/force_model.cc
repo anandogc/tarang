@@ -348,7 +348,7 @@ void FORCE::Model_force_spectrum(Real force_spectrum_amplitude, Real force_spect
 	
 	for (int i=0; i < (Sk.length())(0); i++) {
 		k = 1.0*i;
-		Sk(i) = force_spectrum_amplitude * pow(k,force_spectrum_exponent)/global.time.dt;
+		Sk(i) = force_spectrum_amplitude * pow(k,force_spectrum_exponent)/(0.01);
     }
     
   //  cout << "Sk = " << Sk << endl;

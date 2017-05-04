@@ -521,6 +521,72 @@ void Universal::Compute_ring_spectrum
 
 
 
+void Universal::Compute_local_helical_ring_spectrum
+(
+ Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
+ Array<Complex,3> helicalAx, Array<Complex,3> helicalAy, Array<Complex,3> helicalAz,
+ int n,
+ Array<Real,2> local_hk1, Array<Real,2> local_hk2, Array<Real,2> local_hk3
+ )
+{
+	local_hk1 = 0.0;
+	local_hk2 = 0.0;
+	local_hk3 = 0.0;
+	
+	Real Kmag, theta;
+	Real factor;
+	int shell_index, sector_index;
+	
+	int	Kmax = Max_radius_inside();
+	
+	for (int lx=0; lx<maxlx; lx++)
+		for (int ly=0; ly<maxly; ly++)
+			for (int lz=0; lz<maxlz; lz++) {
+				
+				Kmag = Kmagnitude(lx,ly,lz);
+				shell_index = (int) ceil(Kmag);
+				
+				if ((Kmag > MYEPS) && (shell_index <= Kmax)) {
+					
+					theta = AnisKvect_polar_angle(lx,ly,lz);
+					
+					sector_index = Get_sector_index(theta, global.spectrum.ring.sector_angles);
+					
+					factor = Multiplicity_factor(lx,ly,lz);
+					local_hk1(shell_index, sector_index) += (1/4.0)*factor*my_pow(Kmag,n)*real(conj(Ax(lx,ly,lz))*helicalAx(lx,ly,lz) + conj(Ax(lx,ly,lz))*helicalAx(lx,ly,lz));
+					local_hk2(shell_index, sector_index) += (1/4.0)*factor*my_pow(Kmag,n)*real(conj(Ay(lx,ly,lz))*helicalAy(lx,ly,lz) + conj(Ay(lx,ly,lz))*helicalAy(lx,ly,lz));
+					local_hk3(shell_index, sector_index) += (1/4.0)*factor*my_pow(Kmag,n)*real(conj(Az(lx,ly,lz))*helicalAz(lx,ly,lz) + conj(Az(lx,ly,lz))*helicalAz(lx,ly,lz));
+				}
+			}
+	
+}
+
+
+void Universal::Compute_helical_ring_spectrum
+(
+ Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
+ Array<Complex,3> helicalAx, Array<Complex,3> helicalAy, Array<Complex,3> helicalAz,
+ int n,
+ Array<Real,2> hk1, Array<Real,2> hk2, Array<Real,2> hk3
+ )
+{
+	
+	static Array<Real,2> local_hk1(hk1.shape());
+	static Array<Real,2> local_hk2(hk2.shape());
+	static Array<Real,2> local_hk3(hk3.shape());
+	
+	Compute_local_helical_ring_spectrum(Ax, Ay, Az, helicalAx, helicalAy, helicalAz, n, local_hk1, local_hk2, local_hk3);
+	
+	int data_size = hk1.size();
+	
+	MPI_Reduce(reinterpret_cast<Real*>(local_hk1.data()), reinterpret_cast<Real*>(hk1.data()), data_size, MPI_Real, MPI_SUM, master_id, MPI_COMM_WORLD);
+	
+	MPI_Reduce(reinterpret_cast<Real*>(local_hk2.data()), reinterpret_cast<Real*>(hk2.data()), data_size, MPI_Real, MPI_SUM, master_id, MPI_COMM_WORLD);
+	
+	MPI_Reduce(reinterpret_cast<Real*>(local_hk3.data()), reinterpret_cast<Real*>(hk3.data()), data_size, MPI_Real, MPI_SUM, master_id, MPI_COMM_WORLD);
+	
+}
+
 //*********************************************************************************************
 //
 //  A.B

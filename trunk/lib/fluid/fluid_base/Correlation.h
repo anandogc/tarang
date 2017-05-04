@@ -92,6 +92,10 @@ public:
 	static Array<Real,2>		ring_ek2;
 	
 	static Array<Real,2>		ring_ek3;
+
+	static Array<Real,2>		ring_hk1;
+	static Array<Real,2>		ring_hk2;
+	static Array<Real,2>		ring_hk3;
 	
 	//!  Energy Dissipation rate in ring(m,n) (without \f$ \nu \f$).
 	static Array<Real,2>		ring_dissk1, ring_dissk2, ring_dissk3;
@@ -136,6 +140,7 @@ public:
 	static void Compute_ring_spectrum(FluidVF& U);
 	static void Compute_ring_spectrum(FluidVF& U, FluidVF& W);
 	static void Compute_ring_spectrum(FluidVF&U, FluidSF& T);
+	static void Compute_helical_ring_spectrum(FluidVF& U, FluidVF& helicalU);
 	
 	static void Compute_cylindrical_ring_spectrum(FluidVF& U);
 	static void Compute_cylindrical_ring_spectrum(FluidVF& U, FluidVF& W);

@@ -567,6 +567,33 @@ inline Real SFF_PENCIL::Get_Modal_helicity
 
 }
 
+inline void SFF_PENCIL::Craya_to_helical(Complex U1, Complex U2, Complex &U_plus, Complex &U_minus)
+{
+}
+
+inline void SFF_PENCIL::Helical_to_Craya(Complex U_plus, Complex U_minus, Complex &U1, Complex &U2)
+{
+}
+
+
+inline void SFF_PENCIL::Craya_to_cartesian(int lx, int ly, int lz, Complex U1, Complex U2, Complex &vpll, Complex &vh1, Complex &vh2)
+{
+}
+
+inline void SFF_PENCIL::Cartesian_to_Craya(int lx, int ly, int lz, Complex vpll, Complex vh1, Complex vh2, Complex &U1, Complex &U2)
+{
+}
+//Shubhadeep
+inline void SFF_PENCIL::Helical_to_cartesian(int lx, int ly, int lz, Complex U_plus, Complex U_minus, Complex &vpll, Complex &vh1, Complex &vh2)
+{
+
+}
+
+inline void SFF_PENCIL::Cartesian_to_helical(int lx, int ly, int lz, Complex vpll, Complex vh1, Complex vh2, Complex &U_plus, Complex &U_minus)
+{
+    
+}
+//Shubhadeep
 
 /**********************************************************************************************
 

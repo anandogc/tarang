@@ -68,6 +68,7 @@ class BasicIO
 	struct Array_properties {
 		TinyVector<hsize_t,rank> shape_full_complex_array;
 		TinyVector<hsize_t,rank> shape_full_real_array;
+		TinyVector<hsize_t,rank> shape_cropped_real_array; //Zeros in last Z is cropped
 
 		TinyVector<int,rank> id_complex_array;
 		TinyVector<int,rank> id_real_array;
