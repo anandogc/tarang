@@ -168,9 +168,11 @@ void FluidIO::Init_cond_energy_helicity_spectrum(FluidVF& U)
     
     if (my_id == master_id) {
         if (basis_type == "SSS") {
-            real(U.cvf.V1(0,0,0)) = Ux000;
-            real(U.cvf.V2(0,0,0)) = Uy000;
-            real(U.cvf.V3(0,0,0)) = Uz000;
+          U.cvf.V1(0,0,0).real(Ux000);
+          U.cvf.V2(0,0,0).real(Uy000);
+          U.cvf.V3(0,0,0).real(Uz000);
+          //real(U.cvf.V2(0,0,0)) = Uy000;
+          //real(U.cvf.V3(0,0,0)) = Uz000;
         }
         else {
             U.cvf.V1(0,0,0) = Complex(Ux000,0.0);
@@ -234,10 +236,14 @@ void  FluidIO::Init_cond_energy_helicity_spectrum_scalar(FluidVF& U, FluidSF& T)
     
     if (my_id == master_id) {
         if (basis_type == "SSS") {
-            real(U.cvf.V1(0,0,0)) = Ux000;
-            real(U.cvf.V2(0,0,0)) = Uy000;
-            real(U.cvf.V3(0,0,0)) = Uz000;
-            real(T.csf.F(0,0,0))  = T000;
+          U.cvf.V1(0,0,0).real(Ux000);
+          U.cvf.V2(0,0,0).real(Uy000);
+          U.cvf.V3(0,0,0).real(Uz000);
+          T.csf.F(0,0,0).real(T000);
+            //real(U.cvf.V1(0,0,0)) = Ux000;
+            //real(U.cvf.V2(0,0,0)) = Uy000;
+            //real(U.cvf.V3(0,0,0)) = Uz000;
+            //real(T.csf.F(0,0,0))  = T000;
         }
         else {
             U.cvf.V1(0,0,0) = Complex(Ux000,0.0);
@@ -389,13 +395,21 @@ void  FluidIO::Init_cond_energy_helicity_spectrum(FluidVF& U, FluidVF& W)
     
     if (my_id == master_id) {
         if (basis_type == "SSS") {
-            real(U.cvf.V1(0,0,0)) = Ux000;
+          U.cvf.V1(0,0,0).real(Ux000);
+          U.cvf.V2(0,0,0).real(Uy000);
+          U.cvf.V3(0,0,0).real(Uz000);
+          
+          W.cvf.V1(0,0,0).real(Wx000);
+          W.cvf.V2(0,0,0).real(Wy000);
+          W.cvf.V3(0,0,0).real(Wz000);
+          
+            /*real(U.cvf.V1(0,0,0)) = Ux000;
             real(U.cvf.V2(0,0,0)) = Uy000;
             real(U.cvf.V3(0,0,0)) = Uz000;
             
             real(W.cvf.V1(0,0,0)) = Wx000;
             real(W.cvf.V2(0,0,0)) = Wy000;
-            real(W.cvf.V3(0,0,0)) = Wz000;
+            real(W.cvf.V3(0,0,0)) = Wz000;*/
         }
         else {
             U.cvf.V1(0,0,0) = Complex(Ux000,0.0);
@@ -517,14 +531,24 @@ void  FluidIO::Init_cond_energy_helicity_spectrum(FluidVF& U, FluidVF& W, FluidS
     
     if (my_id == master_id) {
         if (basis_type == "SSS") {
-            real(U.cvf.V1(0,0,0)) = Ux000;
+          
+          U.cvf.V1(0,0,0).real(Ux000);
+          U.cvf.V2(0,0,0).real(Uy000);
+          U.cvf.V3(0,0,0).real(Uz000);
+          
+          W.cvf.V1(0,0,0).real(Wx000);
+          W.cvf.V2(0,0,0).real(Wy000);
+          W.cvf.V3(0,0,0).real(Wz000);
+          T.csf.F(0,0,0).real(T000);
+          
+            /*real(U.cvf.V1(0,0,0)) = Ux000;
             real(U.cvf.V2(0,0,0)) = Uy000;
             real(U.cvf.V3(0,0,0)) = Uz000;
             
             real(W.cvf.V1(0,0,0)) = Wx000;
             real(W.cvf.V2(0,0,0)) = Wy000;
             real(W.cvf.V3(0,0,0)) = Wz000;
-            real(T.csf.F(0,0,0)) = T000;
+            real(T.csf.F(0,0,0)) = T000;*/
         }
         else {
             U.cvf.V1(0,0,0) = Complex(Ux000,0.0);
