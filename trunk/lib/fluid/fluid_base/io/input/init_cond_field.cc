@@ -100,8 +100,26 @@ void  FluidIO::Init_cond_non_helical_to_helical(FluidVF& U)
 
         
         universal->Cartesian_to_helical(lx,ly,lz,vpll,vh1,vh2,u_plus, u_minus);
-        phase_u_plus = u_plus/abs(u_plus);
-        phase_u_minus = u_minus/abs(u_minus);
+        
+        //phase_u_plus = u_plus/abs(u_plus);
+        //phase_u_minus = u_minus/abs(u_minus);
+        
+        if (abs(u_plus) < MYEPS & abs(u_minus) < MYEPS){
+          phase_u_plus = 1;
+          phase_u_minus = 1;
+        }
+        else if(abs(u_plus) < MYEPS)
+        {phase_u_plus = 1;
+          phase_u_minus = u_minus/abs(u_minus);}
+        else if(abs(u_minus) < MYEPS)
+        {phase_u_plus = u_plus/abs(u_plus);
+          phase_u_minus = 1;}
+        else
+        {phase_u_plus = u_plus/abs(u_plus);
+          phase_u_minus = u_minus/abs(u_minus);}
+        
+        
+        
         u_plus_mod =sqrt((1+sk)*ek_old/2);
         u_minus_mod = sqrt((1-sk)/(1+sk))*u_plus_mod;
         u_plus = u_plus_mod*phase_u_plus;
