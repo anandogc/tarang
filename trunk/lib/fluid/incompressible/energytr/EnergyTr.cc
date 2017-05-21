@@ -86,6 +86,8 @@ EnergyTr::EnergyTr()
 		flux_VF_Ain_Bout.resize(global.energy_transfer.flux.no_spheres+1);
 		flux_VF_Uin_Aout_2.resize(global.energy_transfer.flux.no_spheres+1);
         flux_HM.resize(global.energy_transfer.flux.no_spheres+1);
+        flux_VF_U.resize(global.energy_transfer.flux.no_spheres+1);
+        flux_VF_B.resize(global.energy_transfer.flux.no_spheres+1);
 
 
 

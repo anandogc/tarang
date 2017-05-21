@@ -155,12 +155,15 @@ void FluidIO_incompress::Output_flux(FluidVF& U, FluidVF& W, Pressure& P, FluidV
 
 
 	energyTr->Compute_kinetic_helicity_flux(U, W, helicalU, helicalW);
-	Print_array(flux_file, "flux: kinetic_helicity_flux_U_to_W ", energyTr->flux_VF_Uin_Wout);
+    Print_array(flux_file, "flux: kinetic_helicity_flux_U  ", energyTr->flux_VF_U);
+    Print_array(flux_file, "flux: kinetic_helicity_flux_B  ", energyTr->flux_VF_B);
+  
+	/*Print_array(flux_file, "flux: kinetic_helicity_flux_U_to_W ", energyTr->flux_VF_Uin_Wout);
 	Print_array(flux_file, "flux: kinetic_helicity_flux_B_to_W  ", energyTr->flux_VF_Bin_Wout);
 	Print_array(flux_file, "flux: kinetic_helicity_flux_W_to_U  ", energyTr->flux_VF_Win_Uout);
 	Print_array(flux_file, "flux: kinetic_helicity_flux_U_to_U  ", energyTr->flux_VF_Uin_Uout);
 	Print_array(flux_file, "flux: kinetic_helicity_flux_B_to_U ", energyTr->flux_VF_Bin_Uout);
-	Print_array(flux_file, "flux: kinetic_helicity_flux_J_to_U  ", energyTr->flux_VF_Jin_Uout);
+	Print_array(flux_file, "flux: kinetic_helicity_flux_J_to_U  ", energyTr->flux_VF_Jin_Uout);*/
 
 // For magnetic helicity flux
     energyTr->Compute_magnetic_helicity_flux(U,W);

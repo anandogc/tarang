@@ -312,10 +312,35 @@ void EnergyTr::Compute_kinetic_helicity_flux_old(FluidVF& U, FluidVF& helicalU)
 }
 
 //**************************** Kinetic Helicity in MHD ****************************************
-// Satyajit ** 31st Oct. 2016.
-
+// Satyajit Franck Abhishek ** 21st May. 2017.
 
 void EnergyTr::Compute_kinetic_helicity_flux(FluidVF& U, FluidVF& W, FluidVF& helicalU, FluidVF& helicalW)//Rename this to old
+{
+  universal->Compute_vorticity(U.cvf.V1, U.cvf.V2, U.cvf.V3, helicalU.cvf.V1, helicalU.cvf.V2, helicalU.cvf.V3, 0, universal->Max_radius_inside());
+  universal->Compute_vorticity(W.cvf.V1, W.cvf.V2, W.cvf.V3, helicalW.cvf.V1, helicalW.cvf.V2, helicalW.cvf.V3, 0, universal->Max_radius_inside());
+  
+  flux_VF_U = 0.0;
+  flux_VF_B = 0.0;
+  
+  
+  for (int sphere_index = 1; sphere_index <= global.energy_transfer.flux.no_spheres; sphere_index++) {
+    
+    Fill_in_sphere(sphere_index, helicalU);
+    // nlin = U.grad B<
+    Nlin_incompress::Compute_nlin_helical(U, Giver);
+    flux_VF_U(sphere_index) = Prod_out_sphere_nlinV(sphere_index, U, helicalU);
+    
+    Fill_in_sphere(sphere_index, helicalW);
+    // nlin = U.grad B<
+    Nlin_incompress::Compute_nlin_helical(W, Giver);
+    flux_VF_B(sphere_index) = Prod_out_sphere_nlinV(sphere_index, W, helicalU);
+    
+
+  }  
+}
+
+
+/*void EnergyTr::Compute_kinetic_helicity_flux(FluidVF& U, FluidVF& W, FluidVF& helicalU, FluidVF& helicalW)//Rename this to old
 {
 	universal->Compute_vorticity(U.cvf.V1, U.cvf.V2, U.cvf.V3, helicalU.cvf.V1, helicalU.cvf.V2, helicalU.cvf.V3, 0, universal->Max_radius_inside());
 	universal->Compute_vorticity(W.cvf.V1, W.cvf.V2, W.cvf.V3, helicalW.cvf.V1, helicalW.cvf.V2, helicalW.cvf.V3, 0, universal->Max_radius_inside());
@@ -373,7 +398,7 @@ void EnergyTr::Compute_kinetic_helicity_flux(FluidVF& U, FluidVF& W, FluidVF& he
 		Nlin_incompress::Compute_nlin(W, Giver);
 		flux_VF_Jin_Uout(sphere_index) = 0.5 * Prod_out_sphere_nlinV(sphere_index, W, U);
 	}  
-}
+}*/
 
 //*********************************************************************************************
 
