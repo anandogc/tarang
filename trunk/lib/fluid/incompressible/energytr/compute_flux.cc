@@ -333,7 +333,7 @@ void EnergyTr::Compute_kinetic_helicity_flux(FluidVF& U, FluidVF& W, FluidVF& he
     Fill_in_sphere(sphere_index, helicalW);
     // nlin = U.grad B<
     Nlin_incompress::Compute_nlin_helical(W, Giver);
-    flux_VF_B(sphere_index) = Prod_out_sphere_nlinV(sphere_index, W, helicalU);
+    flux_VF_B(sphere_index) = -Prod_out_sphere_nlinV(sphere_index, W, helicalU);
     
 
   }  
