@@ -185,8 +185,9 @@ void EnergyTr::Compute_flux(FluidVF& U, FluidVF& W)
 		flux_VF_Win_Wout(sphere_index) = -Prod_out_sphere_nlinV(sphere_index, U, W);		
 		// -(U.graad W<). W>
 		
-		flux_VF_Win_Uout(sphere_index) = Prod_out_sphere_nlinV(sphere_index, U, U);	
+		flux_VF_Win_Uout(sphere_index) = -Prod_out_sphere_nlinV(sphere_index, U, U);
 		//  (U.graad W<). U>
+      //(U is nlin argument, U>)
 	}
 	
 	//
