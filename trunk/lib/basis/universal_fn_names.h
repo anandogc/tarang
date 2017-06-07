@@ -100,12 +100,25 @@
         Array<Real,1> local_H1k1, Array<Real,1> local_H1k2, Array<Real,1> local_H1k3, 
         Array<Real,1> local_H1k_count
     );
-    
+
+    void Compute_local_shell_spectrum_helicity2
+    (
+         Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
+         Array<Real,1> local_H1k1, Array<Real,1> local_H1k2, Array<Real,1> local_H1k3,
+         Array<Real,1> local_H1k_count
+     );
+
     void Compute_shell_spectrum_helicity
     (
         Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az, 
         Array<Real,1> H1k1, Array<Real,1> H1k2, Array<Real,1> H1k3 
     );
+
+    void Compute_shell_spectrum_helicity2
+    (
+         Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
+         Array<Real,1> H1k1, Array<Real,1> H1k2, Array<Real,1> H1k3
+     );
 
     void Compute_local_ring_spectrum_helicity
     ( 

@@ -72,7 +72,8 @@ EnergyTr::EnergyTr()
         flux_VF.resize(global.energy_transfer.flux.no_spheres+1);
         flux_VF_Uin_Uout.resize(global.energy_transfer.flux.no_spheres+1);
 		flux_VF_Uin_Wout.resize(global.energy_transfer.flux.no_spheres+1);
-        flux_VF_Win_Uout.resize(global.energy_transfer.flux.no_spheres+1);
+        //flux_VF_Win_Uout.resize(global.energy_transfer.flux.no_spheres+1);
+        flux_VF_Uout_Win.resize(global.energy_transfer.flux.no_spheres+1);
 
 		flux_VF_Win_Wout.resize(global.energy_transfer.flux.no_spheres+1);
         flux_VF_Bin_Wout.resize(global.energy_transfer.flux.no_spheres+1);
@@ -139,7 +140,7 @@ EnergyTr::EnergyTr()
 		// FOR VECTOR FIELD W
 		if (global.program.W_exists) {
 			flux_VF_Uin_Win.resize(global.energy_transfer.flux.no_spheres+1);
-			flux_VF_Win_Uout.resize(global.energy_transfer.flux.no_spheres+1);
+			flux_VF_Uout_Win.resize(global.energy_transfer.flux.no_spheres+1);
 			flux_VF_Uout_Wout.resize(global.energy_transfer.flux.no_spheres+1);
 			flux_Elsasser_plus.resize(global.energy_transfer.flux.no_spheres+1);
 			flux_Elsasser_minus.resize(global.energy_transfer.flux.no_spheres+1);

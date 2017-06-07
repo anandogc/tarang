@@ -994,10 +994,13 @@ void FluidIO::Output_shell_spectrum(FluidVF& U, FluidVF& W)
 		
 		if (global.program.helicity_switch) {
 			Correlation::Compute_shell_spectrum_helicity(U);
-			Print_array(spectrum_file, "hk", Correlation::shell_ek1, Correlation::shell_ek2, Correlation::shell_ek3);
+			Print_array(spectrum_file, "Uhk", Correlation::shell_ek1, Correlation::shell_ek2, Correlation::shell_ek3);
 			
 			Correlation::Compute_shell_spectrum_helicity(W);
-			Print_array(spectrum_file, "Whk", Correlation::shell_ek1, Correlation::shell_ek2, Correlation::shell_ek3);
+			Print_array(spectrum_file, "Jhk", Correlation::shell_ek1, Correlation::shell_ek2, Correlation::shell_ek3);
+          
+            Correlation::Compute_shell_spectrum_helicity2(W);
+            Print_array(spectrum_file, "Bhk", Correlation::shell_ek1, Correlation::shell_ek2, Correlation::shell_ek3);
 		}
 		
 		if (master)

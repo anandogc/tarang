@@ -191,6 +191,18 @@ void SSS_PENCIL::Compute_local_shell_spectrum_helicity
 	local_H1k3 = 0;
 }
 
+void SSS_PENCIL::Compute_local_shell_spectrum_helicity2
+(
+	Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
+	Array<Real,1> local_H1k1, Array<Real,1> local_H1k2, Array<Real,1> local_H1k3,
+	Array<Real,1> local_H1k_count
+ )
+{
+  local_H1k1 = 0;
+  local_H1k2 = 0;
+  local_H1k3 = 0;
+}
+
 //
 
 void SSS_PENCIL::Compute_shell_spectrum_helicity
@@ -202,6 +214,17 @@ void SSS_PENCIL::Compute_shell_spectrum_helicity
 	H1k1 = 0;
 	H1k2 = 0;
 	H1k3 = 0;
+}
+
+void SSS_PENCIL::Compute_shell_spectrum_helicity2
+(
+	Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
+	Array<Real,1> H1k1, Array<Real,1> H1k2, Array<Real,1> H1k3
+ )
+{
+  H1k1 = 0;
+  H1k2 = 0;
+  H1k3 = 0;
 }
 
 

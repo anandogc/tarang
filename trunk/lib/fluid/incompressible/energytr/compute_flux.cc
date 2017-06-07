@@ -158,6 +158,7 @@ void EnergyTr::Compute_flux(FluidVF& U, FluidVF& W)
 	
 	// U> to W>
 	flux_VF_Uout_Wout = 0.0;
+    flux_VF_Uout_Win = 0.0;//Abhishek 6th June 2017
 	
 	for (int sphere_index = 1; sphere_index <= global.energy_transfer.flux.no_spheres; sphere_index++) {		
 		Fill_out_sphere(sphere_index, U);										
@@ -168,12 +169,15 @@ void EnergyTr::Compute_flux(FluidVF& U, FluidVF& W)
 		
 		flux_VF_Uout_Wout(sphere_index) = Prod_out_sphere_nlinV(sphere_index, W, W);	
 			// (W.graad U>). W>
+        flux_VF_Uout_Win(sphere_index) = Prod_in_sphere_nlinV(sphere_index, W, W);
+        //  (W.graad U>). W<… This is  Pi U> to  W<
 	}
 	
 	
 	// W< to W>;  W< to U>
 	flux_VF_Win_Wout = 0.0;
-	flux_VF_Win_Uout = 0.0;
+	//flux_VF_Win_Uout = 0.0;
+  
 	
 	for (int sphere_index = 1; sphere_index <= global.energy_transfer.flux.no_spheres; sphere_index++) {	
 		Fill_in_sphere(sphere_index, W);										
@@ -185,7 +189,7 @@ void EnergyTr::Compute_flux(FluidVF& U, FluidVF& W)
 		flux_VF_Win_Wout(sphere_index) = -Prod_out_sphere_nlinV(sphere_index, U, W);		
 		// -(U.graad W<). W>
 		
-		flux_VF_Win_Uout(sphere_index) = -Prod_out_sphere_nlinV(sphere_index, U, U);
+		//flux_VF_Win_Uout(sphere_index) = -Prod_out_sphere_nlinV(sphere_index, U, U);
 		//  (U.graad W<). U>
       //(U is nlin argument, U>)
 	}
@@ -281,7 +285,7 @@ void EnergyTr::Compute_kinetic_helicity_flux(FluidVF& U, FluidVF& helicalU)
 }
 
 
-void EnergyTr::Compute_kinetic_helicity_flux_old(FluidVF& U, FluidVF& helicalU)
+/*void EnergyTr::Compute_kinetic_helicity_flux_old(FluidVF& U, FluidVF& helicalU)
 {
 	universal->Compute_vorticity(U.cvf.V1, U.cvf.V2, U.cvf.V3, helicalU.cvf.V1, helicalU.cvf.V2, helicalU.cvf.V3, 0, universal->Max_radius_inside());
 
@@ -310,7 +314,7 @@ void EnergyTr::Compute_kinetic_helicity_flux_old(FluidVF& U, FluidVF& helicalU)
 		Nlin_incompress::Compute_nlin(U, Giver);
 		flux_VF_Win_Uout(sphere_index) = -0.5 * Prod_out_sphere_nlinV(sphere_index, U, U);
 	}
-}
+}*/
 
 //**************************** Kinetic Helicity in MHD ****************************************
 // Satyajit Franck Abhishek ** 21st May. 2017.

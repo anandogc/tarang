@@ -348,6 +348,12 @@ void Correlation::Compute_shell_spectrum_helicity(FluidVF& U)
 	universal->Compute_shell_spectrum_helicity(U.cvf.V1, U.cvf.V2, U.cvf.V3, shell_ek1, shell_ek2, shell_ek3);
 }
 
+void Correlation::Compute_shell_spectrum_helicity2(FluidVF& U)
+{
+  
+  universal->Compute_shell_spectrum_helicity2(U.cvf.V1, U.cvf.V2, U.cvf.V3, shell_ek1, shell_ek2, shell_ek3);
+}
+
 void Correlation::Compute_ring_spectrum_helicity(FluidVF& U)
 {
 	universal->Compute_ring_spectrum_helicity(U.cvf.V1, U.cvf.V2, U.cvf.V3, ring_ek1, ring_ek2, ring_ek3);

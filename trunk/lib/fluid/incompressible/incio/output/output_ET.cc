@@ -148,7 +148,7 @@ void FluidIO_incompress::Output_flux(FluidVF& U, FluidVF& W, Pressure& P, FluidV
 	Print_array(flux_file, "flux: flux_VF_Uin_Wout ", energyTr->flux_VF_Uin_Wout);
 	Print_array(flux_file, "flux: flux_VF_Uin_Win ", energyTr->flux_VF_Uin_Win);
 	Print_array(flux_file, "flux: flux_VF_Win_Wout ", energyTr->flux_VF_Win_Wout);
-	Print_array(flux_file, "flux: flux_VF_Win_Uout ", energyTr->flux_VF_Win_Uout);
+	Print_array(flux_file, "flux: flux_VF_Uout_Win ", energyTr->flux_VF_Uout_Win);
 	Print_array(flux_file, "flux: flux_VF_Uout_Wout ", energyTr->flux_VF_Uout_Wout);
 	Print_array(flux_file, "flux: flux_Elsasser_plus ", energyTr->flux_Elsasser_plus);
 	Print_array(flux_file, "flux: flux_Elsasser_minus ", energyTr->flux_Elsasser_minus);
@@ -206,7 +206,7 @@ void FluidIO_incompress::Output_flux(FluidVF& U, FluidVF& W, Pressure& P, FluidV
 		Print_array(flux_file, "pll2pll: flux_VF_Uin_Wout ", energyTr->flux_VF_Uin_Wout);
 		Print_array(flux_file, "pll2pll: flux_VF_Uin_Win ", energyTr->flux_VF_Uin_Win);
 		Print_array(flux_file, "pll2pll: flux_VF_Win_Wout ", energyTr->flux_VF_Win_Wout);
-		Print_array(flux_file, "pll2pll: flux_VF_Win_Uout ", energyTr->flux_VF_Win_Uout);
+		Print_array(flux_file, "pll2pll: flux_VF_Uout_Win ", energyTr->flux_VF_Uout_Win);
 		Print_array(flux_file, "pll2pll: flux_VF_Uout_Wout ", energyTr->flux_VF_Uout_Wout);
 		Print_array(flux_file, "pll2pll: flux_Elsasser_plus ", energyTr->flux_Elsasser_plus);
 		Print_array(flux_file, "pll2pll: flux_Elsasser_minus ", energyTr->flux_Elsasser_minus);
@@ -232,7 +232,7 @@ void FluidIO_incompress::Output_flux(FluidVF& U, FluidVF& W, FluidSF& T, Pressur
 	Print_array(flux_file, "flux: flux_VF_Uin_Wout ", energyTr->flux_VF_Uin_Wout);
 	Print_array(flux_file, "flux: flux_VF_Uin_Win ", energyTr->flux_VF_Uin_Win);
 	Print_array(flux_file, "flux: flux_VF_Win_Wout ", energyTr->flux_VF_Win_Wout);
-	Print_array(flux_file, "flux: flux_VF_Win_Uout ", energyTr->flux_VF_Win_Uout);
+	Print_array(flux_file, "flux: flux_VF_Uout_Win ", energyTr->flux_VF_Uout_Win);
 	Print_array(flux_file, "flux: flux_VF_Uout_Wout ", energyTr->flux_VF_Uout_Wout);
 	Print_array(flux_file, "flux: flux_Elsasser_plus ", energyTr->flux_Elsasser_plus);
 	Print_array(flux_file, "flux: flux_Elsasser_minus ", energyTr->flux_Elsasser_minus);

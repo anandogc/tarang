@@ -220,6 +220,57 @@ void FFF_PENCIL::Compute_local_shell_spectrum_helicity
 
 }
 
+//Abhishek 7th June 2017 This for the magnetic helicity flux.
+void FFF_PENCIL::Compute_local_shell_spectrum_helicity2
+(
+	Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
+	Array<Real,1> local_H1k1, Array<Real,1> local_H1k2, Array<Real,1> local_H1k3,
+	Array<Real,1> local_H1k_count
+ )
+{
+  
+  local_H1k_count = 0.0;
+  local_H1k1 = 0.0;
+  local_H1k2 = 0.0;
+  local_H1k3 = 0.0;
+  
+  TinyVector<Real,3> Vreal, Vimag, VrcrossVi, K;
+  Real Kmag;
+  int index;
+  Real factor;
+  
+  int	Kmax = Min_radius_outside();
+  
+		
+  for (int lx=0; lx<maxlx; lx++)
+    for (int ly=0; ly<maxly; ly++)
+      for (int lz=0; lz<maxlz; lz++)  {
+        
+        Kmag = Kmagnitude(lx,ly,lz);
+        index = (int) ceil(Kmag);
+        
+        if (index <= Kmax) 	{
+          factor = 2*Multiplicity_factor(lx,ly,lz);
+          // factor multiplied by 2 because of the defn  Hk = K . (Vr x Vi).
+          // recall the defn of energy spectrum that contains 1/2.
+          
+          Vreal = real(Ax(lx,ly,lz)), real(Ay(lx,ly,lz)), real(Az(lx,ly,lz));
+          Vimag = imag(Ax(lx,ly,lz)), imag(Ay(lx,ly,lz)), imag(Az(lx,ly,lz));
+          
+          VrcrossVi = cross(Vreal, Vimag);
+          Wavenumber(lx,ly,lz, K);
+          
+          // modal_helicity = factor * dot(kk, VrcrossVi);
+          local_H1k1(index) += factor* (K(0)*VrcrossVi(0))/pow2(Kmag);
+          local_H1k2(index) += factor* (K(1)*VrcrossVi(1))/pow2(Kmag);
+          local_H1k3(index) += factor* (K(2)*VrcrossVi(2))/pow2(Kmag);
+          
+          local_H1k_count(index) += 2*factor;
+        }	
+      }
+  
+}
+
 
 void FFF_PENCIL::Compute_shell_spectrum_helicity
 (
@@ -272,6 +323,56 @@ void FFF_PENCIL::Compute_shell_spectrum_helicity
 	}
 }
 
+void FFF_PENCIL::Compute_shell_spectrum_helicity2
+(
+	Array<Complex,3> Ax, Array<Complex,3> Ay, Array<Complex,3> Az,
+	Array<Real,1> H1k1, Array<Real,1> H1k2, Array<Real,1> H1k3
+ )
+{
+  
+  static Array<Real,1> local_H1k1(H1k1.shape());
+  static Array<Real,1> local_H1k2(H1k1.shape());
+  static Array<Real,1> local_H1k3(H1k1.shape());
+  
+  static Array<Real,1> local_H1k_count(H1k1.shape());
+  
+  local_H1k1 = 0.0;
+  local_H1k2 = 0.0;
+  local_H1k3 = 0.0;
+  
+  local_H1k_count = 0.0;
+		
+  
+  Compute_local_shell_spectrum_helicity2(Ax,Ay,Az, local_H1k1,local_H1k2,local_H1k3, local_H1k_count);
+  
+  static Array<Real,1> H1k1_count(H1k1.shape());
+  int data_size = H1k1.size();
+  
+  MPI_Reduce(reinterpret_cast<Real*>(local_H1k1.data()), reinterpret_cast<Real*>(H1k1.data()), data_size, MPI_Real, MPI_SUM, master_id, MPI_COMM_WORLD);
+  
+  MPI_Reduce(reinterpret_cast<Real*>(local_H1k2.data()), reinterpret_cast<Real*>(H1k2.data()), data_size, MPI_Real, MPI_SUM, master_id, MPI_COMM_WORLD);
+  
+  MPI_Reduce(reinterpret_cast<Real*>(local_H1k3.data()), reinterpret_cast<Real*>(H1k3.data()), data_size, MPI_Real, MPI_SUM, master_id, MPI_COMM_WORLD);
+  
+  MPI_Reduce(reinterpret_cast<Real*>(local_H1k_count.data()), reinterpret_cast<Real*>(H1k1_count.data()), data_size, MPI_Real, MPI_SUM, master_id, MPI_COMM_WORLD);
+  
+  // The shells near the edges do not complete half sphere, so normalize the shells.
+  
+  if (master) {
+    int Kmax_inside = Max_radius_inside();
+    int	Kmax = Min_radius_outside();
+    
+    for (int index = Kmax_inside+1; index <= Kmax; index++)
+      if (H1k1_count(index) >= 1) {
+        H1k1(index) = H1k1(index)*Approx_number_modes_in_shell(index)/H1k1_count(index);
+        
+        H1k2(index) = H1k2(index)*Approx_number_modes_in_shell(index)/H1k1_count(index);
+        
+        H1k3(index) = H1k3(index)*Approx_number_modes_in_shell(index)/H1k1_count(index);
+      }	
+    
+  }
+}
 //*********************************************************************************************
 
 // Not for 2D

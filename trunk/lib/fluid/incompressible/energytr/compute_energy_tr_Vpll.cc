@@ -106,6 +106,7 @@ void EnergyTr::Compute_flux_Vpll(FluidVF& U, FluidVF& W, Pressure& P)
 	
 	// U> to W>
 	flux_VF_Uout_Wout = 0.0;
+    flux_VF_Uout_Win = 0.0;//Abhishek 6th June 2017
 	
 	for (int sphere_index = 1; sphere_index <= global.energy_transfer.flux.no_spheres; sphere_index++) {
 		Fill_out_sphere_Vpll(sphere_index, U);
@@ -116,12 +117,14 @@ void EnergyTr::Compute_flux_Vpll(FluidVF& U, FluidVF& W, Pressure& P)
 		
 		flux_VF_Uout_Wout(sphere_index) = Prod_out_sphere_nlin_Vpll(sphere_index, W, W);
         // (W.graad U>). W>
+      
+        flux_VF_Uout_Win(sphere_index) = Prod_in_sphere_nlinV(sphere_index, W, W);
 	}
 	
 	
 	// W< to W>;  W< to U>
 	flux_VF_Win_Wout = 0.0;
-	flux_VF_Win_Uout = 0.0;
+	//flux_VF_Win_Uout = 0.0;
 	
 	for (int sphere_index = 1; sphere_index <= global.energy_transfer.flux.no_spheres; sphere_index++) {
 		Fill_in_sphere_Vpll(sphere_index, W);
@@ -133,7 +136,7 @@ void EnergyTr::Compute_flux_Vpll(FluidVF& U, FluidVF& W, Pressure& P)
 		flux_VF_Win_Wout(sphere_index) = -Prod_out_sphere_nlin_Vpll(sphere_index, U, W);
 		// -(U.graad W<). W>
 		
-		flux_VF_Win_Uout(sphere_index) = Prod_out_sphere_nlin_Vpll(sphere_index, U, U);
+		//flux_VF_Win_Uout(sphere_index) = Prod_out_sphere_nlin_Vpll(sphere_index, U, U);
 		//  (U.graad W<). U>
 	}
 	

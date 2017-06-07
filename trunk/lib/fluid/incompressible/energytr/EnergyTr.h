@@ -180,7 +180,8 @@ public:
     Array<Real,1>  flux_VF_U;
     Array<Real,1>  flux_VF_B;
 	Array<Real,1>  flux_VF_Uin_Win;				// from Uin to Win
-	Array<Real,1>  flux_VF_Win_Uout;				// from Win to Uout
+	//Array<Real,1>  flux_VF_Win_Uout;				// from Win to Uout
+    Array<Real,1>  flux_VF_Uout_Win;				// from Win to Uout
 	Array<Real,1>  flux_VF_Uout_Wout;			// from Wout to Uout
 	Array<Real,1>  flux_Elsasser_plus;			// From Zplus_in to Zplus_out
 	Array<Real,1>  flux_Elsasser_minus;			// From minus_in to Zplus_minus

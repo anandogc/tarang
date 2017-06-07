@@ -148,6 +148,7 @@ public:
 	
 	
 	static void Compute_shell_spectrum_helicity(FluidVF& U);
+    static void Compute_shell_spectrum_helicity2(FluidVF& U);
 	static void Compute_ring_spectrum_helicity(FluidVF& U);
 	static void Compute_cylindrical_ring_spectrum_helicity(FluidVF& U);
 	
