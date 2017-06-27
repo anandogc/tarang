@@ -342,13 +342,13 @@ void  FORCE::Assign_force(FluidSF& T, int kx, int ky, int kz, Real localG)
 
 //*************************************************************************************
 
-void FORCE::Model_force_spectrum(Real force_spectrum_amplitude, Real force_spectrum_exponent, Array<Real,1> Sk)
+void FORCE::Model_dissipation_spectrum(Real dissipation_spectrum_amplitude, Real dissipation_spectrum_exponent, Array<Real,1> Sk)
 {
 	Real k;
 	
 	for (int i=0; i < (Sk.length())(0); i++) {
 		k = 1.0*i;
-		Sk(i) = force_spectrum_amplitude * pow(k,force_spectrum_exponent)/(global.time.dt);
+		Sk(i) = dissipation_spectrum_amplitude * pow(k,dissipation_spectrum_exponent);
     }
     
   //  cout << "Sk = " << Sk << endl;

@@ -185,6 +185,7 @@ public:
 	void Compute_force_stratified_random(FluidVF& U, FluidSF& T);
 
 	void Model_force_spectrum(Real force_spectrum_amplitude, Real force_spectrum_exponent, Array<Real,1> Sk);
+    void Model_dissipation_spectrum(Real dissipation_spectrum_amplitude, Real dissipation_spectrum_exponent, Array<Real,1> Sk);
 	void Put_force_amp_phase_comp_conj(FluidVF U, int lx, int ly, int lz,  Real amp, Real phase1, Real phase2, Real phase3, bool add_flag);
 	void Put_force_amp_phase_comp_conj(FluidSF& T, int lx, int ly, int lz, Real amp, Real phase, bool add_flag);
 	

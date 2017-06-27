@@ -63,15 +63,15 @@ extern Uniform<Real> SPECrand;
  */
 
 // force spectrum F(k) = A k^{-e} saved in U.cvf.shell_ek;  hk_by_kek=h_F(k)/(k F(k))  
-void  FORCE::Compute_force_using_random_energy_helicity_spectrum_basic(FluidVF& U, Real inner_radius, Real outer_radius, Real force_spectrum_amplitude, Real force_spectrum_exponent, Real hk_by_kek, bool add_flag)
+void  FORCE::Compute_force_using_random_energy_helicity_spectrum_basic(FluidVF& U, Real inner_radius, Real outer_radius, Real dissipation_spectrum_amplitude, Real dissipation_spectrum_exponent, Real hk_by_kek, bool add_flag)
 {
-	Real Kmag, ek, amp, phase1, phase2, phase3;
+	Real Kmag, diss_k, amp, phase1, phase2, phase3;
 	int index;
     static Real random_next = 0, random_interval = 0.01;
 
     if (global.time.now >=random_next)
     {
-	Model_force_spectrum(force_spectrum_amplitude, force_spectrum_exponent, Correlation::shell_ek);
+	Model_dissipation_spectrum(dissipation_spectrum_amplitude, dissipation_spectrum_exponent, Correlation::shell_ek);
     
 	int kx_max, ky_max, kz_max, kx_min, ky_min, kz_min;
 	kx_max = (int) ceil(outer_radius/kfactor[1]);
@@ -106,8 +106,8 @@ void  FORCE::Compute_force_using_random_energy_helicity_spectrum_basic(FluidVF& 
 					if ((Kmag > inner_radius) && (Kmag <= outer_radius)) {
 						index = (int) ceil(Kmag);
 					
-						ek = Correlation::shell_ek(index)/ universal->Approx_number_modes_in_shell(index);
-						amp = sqrt(2*ek);
+						diss_k = Correlation::shell_ek(index)/ universal->Approx_number_modes_in_shell(index);
+						amp = sqrt(2*diss_k/global.time.dt);
 						
 						phase1 = 2*M_PI * SPECrand.random();
 						
@@ -155,12 +155,12 @@ void  FORCE::Compute_force_using_random_energy_helicity_spectrum_basic_add(Fluid
 
 //*********************************************************************************************
 
-void  FORCE::Compute_force_using_random_energy_spectrum_basic(FluidSF& T, Real inner_radius, Real outer_radius, Real force_spectrum_amplitude, Real force_spectrum_exponent, bool add_flag)
+void  FORCE::Compute_force_using_random_energy_spectrum_basic(FluidSF& T, Real inner_radius, Real outer_radius, Real dissipation_spectrum_amplitude, Real dissipation_spectrum_exponent, bool add_flag)
 {
 	Real Kmag, ek, amp, phase;
 	int index;
 	
-	Model_force_spectrum(force_spectrum_amplitude, force_spectrum_exponent, Correlation::shell_ek);
+	Model_dissipation_spectrum(dissipation_spectrum_amplitude, dissipation_spectrum_exponent, Correlation::shell_ek);
 	
 	int kx_max, ky_max, kz_max, kx_min, ky_min, kz_min;
 	kx_max = (int) ceil(outer_radius/kfactor[1]);
