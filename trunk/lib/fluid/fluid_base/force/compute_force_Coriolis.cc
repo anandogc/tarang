@@ -105,20 +105,21 @@ void FORCE::Compute_force_Coriolis(FluidVF& U)
 	
 	if (U.force_switch) {
 		int omega_components = global.force.int_para(0);
-		
+        Compute_force_const_energy_helicity_supply(U);
+        
 		if (omega_components == 1) {
 			int rotation_direction = global.force.int_para(1);
-			Real two_omega =  2*global.force.double_para(0);
+			Real two_omega =  2*global.force.double_para(4);
 			
-			Compute_force_Coriolis_basic_assign(U, rotation_direction, two_omega);
+			Compute_force_Coriolis_basic_add(U, rotation_direction, two_omega);
 		}
 		
 		else if (omega_components == 3) {
-			Real two_omega1 = 2*global.force.double_para(0);
-			Real two_omega2 = 2*global.force.double_para(1);
-			Real two_omega3 = 2*global.force.double_para(2);
+			Real two_omega1 = 2*global.force.double_para(4);
+			Real two_omega2 = 2*global.force.double_para(5);
+			Real two_omega3 = 2*global.force.double_para(6);
 			
-			Compute_force_Coriolis_basic_assign(U, two_omega1, two_omega2, two_omega3);
+			Compute_force_Coriolis_basic_add(U, two_omega1, two_omega2, two_omega3);
 		}
 	}
 }

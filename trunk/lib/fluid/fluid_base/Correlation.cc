@@ -71,6 +71,9 @@ Array<Real,2> Correlation::cylindrical_ring_ek2;
 Array<Real,2> Correlation::cylindrical_ring_dissk1;
 Array<Real,2> Correlation::cylindrical_ring_dissk2;
 
+Array<Real,1> Correlation::shell_ek_temp1;
+Array<Real,1> Correlation::shell_ek_temp2;
+
 
 void Correlation::Initialize()
 {
@@ -78,7 +81,10 @@ void Correlation::Initialize()
 	shell_ek2.resize(global.spectrum.shell.no_shells);
 	shell_ek3.resize(global.spectrum.shell.no_shells);
 
-	if (global.spectrum.shell.turnon){
+	shell_ek_temp1.resize(global.spectrum.shell.no_shells);
+    shell_ek_temp2.resize(global.spectrum.shell.no_shells);
+    
+    if (global.spectrum.shell.turnon){
 		shell_ek.resize(global.spectrum.shell.no_shells);
 		shell_dissk.resize(global.spectrum.shell.no_shells);
 

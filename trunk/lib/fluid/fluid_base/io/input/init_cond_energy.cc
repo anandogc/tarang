@@ -73,40 +73,21 @@ void  FluidIO::Initialize_using_energy_helicity_spectrum(FluidVF& U, Real epsilo
   
   Model_initial_using_shell_spectrum_Pope(U.dissipation_coefficient, epsilon, Correlation::shell_ek1);
   
-  for (int lx=0; lx<global.field.maxlx; lx++)
-    for (int ly=0; ly<global.field.maxly; ly++)
-      for (int lz=0; lz<global.field.maxlz; lz++) {
-        
-        Kmag = universal->Kmagnitude(lx, ly, lz);
-        
-        if (Kmag > MYEPS) {
-          index = (int) ceil(Kmag);
-          
-          ek = Correlation::shell_ek1(index)/ universal->Approx_number_modes_in_shell(index);
-          
-          
-          if (abs(hk_by_kek) > MYEPS) {
-            
-            hk_by_k = hk_by_kek*ek;
-            
-            // helical
-            phase_plus = 2*M_PI * SPECrand.random();
-            phase_minus = 2*M_PI * SPECrand.random();			// zeta
-            Put_vector_amp_phase_comp_conj_helicity(U, lx, ly, lz, ek, hk_by_k, phase_plus, phase_minus);
-          }
-          
-          else { // no helicity
-            amp = sqrt(2*ek);
-            phase1 = 2*M_PI * SPECrand.random();
-            phase2 = 2*M_PI * SPECrand.random();
-            phase3 = 2*M_PI * SPECrand.random();
-            Put_vector_amp_phase_comp_conj(U, lx, ly, lz, amp, phase1, phase2, phase3);
-          }
-          
-          
-          
-        } // of if(Kmag > MYEPS)			
-      }
+    for (int lx=0; lx<global.field.maxlx; lx++)
+        for (int ly=0; ly<global.field.maxly; ly++)
+            for (int lz=0; lz<global.field.maxlz; lz++) {
+                Kmag = universal->Kmagnitude(lx, ly, lz);
+                
+                if (Kmag > MYEPS) {
+                    index = (int) ceil(Kmag);
+                    ek = Correlation::shell_ek1(index)/ universal->Approx_number_modes_in_shell(index);
+                    hk_by_k = hk_by_kek*ek;
+                    
+                    phase_plus = 2*M_PI * SPECrand.random();
+                    phase_minus = 2*M_PI * SPECrand.random();			// zeta
+                    Put_vector_amp_phase_comp_conj_helicity(U, lx, ly, lz, ek, hk_by_k, phase_plus, phase_minus);
+                } // of if(Kmag > MYEPS)
+            }
 }
 
 //*********************************************************************************************

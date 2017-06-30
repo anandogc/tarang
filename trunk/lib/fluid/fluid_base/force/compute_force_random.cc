@@ -67,7 +67,8 @@ void  FORCE::Compute_force_using_random_energy_helicity_spectrum_basic(FluidVF& 
 {
 	Real Kmag, diss_k, amp, phase1, phase2, phase3;
 	int index;
-    static Real random_next = 0, random_interval = 0.01;
+    static Real random_next = 0;
+    static Real random_interval = 0.01;
 
     if (global.time.now >=random_next)
     {
@@ -253,6 +254,7 @@ void  FORCE::Compute_force_using_random_energy_helicity_spectrum(FluidVF& U, Flu
 	Real Tforce_spectrum_exponent = global.force.double_para(6);
 	
 	Compute_force_using_random_energy_helicity_spectrum_basic_assign(U, inner_radius, outer_radius, force_spectrum_amplitude, force_spectrum_exponent, hk_by_kek);
+    
 	Compute_force_using_random_energy_spectrum_basic_assign(T, inner_radius, outer_radius, Tforce_spectrum_amplitude, Tforce_spectrum_exponent);
 }
 

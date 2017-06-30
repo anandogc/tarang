@@ -125,6 +125,11 @@ public:
 	static Array<Real,2>		cylindrical_ring_dissk;
 	
 	
+	//! for forcing and init-cond
+	static Array<Real,1>		shell_ek_temp1;
+	static Array<Real,1>		shell_ek_temp2;
+
+	
 	static Array<Real,2> ring_spectrum;
 	static Array<Real,2> cylindrical_ring_spectrum;
 
