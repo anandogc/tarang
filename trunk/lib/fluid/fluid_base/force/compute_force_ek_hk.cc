@@ -134,9 +134,11 @@ void FORCE::Force_energy_helicity_supply_or_level_basic(FluidVF& U, string force
 								}
 								
 								else { // helical
+									sk = U.cvf.Modal_helicity(lx,ly,lz)/ (Kmag*modal_energy);
+									
 									if (abs(sk*sk-1) > MYEPS2) {
 										alpha_k = temp * (1-sk*epsh_by_k_epse) / (1 - sk*sk);
-										beta_k = temp * (epsh_by_k_epse - sk) / (1 - sk*sk);
+										beta_k = temp * (epsh_by_k_epse - sk) / ((1 - sk*sk)*Kmag);
 									}
 									
 									else { // max helicity
