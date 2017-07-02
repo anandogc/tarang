@@ -126,6 +126,7 @@ void FORCE::Force_energy_helicity_supply_or_level_basic(FluidVF& U, string force
 							
 							if (force_type == "ENERGY_SUPPLY") {
 								temp = energy_supply_per_mode/ (2*modal_energy);
+                                sk = U.cvf.Modal_helicity(lx,ly,lz)/ (Kmag*modal_energy);
 								
 								if (abs(epsh_by_k_epse) < MYEPS) {  // No helicity forcing, Only Ek forcing
                                     alpha_k = temp * (1-sk*epsh_by_k_epse) / (1 - sk*sk);
@@ -133,11 +134,9 @@ void FORCE::Force_energy_helicity_supply_or_level_basic(FluidVF& U, string force
 								}
 								
 								else { // helical
-									sk = U.cvf.Modal_helicity(lx,ly,lz)/ (Kmag*modal_energy);
-									
 									if (abs(sk*sk-1) > MYEPS2) {
 										alpha_k = temp * (1-sk*epsh_by_k_epse) / (1 - sk*sk);
-										beta_k = temp * (epsh_by_k_epse - sk) / ((1 - sk*sk)*Kmag);
+										beta_k = temp * (epsh_by_k_epse - sk) / (1 - sk*sk);
 									}
 									
 									else { // max helicity
