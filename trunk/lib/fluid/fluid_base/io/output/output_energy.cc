@@ -761,9 +761,12 @@ void FluidIO::Output_global(FluidVF& U, FluidVF& W, FluidSF& T, FluidSF& C)
 void FluidIO::Output_cout(FluidVF &U)
 {	
 	U.cvf.Compute_total_energy();
-
+    
+    if (global.program.helicity_switch)
+        U.cvf.Compute_total_helicity();
+    
 	if (my_id == master_id)
-		cout  << global.time.now << " "  << U.cvf.total_energy << endl; 
+		cout  << global.time.now << " "  << U.cvf.total_energy <<  " " << U.cvf.total_helicity1 << endl;
 }
 
 
@@ -771,9 +774,12 @@ void FluidIO::Output_cout(FluidVF &U, FluidSF& T)
 {
 	U.cvf.Compute_total_energy();
 	T.csf.Compute_total_energy();
+    
+    if (global.program.helicity_switch)
+        U.cvf.Compute_total_helicity();
 	
 	if (my_id == master_id)
-		cout  << global.time.now << " "  << U.cvf.total_energy << " " << T.csf.total_energy  << endl;
+		cout  << global.time.now << " "  << U.cvf.total_energy << " " << T.csf.total_energy <<  " " << U.cvf.total_helicity1 << endl;
 }
 
 void FluidIO::Output_cout(FluidVF &U, FluidSF& T1, FluidSF& T2)
@@ -781,18 +787,26 @@ void FluidIO::Output_cout(FluidVF &U, FluidSF& T1, FluidSF& T2)
 	U.cvf.Compute_total_energy();
 	T1.csf.Compute_total_energy();
 	T2.csf.Compute_total_energy();
+    
+    if (global.program.helicity_switch)
+        U.cvf.Compute_total_helicity();
 	
 	if (my_id == master_id)
-		cout  << global.time.now << " "  << U.cvf.total_energy << " " << T1.csf.total_energy << " " << T2.csf.total_energy  << endl;
+		cout  << global.time.now << " "  << U.cvf.total_energy << " " << T1.csf.total_energy << " " << T2.csf.total_energy  <<  " " << U.cvf.total_helicity1 << endl;
 }
 
 void FluidIO::Output_cout(FluidVF &U, FluidVF &W)
 {
 	U.cvf.Compute_total_energy();
 	W.cvf.Compute_total_energy();
+    
+    if (global.program.helicity_switch) {
+        U.cvf.Compute_total_helicity();
+        W.cvf.Compute_total_helicity();
+    }
 	
 	if (my_id == master_id)
-		cout  << global.time.now << " "  << U.cvf.total_energy << " " << W.cvf.total_energy << endl;
+		cout  << global.time.now << " "  << U.cvf.total_energy << " " << W.cvf.total_energy <<  " " << U.cvf.total_helicity1 <<  " " << U.cvf.total_helicity2 << endl;
 }
 
 void FluidIO::Output_cout(FluidVF &U, FluidVF &W, FluidSF & T)		
@@ -800,10 +814,15 @@ void FluidIO::Output_cout(FluidVF &U, FluidVF &W, FluidSF & T)
 	U.cvf.Compute_total_energy();
 	W.cvf.Compute_total_energy();
 	T.csf.Compute_total_energy();
+    
+    if (global.program.helicity_switch) {
+        U.cvf.Compute_total_helicity();
+        W.cvf.Compute_total_helicity();
+    }
 	
 	if (my_id == master_id)
 		cout  << global.time.now << " "  << U.cvf.total_energy << " " << W.cvf.total_energy << " " 
-		<< T.csf.total_energy << endl;
+		<< T.csf.total_energy <<  " " << U.cvf.total_helicity1 <<  " " << U.cvf.total_helicity2 << endl;
 }
 
 

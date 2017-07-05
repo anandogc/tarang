@@ -105,7 +105,7 @@ void FORCE::Compute_force_Coriolis(FluidVF& U)
 	
 	if (U.force_switch) {
 		int omega_components = global.force.int_para(0);
-        Compute_force_const_energy_helicity_supply(U);
+        // Compute_force_const_energy_helicity_supply(U);
         
 		if (omega_components == 1) {
 			int rotation_direction = global.force.int_para(1);
@@ -195,7 +195,7 @@ void FORCE::Compute_force_Ekman_friction_const_energy_supply(FluidVF& U)
 	U.Force3 = 0.0;
 	
 		// first feed const eps force;
-	Force_energy_helicity_supply_or_level_basic_assign(U, "ENERGY_SUPPLY", inner_radius, outer_radius, energy_supply, epsh_by_k_epse);
+//	Force_energy_helicity_supply_or_level_basic_assign(U, "ENERGY_SUPPLY", inner_radius, outer_radius, energy_supply, epsh_by_k_epse);
 	
 	Compute_force_Ekman_friction_basic_add(U, alpha);
 }
@@ -312,7 +312,7 @@ void FORCE::Compute_force_Keplerian_SB(FluidVF& U)
 	Real omega_keplerian = 1/q_keplerian;
 	
 	
-	Compute_force_using_random_energy_helicity_spectrum_basic_assign(U, inner_radius, outer_radius, force_spectrum_amplitude, force_spectrum_exponent, hk_by_kek);
+//	Compute_force_using_random_energy_helicity_spectrum_basic_assign(U, inner_radius, outer_radius, force_spectrum_amplitude, force_spectrum_exponent, hk_by_kek);
 	
 	Compute_force_Keplerian_basic_assign(U, omega_keplerian, q_keplerian);
 	
@@ -343,9 +343,9 @@ void FORCE::Compute_force_Keplerian_SB(FluidVF& U, FluidVF& W)
 	Real q_keplerian = global.force.double_para(9);
 	Real omega_keplerian = 1/q_keplerian;
 	
-	Compute_force_using_random_energy_helicity_spectrum_basic_assign(U, inner_radius, outer_radius, force_spectrum_amplitude, force_spectrum_exponent, hk_by_kek);
+//	Compute_force_using_random_energy_helicity_spectrum_basic_assign(U, inner_radius, outer_radius, force_spectrum_amplitude, force_spectrum_exponent, hk_by_kek);
 	
-	Compute_force_using_random_energy_helicity_spectrum_basic_assign(W, inner_radius, outer_radius, Wforce_spectrum_amplitude, Wforce_spectrum_exponent, Whk_by_kek);
+//	Compute_force_using_random_energy_helicity_spectrum_basic_assign(W, inner_radius, outer_radius, Wforce_spectrum_amplitude, Wforce_spectrum_exponent, Whk_by_kek);
 	
 	Compute_force_Keplerian_basic_add(U, W, omega_keplerian, q_keplerian);
 	

@@ -61,6 +61,7 @@ public:
 	// basic
 
 	virtual int Get_number_modes_in_shell(Real inner_radius, Real outer_radius);
+    virtual void Compute_modes_in_shell_array();
 	virtual void Print_large_Fourier_elements(Array<Complex,3> A, string array_name="Array");
 	virtual void Array_mult_ksqr(Array<Complex,3> A);
 	virtual void Array_divide_ksqr(Array<Complex,3> A);

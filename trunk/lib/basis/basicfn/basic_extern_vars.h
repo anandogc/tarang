@@ -59,6 +59,9 @@ extern Universal *co_universal;
 extern BasicIO basicIO;
 
 extern Uniform<Real> SPECrand;
+// SPECrand is the random variable structure for Uniform distribution
+// SPECrand.seed(...) to fill seed
+// SPECrand.random()
 
 #endif
 

@@ -51,12 +51,18 @@ FluidVF::FluidVF(string field_name): PlainFluidVF(field_name) {
     nlin2.resize(shape_complex_array);
 	nlin3.resize(shape_complex_array);
 	
-	
+	IC_energy_spectrum.resize(global.spectrum.shell.no_shells);
+    IC_helicity_spectrum.resize(global.spectrum.shell.no_shells);
+    IC_crosshelicity_spectrum.resize(global.spectrum.shell.no_shells);
+    
 	// Memory allocation if force_switch is on
 	if (force_switch) {
         Force1.resize(shape_complex_array);
         Force2.resize(shape_complex_array);
         Force3.resize(shape_complex_array);
+        energy_supply_spectrum.resize(global.spectrum.shell.no_shells);
+        helicity_supply_spectrum.resize(global.spectrum.shell.no_shells);
+        crosshelicity_supply_spectrum.resize(global.spectrum.shell.no_shells);
 	}
 }
 
@@ -82,6 +88,10 @@ FluidVF::FluidVF
     nlin1.resize(shape_complex_array);
     nlin2.resize(shape_complex_array);
 	nlin3.resize(shape_complex_array);
+    
+    IC_energy_spectrum.resize(global.spectrum.shell.no_shells);
+    IC_helicity_spectrum.resize(global.spectrum.shell.no_shells);
+    IC_crosshelicity_spectrum.resize(global.spectrum.shell.no_shells);
 	
 	
 	// Memory allocation if force_switch is on
@@ -89,6 +99,10 @@ FluidVF::FluidVF
         Force1.resize(shape_complex_array);
         Force2.resize(shape_complex_array);
         Force3.resize(shape_complex_array);
+        
+        energy_supply_spectrum.resize(global.spectrum.shell.no_shells);
+        helicity_supply_spectrum.resize(global.spectrum.shell.no_shells);
+        crosshelicity_supply_spectrum.resize(global.spectrum.shell.no_shells);
 	}
 }
 	

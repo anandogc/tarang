@@ -48,11 +48,17 @@ class FORCE
 {
 public: 
 	ifstream force_field_in_file;
-	
+    
+    // For the shells of energy_supply rate, helicity_supply rate etc.
+    Real inner_radius, outer_radius;
+    
+    // arrays temp1, temp2 used in compute_force_astro.cc
 	Array<Real,3> temp1;
 	Array<Complex,3> temp2;
 	
 public:
+ //   void FORCE();
+    void Initialize();
 	void Compute_force(FluidVF& U);
 	void Compute_force(FluidVF& U, FluidSF& T);
 	void Compute_force(FluidVF& U, FluidSF& T1, FluidSF& T2);
@@ -71,37 +77,41 @@ public:
 	void Compute_force_pressure_grad(FluidVF& U);
 	
 	void Const_energy_supply_alpha_beta(FluidVF& U, int lx, int ly, int lz, Real alpha, Real beta, bool add_flag);
-	void Const_energy_supply_alpha_beta(FluidVF& U, FluidVF& W, int lx, int ly, int lz, Real alpha, Real beta, bool add_flag);
-	void Const_energy_alpha_beta(FluidVF& U, int lx, int ly, int lz, Real alpha, Real beta, bool add_flag);
-	
 	void Const_energy_supply_alpha(FluidSF& T, int lx, int ly, int lz, Real alpha, bool add_flag);
+    
+    void Const_energy_alpha_beta(FluidVF& U, int lx, int ly, int lz, Real alpha, Real beta, bool add_flag);
 	void Const_energy_alpha(FluidSF& T, int lx, int ly, int lz, Real alpha, bool add_flag);
 	
-	void Force_energy_helicity_supply_or_level_basic(FluidVF& U, string force_type, Real inner_radius, Real outer_radius, Real para1, Real para2, bool add_flag);
-	void Force_energy_helicity_supply_or_level_basic(FluidSF& T, string force_type, Real inner_radius, Real outer_radius, Real para, bool add_flag);
-	void Force_energy_helicity_supply_or_level_basic_assign(FluidVF& U, string force_type, Real inner_radius, Real outer_radius, Real para1, Real para2);
-	void Force_energy_helicity_supply_or_level_basic_add(FluidVF& U, string force_type, Real inner_radius, Real outer_radius, Real para1, Real para2);
-	void Force_energy_helicity_supply_or_level_basic_assign(FluidSF& T, string force_type, Real inner_radius, Real outer_radius, Real para);
-	void Force_energy_helicity_supply_or_level_basic_add(FluidSF& T, string force_type, Real inner_radius, Real outer_radius, Real para);
-	void Force_energy_crosshelicity_supply_or_level_basic_assign(FluidVF& U, FluidVF& W, Real inner_radius, Real outer_radius, Real para1, Real para2);
-	void Force_energy_crosshelicity_supply_or_level_basic_add(FluidVF& U, FluidVF& W, Real inner_radius, Real outer_radius, Real para1, Real para2);
-
-
-
-	void Force_energy_helicity_supply_or_level(FluidVF& U, string force_type, Real inner_radius, Real outer_radius, Real para1, Real para2);
-	void Force_energy_helicity_supply_or_level(FluidSF& T, string force_type, Real inner_radius, Real outer_radius, Real para);
-	void Force_energy_crosshelicity_supply_or_level_basic(FluidVF& U, FluidVF& W, Real inner_radius, Real outer_radius, Real para1, Real para2, bool add_flag);
+    
+    void Compute_force_Carati_scheme_basic(FluidVF& U, string force_type, bool global_alpha_beta, bool add_flag);
+    
+    void Compute_force_Carati_scheme_assign(FluidVF& U, string force_type,  bool global_alpha_beta);
+    
+    void Compute_force_Carati_scheme_add(FluidVF& U, string force_type,  bool global_alpha_beta);
+    
+    void Compute_force_Carati_scheme_basic(FluidSF& T, string force_type, bool global_alpha_beta, bool add_flag);
+    
+    void Compute_force_Carati_scheme_assign(FluidVF& U, FluidSF& T, string force_type, bool global_alpha_beta);
+    
+    void Compute_force_Carati_scheme_add(FluidVF& U, FluidSF& T, string force_type, bool global_alpha_beta);
+    
+    void Compute_force_Carati_scheme_assign(FluidVF& U, FluidVF& W,  string force_type, bool global_alpha_beta);
+    
+    void Compute_force_Carati_scheme_add(FluidVF& U, FluidVF& W,  string force_type, bool global_alpha_beta);
+    
+    
+    void Compute_force_Carati_scheme(FluidVF& U);
+    
+    void Compute_force_Carati_scheme(FluidVF& U, FluidSF& T);
+    
+    void Compute_force_Carati_scheme(FluidVF& U, FluidVF& W);
+    
+    void Compute_force_Carati_scheme(FluidVF& U, FluidVF& W, FluidSF& T);
+    
+    void Compute_force_Carati_scheme_crosshelicity_basic(FluidVF& U, FluidVF& W,  bool global_alpha_beta, bool add_flag);
 	
-	void Compute_force_crosshelicity_supply(FluidVF& U, FluidVF& W);	
-	void Compute_force_const_energy_helicity_supply(FluidVF& U);
-	void Compute_force_const_energy_helicity_supply(FluidVF& U, FluidSF& T);
-	void Compute_force_const_energy_helicity_supply(FluidVF& U, FluidVF& W);
-	void Compute_force_const_energy_helicity_supply(FluidVF& U, FluidVF& W, FluidSF& T);
-	
-	void Compute_force_const_energy_helicity(FluidVF& U);			
-	void Compute_force_const_energy_helicity(FluidVF& U, FluidSF& T);
-	void Compute_force_const_energy_helicity(FluidVF& U, FluidVF& W);						
-	void Compute_force_const_energy_helicity(FluidVF& U, FluidVF& W, FluidSF& T);
+    void Compute_force_Carati_scheme_crosshelicity(FluidVF& U, FluidVF& W);
+
 	
 	void Add_complex_conj_force(FluidVF& U, int kx, int ky, int kz, Complex Fx, Complex Fy, Complex Fz);
 	void Add_complex_conj_force(FluidSF& T, int kx, int ky, int kz, Complex localG);
@@ -186,21 +196,47 @@ public:
 
 	void Model_force_spectrum(Real force_spectrum_amplitude, Real force_spectrum_exponent, Array<Real,1> Sk);
     void Model_dissipation_spectrum(Real dissipation_spectrum_amplitude, Real dissipation_spectrum_exponent, Array<Real,1> Sk);
-	void Put_force_amp_phase_comp_conj(FluidVF U, int lx, int ly, int lz,  Real amp, Real phase1, Real phase2, Real phase3, bool add_flag);
-	void Put_force_amp_phase_comp_conj(FluidSF& T, int lx, int ly, int lz, Real amp, Real phase, bool add_flag);
 	
-	void Compute_force_using_random_energy_helicity_spectrum_basic(FluidVF& U, Real inner_radius, Real outer_radius, Real force_spectrum_amplitude, Real force_spectrum_exponent, Real hk_by_kek, bool add_flag);
-	void Compute_force_using_random_energy_helicity_spectrum_basic_assign(FluidVF& U, Real inner_radius, Real outer_radius, Real force_spectrum_amplitude, Real force_spectrum_exponent, Real hk_by_kek);
-	void Compute_force_using_random_energy_helicity_spectrum_basic_add(FluidVF& U, Real inner_radius, Real outer_radius, Real force_spectrum_amplitude, Real force_spectrum_exponent, Real hk_by_kek);
-	void Compute_force_using_random_energy_spectrum_basic(FluidSF& T, Real inner_radius, Real outer_radius, Real force_spectrum_amplitude, Real force_spectrum_exponent, bool add_flag);
-	void Compute_force_using_random_energy_spectrum_basic_assign(FluidSF& T, Real inner_radius, Real outer_radius, Real force_spectrum_amplitude, Real force_spectrum_exponent);
-	void Compute_force_using_random_energy_spectrum_basic_add(FluidSF& T, Real inner_radius, Real outer_radius, Real force_spectrum_amplitude, Real force_spectrum_exponent);
+    void Put_or_add_force_vector(FluidVF U, int lx, int lz,  Real amp, Real phase, bool add_flag); // for 2D
+
+    void Put_or_add_force_vector(FluidVF U, int lx, int ly, int lz,  Real amp_plus, Real amp_minus, Real phase_plus, Real phase_minus, bool add_flag);
+    
+    void Put_or_add_force_scalar(FluidSF& T, int lx, int ly, int lz, Real amp, Real phase, bool add_flag);
+    
+    
+    
+    void Compute_force_using_random_noise_basic(FluidVF& U,  Real random_interval, Uniform<Real> rand_struct, int rand_seed, bool add_flag);
+    
+    void Compute_force_using_random_noise_assign(FluidVF& U, Real random_interval);
+    
+    void Compute_force_using_random_noise_add(FluidVF& U,  Real random_interval);
+    
+    void Compute_force_using_random_noise_basic(FluidSF& T,  Real random_interval, Uniform<Real> rand_struct, int rand_seed, bool add_flag);
+    
+    void Compute_force_using_random_noise_assign(FluidVF& U, FluidSF& T, Real random_interval);
+    
+    void Compute_force_using_random_noise_add(FluidVF& U, FluidSF& T,  Real random_interval);
+
+    
+    void Compute_force_using_random_noise_assign(FluidVF& U, FluidVF& W,  Real random_interval);
+    
+    void  Compute_force_using_random_noise_add(FluidVF& U, FluidVF& W,  Real random_interval);
 	
-	void  Compute_force_using_random_energy_helicity_spectrum(FluidVF& U);
-	void  Compute_force_using_random_energy_helicity_spectrum(FluidVF& U, FluidSF& T);
-	void  Compute_force_using_random_energy_helicity_spectrum(FluidVF& U, FluidVF& W);
-	void  Compute_force_using_random_energy_helicity_spectrum(FluidVF& U, FluidVF& W, FluidSF& T);
-	
+    void Compute_force_using_random_noise_assign(FluidVF& U, FluidVF& W, FluidSF& T, Real random_interval);
+    
+    void Compute_force_using_random_noise_add(FluidVF& U, FluidVF& W, FluidSF& T, Real random_interval);
+    
+	void  Compute_force_using_random_noise(FluidVF& U);
+	void  Compute_force_using_random_noise(FluidVF& U, FluidSF& T);
+	void  Compute_force_using_random_noise(FluidVF& U, FluidVF& W);
+    void  Compute_force_using_random_noise(FluidVF& U, FluidVF& W, FluidSF& T);
+    
+    void Compute_force_user_defined1(FluidVF& U);
+    void Compute_force_user_defined2(FluidVF& U);
+    void Compute_force_user_defined1(FluidVF& U, FluidSF& T);
+    void Compute_force_user_defined2(FluidVF& U, FluidSF& T);
+    void Compute_force_user_defined1(FluidVF& U, FluidVF& W);
+    void Compute_force_user_defined2(FluidVF& U, FluidVF& W);
 							
 };
 

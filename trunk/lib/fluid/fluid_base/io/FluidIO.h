@@ -49,6 +49,7 @@ class FluidIO
 	unsigned int slice_file_counter;		//slice file format: slice_<index>_<slice_file_counter>.h5
 
 public:
+    
 	ifstream		field_in_file;
 	ifstream		force_field_in_file;
 	
@@ -155,16 +156,19 @@ public:
 	
 	void Init_cond_DYNAMO_SIX_MODE(FluidVF& U, FluidVF& W);
 	
-	void Put_vector_amp_phase_comp_conj(FluidVF U, int lx, int ly, int lz,  Real amp, Real phase1, Real phase2, Real phase3);
+	// THe put vectors will not be reqired..
+/*    void Put_vector_amp_phase_comp_conj(FluidVF U, int lx, int ly, int lz,  Real amp, Real phase1, Real phase2, Real phase3);
   
     void Put_vector_amp_phase_comp_conj_helicity(FluidVF U, int lx, int ly, int lz,  Real ek, Real hk_by_k, Real phase_plus, Real phase_minus);
 	
 	void Put_scalar_amp_phase_comp_conj(FluidSF& T, int lx, int ly, int lz, Real amp, Real phase);
 
 	void Put_vector_amp_phase_comp_conj_cross_helicity(FluidVF U, int lx, int ly, int lz,  Real u_plus_mod, Real u_minus_mod, Real phase_plus, Real phase_minus);
+ */
 	
-	void Initialize_using_energy_helicity_spectrum(FluidVF& U, Real spectrum_amp, Real hk_by_kek);
-	void Initialize_using_energy_helicity_spectrum(FluidSF& T, Real spectrum_amp);
+	void Init_cond_energy_helicity_spectrum_k_ne0(FluidVF& U);
+	void Init_cond_energy_helicity_spectrum_k_ne0(FluidSF& T);
+    void Init_cond_energy_helicity_spectrum_k_ne0(FluidVF& U, FluidVF& W);
 	
 	void Init_cond_energy_helicity_spectrum(FluidVF& U);
 	void Init_cond_energy_helicity_spectrum(FluidVF& U, FluidSF& T);
@@ -180,7 +184,14 @@ public:
 	void Init_cond_vortex(FluidVF& U, FluidVF& W);
     void Init_cond_vortex(FluidVF& U, FluidVF& W, FluidSF& T);
     void Init_cond_vortex(FluidSF& T);
-	
+    
+    void Init_cond_user_defined1(FluidVF& U);
+    void Init_cond_user_defined2(FluidVF& U);
+    void Init_cond_user_defined1(FluidVF& U, FluidSF& T);
+    void Init_cond_user_defined2(FluidVF& U, FluidSF& T);
+    void Init_cond_user_defined1(FluidVF& U, FluidVF& W);
+    void Init_cond_user_defined2(FluidVF& U, FluidVF& W);
+
 		///
 	
 	bool Global_data_buffer_full();

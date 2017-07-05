@@ -49,188 +49,352 @@
 #include "FORCE.h"
 
 
-extern Uniform<Real> SPECrand;
-
 //*********************************************************************************************
 
-/** @brief Create initial condition based on given spectrum Sk(k). 
- *			Parameters eps_u = IC(1); sk = Hk/(k*ek) = IC(2).
+/** @brief Create initial condition based on given energy supply and kinetic helicity supply.
+ *			The force is updated every random_interval = 0.01, between which the same force is
+ *          applied at every time step.  Note that the random seed remains the same betwween the interval.
  *
- * @note  The energy Sk(k) is divided equally among all the modes in the shell.
- *			Then V(k) is constructed so that it has the given energy
+ * @note  The supply rates are divided equally among all the modes in the shell.
+ * @note  helicity = U.curl U
  * 
  * @note	The mean mode has zero energy.
  */
 
-// force spectrum F(k) = A k^{-e} saved in U.cvf.shell_ek;  hk_by_kek=h_F(k)/(k F(k))  
-void  FORCE::Compute_force_using_random_energy_helicity_spectrum_basic(FluidVF& U, Real inner_radius, Real outer_radius, Real dissipation_spectrum_amplitude, Real dissipation_spectrum_exponent, Real hk_by_kek, bool add_flag)
+
+void  FORCE::Compute_force_using_random_noise_basic(FluidVF& U, Real random_interval, Uniform<Real> rand_struct, int rand_seed, bool add_flag)
 {
-	Real Kmag, diss_k, amp, phase1, phase2, phase3;
-	int index;
+    
+    // No forcing....
+    Real total_energy_supply = sum(U.energy_supply_spectrum);
+    Real total_helicity_supply = sum(U.helicity_supply_spectrum);
+    if (abs(total_energy_supply)+abs(total_helicity_supply) < MYEPS)
+        return;
+    
+    // force ..
+    Real Kmag, energy_supply_k, helicity_supply_k;
+    Real amp_ch1, phase_ch1;  // Amplitudes in Craya-Herring basis.
+    Real amp_plus, amp_minus, phase_plus, phase_minus;
+    int index;
+    
+    rand_struct.seed(rand_seed);
+    
+    int kx_max, ky_max, kz_max, kx_min, ky_min, kz_min;
+    kx_max = (int) ceil(outer_radius/kfactor[1]);
+    
+    if (Ny > 1)
+        ky_max = (int) ceil(outer_radius/kfactor[2]);
+    else
+        ky_max = 0;
+    
+    kz_max = (int) ceil(outer_radius/kfactor[3]);
+    
+    kx_min = ky_min = kz_min = 0;
+    
+    if (basis_type == "FFF" || basis_type == "FFFW")
+        kx_min = -kx_max;
+    
+    if ((basis_type == "FFF" || basis_type == "FFFW") || (basis_type == "SFF"))
+        ky_min = -ky_max;
+    
+    int lx, ly, lz;
+    for (int kx = kx_min; kx <= kx_max; kx++)
+        for (int ky = ky_min; ky <= ky_max; ky++)
+            for (int kz = 0; kz <= kz_max; kz++) {
+                
+                if (universal->Probe_in_me(kx,ky,kz))  {
+                    lx = universal->Get_lx(kx);
+                    ly = universal->Get_ly(ky);
+                    lz = universal->Get_kz(kz);
+                    
+                    Kmag = universal->Kmagnitude(lx, ly, lz);
+                
+                    if ((Kmag > inner_radius) && (Kmag <= outer_radius)) {
+                        index = (int) ceil(Kmag);
+                        energy_supply_k = U.energy_supply_spectrum(index)/ global.spectrum.shell.modes_in_shell(index);
+                        
+                        if ((Ny == 1) && global.program.two_dimension) {  // 2D 2C
+                            amp_ch1 = sqrt(2*energy_supply_k/random_interval);
+                            phase_ch1 = 2*M_PI * rand_struct.random();
+                            
+                            Put_or_add_force_vector(U, lx, lz, amp_ch1, phase_ch1, add_flag);
+                        }
+                        else { //  for 3D & 2D3C
+                            helicity_supply_k = U.helicity_supply_spectrum(index)/ global.spectrum.shell.modes_in_shell(index);
+                            
+                            if (abs(Kmag*energy_supply_k - abs(helicity_supply_k)) > MYEPS) {
+                                amp_plus = sqrt((energy_supply_k+helicity_supply_k/Kmag)/random_interval);
+                                amp_minus = sqrt((energy_supply_k-helicity_supply_k/Kmag)/random_interval);
+                                phase_plus = 2*M_PI * rand_struct.random();
+                                phase_minus = 2*M_PI * rand_struct.random();
+                                
+                                Put_or_add_force_vector(U, lx, ly, lz, amp_plus, amp_minus, phase_plus, phase_minus, add_flag);
+                            }
+                            else {
+                                if (master) cout << "EXITING; ERROR: You have |helicity_supply_k| <= k* energy_supply_k|";
+                                exit(1);
+                            }
+                        }
+                    }
+                }
+            }
+}
+
+void  FORCE::Compute_force_using_random_noise_assign(FluidVF& U, Real random_interval)
+{
     static Real random_next = 0;
-    static Real random_interval = 0.01;
-
-    if (global.time.now >=random_next)
-    {
-	Model_dissipation_spectrum(dissipation_spectrum_amplitude, dissipation_spectrum_exponent, Correlation::shell_ek);
     
-	int kx_max, ky_max, kz_max, kx_min, ky_min, kz_min;
-	kx_max = (int) ceil(outer_radius/kfactor[1]);
-	
-	if (Ny > 1)
-		ky_max = (int) ceil(outer_radius/kfactor[2]);
-	else
-		ky_max = 0;
-	
-	kz_max = (int) ceil(outer_radius/kfactor[3]);
-	
-	kx_min = ky_min = kz_min = 0;
-	
-	if (basis_type == "FFF" || basis_type == "FFFW")
-		kx_min = -kx_max;
-	
-	if ((basis_type == "FFF" || basis_type == "FFFW") || (basis_type == "SFF"))
-		ky_min = -ky_max;
+    static Uniform<Real> force_rand;
+    static int rand_seed;
+    rand_seed = (unsigned int) my_id*time(0);
     
-	int lx, ly, lz;
-	for (int kx = kx_min; kx <= kx_max; kx++)
-		for (int ky = ky_min; ky <= ky_max; ky++)
-			for (int kz = 0; kz <= kz_max; kz++) {
-				
-				if (universal->Probe_in_me(kx,ky,kz))  {
-					lx = universal->Get_lx(kx);
-					ly = universal->Get_ly(ky);
-					lz = universal->Get_kz(kz);
-
-					Kmag = universal->Kmagnitude(lx, ly, lz);
-					
-					if ((Kmag > inner_radius) && (Kmag <= outer_radius)) {
-						index = (int) ceil(Kmag);
-					
-						diss_k = Correlation::shell_ek(index)/ universal->Approx_number_modes_in_shell(index);
-						amp = sqrt(2*diss_k/global.time.dt);
-						
-						phase1 = 2*M_PI * SPECrand.random();
-						
-						if (abs(hk_by_kek) > MYEPS) {		// helical
-							phase2 = phase1 + M_PI/2.0;
-							phase3 = asin(hk_by_kek)/2.0;			// zeta
-						}
-						
-						else { // no helicity
-							phase2 = 2*M_PI * SPECrand.random();
-							phase3 = 2*M_PI * SPECrand.random();
-						}
-                      //cout <<" global.time.next = "<<global.io.time.cout_save_interval<<endl;
-
-
-						Put_force_amp_phase_comp_conj(U, lx, ly, lz, amp, phase1, phase2, phase3, add_flag);
-                      //global.io.time.global_save_next += global.io.time.global_save_interval;
-
-                      //global.io.time.global_save_next += global.io.time.global_save_interval;
-
-                     
-
-                      }
-                    //    cout << "li, amp = " << lx << " " << ly << " " << lz << " " << Kmag << " " << amp << endl;
-						
-					} // of if(Kmag > MYEPS)
-				}
-                random_next += random_interval;
-                cout <<" time random_next  = "<<global.time.now<<" "<<random_next << " " << random_interval << endl;
-
-			}
-  
-}
-
-void  FORCE::Compute_force_using_random_energy_helicity_spectrum_basic_assign(FluidVF& U, Real inner_radius, Real outer_radius, Real force_spectrum_amplitude, Real force_spectrum_exponent, Real hk_by_kek)
-{
-	Compute_force_using_random_energy_helicity_spectrum_basic(U, inner_radius, outer_radius, force_spectrum_amplitude, force_spectrum_exponent, hk_by_kek, false);
+    if (global.time.now >=random_next) { // Get new rand_seed
+        rand_seed = (unsigned int) my_id*time(0);
+        random_next += random_interval;
+        //   if (master) cout <<" time random_next  = "<<global.time.now<<" "<< random_next << " " << random_interval << endl;
+    } // else rand_seed is unchanged.
+    
+    Compute_force_using_random_noise_basic(U, random_interval, force_rand, rand_seed, false);
 }
 
 
-void  FORCE::Compute_force_using_random_energy_helicity_spectrum_basic_add(FluidVF& U, Real inner_radius, Real outer_radius, Real force_spectrum_amplitude, Real force_spectrum_exponent, Real hk_by_kek)
+void  FORCE::Compute_force_using_random_noise_add(FluidVF& U, Real random_interval)
 {
-	Compute_force_using_random_energy_helicity_spectrum_basic(U, inner_radius, outer_radius, force_spectrum_amplitude, force_spectrum_exponent, hk_by_kek, true);
+    static Real random_next = 0;
+    
+    static Uniform<Real> force_rand;
+    static int rand_seed;
+    rand_seed = (unsigned int) my_id*time(0);
+    
+    if (global.time.now >=random_next) { // Get new rand_seed
+        rand_seed = (unsigned int) my_id*time(0);
+        random_next += random_interval;
+    } // else rand_seed is unchanged.
+    
+    Compute_force_using_random_noise_basic(U, random_interval, force_rand, rand_seed, true);
 }
 
 //*********************************************************************************************
 
-void  FORCE::Compute_force_using_random_energy_spectrum_basic(FluidSF& T, Real inner_radius, Real outer_radius, Real dissipation_spectrum_amplitude, Real dissipation_spectrum_exponent, bool add_flag)
+/** @brief Create initial condition based on given energy supply and kinetic helicity supply.
+ *			The force is updated every random_interval = 0.01, between which the same force is
+ *          applied at every time step.  Note that the random seed remains the same betwween the interval.
+ *
+ * @note  The supply rates are divided equally among all the modes in the shell.
+ * @note  helicity = U.curl U
+ *
+ * @note	The mean mode has zero energy.
+ */
+
+void  FORCE::Compute_force_using_random_noise_basic(FluidSF& T, Real random_interval, Uniform<Real> rand_struct, int rand_seed,  bool add_flag)
 {
-	Real Kmag, ek, amp, phase;
-	int index;
-	
-	Model_dissipation_spectrum(dissipation_spectrum_amplitude, dissipation_spectrum_exponent, Correlation::shell_ek);
-	
-	int kx_max, ky_max, kz_max, kx_min, ky_min, kz_min;
-	kx_max = (int) ceil(outer_radius/kfactor[1]);
-	
-	if (Ny > 1)
-		ky_max = (int) ceil(outer_radius/kfactor[2]);
-	else
-		ky_max = 0;
-	
-	kz_max = (int) ceil(outer_radius/kfactor[3]);
-	
-	kx_min = ky_min = kz_min = 0;
-	
-	if (basis_type == "FFF" || basis_type == "FFFW")
-		kx_min = -kx_max;
-	
-	if ((basis_type == "FFF") || (basis_type == "SFF"))
-		ky_min = -ky_max;
-	
-	int lx, ly, lz;
-	for (int kx = kx_min; kx <= kx_max; kx++)
-		for (int ky = ky_min; ky <= ky_max; ky++)
-			for (int kz = 0; kz <= kz_max; kz++) {
-				if (universal->Probe_in_me(kx,ky,kz))  {
-					lx = universal->Get_lx(kx);
-					ly = universal->Get_ly(ky);
-					lz = universal->Get_kz(kz);
-					
-					Kmag = universal->Kmagnitude(lx, ly, lz);
-					
-					if ((Kmag > inner_radius) && (Kmag <= outer_radius)) {
-						index = (int) ceil(Kmag);
-						
-						ek = Correlation::shell_ek(index)/ universal->Approx_number_modes_in_shell(index);
-						amp = sqrt(2*ek);
-						phase = 2*M_PI * SPECrand.random();
-						
-						Put_force_amp_phase_comp_conj(T, lx, ly, lz, amp, phase, add_flag);
-					} // of if(Kmag > MYEPS)
-				}
-			}
-	
-	if (my_id == master_id)
-		T.csf.F(0,0,0) = 0.0;
+
+    // No random forcing if supplies are zero.
+    Real total_energy_supply = sum(T.energy_supply_spectrum);
+    if (abs(total_energy_supply) < MYEPS)
+        return;
+
+    // Force now
+    Real Kmag, energy_supply_k;
+    Real amp, phase; // For scalar
+    int index;
+    static Real random_next = 0;
+    
+    rand_struct.seed(rand_seed);
+    
+    int kx_max, ky_max, kz_max, kx_min, ky_min, kz_min;
+    kx_max = (int) ceil(outer_radius/kfactor[1]);
+    
+    if (Ny > 1)
+        ky_max = (int) ceil(outer_radius/kfactor[2]);
+    else
+        ky_max = 0;
+    
+    kz_max = (int) ceil(outer_radius/kfactor[3]);
+    
+    kx_min = ky_min = kz_min = 0;
+    
+    if (basis_type == "FFF" || basis_type == "FFFW")
+        kx_min = -kx_max;
+    
+    if ((basis_type == "FFF" || basis_type == "FFFW") || (basis_type == "SFF"))
+        ky_min = -ky_max;
+    
+    int lx, ly, lz;
+    for (int kx = kx_min; kx <= kx_max; kx++)
+        for (int ky = ky_min; ky <= ky_max; ky++)
+            for (int kz = 0; kz <= kz_max; kz++)
+                
+                if (universal->Probe_in_me(kx,ky,kz))  {
+                    lx = universal->Get_lx(kx);
+                    ly = universal->Get_ly(ky);
+                    lz = universal->Get_kz(kz);
+                    
+                    Kmag = universal->Kmagnitude(lx, ly, lz);
+                    
+                    if ((Kmag > inner_radius) && (Kmag <= outer_radius)) {
+                        index = (int) ceil(Kmag);
+                        
+                        if (T.force_switch) {
+                            energy_supply_k = T.energy_supply_spectrum(index)/  global.spectrum.shell.modes_in_shell(index);
+                            amp = sqrt(2*energy_supply_k/random_interval);
+                            phase = 2*M_PI * rand_struct.random();
+                            
+                            Put_or_add_force_scalar(T, lx, ly, lz, amp, phase, add_flag);
+                        }
+                    }
+                }
 }
 
 
-void  FORCE::Compute_force_using_random_energy_spectrum_basic_assign(FluidSF& T, Real inner_radius, Real outer_radius, Real force_spectrum_amplitude, Real force_spectrum_exponent)
+
+
+void  FORCE::Compute_force_using_random_noise_assign(FluidVF& U, FluidSF& T, Real random_interval)
 {
-	Compute_force_using_random_energy_spectrum_basic(T, inner_radius, outer_radius, force_spectrum_amplitude, force_spectrum_exponent, false);
+    static Real random_next = 0;
+    
+    static Uniform<Real> force_rand;
+    static int rand_seed1, rand_seed2;
+    rand_seed1 = ((unsigned int) my_id*time(0));
+    rand_seed2 = ((unsigned int) my_id*time(0)+1);
+    
+    if (global.time.now >=random_next) { // Get new rand_seed
+        rand_seed1 = ((unsigned int) my_id*time(0));
+        rand_seed2 = ((unsigned int) my_id*time(0)+1);
+        random_next += random_interval;
+    } // else rand_seed is unchanged.
+    
+    Compute_force_using_random_noise_basic(U, random_interval, force_rand, rand_seed1, false);
+    
+    if (T.force_switch)
+        Compute_force_using_random_noise_basic(T, random_interval, force_rand,  rand_seed2, false);
 }
 
-void  FORCE::Compute_force_using_random_energy_spectrum_basic_add(FluidSF& T, Real inner_radius, Real outer_radius, Real force_spectrum_amplitude, Real force_spectrum_exponent)
+void  FORCE::Compute_force_using_random_noise_add(FluidVF& U, FluidSF& T, Real random_interval)
 {
-	Compute_force_using_random_energy_spectrum_basic(T, inner_radius, outer_radius, force_spectrum_amplitude, force_spectrum_exponent, true);
-}
+    static Real random_next = 0;
+    
+    static Uniform<Real> force_rand;
+    static int rand_seed1, rand_seed2;
+    rand_seed1 = ((unsigned int) my_id*time(0));
+    rand_seed2 = ((unsigned int) my_id*time(0)+1);
 
+    
+    if (global.time.now >=random_next) { // Get new rand_seed
+        rand_seed1 = ((unsigned int) my_id*time(0));
+        rand_seed2 = ((unsigned int) my_id*time(0)+1);
+        random_next += random_interval;
+    } // else rand_seed is unchanged.
+    
+    Compute_force_using_random_noise_basic(U, random_interval, force_rand, rand_seed1, true);
+    
+    if (T.force_switch)
+        Compute_force_using_random_noise_basic(T, random_interval, force_rand, rand_seed2, true);
+}
 
 //*********************************************************************************************
 
-void  FORCE::Compute_force_using_random_energy_helicity_spectrum(FluidVF& U) 
+
+void  FORCE::Compute_force_using_random_noise_assign(FluidVF& U, FluidVF& W, Real random_interval)
 {
-	Real inner_radius = global.force.double_para(0);
-	Real outer_radius = global.force.double_para(1);
-	Real force_spectrum_amplitude = global.force.double_para(2);
-	Real force_spectrum_exponent = global.force.double_para(3);
-	Real hk_by_kek = global.force.double_para(4);
+    static Real random_next = 0;
     
-    Compute_force_using_random_energy_helicity_spectrum_basic_assign(U, inner_radius, outer_radius, force_spectrum_amplitude, force_spectrum_exponent, hk_by_kek);
+    static Uniform<Real> force_rand;
+    static int rand_seed1, rand_seed2;
+    rand_seed1 = ((unsigned int) my_id*time(0));
+    rand_seed2 = ((unsigned int) my_id*time(0)+1);
+    
+    if (global.time.now >=random_next) { // Get new rand_seed
+        rand_seed1 = ((unsigned int) my_id*time(0));
+        rand_seed2 = ((unsigned int) my_id*time(0)+1);
+        random_next += random_interval;
+    } // else rand_seed is unchanged.
+    
+    Compute_force_using_random_noise_basic(U, random_interval, force_rand, rand_seed1, false);
+    Compute_force_using_random_noise_basic(W, random_interval, force_rand, rand_seed2, false);
+}
+
+
+void  FORCE::Compute_force_using_random_noise_add(FluidVF& U, FluidVF& W, Real random_interval)
+{
+    static Real random_next = 0;
+    
+    static Uniform<Real> force_rand;
+    static int rand_seed1, rand_seed2;
+    rand_seed1 = ((unsigned int) my_id*time(0));
+    rand_seed2 = ((unsigned int) my_id*time(0)+1);
+    
+    if (global.time.now >=random_next) { // Get new rand_seed
+        rand_seed1 = ((unsigned int) my_id*time(0));
+        rand_seed2 = ((unsigned int) my_id*time(0)+1);
+        random_next += random_interval;
+    } // else rand_seed is unchanged.
+    
+    Compute_force_using_random_noise_basic(U, random_interval, force_rand, rand_seed1, true);
+    Compute_force_using_random_noise_basic(W, random_interval, force_rand, rand_seed2, true);
+}
+
+//*********************************************************************************************
+
+
+void  FORCE::Compute_force_using_random_noise_assign(FluidVF& U, FluidVF& W, FluidSF& T, Real random_interval)
+{
+    static Real random_next = 0;
+    
+    static Uniform<Real> force_rand;
+    static int rand_seed1, rand_seed2, rand_seed3;
+    rand_seed1 = ((unsigned int) my_id*time(0));
+    rand_seed2 = ((unsigned int) my_id*time(0)+1);
+    rand_seed3 = ((unsigned int) my_id*time(0)+2);
+    
+    if (global.time.now >=random_next) { // Get new rand_seed
+        rand_seed1 = ((unsigned int) my_id*time(0));
+        rand_seed2 = ((unsigned int) my_id*time(0)+1);
+        rand_seed3 = ((unsigned int) my_id*time(0)+2);
+        random_next += random_interval;
+    } // else rand_seed is unchanged.
+    
+    Compute_force_using_random_noise_basic(U, random_interval, force_rand, rand_seed1, false);
+    Compute_force_using_random_noise_basic(W, random_interval, force_rand, rand_seed2, false);
+    Compute_force_using_random_noise_basic(T, random_interval, force_rand, rand_seed3, false);
+}
+
+
+void  FORCE::Compute_force_using_random_noise_add(FluidVF& U, FluidVF& W, FluidSF& T, Real random_interval)
+{
+    static Real random_next = 0;
+    
+    static Uniform<Real> force_rand;
+    static int rand_seed1, rand_seed2, rand_seed3;
+    rand_seed1 = ((unsigned int) my_id*time(0));
+    rand_seed2 = ((unsigned int) my_id*time(0)+1);
+    rand_seed3 = ((unsigned int) my_id*time(0)+2);
+    
+    if (global.time.now >=random_next) { // Get new rand_seed
+        rand_seed1 = ((unsigned int) my_id*time(0));
+        rand_seed2 = ((unsigned int) my_id*time(0)+1);
+        rand_seed3 = ((unsigned int) my_id*time(0)+2);
+        random_next += random_interval;
+    } // else rand_seed is unchanged.
+    
+    Compute_force_using_random_noise_basic(U, random_interval, force_rand, rand_seed1, true);
+    Compute_force_using_random_noise_basic(W, random_interval, force_rand, rand_seed2, true);
+    Compute_force_using_random_noise_basic(T, random_interval, force_rand, rand_seed3, true);
+}
+
+//*********************************************************************************************
+
+void  FORCE::Compute_force_using_random_noise(FluidVF& U)
+{
+    inner_radius = global.force.double_para(0);
+    outer_radius = global.force.double_para(1);
+    
+    Real random_interval = global.force.double_para(2);
+    
+    U.energy_supply_spectrum = global.force.U_energy_supply_spectrum;
+    U.helicity_supply_spectrum = global.force.U_helicity_supply_spectrum;
+    
+    Compute_force_using_random_noise_assign(U, random_interval);
 }
 
 //*********************************************************************************************
@@ -243,19 +407,19 @@ void  FORCE::Compute_force_using_random_energy_helicity_spectrum(FluidVF& U)
  * @note	The mean mode has zero energy.
  */
 
-void  FORCE::Compute_force_using_random_energy_helicity_spectrum(FluidVF& U, FluidSF& T)
+void  FORCE::Compute_force_using_random_noise(FluidVF& U, FluidSF& T)
 {    
-	Real inner_radius = global.force.double_para(0);
-	Real outer_radius = global.force.double_para(1);
-    Real force_spectrum_amplitude = global.force.double_para(2);
-	Real force_spectrum_exponent = global.force.double_para(3);
-	Real hk_by_kek = global.force.double_para(4);
-	Real Tforce_spectrum_amplitude = global.force.double_para(5);
-	Real Tforce_spectrum_exponent = global.force.double_para(6);
-	
-	Compute_force_using_random_energy_helicity_spectrum_basic_assign(U, inner_radius, outer_radius, force_spectrum_amplitude, force_spectrum_exponent, hk_by_kek);
+    inner_radius = global.force.double_para(0);
+    outer_radius = global.force.double_para(1);
     
-	Compute_force_using_random_energy_spectrum_basic_assign(T, inner_radius, outer_radius, Tforce_spectrum_amplitude, Tforce_spectrum_exponent);
+    Real random_interval = global.force.double_para(2);
+    
+    U.energy_supply_spectrum = global.force.U_energy_supply_spectrum;
+    T.energy_supply_spectrum = global.force.T_energy_supply_spectrum;
+    
+    U.helicity_supply_spectrum = global.force.U_helicity_supply_spectrum;
+	
+	Compute_force_using_random_noise_assign(U, T, random_interval);
 }
 
 
@@ -270,20 +434,21 @@ void  FORCE::Compute_force_using_random_energy_helicity_spectrum(FluidVF& U, Flu
  * 
  * @note	The mean mode has zero energy.
  */
-void  FORCE::Compute_force_using_random_energy_helicity_spectrum(FluidVF& U, FluidVF& W)
+void  FORCE::Compute_force_using_random_noise(FluidVF& U, FluidVF& W)
 {
-	Real inner_radius = global.force.double_para(0);
-	Real outer_radius = global.force.double_para(1);
-	Real force_spectrum_amplitude = global.force.double_para(2);
-	Real force_spectrum_exponent = global.force.double_para(3);
-	Real hk_by_kek = global.force.double_para(4);
-	Real Wforce_spectrum_amplitude = global.force.double_para(5);
-	Real Wforce_spectrum_exponent = global.force.double_para(6);
-	Real Whk_by_kek = global.force.double_para(7);
+	inner_radius = global.force.double_para(0);
+	outer_radius = global.force.double_para(1);
     
-    Compute_force_using_random_energy_helicity_spectrum_basic_assign(U, inner_radius, outer_radius, force_spectrum_amplitude, force_spectrum_exponent, hk_by_kek);
-	
-	Compute_force_using_random_energy_helicity_spectrum_basic_assign(W, inner_radius, outer_radius, Wforce_spectrum_amplitude, Wforce_spectrum_exponent, Whk_by_kek);
+    Real random_interval = global.force.double_para(2);
+    
+    U.energy_supply_spectrum = global.force.U_energy_supply_spectrum;
+    W.energy_supply_spectrum = global.force.W_energy_supply_spectrum;
+    
+    U.helicity_supply_spectrum = global.force.U_helicity_supply_spectrum;
+    W.helicity_supply_spectrum = global.force.W_helicity_supply_spectrum;
+    W.crosshelicity_supply_spectrum = global.force.W_crosshelicity_supply_spectrum;
+    
+    Compute_force_using_random_noise_assign(U, W, random_interval);
 }
 											  
 
@@ -300,28 +465,22 @@ void  FORCE::Compute_force_using_random_energy_helicity_spectrum(FluidVF& U, Flu
  * 
  * @note	The mean mode has zero energy.
  */
-void  FORCE::Compute_force_using_random_energy_helicity_spectrum(FluidVF& U, FluidVF& W, FluidSF& T)
+void  FORCE::Compute_force_using_random_noise(FluidVF& U, FluidVF& W, FluidSF& T)
 {
-	Real inner_radius = global.force.double_para(0);
-	Real outer_radius = global.force.double_para(1);
-	Real force_spectrum_amplitude = global.force.double_para(2);
-	Real force_spectrum_exponent = global.force.double_para(3);
-	Real hk_by_kek = global.force.double_para(4);
-	
-	Real Wforce_spectrum_amplitude = global.force.double_para(5);
-	Real Wforce_spectrum_exponent = global.force.double_para(6);
-	Real Whk_by_kek = global.force.double_para(7);
-	
-	Real Tforce_spectrum_amplitude = global.force.double_para(8);
-	Real Tforce_spectrum_exponent = global.force.double_para(9);
+    inner_radius = global.force.double_para(0);
+    outer_radius = global.force.double_para(1);
     
-    Compute_force_using_random_energy_helicity_spectrum_basic_assign(U, inner_radius, outer_radius, force_spectrum_amplitude, force_spectrum_exponent, hk_by_kek);
-	
-	Compute_force_using_random_energy_helicity_spectrum_basic_assign(W, inner_radius, outer_radius, Wforce_spectrum_amplitude, Wforce_spectrum_exponent, Whk_by_kek);
-	
-	Compute_force_using_random_energy_spectrum_basic_assign(T, inner_radius, outer_radius, Tforce_spectrum_amplitude, Tforce_spectrum_exponent);
-	
-	
+    Real random_interval = global.force.double_para(2);
+    
+    U.energy_supply_spectrum = global.force.U_energy_supply_spectrum;
+    W.energy_supply_spectrum = global.force.W_energy_supply_spectrum;
+    T.energy_supply_spectrum = global.force.T_energy_supply_spectrum;
+    
+    U.helicity_supply_spectrum = global.force.U_helicity_supply_spectrum;
+    W.helicity_supply_spectrum = global.force.W_helicity_supply_spectrum;
+    W.crosshelicity_supply_spectrum = global.force.W_crosshelicity_supply_spectrum;
+    
+    Compute_force_using_random_noise_assign(U, W, T, random_interval);
 }
 
 //********************************** init_cond_energy.cc **************************************

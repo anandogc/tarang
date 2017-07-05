@@ -44,12 +44,11 @@ void FORCE::Compute_force(FluidVF& U)
 {
 	switch (global.force.field_procedure) {		
 		case (0) : Compute_force_decay(U);	break;		
-		case (1) : Compute_force_const_energy_helicity_supply(U); break;	
-		case (2) : Compute_force_const_energy_helicity(U); break;
+		case (1) : Compute_force_Carati_scheme(U); break;
 		case (3) : Compute_force_given_modes(U); break;
 		case (4) : Compute_force_Taylor_Green(U); break;
 		case (5) : Compute_force_ABC(U); break;
-		case (6) : Compute_force_using_random_energy_helicity_spectrum(U); break;
+		case (6) : Compute_force_using_random_noise(U); break;
 		case (21) : Compute_force_Coriolis(U); break;
 		case (22) : Compute_force_Keplerian(U); break;
 		case (23) : Compute_force_Keplerian_SB(U); break;
@@ -59,6 +58,8 @@ void FORCE::Compute_force(FluidVF& U)
 		case (104): Compute_force_Ekman_friction(U); break;
 		case (105): Compute_force_Ekman_friction_const_energy_supply(U); break;	
 		case (420): Compute_force_pressure_grad(U); break;
+        case (501): Compute_force_user_defined1(U); break;
+        case (502): Compute_force_user_defined2(U); break;
 	}
 	
 	int force_proc = global.force.field_procedure;
@@ -79,18 +80,19 @@ void FORCE::Compute_force(FluidVF& U, FluidSF& T)
 {
 	switch (global.force.field_procedure) {		
 		case (0) : Compute_force_decay(U, T);	break;		
-		case (1) : Compute_force_const_energy_helicity_supply(U, T); break;
-		case (2) : Compute_force_const_energy_helicity(U, T); break;		
+		case (1) : Compute_force_Carati_scheme(U, T); break;
 		case (3) : Compute_force_given_modes(U, T); break;
 		case (4) : Compute_force_Taylor_Green(U, T); break;
 		case (5) : Compute_force_ABC(U, T); break;
-		case (6) : Compute_force_using_random_energy_helicity_spectrum(U, T); break;
-		case (11): Compute_force_const_energy_helicity_supply(U); break;
+		case (6) : Compute_force_using_random_noise(U, T); break;
+		case (11): Compute_force_using_random_noise(U); break;
 		case (21) : Compute_force_Coriolis(U, T); break;	
 		case (51) : Compute_force_RBC(U, T); break;	
 		case (52) : Compute_force_RBC_rotation(U, T); break;
 		case (53) : Compute_force_stratified_random(U, T); break;
 		case (101): Compute_force_Liquid_metal(U, T); break;
+        case (501): Compute_force_user_defined1(U, T); break;
+        case (502): Compute_force_user_defined2(U, T); break;
 	}
 	
 	int force_proc = global.force.field_procedure;
@@ -130,17 +132,18 @@ void FORCE::Compute_force(FluidVF& U, FluidVF& W)
 {
 	switch (global.force.field_procedure) {		
 		case (0) : Compute_force_decay(U, W);	break;				
-		case (1) : Compute_force_const_energy_helicity_supply(U, W); break;	
-		case (2) : Compute_force_const_energy_helicity(U, W); break;	
+		case (1) : Compute_force_Carati_scheme(U, W); break;
 		case (3) : Compute_force_given_modes(U, W); break;
 		case (4) : Compute_force_Taylor_Green(U, W); break;
 		case (5) : Compute_force_ABC(U, W); break;
-		case (6) : Compute_force_using_random_energy_helicity_spectrum(U, W); break;
+		case (6) : Compute_force_using_random_noise(U, W); break;
 		case (21) : Compute_force_Coriolis(U, W); break;
 		case (22) : Compute_force_Keplerian(U, W); break;
 		case (23) : Compute_force_Keplerian_SB(U, W); break;
-		case (24) : Compute_force_crosshelicity_supply(U, W); break;
+		case (24) : Compute_force_Carati_scheme_crosshelicity(U, W); break;
 		case (101): Compute_force_DYNAMO_SIX_MODE(U, W); break;
+        case (501): Compute_force_user_defined1(U, W); break;
+        case (502): Compute_force_user_defined2(U, W); break;
 	}
 	
 	int force_proc = global.force.field_procedure;
@@ -170,12 +173,12 @@ void FORCE::Compute_force(FluidVF& U, FluidVF& W, FluidSF& T)
 {
 	switch (global.force.field_procedure) {		
 		case (0) : Compute_force_decay(U, W, T);	break;					
-		case (1) : Compute_force_const_energy_helicity_supply(U, W, T); break;	
-		case (2) : Compute_force_const_energy_helicity(U, W, T); break;
+		case (1) : Compute_force_Carati_scheme(U, W, T); break;
+		case (2) : Compute_force_Carati_scheme(U, W, T); break;
 		case (3) : Compute_force_given_modes(U, W, T); break;
 		case (4) : Compute_force_Taylor_Green(U, W, T); break;
 		case (5) : Compute_force_ABC(U, W, T); break;
-		case (6) : Compute_force_using_random_energy_helicity_spectrum(U, W, T); break;
+		case (6) : Compute_force_using_random_noise(U, W, T); break;
 		case (21) : Compute_force_Coriolis(U, W, T); break;
 		case (51) : Compute_force_RBC(U, W,T); break;
 		case (52) : Compute_force_RBC_rotation(U, W, T); break;

@@ -65,7 +65,6 @@ Real FFF_PENCIL::Get_local_energy(Array<Complex,3> A)
 		local_energy -= Array_sqr(A(Range::all(),Range::all(),0))/2;
 	
 	return local_energy;
-	
 }
 
 

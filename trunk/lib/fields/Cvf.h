@@ -207,7 +207,10 @@ public:
 	
 	/// Compute total helicity1, helicity2, and their dissipation for Cvf.
 	void Compute_total_helicity();
+    
+    void Put_or_add_vector(int lx, int lz,  Real amp, Real phase, bool add_flag);
 	
+    void Put_or_add_vector(int lx, int ly, int lz,  Real amp_Uplus, Real amp_Uminus, Real phase_plus, Real phase_minus, bool add_flag);
 	
 	//*****************************************************************************************	
 	

@@ -232,6 +232,15 @@ public:
 		Array<Real,1> double_para;
 		Array<string,1> string_para;
 
+
+		//Shubhadeep//
+		Array<Real,1> U_energy_supply_spectrum;
+		Array<Real,1> U_helicity_supply_spectrum;
+		Array<Real,1> T_energy_supply_spectrum;
+		Array<Real,1> W_energy_supply_spectrum;
+		Array<Real,1> W_helicity_supply_spectrum;
+		Array<Real,1> W_crosshelicity_supply_spectrum;
+		//Shubhadeep//
 		struct modes{
 			bool read_done;
 			int number;
@@ -267,7 +276,14 @@ public:
 		Array<int,1> int_para;
 		Array<Real,1> double_para;
 		Array<string,1> string_para;
-
+		//Shubhadeep //
+		Array<Real,1> U_IC_energy_spectrum;
+		Array<Real,1> U_IC_helicity_spectrum;
+		Array<Real,1> T_IC_energy_spectrum;
+		Array<Real,1> W_IC_energy_spectrum;
+		Array<Real,1> W_IC_helicity_spectrum;
+		Array<Real,1> W_IC_crosshelicity_spectrum;
+		//Shubhadeep //
 		vector<h5::Expression> slice_save;
 		
 		struct init_cond_modes {
@@ -398,6 +414,7 @@ public:
 		struct shell {
 			bool turnon;
 			int no_shells;
+            Array<int,1> modes_in_shell;
 			void Print(int my_level);
 		} shell;
 
@@ -563,6 +580,7 @@ public:
 
 	void Parse(int argc, char** argv, bool parse_para=true);
 	void Read();
+	void Read_IC_energy_supply_arrays(); //Shubhadeep
 	void Init_defaults();
 	void Process_basic_vars();
 	void Process_advanced_vars();

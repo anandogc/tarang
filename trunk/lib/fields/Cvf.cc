@@ -321,6 +321,136 @@ void CVF::Compute_planar_structure_function()
 }
  */
 
+//******************************************************************************
+/** @brief Put a vector at (lx,0,lz) given the amp and phase V_c1 (Craya-Herring)
+ *  For 2D
+ *
+ *  @param lx, lz  (ly=0): location where the V is to be assigned.
+ *	@param amp		Amplitude of the vector V_c1 (Craya-Herring).
+ *	@param phase Phase of the vector V_c1 (Craya-Herring)
+ *  @param add_flag: if yes,it adds the vector to existing V, otherwise assigns V at (lx,0,lz)
+ *
+ *  @detail If k=(0,0,0), set Force=(0,0,0)
+ *  @detail For 2D, (xz) plane of the code is to be treaed as (x,y) of Craya-Herring decomposition.  For 2D, the anisotropy direction is ignored, and Vx = V_c1 sin(phi), Vz= -V_c1 cos(phi).
+ *  @detail: (0,0,0) assigned before...while calling Init_cond_energy_helicity_spectrum()
+ */
+void CVF::Put_or_add_vector(int lx, int lz,  Real amp, Real phase, bool add_flag)
+{
+    Complex V_ch1;  // Amplitude along Craya-herring basis vector e1.
+    Real kx, kz, Kmag, phi;
+    
+    TinyVector<Complex,3> VFour, Vlocal_complex;
+    TinyVector<Real,3> Vlocal_real;
+    
+    // k != (0,0,0) : PS:(0,0,0) assigned before...while calling Init_cond_energy_helicity_spectrum()
+    Kmag  = universal->Kmagnitude(lx, 0, lz);
+    if (Kmag > MYEPS) {
+        V1 = amp * exp(I*phase);
+        kx = universal->Get_kx(lx) * kfactor[1];
+        kz = universal->Get_kz(lz) * kfactor[3];
+        phi = Get_azimuthal_angle(kx, kz);
+        
+        VFour = V_ch1*sin(phi), 0, -V_ch1*cos(phi);
+        
+        if (basis_type == "FFF" || basis_type == "FFFW") {
+            Vlocal_complex = VFour;
+            
+            if (!add_flag)
+                universal->Assign_local_spectral_field(lx, 0, lz, V1, V2, V3, Vlocal_complex);
+            else
+                universal->Add_local_spectral_field(lx, 0, lz, V1, V2, V3, Vlocal_complex);
+        }
+        
+        else if (basis_type == "SSS") {
+            Convert_from_Fourier_space(VFour, Vlocal_real);
+            
+            if (!add_flag)
+                universal->Assign_local_spectral_field(lx, 0, lz, V1, V2, V3, Vlocal_real);
+            else
+                universal->Add_local_spectral_field(lx, 0, lz, V1, V2, V3, Vlocal_real);
+        }
+        
+        else {
+            Convert_from_Fourier_space(VFour, Vlocal_complex);
+            
+            if (!add_flag)
+                universal->Assign_local_spectral_field(lx, 0, lz, V1, V2, V3, Vlocal_complex);
+            else
+                universal->Add_local_spectral_field(lx, 0, lz, V1, V2, V3, Vlocal_complex);
+        }
+    }
+}
+
+
+
+
+void CVF::Put_or_add_vector(int lx, int ly, int lz,  Real amp_plus, Real amp_minus, Real phase_plus, Real phase_minus, bool add_flag)
+{
+    Complex u_plus, u_minus;   // Amplitudes along helical basis
+    Complex u_ch1, u_ch2;     // Amplitudes along Craya-Herring basis
+    Complex vpll, vh1, vh2;
+    Real kx,kz,phi,Kmag;
+    
+    TinyVector<Complex,3> VFour, Vlocal_complex;
+    TinyVector<Real,3> Vlocal_real;
+ 
+    // k != (0,0,0) : PS:(0,0,0) assigned before...while calling Init_cond_energy_helicity_spectrum()
+    
+    Kmag  = universal->Kmagnitude(lx, ly, lz);
+    if (Kmag > MYEPS) {
+        u_plus = amp_plus * exp(I*phase_plus);
+        u_minus = amp_minus * exp(I*phase_minus);
+        universal->Helical_to_Craya(u_plus,u_minus,u_ch1,u_ch2);
+        
+        if (Ny == 1) {  // 2D3C
+            kx = universal->Get_kx(lx) * kfactor[1];
+            kz = universal->Get_kz(lz) * kfactor[3];
+            phi = Get_azimuthal_angle(kx, kz);  // tan^{-1}(kz/kx)
+            
+            VFour = u_ch1*sin(phi), u_ch2, -u_ch1*cos(phi);
+        }
+        else { // 3D
+            universal->Craya_to_cartesian(lx, ly, lz, u_ch1, u_ch2, vpll, vh1, vh2);
+            // Gets components pll, fh1, fh2 in Cartesian basis.
+            
+            if (global.field.anisotropy_dirn == 1)
+                VFour = vpll, vh1, vh2;
+            
+            else if (global.field.anisotropy_dirn == 2)
+                VFour = vh2, vpll, vh1;
+            
+            else if (global.field.anisotropy_dirn == 3)
+                VFour = vh1, vh2, vpll;
+        }
+    
+        
+        if (basis_type == "FFF" || basis_type == "FFFW") {
+            Vlocal_complex = VFour;
+            if (!add_flag)
+                universal->Assign_local_spectral_field(lx, ly, lz, V1, V2, V3, Vlocal_complex);
+            else
+                universal->Add_local_spectral_field(lx, ly, lz, V1, V2, V3, Vlocal_complex);
+        }
+        
+        else if (basis_type == "SSS") {
+            Convert_from_Fourier_space(VFour, Vlocal_real);
+            if (!add_flag)
+                universal->Assign_local_spectral_field(lx, ly, lz, V1, V2, V3, Vlocal_real);
+            else
+                universal->Add_local_spectral_field(lx, ly, lz, V1, V2, V3, Vlocal_real);
+        }
+    
+        
+        else {
+            Convert_from_Fourier_space(VFour, Vlocal_complex);
+            if (!add_flag)
+                universal->Assign_local_spectral_field(lx, ly, lz, V1, V2, V3, Vlocal_complex);
+            else
+                universal->Add_local_spectral_field(lx, ly, lz, V1, V2, V3, Vlocal_complex);
+        }
+    }
+}
+
 /**********************************************************************************************
 
        Dealias CVF

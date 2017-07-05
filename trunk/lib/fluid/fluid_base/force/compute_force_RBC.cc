@@ -51,110 +51,110 @@
 void FORCE::Compute_force_RBC_basic_assign(FluidVF& U, FluidSF& T)
 {
 	
-	if (global.program.basis_type == "ChFF") { // box size (2,Ly,Lz)
-		U.Force1 =  Real(0.125)*(global.PHYSICS.Rayleigh*global.PHYSICS.Prandtl)*(T.csf.F);
+    if (global.program.basis_type == "ChFF") { // box size (2,Ly,Lz)
+        U.Force1 =  Real(0.125)*(global.PHYSICS.Rayleigh*global.PHYSICS.Prandtl)*(T.csf.F);
         U.Force2 = ZERO;
         U.Force3 = ZERO;
-        T.Force = Real(0.5)*(U.cvf.V1); 
-		
+        T.Force = Real(0.5)*(U.cvf.V1);
+        
         // For the velocity field
-		if (global.PHYSICS.Pr_option == "PRLARGE") {
-			
-			if (global.PHYSICS.Uscaling == "USMALL")
-				U.Force1 = (Real (0.125*global.PHYSICS.Rayleigh*global.PHYSICS.Prandtl))*(T.csf.F);	// (u.grad)u-Ra*Pr*theta
-			
-			else if (global.PHYSICS.Uscaling  == "ULARGE")
-				U.Force1 =  T.csf.F;					// (u.grad)u-theta
-		}
-		
-		else if ((global.PHYSICS.Pr_option == "PRSMALL") || (global.PHYSICS.Pr_option == "PRZERO")) {
-			
-			if (global.PHYSICS.Uscaling == "USMALL")
-				U.Force1 = (global.PHYSICS.Rayleigh)* (T.csf.F);				// (u.grad)u-theta
-			
-			else if (global.PHYSICS.Uscaling == "ULARGE")
-				U.Force1 = (global.PHYSICS.Prandtl)*(T.csf.F);				// (u.grad)u-theta
-		}
-		
-		else if (global.PHYSICS.Pr_option == "PRINFTY") {
-			;  // Force only Temperature; do nothing here
-		}
+        if (global.PHYSICS.Pr_option == "PRLARGE") {
+            
+            if (global.PHYSICS.Uscaling == "USMALL")
+                U.Force1 = (Real (0.125*global.PHYSICS.Rayleigh*global.PHYSICS.Prandtl))*(T.csf.F);	// (u.grad)u-Ra*Pr*theta
+            
+            else if (global.PHYSICS.Uscaling  == "ULARGE")
+                U.Force1 =  T.csf.F;					// (u.grad)u-theta
+        }
         
-		
-		// For the temperature field
+        else if ((global.PHYSICS.Pr_option == "PRSMALL") || (global.PHYSICS.Pr_option == "PRZERO")) {
+            
+            if (global.PHYSICS.Uscaling == "USMALL")
+                U.Force1 = (global.PHYSICS.Rayleigh)* (T.csf.F);				// (u.grad)u-theta
+            
+            else if (global.PHYSICS.Uscaling == "ULARGE")
+                U.Force1 = (global.PHYSICS.Prandtl)*(T.csf.F);				// (u.grad)u-theta
+        }
         
-		if (global.PHYSICS.Pr_option == "PRZERO")
-			T.Force = 0.0;
-		// Do nothing; Nonlinear term (u.grad)T does not exist- see single-time step
-		
-		else  {
-			if (global.PHYSICS.Pr_option == "PRLARGE")
+        else if (global.PHYSICS.Pr_option == "PRINFTY") {
+            ;  // Force only Temperature; do nothing here
+        }
+        
+        
+        // For the temperature field
+        
+        if (global.PHYSICS.Pr_option == "PRZERO")
+            T.Force = 0.0;
+        // Do nothing; Nonlinear term (u.grad)T does not exist- see single-time step
+        
+        else  {
+            if (global.PHYSICS.Pr_option == "PRLARGE")
                 T.Force = (U.cvf.V1)/TWO;
-			
-			// F(T) = globalvar_temperature_grad * ux(k)
-			// globalvar_temperature_grad = +1 for RB, and -1 for stratified flows
-			
-			else if (global.PHYSICS.Pr_option == "PRSMALL") {
-				T.Force =  (Real (1/(TWO*global.PHYSICS.Prandtl)))*(U.cvf.V1);
-			}
-			//F(T) =  globalvar_temperature_grad * ux(k)/Pr
-			
-			else if (global.PHYSICS.Pr_option == "PRINFTY")
+            
+            // F(T) = globalvar_temperature_grad * ux(k)
+            // globalvar_temperature_grad = +1 for RB, and -1 for stratified flows
+            
+            else if (global.PHYSICS.Pr_option == "PRSMALL") {
+                T.Force =  (Real (1/(TWO*global.PHYSICS.Prandtl)))*(U.cvf.V1);
+            }
+            //F(T) =  globalvar_temperature_grad * ux(k)/Pr
+            
+            else if (global.PHYSICS.Pr_option == "PRINFTY")
                 T.Force =   (U.cvf.V1)/TWO;
-		}
+        }
     }
     
     else {
         // For the velocity field
-		if (global.PHYSICS.Pr_option == "PRLARGE") {
-			
-			if (global.PHYSICS.Uscaling == "USMALL") 		
-				U.Force1 =  (global.PHYSICS.Rayleigh*global.PHYSICS.Prandtl)*(T.csf.F);	// (u.grad)u-Ra*Pr*theta
-			
-			else if (global.PHYSICS.Uscaling  == "ULARGE") 		
-				U.Force1 =  T.csf.F;					// (u.grad)u-theta			
-		}
-		
-		else if ((global.PHYSICS.Pr_option == "PRSMALL") || (global.PHYSICS.Pr_option == "PRZERO")) {
-			
-			if (global.PHYSICS.Uscaling == "USMALL") 
-				U.Force1 = (global.PHYSICS.Rayleigh)* (T.csf.F);				// (u.grad)u-theta
-			
-			else if (global.PHYSICS.Uscaling == "ULARGE") 		
-				U.Force1 = (global.PHYSICS.Prandtl)*(T.csf.F);				// (u.grad)u-theta
-		}
-		
-		else if (global.PHYSICS.Pr_option == "PRINFTY") {
-			;  // Force only Temperature; do nothing here
-		}
-
-		
-		// For the temperature field
-
-		if (global.PHYSICS.Pr_option == "PRZERO") 
-			T.Force = 0.0;  
-		// Do nothing; Nonlinear term (u.grad)T does not exist- see single-time step
-		
-		else  {
-			if (global.PHYSICS.Pr_option == "PRLARGE")
-			T.Force = (U.cvf.V1);
-			
-			// F(T) = globalvar_temperature_grad * ux(k)	
-			// globalvar_temperature_grad = +1 for RB, and -1 for stratified flows
-			
-			else if (global.PHYSICS.Pr_option == "PRSMALL") {
-				T.Force =   (1/global.PHYSICS.Prandtl)*(U.cvf.V1);
-			}
-			//F(T) =  globalvar_temperature_grad * ux(k)/Pr
-			
-			else if (global.PHYSICS.Pr_option == "PRINFTY")
-					T.Force =  (U.cvf.V1);
-			
-			if (global.PHYSICS.temperature_grad != 1)  // for stratififed flows
-				T.Force = (Real (global.PHYSICS.temperature_grad))*T.Force;
-		}
-	}
- 
+        if (global.PHYSICS.Pr_option == "PRLARGE") {
+            
+            if (global.PHYSICS.Uscaling == "USMALL")
+                U.Force1 =  (global.PHYSICS.Rayleigh*global.PHYSICS.Prandtl)*(T.csf.F);	// (u.grad)u-Ra*Pr*theta
+            
+            else if (global.PHYSICS.Uscaling  == "ULARGE")
+                U.Force1 =  T.csf.F;					// (u.grad)u-theta
+        }
+        
+        else if ((global.PHYSICS.Pr_option == "PRSMALL") || (global.PHYSICS.Pr_option == "PRZERO")) {
+            
+            if (global.PHYSICS.Uscaling == "USMALL")
+                U.Force1 = (global.PHYSICS.Rayleigh)* (T.csf.F);				// (u.grad)u-theta
+            
+            else if (global.PHYSICS.Uscaling == "ULARGE")
+                U.Force1 = (global.PHYSICS.Prandtl)*(T.csf.F);				// (u.grad)u-theta
+        }
+        
+        else if (global.PHYSICS.Pr_option == "PRINFTY") {
+            ;  // Force only Temperature; do nothing here
+        }
+        
+        
+        // For the temperature field
+        
+        if (global.PHYSICS.Pr_option == "PRZERO")
+            T.Force = 0.0;
+        // Do nothing; Nonlinear term (u.grad)T does not exist- see single-time step
+        
+        else  {
+            if (global.PHYSICS.Pr_option == "PRLARGE")
+                T.Force = (U.cvf.V1);
+            
+            // F(T) = globalvar_temperature_grad * ux(k)	
+            // globalvar_temperature_grad = +1 for RB, and -1 for stratified flows
+            
+            else if (global.PHYSICS.Pr_option == "PRSMALL") {
+                T.Force =   (1/global.PHYSICS.Prandtl)*(U.cvf.V1);
+            }
+            //F(T) =  globalvar_temperature_grad * ux(k)/Pr
+            
+            else if (global.PHYSICS.Pr_option == "PRINFTY")
+                T.Force =  (U.cvf.V1);
+            
+            if (global.PHYSICS.temperature_grad != 1)  // for stratififed flows
+                T.Force = (Real (global.PHYSICS.temperature_grad))*T.Force;
+        }
+    }
+    
 }
 
 void FORCE::Compute_force_RBC_basic_add(FluidVF& U, FluidSF& T)
@@ -327,12 +327,7 @@ void FORCE::Compute_force_stratified_random(FluidVF& U, FluidSF& T)
 	
 	Real inner_radius =  global.force.double_para(0);
 	Real outer_radius = global.force.double_para(1);
-    Real force_spectrum_amplitude = global.force.double_para(2);
-    Real force_spectrum_exponent = global.force.double_para(3);
-    Real hk_by_kek = global.force.double_para(4);
-	Real Tforce_spectrum_amplitude = global.force.double_para(5);
-	Real Tforce_spectrum_exponent = global.force.double_para(6);
-
+ 
     //Compute_force_RBC(U, T); //For startified
 
 
@@ -345,9 +340,8 @@ void FORCE::Compute_force_stratified_random(FluidVF& U, FluidSF& T)
 		T.Force = -U.cvf.V1;
 	}
     
-    Compute_force_using_random_energy_helicity_spectrum_basic_add(U, inner_radius, outer_radius, force_spectrum_amplitude, force_spectrum_exponent, hk_by_kek);
+//    Compute_force_using_random_noise_basic_add(U, inner_radius, outer_radius, force_spectrum_amplitude, force_spectrum_exponent, hk_by_kek);
     
-    //Compute_force_using_random_energy_spectrum_basic_add(T, inner_radius, outer_radius, Tforce_spectrum_amplitude, Tforce_spectrum_exponent);
 }
 
 //************************ End of compute_force_RB.cc *****************************************
