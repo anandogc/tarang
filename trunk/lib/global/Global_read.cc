@@ -833,7 +833,7 @@ void Global::Read_IC_energy_supply_arrays()
 	}
 	else if (program.kind=="MHD_INCOMPRESS")
 	{
-		initial >> io.U_IC_helicity_spectrum >> io.U_IC_helicity_spectrum >> io.W_IC_energy_spectrum >> io.W_IC_helicity_spectrum >> io.W_IC_crosshelicity_spectrum;
+		initial >> io.U_IC_energy_spectrum >> io.U_IC_helicity_spectrum  >> io.W_IC_energy_spectrum >> io.W_IC_helicity_spectrum >> io.W_IC_crosshelicity_spectrum;
         
 		forcing >> force.U_energy_supply_spectrum >> force.U_helicity_supply_spectrum >> force.W_energy_supply_spectrum >> force.W_helicity_supply_spectrum >> force.W_crosshelicity_supply_spectrum;
 	}

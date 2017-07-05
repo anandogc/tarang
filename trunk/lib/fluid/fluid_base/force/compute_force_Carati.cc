@@ -65,7 +65,7 @@ void FORCE::Compute_force_Carati_scheme_energy_supply(FluidVF& U, bool global_al
     Real total_helicity_supply = sum(U.helicity_supply_spectrum);
     if ((abs(total_energy_supply) + abs(total_helicity_supply)) < MYEPS)
         return;
-    
+   
     // Force now
     Real energy_supply_k, helicity_supply_k;  // for the mode {\bf k}
     Real denr;
@@ -121,7 +121,7 @@ void FORCE::Compute_force_Carati_scheme_energy_supply(FluidVF& U, bool global_al
                 alpha_k = (total_energy_supply*total_ksqrEk_in_force_shell - total_helicity_supply*total_Hk_in_force_shell)/(2*denr);
                 beta_k = (total_helicity_supply*total_Ek_in_force_shell - total_energy_supply*total_Hk_in_force_shell)/(2*denr);
             }
-            else { // helical
+            else if ((total_Ek_in_force_shell > MYEPS2) && (total_ksqrEk_in_force_shell > MYEPS2)) { // helical
                 alpha_k = total_energy_supply/(4*total_Ek_in_force_shell);
                 beta_k = total_energy_supply/(4*sqrt(total_Ek_in_force_shell*total_ksqrEk_in_force_shell));
             }
@@ -302,7 +302,7 @@ void FORCE::Compute_force_Carati_scheme_assign(FluidVF& U, FluidVF& W, string fo
 {
     if (U.force_switch)
         Compute_force_Carati_scheme_basic(U, force_type, global_alpha_beta, false);
-    
+
     if (W.force_switch)
         Compute_force_Carati_scheme_basic(W, force_type, global_alpha_beta, false);
     
@@ -450,7 +450,7 @@ void FORCE::Compute_force_Carati_scheme(FluidVF& U, FluidSF& T)
 void FORCE::Compute_force_Carati_scheme(FluidVF& U, FluidVF& W)
 {
 		
-	inner_radius = global.force.double_para(0);
+    inner_radius = global.force.double_para(0);
 	outer_radius = global.force.double_para(1);
     string force_type = global.force.string_para(0);
     
@@ -462,8 +462,7 @@ void FORCE::Compute_force_Carati_scheme(FluidVF& U, FluidVF& W)
     U.helicity_supply_spectrum = global.force.U_helicity_supply_spectrum;
     W.helicity_supply_spectrum = global.force.W_helicity_supply_spectrum;
     W.crosshelicity_supply_spectrum = global.force.W_crosshelicity_supply_spectrum;
-
-	
+    
     Compute_force_Carati_scheme_assign(U, W, force_type,  global_alpha_beta);
 }
 

@@ -145,8 +145,9 @@ void FORCE::Compute_force(FluidVF& U, FluidVF& W)
         case (501): Compute_force_user_defined1(U, W); break;
         case (502): Compute_force_user_defined2(U, W); break;
 	}
-	
-	int force_proc = global.force.field_procedure;
+
+    int force_proc = global.force.field_procedure;
+    
 	if (U.force_switch) {
 		if ((force_proc==1) || (force_proc==2)) {
 			U.Satisfy_strong_reality_condition_force_field();

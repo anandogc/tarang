@@ -164,10 +164,6 @@ void FluidIO::Init_cond_energy_helicity_spectrum(FluidVF& U)
     U.IC_energy_spectrum = global.io.U_IC_energy_spectrum;
     U.IC_helicity_spectrum = global.io.U_IC_helicity_spectrum;
     
-    cout << "here" << sum(U.IC_energy_spectrum) << U.IC_energy_spectrum << endl;
-    
-    cout << "here" << sum(U.IC_helicity_spectrum) << U.IC_helicity_spectrum << endl;
-    
     Init_cond_energy_helicity_spectrum_k_ne0(U);
     
     if (my_id == master_id) {
@@ -280,6 +276,7 @@ void  FluidIO::Init_cond_energy_helicity_spectrum_RBC(FluidVF& U, FluidSF& T)
 void  FluidIO::Init_cond_energy_helicity_spectrum_k_ne0(FluidVF& U, FluidVF& W)
 {
     if (abs(abs(sum(W.IC_crosshelicity_spectrum))) < MYEPS) {  // zero cross helicity
+        cout << "Init_cond_energy_helicity_spectrum_k_ne0: HERE MKV" << endl;
         Init_cond_energy_helicity_spectrum_k_ne0(U);
         Init_cond_energy_helicity_spectrum_k_ne0(W);
     }
@@ -363,7 +360,7 @@ void  FluidIO::Init_cond_energy_helicity_spectrum(FluidVF& U, FluidVF& W)
         Wy000 = global.io.double_para(4);
         Wz000 = global.io.double_para(5);
     }
-    
+
     U.IC_energy_spectrum = global.io.U_IC_energy_spectrum;
     W.IC_energy_spectrum = global.io.W_IC_energy_spectrum;
 	
