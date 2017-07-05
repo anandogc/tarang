@@ -52,21 +52,30 @@
 void FORCE::Compute_force_Carati_scheme_basic(FluidVF& U, string force_type, bool global_alpha_beta, bool add_flag)
 {
     
+    if (force_type == "ENERGY_SUPPLY")
+        Compute_force_Carati_scheme_energy_supply(U, global_alpha_beta, add_flag);
+    else if (force_type == "CONSTANT_ENERGY")
+        Compute_force_Carati_scheme_const_energy(U, global_alpha_beta, add_flag);
+}
+
+void FORCE::Compute_force_Carati_scheme_energy_supply(FluidVF& U, bool global_alpha_beta, bool add_flag)
+{
     // No forcing....
-    Real total_energy_supply_level = sum(U.energy_supply_spectrum);
-    Real total_helicity_supply_level = sum(U.helicity_supply_spectrum);
-    if ((abs(total_energy_supply_level) + abs(total_helicity_supply_level)) < MYEPS)
+    Real total_energy_supply = sum(U.energy_supply_spectrum);
+    Real total_helicity_supply = sum(U.helicity_supply_spectrum);
+    if ((abs(total_energy_supply) + abs(total_helicity_supply)) < MYEPS)
         return;
     
     // Force now
     Real energy_supply_k, helicity_supply_k;  // for the mode {\bf k}
+    Real denr;
     Real epsh_by_k_epse;
     
     int lx, ly, lz;
     int kx_max, ky_max, kz_max, kx_min, ky_min, kz_min;
 
     Real Kmag, alpha_k, beta_k, sk;
-    Real modal_energy;
+    Real modal_energy, modal_helicity;
 	Real temp, temp1, temp2, temp3;
     int index;
 	
@@ -87,9 +96,7 @@ void FORCE::Compute_force_Carati_scheme_basic(FluidVF& U, string force_type, boo
 	if ((basis_type == "FFF" || basis_type == "FFFW") || (basis_type == "SFF"))
 		ky_min = -ky_max; 
 	
-    
-    if (force_type == "ENERGY_SUPPLY")
-        if (global_alpha_beta) {
+    if (global_alpha_beta) {
             Real total_energy_supply = sum(U.energy_supply_spectrum);
             Real total_helicity_supply = sum(U.helicity_supply_spectrum);
             
@@ -108,7 +115,7 @@ void FORCE::Compute_force_Carati_scheme_basic(FluidVF& U, string force_type, boo
             for (int i=int(inner_radius)+1; i<= int(outer_radius); i++)
                 total_Hk_in_force_shell += Correlation::shell_ek1(i) + Correlation::shell_ek2(i) + Correlation::shell_ek3(i);
             
-            Real denr = total_Ek_in_force_shell*total_ksqrEk_in_force_shell - my_pow(total_Hk_in_force_shell,2);
+            denr = total_Ek_in_force_shell*total_ksqrEk_in_force_shell - my_pow(total_Hk_in_force_shell,2);
             
             if (denr > MYEPS) {
                 alpha_k = (total_energy_supply*total_ksqrEk_in_force_shell - total_helicity_supply*total_Hk_in_force_shell)/(2*denr);
@@ -118,27 +125,96 @@ void FORCE::Compute_force_Carati_scheme_basic(FluidVF& U, string force_type, boo
                 alpha_k = total_energy_supply/(4*total_Ek_in_force_shell);
                 beta_k = total_energy_supply/(4*sqrt(total_Ek_in_force_shell*total_ksqrEk_in_force_shell));
             }
-        }  // The above scheme works for 2D2C, 2D3C, and 3D.
+        
+        for (int kx = kx_min; kx <= kx_max; kx++)
+            for (int ky = ky_min; ky <= ky_max; ky++)
+                for (int kz = 0; kz <= kz_max; kz++) {
+                    if (universal->Probe_in_me(kx,ky,kz))  {
+                        lx = universal->Get_lx(kx);
+                        ly = universal->Get_ly(ky);
+                        lz = universal->Get_kz(kz);
+                    
+                        Kmag = universal->Kmagnitude(lx, ly, lz);
+                        if ((Kmag > inner_radius) && (Kmag <= outer_radius))
+                             Const_energy_supply_alpha_beta(U, lx, ly, lz, alpha_k, beta_k, add_flag);
+                    }
+                }
+        return;  // Done... global_alpha_beta
+    } // The above scheme works for 2D2C, 2D3C, and 3D.
     
-
-
-	for (int kx = kx_min; kx <= kx_max; kx++)
-		for (int ky = ky_min; ky <= ky_max; ky++)  
-			for (int kz = 0; kz <= kz_max; kz++) {
-
-				if (universal->Probe_in_me(kx,ky,kz))  {
-					lx = universal->Get_lx(kx);
-					ly = universal->Get_ly(ky);
-					lz = universal->Get_kz(kz);
-				
-					Kmag = universal->Kmagnitude(lx, ly, lz);
-					if ((Kmag > inner_radius) && (Kmag <= outer_radius)) {
+    // Now alpha_beta computations for !global_alpha_beta
+    
+    for (int kx = kx_min; kx <= kx_max; kx++)
+        for (int ky = ky_min; ky <= ky_max; ky++)
+            for (int kz = 0; kz <= kz_max; kz++)
+                if (universal->Probe_in_me(kx,ky,kz))  {  // for the modes inside the proc
+                    lx = universal->Get_lx(kx);
+                    ly = universal->Get_ly(ky);
+                    lz = universal->Get_kz(kz);
+                    
+                    Kmag = universal->Kmagnitude(lx, ly, lz);
+                    if ((Kmag > inner_radius) && (Kmag <= outer_radius)) {
+                        
                         index = (int) ceil(Kmag);
-						modal_energy = U.cvf.Modal_energy(lx, ly, lz);
-						if (modal_energy > MYEPS) {
-
-							if (force_type == "ENERGY_SUPPLY") {
+                        modal_energy = U.cvf.Modal_energy(lx, ly, lz);
+                        if (modal_energy > MYEPS) {
+                            
+                            energy_supply_k = U.energy_supply_spectrum(index)/ global.spectrum.shell.modes_in_shell(index);
+                            
+                            if ((Ny == 1) && global.program.two_dimension) {  // 2D 2C
+                                alpha_k = energy_supply_k/(2*modal_energy);
+                                beta_k = 0;
+                            }
+                            else { // 3D or 2D3C
+                                helicity_supply_k = U.helicity_supply_spectrum(index)/ global.spectrum.shell.modes_in_shell(index);
+                                modal_helicity = U.cvf.Modal_helicity(lx,ly,lz);
                                 
+                                denr = TWO*(my_pow(Kmag*modal_energy,2) - my_pow(modal_helicity, 2));
+                                epsh_by_k_epse = helicity_supply_k/(Kmag*energy_supply_k);
+                                
+                                if (abs(denr) > MYEPS) {
+                                    alpha_k = (my_pow(Kmag,2)*energy_supply_k*modal_energy - helicity_supply_k*modal_helicity)/denr;
+                                    
+                                    beta_k = (helicity_supply_k*modal_energy - energy_supply_k*modal_helicity)/denr;
+                                }
+                                else if (abs(epsh_by_k_epse-1) < MYEPS) {
+                                    alpha_k = energy_supply_k/(4*modal_energy);
+                                    beta_k = alpha_k/Kmag;
+                                }
+                                else {
+                                    if (master)
+                                        cout << "ERROR: Max heliicty supply case: Hk approx k*Ek" << endl;
+                                    exit(1);
+                                } // of error
+                            }   // 3D or 2D3C
+                            
+                            Const_energy_supply_alpha_beta(U, lx, ly, lz, alpha_k, beta_k, add_flag);
+                            
+                        } // (modal_energy > MYEPS)  F computation for both 2D and 3D
+                    } // Kmag cond
+                } // for the modes inside the proc
+}
+
+void FORCE::Compute_force_Carati_scheme_const_energy(FluidVF& U, bool global_alpha_beta, bool add_flag)
+{
+    // TO DO
+  /*  for (int kx = kx_min; kx <= kx_max; kx++)
+        for (int ky = ky_min; ky <= ky_max; ky++)
+            for (int kz = 0; kz <= kz_max; kz++) {
+                
+                if (universal->Probe_in_me(kx,ky,kz))  {
+                    lx = universal->Get_lx(kx);
+                    ly = universal->Get_ly(ky);
+                    lz = universal->Get_kz(kz);
+                    
+                    Kmag = universal->Kmagnitude(lx, ly, lz);
+                    if ((Kmag > inner_radius) && (Kmag <= outer_radius)) {
+                        index = (int) ceil(Kmag);
+                        modal_energy = U.cvf.Modal_energy(lx, ly, lz);
+                        if (modal_energy > MYEPS) {
+                            
+                            if (force_type == "ENERGY_SUPPLY") {
+                                // if (!global_alpha_beta) {
                                 energy_supply_k = U.energy_supply_spectrum(index)/ global.spectrum.shell.modes_in_shell(index);
                                 helicity_supply_k = U.helicity_supply_spectrum(index)/ global.spectrum.shell.modes_in_shell(index);
                                 
@@ -176,43 +252,39 @@ void FORCE::Compute_force_Carati_scheme_basic(FluidVF& U, string force_type, boo
                                         }
                                     }
                                 }
+                                //   }
                                 
                                 Const_energy_supply_alpha_beta(U, lx, ly, lz, alpha_k, beta_k, add_flag);
                                 
                             } // end of (force_type == "ENERGY_SUPPLY")
-							
-							else if (force_type == "CONSTANT_ENERGY") {
-							/*	temp1 = sqrt(energy_per_mode/modal_energy);
-								
-								if (abs(h_by_k_E) < MYEPS) { // No helical forcing
-									alpha_k = temp1;
-									beta_k = 0.0;
-								}
-								
-								else {
-									sk = U.cvf.Modal_helicity(lx,ly,lz)/ (Kmag*modal_energy);
-									
-									if (abs(sk*sk-1) > MYEPS2) {	
-										temp2 = sqrt((1+h_by_k_E)/ (1+sk));
-										temp3 = sqrt((1-h_by_k_E)/ (1-sk));
-										
-										alpha_k = (temp1/2) * (temp2 + temp3);
-										beta_k =  (temp1/(2*Kmag)) * (temp2 - temp3);
-									}
-									
-									else {
-										alpha_k = temp1/2;
-										beta_k = alpha_k/(sk*Kmag);
-									}	
-								}
-                                Const_energy_alpha_beta(U, lx, ly, lz, alpha_k, beta_k, add_flag);
-                                */
-                            } // end of (force_type == "CONSTANT_ENERGY")
-                        }
-					}
-				}	//  of if (Probe_in_me())						
-			}		// of for
-						
+                            
+                            else if (force_type == "CONSTANT_ENERGY") {
+                                /*	temp1 = sqrt(energy_per_mode/modal_energy);
+                                 
+                                 if (abs(h_by_k_E) < MYEPS) { // No helical forcing
+                                 alpha_k = temp1;
+                                 beta_k = 0.0;
+                                 }
+                                 
+                                 else {
+                                 sk = U.cvf.Modal_helicity(lx,ly,lz)/ (Kmag*modal_energy);
+                                 
+                                 if (abs(sk*sk-1) > MYEPS2) {
+                                 temp2 = sqrt((1+h_by_k_E)/ (1+sk));
+                                 temp3 = sqrt((1-h_by_k_E)/ (1-sk));
+                                 
+                                 alpha_k = (temp1/2) * (temp2 + temp3);
+                                 beta_k =  (temp1/(2*Kmag)) * (temp2 - temp3);
+                                 }
+                                 
+                                 else {
+                                 alpha_k = temp1/2;
+                                 beta_k = alpha_k/(sk*Kmag);
+                                 }	
+                                 }
+                                 Const_energy_alpha_beta(U, lx, ly, lz, alpha_k, beta_k, add_flag);
+                                 */
+    
 }
 
 void FORCE::Compute_force_Carati_scheme_assign(FluidVF& U, string force_type, bool global_alpha_beta)

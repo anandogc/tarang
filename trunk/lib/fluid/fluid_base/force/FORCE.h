@@ -85,6 +85,10 @@ public:
     
     void Compute_force_Carati_scheme_basic(FluidVF& U, string force_type, bool global_alpha_beta, bool add_flag);
     
+    void Compute_force_Carati_scheme_energy_supply(FluidVF& U, bool global_alpha_beta, bool add_flag);
+    
+    void Compute_force_Carati_scheme_const_energy(FluidVF& U, bool global_alpha_beta, bool add_flag);
+    
     void Compute_force_Carati_scheme_assign(FluidVF& U, string force_type,  bool global_alpha_beta);
     
     void Compute_force_Carati_scheme_add(FluidVF& U, string force_type,  bool global_alpha_beta);
