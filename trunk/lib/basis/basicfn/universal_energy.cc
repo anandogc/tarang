@@ -247,9 +247,9 @@ void Universal::Compute_shell_spectrum
 	
 	int data_size = Sk.size();
 	
-	MPI_Reduce(reinterpret_cast<Real*>(local_Sk.data()), reinterpret_cast<Real*>(Sk.data()), data_size, MPI_Real, MPI_SUM, master_id, MPI_COMM_WORLD);
+	MPI_Allreduce(reinterpret_cast<Real*>(local_Sk.data()), reinterpret_cast<Real*>(Sk.data()), data_size, MPI_Real, MPI_SUM, MPI_COMM_WORLD);
 	
-	MPI_Reduce(reinterpret_cast<Real*>(local_Sk_count.data()), reinterpret_cast<Real*>(Sk_count.data()), data_size, MPI_Real, MPI_SUM, master_id, MPI_COMM_WORLD);
+	MPI_Allreduce(reinterpret_cast<Real*>(local_Sk_count.data()), reinterpret_cast<Real*>(Sk_count.data()), data_size, MPI_Real, MPI_SUM, MPI_COMM_WORLD);
 	
 	// For semi-filled shells
 	
@@ -323,9 +323,9 @@ void Universal::Compute_shell_spectrum
 	
 	int data_size = Sk.size();
 	
-	MPI_Reduce(reinterpret_cast<Real*>(local_Sk.data()), reinterpret_cast<Real*>(Sk.data()), data_size, MPI_Real, MPI_SUM, master_id, MPI_COMM_WORLD);
+	MPI_Allreduce(reinterpret_cast<Real*>(local_Sk.data()), reinterpret_cast<Real*>(Sk.data()), data_size, MPI_Real, MPI_SUM, MPI_COMM_WORLD);
 	
-	MPI_Reduce(reinterpret_cast<Real*>(local_Sk_count.data()), reinterpret_cast<Real*>(Sk_count.data()), data_size, MPI_Real, MPI_SUM, master_id, MPI_COMM_WORLD);
+	MPI_Allreduce(reinterpret_cast<Real*>(local_Sk_count.data()), reinterpret_cast<Real*>(Sk_count.data()), data_size, MPI_Real, MPI_SUM, MPI_COMM_WORLD);
 	
 	// For semi-filled shells
 	

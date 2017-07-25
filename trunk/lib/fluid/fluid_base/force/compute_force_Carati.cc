@@ -60,6 +60,10 @@ void FORCE::Compute_force_Carati_scheme_basic(FluidVF& U, string force_type, boo
 
 void FORCE::Compute_force_Carati_scheme_energy_supply(FluidVF& U, bool global_alpha_beta, bool add_flag)
 {
+    U.Force1 = 0;
+    U.Force2 = 0;
+    U.Force3 = 0;
+    
     // No forcing....
     Real total_energy_supply = sum(U.energy_supply_spectrum);
     Real total_helicity_supply = sum(U.helicity_supply_spectrum);
@@ -78,6 +82,7 @@ void FORCE::Compute_force_Carati_scheme_energy_supply(FluidVF& U, bool global_al
     Real modal_energy, modal_helicity;
 	Real temp, temp1, temp2, temp3;
     int index;
+    
 	
 	kx_max = (int) ceil(outer_radius/kfactor[1]);
 	
@@ -97,48 +102,54 @@ void FORCE::Compute_force_Carati_scheme_energy_supply(FluidVF& U, bool global_al
 		ky_min = -ky_max; 
 	
     if (global_alpha_beta) {
-            Real total_energy_supply = sum(U.energy_supply_spectrum);
-            Real total_helicity_supply = sum(U.helicity_supply_spectrum);
-            
-            Real total_Ek_in_force_shell = 0;
-            Real total_ksqrEk_in_force_shell = 0;
-            Real total_Hk_in_force_shell = 0;
+        Real total_Ek_in_force_shell = 0;
+        Real total_ksqrEk_in_force_shell = 0;
+        Real total_Hk_in_force_shell = 0;
+        
+        Array<Real,1> alpha_k_shell(global.spectrum.shell.no_shells);
+        Array<Real,1> beta_k_shell(global.spectrum.shell.no_shells);
+        alpha_k_shell=0;
+        beta_k_shell=0;
+        
+        for (int i=int(inner_radius)+1; i<= int(outer_radius); i++) {
+            total_Ek_in_force_shell =  total_ksqrEk_in_force_shell =  total_Hk_in_force_shell = 0;
             
             Correlation::Compute_shell_spectrum(U);
-            for (int i=int(inner_radius)+1; i<= int(outer_radius); i++) {
-                total_Ek_in_force_shell += Correlation::shell_ek1(i) + Correlation::shell_ek2(i) + Correlation::shell_ek3(i);
-                total_ksqrEk_in_force_shell += Correlation::shell_dissk1(i) + Correlation::shell_dissk2(i) + Correlation::shell_dissk3(i);
-            }
+            total_Ek_in_force_shell += Correlation::shell_ek1(i) + Correlation::shell_ek2(i) + Correlation::shell_ek3(i);
+            total_ksqrEk_in_force_shell += Correlation::shell_dissk1(i) + Correlation::shell_dissk2(i) + Correlation::shell_dissk3(i);
+            
             total_ksqrEk_in_force_shell /= TWO;   // shell_dissk1 contains 2*k^2*E(k), so div by 2
             
             Correlation::Compute_shell_spectrum_helicity(U);
-            for (int i=int(inner_radius)+1; i<= int(outer_radius); i++)
-                total_Hk_in_force_shell += Correlation::shell_ek1(i) + Correlation::shell_ek2(i) + Correlation::shell_ek3(i);
+            total_Hk_in_force_shell += Correlation::shell_ek1(i) + Correlation::shell_ek2(i) + Correlation::shell_ek3(i);
             
             denr = total_Ek_in_force_shell*total_ksqrEk_in_force_shell - my_pow(total_Hk_in_force_shell,2);
             
             if (denr > MYEPS) {
-                alpha_k = (total_energy_supply*total_ksqrEk_in_force_shell - total_helicity_supply*total_Hk_in_force_shell)/(2*denr);
-                beta_k = (total_helicity_supply*total_Ek_in_force_shell - total_energy_supply*total_Hk_in_force_shell)/(2*denr);
+                alpha_k_shell(i) = (U.energy_supply_spectrum(i)*total_ksqrEk_in_force_shell - U.helicity_supply_spectrum(i)*total_Hk_in_force_shell)/(2*denr);
+                beta_k_shell(i) = (U.helicity_supply_spectrum(i)*total_Ek_in_force_shell - U.energy_supply_spectrum(i)*total_Hk_in_force_shell)/(2*denr);
             }
             else if ((total_Ek_in_force_shell > MYEPS2) && (total_ksqrEk_in_force_shell > MYEPS2)) { // helical
-                alpha_k = total_energy_supply/(4*total_Ek_in_force_shell);
-                beta_k = total_energy_supply/(4*sqrt(total_Ek_in_force_shell*total_ksqrEk_in_force_shell));
+                alpha_k_shell(i) = U.energy_supply_spectrum(i)/(4*total_Ek_in_force_shell);
+                beta_k_shell(i) = U.energy_supply_spectrum(i)/(4*sqrt(total_Ek_in_force_shell*total_ksqrEk_in_force_shell));
             }
-        
+            
+        }
         for (int kx = kx_min; kx <= kx_max; kx++)
             for (int ky = ky_min; ky <= ky_max; ky++)
-                for (int kz = 0; kz <= kz_max; kz++) {
-                    if (universal->Probe_in_me(kx,ky,kz))  {
-                        lx = universal->Get_lx(kx);
+				for (int kz = 0; kz <= kz_max; kz++) {
+					if (universal->Probe_in_me(kx,ky,kz))  {
+						lx = universal->Get_lx(kx);
                         ly = universal->Get_ly(ky);
                         lz = universal->Get_kz(kz);
-                    
+                            
                         Kmag = universal->Kmagnitude(lx, ly, lz);
-                        if ((Kmag > inner_radius) && (Kmag <= outer_radius))
-                             Const_energy_supply_alpha_beta(U, lx, ly, lz, alpha_k, beta_k, add_flag);
-                    }
-                }
+						if ((Kmag > inner_radius) && (Kmag <= outer_radius)) {
+							index = (int) ceil(Kmag);
+							Const_energy_supply_alpha_beta(U, lx, ly, lz, alpha_k_shell(index), beta_k_shell(index), add_flag);
+							}
+					}
+				}
         return;  // Done... global_alpha_beta
     } // The above scheme works for 2D2C, 2D3C, and 3D.
     
@@ -324,7 +335,8 @@ void FORCE::Compute_force_Carati_scheme_add(FluidVF& U, FluidVF& W, string force
 
 void FORCE::Compute_force_Carati_scheme_basic(FluidSF& T, string force_type, bool global_alpha_beta, bool add_flag)
 {
-	
+	T.Force = 0;
+    
     // No forcing....
     Real total_energy_supply_level = sum(T.energy_supply_spectrum);
     if (abs(total_energy_supply_level) < MYEPS)

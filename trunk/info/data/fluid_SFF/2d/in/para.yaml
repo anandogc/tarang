@@ -45,7 +45,7 @@ force:
     T_switch: false
     # 0:decay, 1:ek_hk_suppy, 2:const_ek_hk, 3: modes, 4:TG, 5:ABC,  
     field_procedure: 1
-    int_para: 0
+    int_para: 1
     #if ... provide ()
     #if ....
     double_para: [3,4] #inner /outer radii
