@@ -220,7 +220,7 @@ void Universal::Compute_local_shell_spectrum
 				if (index <= Kmax) {
 					factor = Multiplicity_factor(lx,ly,lz);
 					
-					local_Sk(index) += factor*my_pow(Kmag,n)*Vsqr(A(lx,ly,lz));
+					local_Sk(index) += factor*my_pow(Kmag,n)*Vsqr(A(lx,ly,lz))*pow2(Kmag);
 					local_Sk_count(index) += 2*factor;
 					// Mult by 2 because factor is offset by 2 in Multiply_factor
 				}
@@ -251,16 +251,7 @@ void Universal::Compute_shell_spectrum
 	
 	MPI_Allreduce(reinterpret_cast<Real*>(local_Sk_count.data()), reinterpret_cast<Real*>(Sk_count.data()), data_size, MPI_Real, MPI_SUM, MPI_COMM_WORLD);
 	
-	// For semi-filled shells
-	
-	if (master)  {
-		int Kmax_inside = Max_radius_inside();
-		int	Kmax = Min_radius_outside();
-		
-		for (int index = Kmax_inside+1; index <= Kmax; index++)
-			if (Sk_count(index) >= 1)
-				Sk(index) = Sk(index)*Approx_number_modes_in_shell(index)/Sk_count(index);
-	}
+    Sk = (Sk*(4*M_PI))/Sk_count;
 }
 
 //*********************************************************************************************
