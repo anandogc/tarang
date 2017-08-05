@@ -251,7 +251,12 @@ void Universal::Compute_shell_spectrum
 	
 	MPI_Allreduce(reinterpret_cast<Real*>(local_Sk_count.data()), reinterpret_cast<Real*>(Sk_count.data()), data_size, MPI_Real, MPI_SUM, MPI_COMM_WORLD);
 	
-    Sk = (Sk*(4*M_PI))/Sk_count;
+    for (int i=0; i<=Sk_count.extent(0); i++){
+      if (Sk_count(i) <= 0)
+        Sk(i) = 0;
+      else
+    Sk(i) = Sk(i)*(4*M_PI)/(Sk_count(i)*(kfactor[1]*kfactor[2]*kfactor[3]));
+    }
 }
 
 //*********************************************************************************************
