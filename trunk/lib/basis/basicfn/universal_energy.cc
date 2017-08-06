@@ -220,7 +220,9 @@ void Universal::Compute_local_shell_spectrum
 				if (index <= Kmax) {
 					factor = Multiplicity_factor(lx,ly,lz);
 					
-					local_Sk(index) += factor*my_pow(Kmag,n)*Vsqr(A(lx,ly,lz))*pow2(Kmag);
+                    local_Sk(index) += factor*my_pow(Kmag,n)*Vsqr(A(lx,ly,lz));
+                    //Abhishek implemented new spectrum formula
+					//local_Sk(index) += factor*my_pow(Kmag,n)*Vsqr(A(lx,ly,lz))*pow2(Kmag);
 					local_Sk_count(index) += 2*factor;
 					// Mult by 2 because factor is offset by 2 in Multiply_factor
 				}
@@ -250,13 +252,16 @@ void Universal::Compute_shell_spectrum
 	MPI_Allreduce(reinterpret_cast<Real*>(local_Sk.data()), reinterpret_cast<Real*>(Sk.data()), data_size, MPI_Real, MPI_SUM, MPI_COMM_WORLD);
 	
 	MPI_Allreduce(reinterpret_cast<Real*>(local_Sk_count.data()), reinterpret_cast<Real*>(Sk_count.data()), data_size, MPI_Real, MPI_SUM, MPI_COMM_WORLD);
-	
-    for (int i=0; i<=Sk_count.extent(0); i++){
+	//Abhishek implemented new spectrum formula
+    /*for (int i=0; i<=Sk_count.extent(0); i++){
       if (Sk_count(i) <= 0)
         Sk(i) = 0;
       else
     Sk(i) = Sk(i)*(4*M_PI)/(Sk_count(i)*(kfactor[1]*kfactor[2]*kfactor[3]));
-    }
+    }*/
+  
+  // For semi-filled shells
+
 }
 
 //*********************************************************************************************
