@@ -60,16 +60,13 @@ void FORCE::Compute_force_Carati_scheme_basic(FluidVF& U, string force_type, boo
 
 void FORCE::Compute_force_Carati_scheme_energy_supply(FluidVF& U, bool global_alpha_beta, bool add_flag)
 {
-    U.Force1 = 0;
-    U.Force2 = 0;
-    U.Force3 = 0;
-    
+
     // No forcing....
     Real total_energy_supply = sum(U.energy_supply_spectrum);
     Real total_helicity_supply = sum(U.helicity_supply_spectrum);
     if ((abs(total_energy_supply) + abs(total_helicity_supply)) < MYEPS)
         return;
-   
+    
     // Force now
     Real energy_supply_k, helicity_supply_k;  // for the mode {\bf k}
     Real denr;
@@ -298,29 +295,20 @@ void FORCE::Compute_force_Carati_scheme_const_energy(FluidVF& U, bool global_alp
     
 }
 
-void FORCE::Compute_force_Carati_scheme_assign(FluidVF& U, string force_type, bool global_alpha_beta)
-{
-	Compute_force_Carati_scheme_basic(U, force_type, global_alpha_beta, false);
-}
 
-void FORCE::Compute_force_Carati_scheme_add(FluidVF& U, string force_type,  bool global_alpha_beta)
+// Shubhadeep & A. G. Chatterjee	
+void FORCE::Compute_force_Carati_scheme(FluidVF& U, string force_type,  bool global_alpha_beta)
 {
+
 	Compute_force_Carati_scheme_basic(U, force_type, global_alpha_beta, true);
 }
-			
+		
 
-void FORCE::Compute_force_Carati_scheme_assign(FluidVF& U, FluidVF& W, string force_type, bool global_alpha_beta)
+
+// Shubhadeep & A. G. Chatterjee
+void FORCE::Compute_force_Carati_scheme(FluidVF& U, FluidVF& W, string force_type, bool global_alpha_beta)
 {
-    if (U.force_switch)
-        Compute_force_Carati_scheme_basic(U, force_type, global_alpha_beta, false);
 
-    if (W.force_switch)
-        Compute_force_Carati_scheme_basic(W, force_type, global_alpha_beta, false);
-    
-}
-
-void FORCE::Compute_force_Carati_scheme_add(FluidVF& U, FluidVF& W, string force_type, bool global_alpha_beta)
-{
     if (U.force_switch)
         Compute_force_Carati_scheme_basic(U, force_type, global_alpha_beta, true);
     
@@ -335,8 +323,7 @@ void FORCE::Compute_force_Carati_scheme_add(FluidVF& U, FluidVF& W, string force
 
 void FORCE::Compute_force_Carati_scheme_basic(FluidSF& T, string force_type, bool global_alpha_beta, bool add_flag)
 {
-	T.Force = 0;
-    
+
     // No forcing....
     Real total_energy_supply_level = sum(T.energy_supply_spectrum);
     if (abs(total_energy_supply_level) < MYEPS)
@@ -402,16 +389,9 @@ void FORCE::Compute_force_Carati_scheme_basic(FluidSF& T, string force_type, boo
     }
 }	
 
-void FORCE::Compute_force_Carati_scheme_assign(FluidVF& U, FluidSF& T, string force_type,  bool global_alpha_beta)
-{
-    if (U.force_switch)
-        Compute_force_Carati_scheme_basic(U, force_type, global_alpha_beta, false);
-    
-    if (T.force_switch)
-        Compute_force_Carati_scheme_basic(T, force_type, global_alpha_beta, false);
-}
 
-void FORCE::Compute_force_Carati_scheme_add(FluidVF& U, FluidSF& T, string force_type,   bool  global_alpha_beta)
+// Shubhadeep & A. G. Chatterjee
+void FORCE::Compute_force_Carati_scheme(FluidVF& U, FluidSF& T, string force_type,   bool  global_alpha_beta)
 {
     if (U.force_switch)
         Compute_force_Carati_scheme_basic(U, force_type, global_alpha_beta, true);
@@ -421,20 +401,28 @@ void FORCE::Compute_force_Carati_scheme_add(FluidVF& U, FluidSF& T, string force
 }
 //*********************************************************************************************
 // derived fn
+/*void FORCE::Compute_force_Carati_scheme(FluidVF& U)
+{
+    char force_type[80];
+    bool global_alpha_beta;
+    global.force.Get_para("%s, %d, %f, %f",force_type, &global_alpha_beta, &inner_radius, &outer_radius);
+
+    U.energy_supply_spectrum = global.force.U_energy_supply_spectrum;
+    U.helicity_supply_spectrum = global.force.U_helicity_supply_spectrum;   
+	if (U.force_switch)
+        Compute_force_Carati_scheme_assign(U, force_type, global_alpha_beta);
+}*/
+
 void FORCE::Compute_force_Carati_scheme(FluidVF& U)
 {
-	inner_radius = global.force.double_para(0);
-    outer_radius = global.force.double_para(1);
-    string force_type = global.force.string_para(0);
-    
-    bool global_alpha_beta = !!(global.force.int_para(0));
-    
+	// Shubhadeep & A. G. Chatterjee
+    char force_type[80];
+    bool global_alpha_beta;
+    global.force.Get_para("%s %d %f %f",force_type, &global_alpha_beta, &inner_radius, &outer_radius);
     U.energy_supply_spectrum = global.force.U_energy_supply_spectrum;
-    U.helicity_supply_spectrum = global.force.U_helicity_supply_spectrum;
-
-    
-	if (U.force_switch) 
-        Compute_force_Carati_scheme_assign(U, force_type, global_alpha_beta);
+    U.helicity_supply_spectrum = global.force.U_helicity_supply_spectrum;   
+	if (U.force_switch)
+        Compute_force_Carati_scheme(U, force_type, global_alpha_beta);
 }
 
 
@@ -442,19 +430,15 @@ void FORCE::Compute_force_Carati_scheme(FluidVF& U)
 // derived fn
 void FORCE::Compute_force_Carati_scheme(FluidVF& U, FluidSF& T)
 {
-	
-	inner_radius = global.force.double_para(0);
-    outer_radius = global.force.double_para(1);
-    string force_type = global.force.string_para(0);
-    
-    bool global_alpha_beta = !!(global.force.int_para(0));
-    
+	char force_type[80];
+    bool global_alpha_beta;
+    global.force.Get_para("%s %d %f %f",force_type, &global_alpha_beta, &inner_radius, &outer_radius);   
     U.energy_supply_spectrum = global.force.U_energy_supply_spectrum;
     T.energy_supply_spectrum = global.force.T_energy_supply_spectrum;
     
     U.helicity_supply_spectrum = global.force.U_helicity_supply_spectrum;
 	
-    Compute_force_Carati_scheme_assign(U, T, force_type, global_alpha_beta);
+    Compute_force_Carati_scheme(U, T, force_type, global_alpha_beta);
 }
 
 //*********************************************************************************************
@@ -462,11 +446,17 @@ void FORCE::Compute_force_Carati_scheme(FluidVF& U, FluidSF& T)
 void FORCE::Compute_force_Carati_scheme(FluidVF& U, FluidVF& W)
 {
 		
+    /*
     inner_radius = global.force.double_para(0);
 	outer_radius = global.force.double_para(1);
     string force_type = global.force.string_para(0);
     
     bool global_alpha_beta = !!(global.force.int_para(0));
+    */
+    // Shubhadeep & A. G. Chatterjee
+    char force_type[80];
+    bool global_alpha_beta;
+    global.force.Get_para("%s %d %f %f",force_type, &global_alpha_beta, &inner_radius, &outer_radius);
     
     U.energy_supply_spectrum = global.force.U_energy_supply_spectrum;
     W.energy_supply_spectrum = global.force.W_energy_supply_spectrum;
@@ -475,7 +465,7 @@ void FORCE::Compute_force_Carati_scheme(FluidVF& U, FluidVF& W)
     W.helicity_supply_spectrum = global.force.W_helicity_supply_spectrum;
     W.crosshelicity_supply_spectrum = global.force.W_crosshelicity_supply_spectrum;
     
-    Compute_force_Carati_scheme_assign(U, W, force_type,  global_alpha_beta);
+    Compute_force_Carati_scheme(U, W, force_type,  global_alpha_beta);
 }
 
 
@@ -501,7 +491,7 @@ void FORCE::Compute_force_Carati_scheme(FluidVF& U, FluidVF& W, FluidSF& T)
     W.helicity_supply_spectrum = global.force.W_helicity_supply_spectrum;
     W.crosshelicity_supply_spectrum = global.force.W_crosshelicity_supply_spectrum;
 
-    Compute_force_Carati_scheme_assign(U, W, force_type,  global_alpha_beta);
+    Compute_force_Carati_scheme(U, W, force_type,  global_alpha_beta);
     
     if (T.force_switch)
         Compute_force_Carati_scheme_basic(T, force_type, global_alpha_beta, true);

@@ -44,7 +44,7 @@
 #include <yaml-cpp/yaml.h>
 #include <vector>
 #include <map>
-
+#include <cstdarg>
 //*********************************************************************************************
 
 class Global
@@ -225,13 +225,16 @@ public:
 		bool T_switch;
 		bool C_switch;
 		bool configuration_done;
-
-		int field_procedure;
-
+		
+		int force_para_index;		
+		void Get_para(string format, ...);
 		Array<int,1> int_para;
 		Array<Real,1> double_para;
 		Array<string,1> string_para;
+		
+		Array<int,1> field_procedure;           // Shubhadeep & A. G. Chatterjee
 
+		Array<string,1> parameters;             // Shubhadeep & A. G. Chatterjee
 
 		//Shubhadeep//
 		Array<Real,1> U_energy_supply_spectrum;

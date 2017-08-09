@@ -60,6 +60,7 @@ public:
  //   void FORCE();
     void Initialize();
 	void Compute_force(FluidVF& U);
+	void Compute_force(FluidSF& T);
 	void Compute_force(FluidVF& U, FluidSF& T);
 	void Compute_force(FluidVF& U, FluidSF& T1, FluidSF& T2);
 	void Compute_force(FluidVF& U, FluidVF& W);
@@ -72,7 +73,7 @@ public:
 	void Compute_force_decay(FluidVF& U, FluidVF& W);
 	void Compute_force_decay(FluidVF& U, FluidVF& W, FluidSF& T);
 	
-	void Compute_force(FluidSF& T);
+	
 	
 	void Compute_force_pressure_grad(FluidVF& U);
 	
@@ -89,20 +90,16 @@ public:
     
     void Compute_force_Carati_scheme_const_energy(FluidVF& U, bool global_alpha_beta, bool add_flag);
     
-    void Compute_force_Carati_scheme_assign(FluidVF& U, string force_type,  bool global_alpha_beta);
     
-    void Compute_force_Carati_scheme_add(FluidVF& U, string force_type,  bool global_alpha_beta);
-    
+
     void Compute_force_Carati_scheme_basic(FluidSF& T, string force_type, bool global_alpha_beta, bool add_flag);
     
-    void Compute_force_Carati_scheme_assign(FluidVF& U, FluidSF& T, string force_type, bool global_alpha_beta);
+    void Compute_force_Carati_scheme(FluidVF& U, string force_type,  bool global_alpha_beta);
+
+    void Compute_force_Carati_scheme(FluidVF& U, FluidSF& T, string force_type, bool global_alpha_beta);
     
-    void Compute_force_Carati_scheme_add(FluidVF& U, FluidSF& T, string force_type, bool global_alpha_beta);
-    
-    void Compute_force_Carati_scheme_assign(FluidVF& U, FluidVF& W,  string force_type, bool global_alpha_beta);
-    
-    void Compute_force_Carati_scheme_add(FluidVF& U, FluidVF& W,  string force_type, bool global_alpha_beta);
-    
+    void Compute_force_Carati_scheme(FluidVF& U, FluidVF& W,  string force_type, bool global_alpha_beta);
+
     
     void Compute_force_Carati_scheme(FluidVF& U);
     
@@ -111,6 +108,7 @@ public:
     void Compute_force_Carati_scheme(FluidVF& U, FluidVF& W);
     
     void Compute_force_Carati_scheme(FluidVF& U, FluidVF& W, FluidSF& T);
+
     
     void Compute_force_Carati_scheme_crosshelicity_basic(FluidVF& U, FluidVF& W,  bool global_alpha_beta, bool add_flag);
 	
@@ -144,8 +142,8 @@ public:
 	void Compute_force_ABC(FluidVF& U, FluidVF& W);
 	void Compute_force_ABC(FluidVF& U, FluidVF& W, FluidSF& T);
 	
-	void Compute_force_RBC_basic_assign(FluidVF& U, FluidSF& T);
-	void Compute_force_RBC_basic_add(FluidVF& U, FluidSF& T);
+	
+	void Compute_force_RBC_basic(FluidVF& U, FluidSF& T);
 	void Compute_force_RBC(FluidVF& U, FluidSF& T);
 	void Compute_force_RBC(FluidVF& U, FluidVF& W, FluidSF& T);
 	void Compute_force_RBC_rotation(FluidVF& U, FluidSF& T);
@@ -158,14 +156,11 @@ public:
 	
 	void Compute_force_DYNAMO_SIX_MODE(FluidVF& U, FluidVF& W);
 	
-	void Compute_force_Coriolis_basic_assign(FluidVF& U, int rotation_direction, Real two_omega);
-	void Compute_force_Coriolis_basic_assign(FluidVF& U, Real two_omega1, Real two_omega2, Real two_omega3);
-
-	void Compute_force_Coriolis_basic_add(FluidVF& U, int rotation_direction, Real two_omega);
-	void Compute_force_Coriolis_basic_add(FluidVF& U, Real two_omega1, Real two_omega2, Real two_omega3);
+	
 
 	
 	void Compute_force_Coriolis(FluidVF& U);
+	void Compute_force_Coriolis(FluidVF& U, Real two_omega1, Real two_omega2, Real two_omega3);
 	void Compute_force_Coriolis(FluidVF& U, FluidSF& T);
 	void Compute_force_Coriolis(FluidVF& U, FluidVF& W);
 	void Compute_force_Coriolis(FluidVF& U, FluidVF& W, FluidSF& T);

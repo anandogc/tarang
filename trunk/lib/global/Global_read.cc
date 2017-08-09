@@ -432,7 +432,7 @@ void Global::Read()
 	
 	para["force"]["field_procedure"] >> force.field_procedure;
 
-	
+	para["force"]["parameters"] >> force.parameters;
 	para["force"]["int_para"] >> force.int_para;
 	para["force"]["double_para"] >> force.double_para;
 	para["force"]["string_para"] >> force.string_para;
@@ -821,10 +821,11 @@ void Global::Read()
 //Shubhadeep
 void Global::Read_IC_energy_supply_arrays()
 {
-
+	char init[]="/in/initial.txt";
+	char forces[]="/in/forcing.txt";
     ifstream initial,forcing;
-	initial.open("in/initial.txt");
-	forcing.open("in/forcing.txt");
+	initial.open((io.data_dir+init).c_str());
+	forcing.open((io.data_dir+forces).c_str());
 	if (program.kind=="FLUID_INCOMPRESS")
 	{
 		initial >> io.U_IC_energy_spectrum >> io.U_IC_helicity_spectrum;

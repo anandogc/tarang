@@ -122,7 +122,7 @@ void  FORCE::Compute_force_using_random_noise_basic(FluidVF& U, Real random_inte
                         else { //  for 3D & 2D3C
                             helicity_supply_k = U.helicity_supply_spectrum(index)/ global.spectrum.shell.modes_in_shell(index);
                             
-                            if (abs(Kmag*energy_supply_k - abs(helicity_supply_k)) > MYEPS) {
+                            if (abs(Kmag*energy_supply_k - abs(helicity_supply_k)) >=0) {
                                 amp_plus = sqrt((energy_supply_k+helicity_supply_k/Kmag)/random_interval);
                                 amp_minus = sqrt((energy_supply_k-helicity_supply_k/Kmag)/random_interval);
                                 phase_plus = 2*M_PI * rand_struct.random();
@@ -154,7 +154,7 @@ void  FORCE::Compute_force_using_random_noise_assign(FluidVF& U, Real random_int
         //   if (master) cout <<" time random_next  = "<<global.time.now<<" "<< random_next << " " << random_interval << endl;
     } // else rand_seed is unchanged.
     
-    Compute_force_using_random_noise_basic(U, random_interval, force_rand, rand_seed, false);
+    Compute_force_using_random_noise_basic(U, random_interval, force_rand, rand_seed, true);
 }
 
 
@@ -385,12 +385,9 @@ void  FORCE::Compute_force_using_random_noise_add(FluidVF& U, FluidVF& W, FluidS
 //*********************************************************************************************
 
 void  FORCE::Compute_force_using_random_noise(FluidVF& U)
-{
-    inner_radius = global.force.double_para(0);
-    outer_radius = global.force.double_para(1);
-    
-    Real random_interval = global.force.double_para(2);
-    
+{   
+    Real random_interval;
+    global.force.Get_para("%f %f %f", &inner_radius, &outer_radius,&random_interval);
     U.energy_supply_spectrum = global.force.U_energy_supply_spectrum;
     U.helicity_supply_spectrum = global.force.U_helicity_supply_spectrum;
     

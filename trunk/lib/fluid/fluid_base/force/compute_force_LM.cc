@@ -119,7 +119,7 @@ void FORCE::Compute_force_Liquid_metal(FluidVF& U, FluidSF& T)
 	Real B0y = global.force.double_para(1);
 	Real B0z = global.force.double_para(2);
 	
-	Compute_force_RBC_basic_assign(U, T);
+	Compute_force_RBC_basic(U, T);
 	
 	Compute_force_Liquid_metal_basic_add(U, B0x, B0y, B0z);
 }
