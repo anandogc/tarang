@@ -61,6 +61,8 @@ int Ifluid_main()
 		
 		
 		fluidIO_incompress.Read_init_cond(U);
+		
+		
 
 		// fluidIO_incompress.Output_cout(U);  // for initial cond
 		// MPI_Abort(MPI_COMM_WORLD, 1);
@@ -80,7 +82,12 @@ int Ifluid_main()
 			cout << "abs(sum(Divergence)) of the initial field U = " << total_abs_div << "is large. " << '\n' << "Therefore exiting the program." << endl;
 			// MPI_Abort(MPI_COMM_WORLD, 1);
 		}
-
+		universal->Compute_vorticity(U.cvf.V1, U.cvf.V2, U.cvf.V3, helicalU.cvf.V1, helicalU.cvf.V2, helicalU.cvf.V3, 0, universal->Max_radius_inside());
+		Force.Compute_force(U);
+		if (1) {
+			U.Inverse_transform();
+			fluidIO_incompress.Output_real_field(U);
+		}
 		fluidIO_incompress.Output_all_inloop(U, P, helicalU);  // for initial cond
 
 
@@ -113,7 +120,8 @@ int Ifluid_main()
 				cout << "max(abs(Divergence)) of U = " << total_abs_div << "is large. " << '\n' << "Therefore exiting the program." << endl;
 				// MPI_Abort(MPI_COMM_WORLD, 1); 
 			}
-
+			universal->Compute_vorticity(U.cvf.V1, U.cvf.V2, U.cvf.V3, helicalU.cvf.V1, helicalU.cvf.V2, helicalU.cvf.V3, 0, universal->Max_radius_inside());
+			Force.Compute_force(U);
 			fluidIO_incompress.Output_all_inloop(U, P, helicalU);
 			
 			if ( isnan(U.cvf.total_energy) )  { 

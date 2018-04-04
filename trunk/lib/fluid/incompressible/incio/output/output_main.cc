@@ -100,7 +100,8 @@ void FluidIO_incompress::Output_all_inloop(FluidVF& U, Pressure& P, FluidVF& hel
 	
 
 	if (global.time.now >= global.io.time.spectrum_save_next) {
-		Output_shell_spectrum(U);	
+		//Output_shell_spectrum(U);	
+		Output_shell_spectrum_helical(U,helicalU);
 		global.io.time.spectrum_save_next += global.io.time.spectrum_save_interval;
 	}		
 					
@@ -176,7 +177,8 @@ void FluidIO_incompress::Output_last(FluidVF& U, Pressure& P, FluidVF& helicalU)
 		Output_real_field(U);
 	}	
 	if (global.io.time.spectrum_save_last)
-		Output_shell_spectrum(U);	
+		Output_shell_spectrum_helical(U,helicalU);
+		//Output_shell_spectrum(U);	
 	
 	if ((global.energy_transfer.turnon) && (global.io.time.flux_save_last))
 		Output_flux(U, P, helicalU);

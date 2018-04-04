@@ -269,6 +269,17 @@ void FluidIO::Output_real_field(FluidVF& U)
 {
 	if (global.time.now >= global.io.time.real_field_save_next) {
 		U.rvf.Write_real_field();
+		/*
+		if (U.force_switch){
+			CVF cvf("Fv");
+			cvf.V1=U.Force1;
+			cvf.V2=U.Force2;
+			cvf.V3=U.Force3;
+			RVF rvf("Fv");
+			rvf.Inverse_transform(cvf);
+			rvf.Write_real_field();
+		}
+		*/
 		global.io.time.real_field_save_next += global.io.time.real_field_save_interval;
 	}
 }

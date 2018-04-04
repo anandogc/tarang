@@ -261,6 +261,7 @@ public:
 	void Output_cout(FluidVF& U, FluidVF& W, FluidSF& T, FluidSF& C);
 	
 	void Output_shell_spectrum(FluidVF& U);
+	void Output_shell_spectrum_helical(FluidVF& U, FluidVF& helicalU); //13march 2018 shubhadeep
 	void Output_shell_spectrum(FluidVF& U, FluidSF& T);
 	void Output_shell_spectrum_scalar(FluidVF& U, FluidSF& T);
 	void Output_shell_spectrum(FluidVF& U, FluidSF& T1, FluidSF& T2);

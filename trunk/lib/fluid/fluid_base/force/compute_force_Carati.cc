@@ -112,20 +112,36 @@ void FORCE::Compute_force_Carati_scheme_energy_supply(FluidVF& U, bool global_al
             total_Ek_in_force_shell =  total_ksqrEk_in_force_shell =  total_Hk_in_force_shell = 0;
             
             Correlation::Compute_shell_spectrum(U);
-            total_Ek_in_force_shell += Correlation::shell_ek1(i) + Correlation::shell_ek2(i) + Correlation::shell_ek3(i);
+            total_Ek_in_force_shell += Correlation::shell_ek1_force(i) + Correlation::shell_ek2_force(i) + Correlation::shell_ek3_force(i);
             total_ksqrEk_in_force_shell += Correlation::shell_dissk1(i) + Correlation::shell_dissk2(i) + Correlation::shell_dissk3(i);
             
             total_ksqrEk_in_force_shell /= TWO;   // shell_dissk1 contains 2*k^2*E(k), so div by 2
             
             Correlation::Compute_shell_spectrum_helicity(U);
-            total_Hk_in_force_shell += Correlation::shell_ek1(i) + Correlation::shell_ek2(i) + Correlation::shell_ek3(i);
+            total_Hk_in_force_shell += Correlation::shell_ek1_force(i) + Correlation::shell_ek2_force(i) + Correlation::shell_ek3_force(i);
             
             denr = total_Ek_in_force_shell*total_ksqrEk_in_force_shell - my_pow(total_Hk_in_force_shell,2);
             
             if (denr > MYEPS) {
                 alpha_k_shell(i) = (U.energy_supply_spectrum(i)*total_ksqrEk_in_force_shell - U.helicity_supply_spectrum(i)*total_Hk_in_force_shell)/(2*denr);
                 beta_k_shell(i) = (U.helicity_supply_spectrum(i)*total_Ek_in_force_shell - U.energy_supply_spectrum(i)*total_Hk_in_force_shell)/(2*denr);
+            
+
+             //if (i==5){
+             //   cout<< "my_id = "<< my_id <<", i = " <<i<< ", time = "<<global.time.now <<", alpha k = " << alpha_k_shell(i) << endl;
+             //   cout<< "my_id = "<< my_id <<", i = " <<i<< ", time = "<<global.time.now <<", beta k = " << beta_k_shell(i) << endl;
+             //   
+             //   cout<< "my_id = "<< my_id <<", i = " <<i<< ", time = "<<global.time.now <<", Epsilon_E = " << U.energy_supply_spectrum(i) <<endl;
+             //   cout<< "my_id = "<< my_id <<", i = " <<i<< ", time = "<<global.time.now <<", Wf = " << total_ksqrEk_in_force_shell << endl;
+             //   cout<< "my_id = "<< my_id <<", i = " <<i<< ", time = "<<global.time.now <<", Hf = " << total_Hk_in_force_shell << endl;
+             //   
+             //   cout<< "my_id = "<< my_id <<", i = " <<i<< ", time = "<<global.time.now <<", Epsilon_H = " << U.helicity_supply_spectrum(i) << endl;
+             //   cout<< "my_id = "<< my_id <<", i = " <<i<< ", time = "<<global.time.now <<", E_F = " << total_Ek_in_force_shell << endl;
+             //   }
+
+
             }
+
             else if ((total_Ek_in_force_shell > MYEPS2) && (total_ksqrEk_in_force_shell > MYEPS2)) { // helical
                 alpha_k_shell(i) = U.energy_supply_spectrum(i)/(4*total_Ek_in_force_shell);
                 beta_k_shell(i) = U.energy_supply_spectrum(i)/(4*sqrt(total_Ek_in_force_shell*total_ksqrEk_in_force_shell));
@@ -138,15 +154,18 @@ void FORCE::Compute_force_Carati_scheme_energy_supply(FluidVF& U, bool global_al
 					if (universal->Probe_in_me(kx,ky,kz))  {
 						lx = universal->Get_lx(kx);
                         ly = universal->Get_ly(ky);
-                        lz = universal->Get_kz(kz);
+                        lz = universal->Get_lz(kz);
                             
                         Kmag = universal->Kmagnitude(lx, ly, lz);
 						if ((Kmag > inner_radius) && (Kmag <= outer_radius)) {
 							index = (int) ceil(Kmag);
+                            
 							Const_energy_supply_alpha_beta(U, lx, ly, lz, alpha_k_shell(index), beta_k_shell(index), add_flag);
-							}
+						}
 					}
 				}
+        
+       // universal->Print_large_Fourier_elements(U.cvf.V1);
         return;  // Done... global_alpha_beta
     } // The above scheme works for 2D2C, 2D3C, and 3D.
     
@@ -158,7 +177,7 @@ void FORCE::Compute_force_Carati_scheme_energy_supply(FluidVF& U, bool global_al
                 if (universal->Probe_in_me(kx,ky,kz))  {  // for the modes inside the proc
                     lx = universal->Get_lx(kx);
                     ly = universal->Get_ly(ky);
-                    lz = universal->Get_kz(kz);
+                    lz = universal->Get_lz(kz);
                     
                     Kmag = universal->Kmagnitude(lx, ly, lz);
                     if ((Kmag > inner_radius) && (Kmag <= outer_radius)) {
@@ -191,7 +210,7 @@ void FORCE::Compute_force_Carati_scheme_energy_supply(FluidVF& U, bool global_al
                                 }
                                 else {
                                     if (master)
-                                        cout << "ERROR: Max heliicty supply case: Hk approx k*Ek" << endl;
+                                        cout << "ERROR: Max helicity supply case: Hk approx k*Ek" << endl;
                                     exit(1);
                                 } // of error
                             }   // 3D or 2D3C
@@ -201,6 +220,7 @@ void FORCE::Compute_force_Carati_scheme_energy_supply(FluidVF& U, bool global_al
                         } // (modal_energy > MYEPS)  F computation for both 2D and 3D
                     } // Kmag cond
                 } // for the modes inside the proc
+                
 }
 
 void FORCE::Compute_force_Carati_scheme_const_energy(FluidVF& U, bool global_alpha_beta, bool add_flag)
@@ -213,7 +233,7 @@ void FORCE::Compute_force_Carati_scheme_const_energy(FluidVF& U, bool global_alp
                 if (universal->Probe_in_me(kx,ky,kz))  {
                     lx = universal->Get_lx(kx);
                     ly = universal->Get_ly(ky);
-                    lz = universal->Get_kz(kz);
+                    lz = universal->Get_lz(kz);
                     
                     Kmag = universal->Kmagnitude(lx, ly, lz);
                     if ((Kmag > inner_radius) && (Kmag <= outer_radius)) {
@@ -363,7 +383,7 @@ void FORCE::Compute_force_Carati_scheme_basic(FluidSF& T, string force_type, boo
                     if (universal->Probe_in_me(kx, ky, kz)) {
                         lx = universal->Get_lx(kx);
                         ly = universal->Get_ly(ky);
-                        lz = universal->Get_kz(kz);
+                        lz = universal->Get_lz(kz);
                         
                         Kmag = universal->Kmagnitude(lx, ly, lz);
                         if ((Kmag > inner_radius) && (Kmag <= outer_radius)) {

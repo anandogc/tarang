@@ -69,6 +69,7 @@ void FORCE::Const_energy_supply_alpha_beta(FluidVF& U, int lx, int ly, int lz, R
 		
 	else {
 		static int index=0;
+		
 		TinyVector<Complex,3> localV, localForce, vorticity;
 		
 		localV = universal->Get_local_spectral_field(lx, ly, lz, U.cvf.V1, U.cvf.V2, U.cvf.V3);

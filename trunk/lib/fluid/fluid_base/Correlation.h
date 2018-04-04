@@ -75,7 +75,11 @@ public:
 	
 	//!  Energy of Vz in shell k
 	static Array<Real,1>		shell_ek3;
-
+	//shubhadeep
+	static  Array<Real,1>		shell_ek1_force;
+	static Array<Real,1>		shell_ek2_force;
+	static Array<Real,1>		shell_ek3_force;
+	//shubhadeep
 	
 	//!  Energy Dissipation rate in shell k (without \f$ \nu \f$).
 	static Array<Real,1>		shell_dissk1;
@@ -139,8 +143,9 @@ public:
 	
 	static void Compute_shell_spectrum(FluidVF& U);
 	static void Compute_shell_spectrum(FluidVF& U, FluidVF& W);
+	static void Compute_shell_spectrum_dissipation(FluidVF& U, FluidVF& W); //shubhadeep
 	static void Compute_shell_spectrum(FluidVF& U, FluidSF& T);
-	
+	static void Compute_force_shell_spectrum_helical(FluidVF& U,FluidVF& helicalU);//shubhadeep
 	
 	static void Compute_ring_spectrum(FluidVF& U);
 	static void Compute_ring_spectrum(FluidVF& U, FluidVF& W);

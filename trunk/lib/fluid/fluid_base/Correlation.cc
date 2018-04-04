@@ -43,6 +43,10 @@ Array<Real,1> Correlation::shell_ek1;
 Array<Real,1> Correlation::shell_ek2;
 Array<Real,1> Correlation::shell_ek3;
 
+Array<Real,1> Correlation::shell_ek1_force;
+Array<Real,1> Correlation::shell_ek2_force;
+Array<Real,1> Correlation::shell_ek3_force;
+
 Array<Real,1> Correlation::shell_dissk1;
 Array<Real,1> Correlation::shell_dissk2;
 Array<Real,1> Correlation::shell_dissk3;
@@ -80,7 +84,11 @@ void Correlation::Initialize()
 	shell_ek1.resize(global.spectrum.shell.no_shells);
 	shell_ek2.resize(global.spectrum.shell.no_shells);
 	shell_ek3.resize(global.spectrum.shell.no_shells);
-
+	//shubhadeep
+	shell_ek1_force.resize(global.spectrum.shell.no_shells);
+	shell_ek2_force.resize(global.spectrum.shell.no_shells);
+	shell_ek3_force.resize(global.spectrum.shell.no_shells);
+	//shubhadeep
 	shell_ek_temp1.resize(global.spectrum.shell.no_shells);
     shell_ek_temp2.resize(global.spectrum.shell.no_shells);
     
@@ -231,19 +239,19 @@ void Correlation::Compute_shell_spectrum(FluidVF& U)
 {
 	
 	universal->Compute_shell_spectrum(U.cvf.V1, 0, shell_ek1);
-	
+	universal->Compute_shell_spectrum_force(U.cvf.V1,0,shell_ek1_force);          //shubhadeep
 	if (!global.program.two_dimension)
 		universal->Compute_shell_spectrum(U.cvf.V2, 0, shell_ek2);
-	
+		universal->Compute_shell_spectrum_force(U.cvf.V2, 0, shell_ek2_force);    //shubhadeep
 	universal->Compute_shell_spectrum(U.cvf.V3, 0, shell_ek3);
+	universal->Compute_shell_spectrum_force(U.cvf.V3, 0, shell_ek3_force);        //shubhadeep
 	
-	
-	universal->Compute_shell_spectrum(U.cvf.V1, 2, shell_dissk1);
+	universal->Compute_shell_spectrum_force(U.cvf.V1, 2, shell_dissk1);
 	
 	if (!global.program.two_dimension)
-		universal->Compute_shell_spectrum(U.cvf.V2, 2, shell_dissk2);
+		universal->Compute_shell_spectrum_force(U.cvf.V2, 2, shell_dissk2);
 	
-	universal->Compute_shell_spectrum(U.cvf.V3, 2, shell_dissk3);
+	universal->Compute_shell_spectrum_force(U.cvf.V3, 2, shell_dissk3);
 	
 	shell_dissk1 *= TWO;
 	shell_dissk2 *= TWO;
@@ -261,7 +269,22 @@ void Correlation::Compute_shell_spectrum(FluidVF& U, FluidVF& W)
 	universal->Compute_shell_spectrum(U.cvf.V3, W.cvf.V3, 0, shell_ek3);
 }
 
+//shubhadeep
+void Correlation::Compute_shell_spectrum_dissipation(FluidVF& U, FluidVF& W)
+{
+	universal->Compute_shell_spectrum(U.cvf.V1, W.cvf.V1, 2, shell_dissk1);
+	
+	if (!global.program.two_dimension)
+		universal->Compute_shell_spectrum(U.cvf.V2, W.cvf.V2, 2, shell_dissk2);
+	
+	universal->Compute_shell_spectrum(U.cvf.V3, W.cvf.V3, 2, shell_dissk3);
 
+	shell_dissk1*=TWO;//*U.dissipation_coefficient;
+	shell_dissk2*=TWO;//*U.dissipation_coefficient;
+	shell_dissk3*=TWO;//*U.dissipation_coefficient;
+
+}
+//shubhadeep
 void Correlation::Compute_shell_spectrum(FluidVF& U, FluidSF& T)
 {
 	
@@ -352,6 +375,7 @@ void Correlation::Compute_shell_spectrum_helicity(FluidVF& U)
 {
 	
 	universal->Compute_shell_spectrum_helicity(U.cvf.V1, U.cvf.V2, U.cvf.V3, shell_ek1, shell_ek2, shell_ek3);
+	universal->Compute_shell_spectrum_helicity_force(U.cvf.V1, U.cvf.V2, U.cvf.V3, shell_ek1_force, shell_ek2_force, shell_ek3_force);
 }
 
 void Correlation::Compute_shell_spectrum_helicity2(FluidVF& U)
@@ -444,6 +468,19 @@ void Correlation::Compute_force_shell_spectrum(FluidVF& U)
 	shell_ek3 *= TWO;
 }
 
+void Correlation::Compute_force_shell_spectrum_helical(FluidVF& U,FluidVF& helicalU)
+{
+	universal->Compute_shell_spectrum(helicalU.cvf.V1, U.Force1, 0, shell_ek1);
+	
+	if (!global.program.two_dimension)
+		universal->Compute_shell_spectrum(helicalU.cvf.V2, U.Force2, 0, shell_ek2);
+	
+	universal->Compute_shell_spectrum(helicalU.cvf.V3, U.Force3, 0, shell_ek3);
+	
+	shell_ek1 *= TWO;
+	shell_ek2 *= TWO;
+	shell_ek3 *= TWO;
+}
 
 void Correlation::Compute_force_ring_spectrum(FluidVF& U)
 {

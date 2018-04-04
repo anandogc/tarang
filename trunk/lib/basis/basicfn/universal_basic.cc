@@ -119,17 +119,28 @@ void Universal::Compute_modes_in_shell_array()
     int index;
     
     global.spectrum.shell.modes_in_shell = 0;
-    
-    for (int kx = -kx_max+1; kx <= kx_max; kx++)
-        for (int ky = -ky_max+1; ky <= ky_max; ky++)
-            for (int kz = -kz_max+1; kz <= kz_max; kz++) {
-                Kmag = sqrt(pow2(kx*kfactor[1]) + pow2(ky*kfactor[2]) + pow2(kz*kfactor[3]));
-        
-                index = (int) ceil(Kmag);
-            
-                global.spectrum.shell.modes_in_shell(index) += 1;
-            }
-}
+    if (Ny>1){
+    	for (int kx = -kx_max+1; kx <= kx_max; kx++)
+    	    for (int ky = -ky_max+1; ky <= ky_max; ky++)
+    	        for (int kz = -kz_max+1; kz <= kz_max; kz++) {
+    	            Kmag = sqrt(pow2(kx*kfactor[1]) + pow2(ky*kfactor[2]) + pow2(kz*kfactor[3]));
+    	    
+    	            index = (int) ceil(Kmag);
+    	        
+    	            global.spectrum.shell.modes_in_shell(index) += 1;
+    	        }
+    }
+    else{
+    	for (int kx = -kx_max+1; kx <= kx_max; kx++)
+    	        for (int kz = -kz_max+1; kz <= kz_max; kz++) {
+    	            Kmag = sqrt(pow2(kx*kfactor[1]) + pow2(kz*kfactor[3]));
+    	    
+    	            index = (int) ceil(Kmag);
+    	        
+    	            global.spectrum.shell.modes_in_shell(index) += 1;
+    	        }
+    }
+}	
 
 //*********************************************************************************************
 

@@ -867,7 +867,40 @@ void FluidIO::Output_shell_spectrum(FluidVF& U)
 
 	}
 }  
+void FluidIO::Output_shell_spectrum_helical(FluidVF& U, FluidVF& helicalU)
+{
+	if (global.spectrum.shell.turnon) {
+		if (global.mpi.master) 
+			spectrum_file << "%% Time = " << global.time.now << "\n \n"; 	
 
+		
+		Correlation::Compute_shell_spectrum(U);
+		Print_array(spectrum_file, "Uek", Correlation::shell_ek1_force, Correlation::shell_ek2_force, Correlation::shell_ek3_force);
+		Print_array(spectrum_file, "UDk", Correlation::shell_dissk1, Correlation::shell_dissk2, Correlation::shell_dissk3);
+		
+		if (U.force_switch) {
+			  Correlation::Compute_force_shell_spectrum(U);
+			  Print_array(spectrum_file, "(Fv.v)(k)", Correlation::shell_ek1, Correlation::shell_ek2, Correlation::shell_ek3);
+			if (global.program.helicity_switch) {
+				Correlation::Compute_force_shell_spectrum_helical(U,helicalU);
+				Print_array(spectrum_file, "(Fv.w)(k)", Correlation::shell_ek1, Correlation::shell_ek2, Correlation::shell_ek3);
+			}
+		}
+		
+		if (global.program.helicity_switch) {
+			Correlation::Compute_shell_spectrum_helicity(U);
+			Print_array(spectrum_file, "hk", Correlation::shell_ek1, Correlation::shell_ek2, Correlation::shell_ek3);
+			Correlation::Compute_shell_spectrum_dissipation(U,helicalU);
+			Print_array(spectrum_file, "hDk", Correlation::shell_dissk1, Correlation::shell_dissk2, Correlation::shell_dissk3);
+		}
+		
+		if (master)
+			spectrum_file.flush();
+
+	}
+
+}  
+//shubhadeep
 //*********************************************************************************************  
 // scalar
 void FluidIO::Output_shell_spectrum(FluidVF& U, FluidSF& T)
