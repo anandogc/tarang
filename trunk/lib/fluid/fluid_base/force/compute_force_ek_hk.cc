@@ -48,6 +48,8 @@
 //*********************************************************************************************
 // Real energy_supply, Real epsh_by_k_epse
 // Real energy_level, h_by_k_E
+// for global alpha, beta, set global_alpha_beta= true
+// global alpha, beta: Based on suggestions by Rodion Stepanov
 
 void FORCE::Force_energy_helicity_supply_or_level_basic(FluidVF& U, string force_type, Real inner_radius, Real outer_radius, Real para1, Real para2, bool add_flag)
 { 
@@ -56,10 +58,16 @@ void FORCE::Force_energy_helicity_supply_or_level_basic(FluidVF& U, string force
 	Real epsh_by_k_epse = 0.0;
 	Real energy_level = 0.0;
 	Real h_by_k_E = 0.0;
+    Real kinetic_helicity_supply = 0.0;
+    
+    bool global_alpha_beta = false;
 	
 	if (force_type == "ENERGY_SUPPLY") {
 		energy_supply = para1;
-		epsh_by_k_epse = para2;
+		if (global_alpha_beta)
+            kinetic_helicity_supply = para2;
+        else
+            epsh_by_k_epse = para2;
 	}
 	
 	else if (force_type == "CONSTANT_ENERGY") {
@@ -108,6 +116,29 @@ void FORCE::Force_energy_helicity_supply_or_level_basic(FluidVF& U, string force
 	
 	int lx, ly, lz;
 	Real Kmag, alpha_k, beta_k, sk;
+    
+    if (global_alpha_beta) {
+        Real total_Ek_in_force_shell = 0;
+        Real total_ksqrEk_in_force_shell = 0;
+
+        Correlation::Compute_shell_spectrum(U);
+        for (int i=int(inner_radius)+1; i<= int(outer_radius); i++) {
+            total_Ek_in_force_shell += Correlation::shell_ek1(i) + Correlation::shell_ek2(i) + Correlation::shell_ek3(i);
+            total_ksqrEk_in_force_shell += Correlation::shell_dissk1(i) + Correlation::shell_dissk3(i) + Correlation::shell_dissk3(i);
+        }
+        total_ksqrEk_in_force_shell /= TWO;   // shell_dissk1 contains 2*k^2*E(k), so div by 2
+        
+        Real total_Hk_in_force_shell = 0;
+        Correlation::Compute_shell_spectrum_helicity(U);
+        for (int i=int(inner_radius)+1; i<= int(outer_radius); i++)
+            total_Hk_in_force_shell += Correlation::shell_ek1(i) + Correlation::shell_ek2(i) + Correlation::shell_ek3(i);
+        
+        Real denr = total_Ek_in_force_shell*total_ksqrEk_in_force_shell - my_pow(total_Hk_in_force_shell,2);
+        
+        alpha_k = (energy_supply*total_ksqrEk_in_force_shell - kinetic_helicity_supply*total_Hk_in_force_shell)/(2*denr);
+        beta_k = (kinetic_helicity_supply*total_Ek_in_force_shell - energy_supply*total_Hk_in_force_shell)/(2*denr);
+    }
+
 
 	for (int kx = kx_min; kx <= kx_max; kx++)
 		for (int ky = ky_min; ky <= ky_max; ky++)  
@@ -124,7 +155,7 @@ void FORCE::Force_energy_helicity_supply_or_level_basic(FluidVF& U, string force
 						
 						if (modal_energy > MYEPS) {
 							
-							if (force_type == "ENERGY_SUPPLY") {
+							if (force_type == "ENERGY_SUPPLY" && !global_alpha_beta) { // for local alpha-beta
 								temp = energy_supply_per_mode/ (2*modal_energy);
                                 sk = U.cvf.Modal_helicity(lx,ly,lz)/ (Kmag*modal_energy);
 								
@@ -133,9 +164,7 @@ void FORCE::Force_energy_helicity_supply_or_level_basic(FluidVF& U, string force
                                     beta_k = temp * (epsh_by_k_epse - sk) / ((1 - sk*sk)*Kmag);
 								}
 								
-								else { // helical
-									sk = U.cvf.Modal_helicity(lx,ly,lz)/ (Kmag*modal_energy);
-									
+								else { // helical									
 									if (abs(sk*sk-1) > MYEPS2) {
 										alpha_k = temp * (1-sk*epsh_by_k_epse) / (1 - sk*sk);
 										beta_k = temp * (epsh_by_k_epse - sk) / ((1 - sk*sk)*Kmag);

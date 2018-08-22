@@ -78,9 +78,10 @@ public:
 	void Compute_force_pressure_grad(FluidVF& U);
 	
 	void Const_energy_supply_alpha_beta(FluidVF& U, int lx, int ly, int lz, Real alpha, Real beta, bool add_flag);
+	void Const_energy_supply_alpha_beta(FluidVF& U, FluidVF& W, int lx, int ly, int lz, Real alpha, Real beta, bool add_flag);
+	void Const_energy_alpha_beta(FluidVF& U, int lx, int ly, int lz, Real alpha, Real beta, bool add_flag);
+	
 	void Const_energy_supply_alpha(FluidSF& T, int lx, int ly, int lz, Real alpha, bool add_flag);
-    
-    void Const_energy_alpha_beta(FluidVF& U, int lx, int ly, int lz, Real alpha, Real beta, bool add_flag);
 	void Const_energy_alpha(FluidSF& T, int lx, int ly, int lz, Real alpha, bool add_flag);
 	
     
