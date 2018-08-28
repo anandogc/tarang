@@ -168,7 +168,8 @@ inline void FFF_PENCIL::Assign_spectral_field(int kx, int ky, int kz, Array<Comp
 
 	if ( ((lx >= 0) && (lx < maxlx)) && ((ly >= 0) && (ly < maxly)) && ((lz >= 0) && (lz < maxlz)) ) {
 		Ax(lx, ly, lz) = V(0);
-		Ay(lx, ly, lz) = V(1);
+		if (Ny>1)
+			Ay(lx, ly, lz) = V(1);
 		Az(lx, ly, lz) = V(2);
 	}
 }

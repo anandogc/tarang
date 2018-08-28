@@ -244,10 +244,10 @@ FFF_PENCIL::FFF_PENCIL()
 		array_properties.numprocs_complex_array = num_x_procs_real, 1;
 		array_properties.numprocs_real_array = num_x_procs_real, 1;
 
-		if (global.io.N_in_reduced.size() == 2)
+		if (global.io.N_in_reduced.size() == 3)
 			array_properties.shape_N_in_reduced = global.io.N_in_reduced[0], global.io.N_in_reduced[2]/2+1;
 		
-		if (global.io.N_out_reduced.size() == 2)
+		if (global.io.N_out_reduced.size() == 3)
 			array_properties.shape_N_out_reduced = global.io.N_out_reduced[0], global.io.N_out_reduced[2]/2+1;
 
 		array_properties.Fourier_directions = 1,1;

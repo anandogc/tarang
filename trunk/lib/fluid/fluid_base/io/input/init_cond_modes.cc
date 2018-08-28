@@ -74,9 +74,13 @@ void  FluidIO::Init_cond_modes(FluidVF &U)
 		kz = global.io.init_cond_modes.coords(mode,3);
 		
 		if (basis_type != "SSS") {
-			Vx_complex = global.io.init_cond_modes.field_array_complex(mode,0); 
-			Vy_complex = global.io.init_cond_modes.field_array_complex(mode,1); 
+			Vx_complex = global.io.init_cond_modes.field_array_complex(mode,0);
 			
+			if (Ny > 1)
+				Vy_complex = global.io.init_cond_modes.field_array_complex(mode,1); 
+			else
+				Vy_complex = Complex(0,0);
+
 			if (global.field.incompressible) 
 				universal->Last_component(kx, ky, kz, Vx_complex, Vy_complex, Vz_complex);
 			
@@ -90,7 +94,11 @@ void  FluidIO::Init_cond_modes(FluidVF &U)
 		}
 		else {
 			Vx_real = global.io.init_cond_modes.field_array_real(mode,0); 
-			Vy_real = global.io.init_cond_modes.field_array_real(mode,1); 
+
+			if (Ny > 1)
+				Vy_real = global.io.init_cond_modes.field_array_real(mode,1);
+			else
+				Vy_complex = 0;
 			
 			if (global.field.incompressible) 
 				universal->Last_component(kx, ky, kz, Vx_real, Vy_real, Vz_real);

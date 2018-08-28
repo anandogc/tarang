@@ -261,14 +261,17 @@ void FFF_PENCIL::Assign_sub_array(Range x_range, Range y_range, Range z_range, A
 int FFF_PENCIL::Read(Array<Complex,3> A, h5::Plan plan, string file_name, string dataset_name)
 {
 	if (Ny > 1) {
-		if (my_z_pcoord == 0)  
+		if (my_z_pcoord == 0) {
+			global.temp_array.Xr_slab = 0;  
 			BasicIO::Read(global.temp_array.Xr_slab.data(), plan, file_name, dataset_name);
+		}
 
 		fftk.To_pencil(global.temp_array.Xr_slab, global.temp_array.Xr);
 		fftk.Transpose(global.temp_array.Xr, A);
 
 	}
 	if (Ny == 1) {
+		global.temp_array.Xr = 0;
 		BasicIO::Read(global.temp_array.Xr.data(), plan, file_name, dataset_name);
 		fftk.Transpose(global.temp_array.Xr(Range::all(),0,Range::all()), A(Range::all(),0,Range::all()));
 	}
@@ -278,12 +281,15 @@ int FFF_PENCIL::Read(Array<Complex,3> A, h5::Plan plan, string file_name, string
 int FFF_PENCIL::Read(Array<Real,3> Ar, h5::Plan plan, string file_name, string dataset_name)
 {
 	if (Ny > 1) {
-		if (my_z_pcoord == 0)  
+		if (my_z_pcoord == 0) {
+			global.temp_array.Xr_slab = 0;
 			BasicIO::Read(global.temp_array.Xr_slab.data(), plan, file_name, dataset_name);
+		}
 
 		fftk.To_pencil(global.temp_array.Xr_slab, Ar);
 	}
 	if (Ny == 1) {
+		Ar = 0;
 		BasicIO::Read(Ar.data(), plan, file_name, dataset_name);
 	}
 	return 0;
