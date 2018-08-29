@@ -511,18 +511,30 @@ inline int FFF_PENCIL::Max_radius_inside()
 	int ans = 1;
 	Real Kmag;
 	
-	if	(global.field.waveno_switch)	{
-		Kmag = min( (Nx/2)*kfactor[1], (Ny/2)*kfactor[2]);
-		Kmag = min(Kmag, (Nz/2)*kfactor[3]); 
+	if (Ny>1) {
+		if	(global.field.waveno_switch)	{
+			Kmag = min( (Nx/2)*kfactor[1], (Ny/2)*kfactor[2]);
+			Kmag = min(Kmag, (Nz/2)*kfactor[3]); 
 
-		ans = ((int) Kmag);
+			ans = ((int) Kmag);
+		}
+		
+		else  {
+			ans = min(Nx/2, Ny/2);
+			ans = min(ans, Nz/2);
+		}
 	}
-	
-	else  {
-		ans = min(Nx/2, Ny/2);
-		ans = min(ans, Nz/2);
+	else {
+		if	(global.field.waveno_switch)	{
+			Kmag = min( (Nx/2)*kfactor[1], (Nz/2)*kfactor[3]); 
+
+			ans = ((int) Kmag);
+		}
+		
+		else  {
+			ans = min(Nx/2, Nz/2);
+		}
 	}
-	
 	return ans;
 }
 

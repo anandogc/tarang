@@ -125,20 +125,6 @@ void FORCE::Compute_force_Carati_scheme_energy_supply(FluidVF& U, bool global_al
             if (denr > MYEPS) {
                 alpha_k_shell(i) = (U.energy_supply_spectrum(i)*total_ksqrEk_in_force_shell - U.helicity_supply_spectrum(i)*total_Hk_in_force_shell)/(2*denr);
                 beta_k_shell(i) = (U.helicity_supply_spectrum(i)*total_Ek_in_force_shell - U.energy_supply_spectrum(i)*total_Hk_in_force_shell)/(2*denr);
-            
-
-             //if (i==5){
-             //   cout<< "my_id = "<< my_id <<", i = " <<i<< ", time = "<<global.time.now <<", alpha k = " << alpha_k_shell(i) << endl;
-             //   cout<< "my_id = "<< my_id <<", i = " <<i<< ", time = "<<global.time.now <<", beta k = " << beta_k_shell(i) << endl;
-             //   
-             //   cout<< "my_id = "<< my_id <<", i = " <<i<< ", time = "<<global.time.now <<", Epsilon_E = " << U.energy_supply_spectrum(i) <<endl;
-             //   cout<< "my_id = "<< my_id <<", i = " <<i<< ", time = "<<global.time.now <<", Wf = " << total_ksqrEk_in_force_shell << endl;
-             //   cout<< "my_id = "<< my_id <<", i = " <<i<< ", time = "<<global.time.now <<", Hf = " << total_Hk_in_force_shell << endl;
-             //   
-             //   cout<< "my_id = "<< my_id <<", i = " <<i<< ", time = "<<global.time.now <<", Epsilon_H = " << U.helicity_supply_spectrum(i) << endl;
-             //   cout<< "my_id = "<< my_id <<", i = " <<i<< ", time = "<<global.time.now <<", E_F = " << total_Ek_in_force_shell << endl;
-             //   }
-
 
             }
 

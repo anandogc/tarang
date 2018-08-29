@@ -76,6 +76,11 @@ public:
 		bool force_switch,
 		string field_name
 	);
+	
+	FluidSF
+	(
+		string field_name
+	);
  
 	void Inverse_transform();
 	void Forward_transform();

@@ -114,6 +114,15 @@ Global::Global()
 	basis_table["FFF"]["FFF"]["VxVy"]="FFF";
 	basis_table["FFF"]["FFF"]["VxVz"]="FFF";
 	basis_table["FFF"]["FFF"]["VyVz"]="FFF";
+
+	basis_table["FFF"]["F0F"]["Vx"]  ="F0F";
+	basis_table["FFF"]["F0F"]["Vy"]  ="F0F";
+	basis_table["FFF"]["F0F"]["Vz"]  ="F0F";
+	basis_table["FFF"]["F0F"]["div"] ="F0F";
+	basis_table["FFF"]["F0F"]["Vi2"] ="F0F";
+	basis_table["FFF"]["F0F"]["VxVy"]="F0F";
+	basis_table["FFF"]["F0F"]["VxVz"]="F0F";
+	basis_table["FFF"]["F0F"]["VyVz"]="F0F";
 	
 	// ChFF: Chebyshev basis
 	basis_table["ChFF"]["ChFF"]["Vx"]  ="ChFF";
