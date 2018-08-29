@@ -57,6 +57,9 @@ public:
 	//!  Force \f$ F_x(local_{N1}, N_2, N_3/2+1) \f$.
 	Array<Complex,3> Force;	
 	bool force_switch;
+    
+    Array<Real,1> IC_energy_spectrum;
+    Array<Real,1> energy_supply_spectrum;
 	
 public:
 
@@ -71,6 +74,11 @@ public:
 		Real hyper_diffusion_coefficient, 
 		int hyper_diffusion_exponent,
 		bool force_switch,
+		string field_name
+	);
+	
+	FluidSF
+	(
 		string field_name
 	);
  

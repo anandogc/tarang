@@ -158,7 +158,7 @@ void SSF_PENCIL::Zderiv(Array<Complex,3> A, Array<Complex,3> B)
 	Real Kz;
 	
 	for (int lz=0; lz<maxlz; lz++) {
-		Kz = Get_ky(lz)*kfactor[3];
+		Kz = Get_kz(lz)*kfactor[3];
 		
 		B(Range::all(),Range::all(),lz) = Complex(0, Kz)*(A(Range::all(),Range::all(),lz));	
 	}   
@@ -169,7 +169,7 @@ void SSF_PENCIL::Add_Zderiv(Array<Complex,3> A, Array<Complex,3> B)
 	Real Kz;
 	
 	for (int lz=0; lz<maxlz; lz++) {
-		Kz = Get_ky(lz)*kfactor[3];
+		Kz = Get_kz(lz)*kfactor[3];
 		
 		B(Range::all(),Range::all(),lz) += Complex(0, Kz)*(A(Range::all(),Range::all(),lz));
 	}

@@ -67,6 +67,7 @@ int main(int argc, char** argv)
 
 	global.Parse(argc, argv);
 	global.Read();
+    global.Read_IC_energy_supply_arrays();
 
 	global.Process_basic_vars();
 	
@@ -86,6 +87,7 @@ int main(int argc, char** argv)
 	} */
 /*    else if (global.program.basis_type == "CFFF"){
 	}*/
+    
 	
 	if (universal == NULL){
 			if(master) cerr << "program.basis_type must be one of FFF, SFF, SSF, SSS."<< endl;
@@ -96,7 +98,8 @@ int main(int argc, char** argv)
 
 	global.Print();
 
-	
+    universal->Compute_modes_in_shell_array();
+    
 	Correlation::Initialize();
 	
 	time_t start;

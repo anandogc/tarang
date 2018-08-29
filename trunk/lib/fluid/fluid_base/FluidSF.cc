@@ -46,6 +46,24 @@
    
 **********************************************************************************************/
 
+
+FluidSF::FluidSF
+(
+	string field_name
+):csf(field_name), rsf(field_name)
+{			
+
+    nlin.resize(shape_complex_array);
+    IC_energy_spectrum.resize(global.spectrum.shell.no_shells);
+	
+    if (force_switch) {
+        Force.resize(shape_complex_array);
+        energy_supply_spectrum.resize(global.spectrum.shell.no_shells);
+    }
+}
+
+
+
 FluidSF::FluidSF
 (
 	Real diffusion_coefficient, 
@@ -66,9 +84,12 @@ FluidSF::FluidSF
 	this->force_switch = force_switch;
     
     nlin.resize(shape_complex_array);
+    IC_energy_spectrum.resize(global.spectrum.shell.no_shells);
 	
-	if (force_switch)
+    if (force_switch) {
         Force.resize(shape_complex_array);
+        energy_supply_spectrum.resize(global.spectrum.shell.no_shells);
+    }
 }
 
 

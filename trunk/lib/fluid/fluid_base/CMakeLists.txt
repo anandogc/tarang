@@ -32,7 +32,7 @@ ADD_LIBRARY(fluid_base
 	MHD
 
     io/FluidIO.cc
-    io/input/ic_amp_phase.cc
+    #io/input/ic_amp_phase.cc
     io/input/ic_model.cc
     io/input/init_cond_ABC.cc
     io/input/init_cond_dynamo_6mode.cc
@@ -45,6 +45,7 @@ ADD_LIBRARY(fluid_base
     io/input/init_cond_TG.cc
     io/input/init_cond_channel.cc
     io/input/init_cond_vortex.cc
+    io/input/init_cond_user_defined.cc
     io/output/output_energy.cc
     io/output/output_energy_real.cc
     io/output/output_field.cc
@@ -55,7 +56,7 @@ ADD_LIBRARY(fluid_base
     force/compute_force_Coriolis.cc
     force/compute_force_decay.cc
     force/compute_force_dynamo_6mode.cc
-    force/compute_force_ek_hk.cc
+    force/compute_force_Carati.cc
     force/compute_force_LM.cc
     force/compute_force_main.cc
     force/compute_force_modes.cc
@@ -66,5 +67,7 @@ ADD_LIBRARY(fluid_base
     force/force_alpha_beta.cc
     force/force_amp_phase.cc
     force/force_model.cc
+    force/compute_force_user_defined.cc
     force/FORCE.h
+    force/FORCE.cc
 )

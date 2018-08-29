@@ -186,6 +186,52 @@ Real CSF::Modal_energy(int i1, int i2, int i3)
 	return universal->Modal_energy(i1, i2, i3, F);	
 }
 
+//******************************************************************************
+/** @brief Put a scalar at (lx,ly,lz) given the amp and phase V_c1 (Craya-Herring)
+ *  For 2D
+ *
+ *  @param lx, lz  (ly=0): location where the V is to be assigned.
+ *	@param amp		Amplitude of the vector V_c1 (Craya-Herring).
+ *	@param phase Phase of the vector V_c1 (Craya-Herring)
+ *  @param add_flag: if yes,it adds the vector to existing V, otherwise assigns V at (lx,0,lz)
+ *
+ *  @detail If k=(0,0,0), set Force=(0,0,0)
+ *  @detail For 2D, (xz) plane of the code is to be treaed as (x,y) of Craya-Herring decomposition.  For 2D, the anisotropy direction is ignored, and Vx = V_c1 sin(phi), Vz= -V_c1 cos(phi).
+ *  @detail: (0,0,0) assigned before...while calling Init_cond_energy_helicity_spectrum()
+ */
+
+void CSF::Put_or_add_vector(int lx, int ly, int lz,  Real amp, Real phase, bool add_flag)
+{
+    Real Glocal_real;
+    Complex Glocal_complex;
+    
+    Complex G_Four = amp * exp(I * phase);
+    
+    if (basis_type == "FFF" || basis_type == "FFFW") {
+        Glocal_complex = G_Four;
+        if (!add_flag)
+            universal->Assign_local_spectral_field(lx, ly, lz, F, Glocal_complex);
+        else
+           universal->Add_local_spectral_field(lx, ly, lz, F, Glocal_complex);
+    }
+    
+    else if (basis_type == "SSS") {
+        Convert_from_Fourier_space(G_Four, Glocal_real);
+        if (!add_flag)
+            universal->Assign_local_spectral_field(lx, ly, lz, F, Glocal_real);
+        else
+            universal->Add_local_spectral_field(lx, ly, lz, F, Glocal_real);
+    }
+    
+    else {
+        Convert_from_Fourier_space(G_Four, Glocal_complex);
+        if (!add_flag)
+            universal->Assign_local_spectral_field(lx, ly, lz, F, Glocal_complex);
+        else
+            universal->Add_local_spectral_field(lx, ly, lz, F, Glocal_complex);
+    }
+}
+
 
 
 /**********************************************************************************************

@@ -55,7 +55,7 @@
  */
 void FORCE::Const_energy_supply_alpha_beta(FluidVF& U, int lx, int ly, int lz, Real alpha, Real beta, bool add_flag)
 {
-	if (basis_type == "SSS") { // Hk =0
+	if ((basis_type == "SSS") || ((Ny == 1) && global.program.two_dimension)) { // SSS basis or 2D 2C Hk =0
 		TinyVector<Real,3> localV_real, localForce_real;
 		
 		localV_real = real(universal->Get_local_spectral_field(lx, ly, lz, U.cvf.V1, U.cvf.V2, U.cvf.V3));
@@ -69,6 +69,7 @@ void FORCE::Const_energy_supply_alpha_beta(FluidVF& U, int lx, int ly, int lz, R
 		
 	else {
 		static int index=0;
+		
 		TinyVector<Complex,3> localV, localForce, vorticity;
 		
 		localV = universal->Get_local_spectral_field(lx, ly, lz, U.cvf.V1, U.cvf.V2, U.cvf.V3);

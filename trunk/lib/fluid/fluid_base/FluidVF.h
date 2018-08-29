@@ -93,6 +93,11 @@ public:
 	//!  Force along z \f$ F_x(local_{N1}, N_2, N_3/2+1) \f$.
 	Array<Complex,3> Force3;
 	
+    Array<Real,1> IC_energy_spectrum, IC_helicity_spectrum;
+    Array<Real,1> IC_crosshelicity_spectrum; // for MHD; Put in W
+    Array<Real,1> energy_supply_spectrum, helicity_supply_spectrum;
+    Array<Real,1> crosshelicity_supply_spectrum; // for MHD; Put in U
+
 	
 	//! Dissipation coefficient appearing before laplacian \f$ \nu \f$.
 	Real		dissipation_coefficient;

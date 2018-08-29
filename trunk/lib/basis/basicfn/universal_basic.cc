@@ -101,6 +101,47 @@ int Universal::Get_number_modes_in_shell(Real inner_radius, Real outer_radius)
 
 }
 
+void Universal::Compute_modes_in_shell_array()
+{
+    
+    int kx_max, ky_max, kz_max;
+    
+    kx_max = Nx/2;
+    
+    if (Ny > 1)
+        ky_max = Ny/2;
+    else
+        ky_max = 0;
+    
+    kz_max = Nz/2;
+    
+    Real  Kmag;
+    int index;
+    
+    global.spectrum.shell.modes_in_shell = 0;
+    if (Ny>1){
+    	for (int kx = -kx_max+1; kx <= kx_max; kx++)
+    	    for (int ky = -ky_max+1; ky <= ky_max; ky++)
+    	        for (int kz = -kz_max+1; kz <= kz_max; kz++) {
+    	            Kmag = sqrt(pow2(kx*kfactor[1]) + pow2(ky*kfactor[2]) + pow2(kz*kfactor[3]));
+    	    
+    	            index = (int) ceil(Kmag);
+    	        
+    	            global.spectrum.shell.modes_in_shell(index) += 1;
+    	        }
+    }
+    else{
+    	for (int kx = -kx_max+1; kx <= kx_max; kx++)
+    	        for (int kz = -kz_max+1; kz <= kz_max; kz++) {
+    	            Kmag = sqrt(pow2(kx*kfactor[1]) + pow2(kz*kfactor[3]));
+    	    
+    	            index = (int) ceil(Kmag);
+    	        
+    	            global.spectrum.shell.modes_in_shell(index) += 1;
+    	        }
+    }
+}	
+
 //*********************************************************************************************
 
 void Universal::Print_large_Fourier_elements(Array<Complex,3> A, string array_name)

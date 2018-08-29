@@ -74,7 +74,8 @@ void FluidIO::Read_init_cond(FluidVF& U)
             
         case (420) : Init_cond_channel_flow(U); break;
             
-            
+        case (501) : Init_cond_user_defined1(U); break;
+        case (502) : Init_cond_user_defined2(U); break;
 	}
 	
 	if (master)
@@ -124,6 +125,8 @@ void FluidIO::Read_init_cond(FluidVF& U, FluidSF& T)
 		// initialize For Rayleigh Taylor instability.
             
         case (400): Init_cond_vortex(U, T); break;
+        case (501) : Init_cond_user_defined1(U, T); break;
+        case (502) : Init_cond_user_defined2(U, T); break;
 	}
 	
 	if (master)
@@ -216,6 +219,9 @@ void FluidIO::Read_init_cond(FluidVF& U, FluidVF& W)
 		// Full velocity field for a given Re, then introduce random B field in a band
             
         case (400): Init_cond_vortex(U, W); break;
+            
+        case (501) : Init_cond_user_defined1(U, W); break;
+        case (502) : Init_cond_user_defined2(U, W); break;
 	}
 	
 	if (global.mpi.master)

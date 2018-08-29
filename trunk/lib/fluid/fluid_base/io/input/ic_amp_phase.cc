@@ -51,6 +51,7 @@ extern Uniform<Real> SPECrand;
  *
  */
 
+
 void FluidIO::Put_vector_amp_phase_comp_conj(FluidVF U, int lx, int ly, int lz,  Real amp, Real phase1, Real phase2, Real phase3)
 {
 	Complex uperp1, uperp2;
@@ -144,71 +145,70 @@ void FluidIO::Put_vector_amp_phase_comp_conj_helicity(FluidVF U, int lx, int ly,
   TinyVector<Complex,3> VFour, Vlocal_complex;
   TinyVector<Real,3> Vlocal_real;
   
-  if (Ny >1) {
-    u_plus = (sqrt(abs((ek + hk_by_k) * 0.5))) * exp(I*phase_plus);
-    u_minus = (sqrt(abs((ek - hk_by_k) * 0.5))) * exp(I*phase_minus);
-    universal->Helical_to_Craya(u_plus,u_minus,u1,u2);
-  }
-  
-  else {
-    cout<<"Helicity 2D yet to be implemented"<<endl;
-    /*uperp1 = 0.0;
-    uperp2 = amp * exp(I * phase2);
-    
-    theta = universal->AnisKvect_polar_angle(lx, ly, lz);
-    int kx = universal->Get_kx(lx);
-    phi	  = (kx >=0) ? 0 : M_PI;
-    // phi = 0 or pi depending i1>0 or i1 < 0.*/
-  }
-  
-  kkmag  = universal->Kmagnitude(lx, ly, lz);
-  kkperp = universal->AnisKperp(lx, ly, lz);
-  
-  if (kkmag > MYEPS) {
-    if ( kkperp > MYEPS) {
-      universal->Craya_to_cartesian(lx,ly,lz,u1,u2,vpll,vh1,vh2);
+    if (Ny >1) {
+        u_plus = (sqrt(abs((ek + hk_by_k) * 0.5))) * exp(I*phase_plus);
+        u_minus = (sqrt(abs((ek - hk_by_k) * 0.5))) * exp(I*phase_minus);
+        universal->Helical_to_Craya(u_plus,u_minus,u1,u2);
     }
     
-    else {	// k along pll axis.  V on the perp plane.
-      vpll = 0.0;
-      vh1 = u2;
-      vh2 = -u1;
+    else {
+        cout<<"Helicity 2D yet to be implemented"<<endl;
+        /*uperp1 = 0.0;
+         uperp2 = amp * exp(I * phase2);
+         
+         theta = universal->AnisKvect_polar_angle(lx, ly, lz);
+         int kx = universal->Get_kx(lx);
+         phi	  = (kx >=0) ? 0 : M_PI;
+         // phi = 0 or pi depending i1>0 or i1 < 0.*/
     }
-  }
-  
-  else {
-    if (my_id == master_id) { // origin lies in the master node
-      U.cvf.V1(ly,lz,lx) = 0;
-      U.cvf.V2(ly,lz,lx) = 0;
-      U.cvf.V3(ly,lz,lx) = 0;
-      return;
+    
+    kkmag  = universal->Kmagnitude(lx, ly, lz);
+    kkperp = universal->AnisKperp(lx, ly, lz);
+    
+    if (kkmag > MYEPS) {
+        if ( kkperp > MYEPS) {
+            universal->Craya_to_cartesian(lx,ly,lz,u1,u2,vpll,vh1,vh2);
+        }
+        
+        else {	// k along pll axis.  V on the perp plane.
+            vpll = 0.0;
+            vh1 = u2;
+            vh2 = -u1;
+        }
     }
-  }
-  
-  if (global.field.anisotropy_dirn == 1)
-    VFour = vpll, vh1, vh2;
-		//VFour = vpll, vh2, vh1; //Patch for 2D
-  
-  else if (global.field.anisotropy_dirn == 2)
-    VFour = vh2, vpll, vh1;
-  
-  else if (global.field.anisotropy_dirn == 3)
-    VFour = vh1, vh2, vpll;
-  
-  if (basis_type == "FFF" || basis_type == "FFFW") {
-    Vlocal_complex = VFour;
-    universal->Assign_local_spectral_field(lx, ly, lz, U.cvf.V1, U.cvf.V2, U.cvf.V3, Vlocal_complex);
-  }
-  
-  else if (basis_type == "SSS") {
-    Convert_from_Fourier_space(VFour, Vlocal_real);
-    universal->Assign_local_spectral_field(lx, ly, lz, U.cvf.V1, U.cvf.V2, U.cvf.V3, Vlocal_real);
-  }
-  
-  else {
-    Convert_from_Fourier_space(VFour, Vlocal_complex);
-    universal->Assign_local_spectral_field(lx, ly, lz, U.cvf.V1, U.cvf.V2, U.cvf.V3, Vlocal_complex);
-  }
+    else {
+        if (my_id == master_id) { // origin lies in the master node
+            U.cvf.V1(ly,lz,lx) = 0;
+            U.cvf.V2(ly,lz,lx) = 0;
+            U.cvf.V3(ly,lz,lx) = 0;
+            return;
+        }
+    }
+    
+    if (global.field.anisotropy_dirn == 1)
+        VFour = vpll, vh1, vh2;
+    //VFour = vpll, vh2, vh1; //Patch for 2D
+    
+    else if (global.field.anisotropy_dirn == 2)
+        VFour = vh2, vpll, vh1;
+    
+    else if (global.field.anisotropy_dirn == 3)
+        VFour = vh1, vh2, vpll;
+    
+    if (basis_type == "FFF" || basis_type == "FFFW") {
+        Vlocal_complex = VFour;
+        universal->Assign_local_spectral_field(lx, ly, lz, U.cvf.V1, U.cvf.V2, U.cvf.V3, Vlocal_complex);
+    }
+    
+    else if (basis_type == "SSS") {
+        Convert_from_Fourier_space(VFour, Vlocal_real);
+        universal->Assign_local_spectral_field(lx, ly, lz, U.cvf.V1, U.cvf.V2, U.cvf.V3, Vlocal_real);
+    }
+    
+    else {
+        Convert_from_Fourier_space(VFour, Vlocal_complex);
+        universal->Assign_local_spectral_field(lx, ly, lz, U.cvf.V1, U.cvf.V2, U.cvf.V3, Vlocal_complex);
+    }
 }
 
 

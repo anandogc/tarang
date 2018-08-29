@@ -161,8 +161,9 @@ public:
 	/// Compute entropy of F.
 	void Compute_entropy();
 	
-	
-	//*****************************************************************************************	
+	//*****************************************************************************************
+    
+    void Put_or_add_vector(int lx, int ly, int lz,  Real amp, Real phase, bool add_flag);
 	
 	/// 3D: Return modal energy for grid index (i1,i2,i3).
 	Real Modal_energy(int i1, int i2, int i3);

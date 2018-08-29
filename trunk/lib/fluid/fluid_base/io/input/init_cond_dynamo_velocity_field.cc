@@ -56,10 +56,10 @@ void FluidIO::Init_cond_dynamo_full_velocity_field(FluidVF& U, FluidVF& W)
 {
 	Init_cond_complex_field(U);  // Read the velocity field..
 	
-// Init_cond_double_para(1,2,3) = totalEb,	kkmin, kkmax
-// Distribute totalEb among the modes in 
+    Init_cond_energy_helicity_spectrum_k_ne0(W);
+    // Fill B field with random vars given Eb spectrum and helicity
 	
-	Real totalEb = global.io.double_para(0);
+/*	Real totalEb = global.io.double_para(0);
 	Real Kmin = global.io.double_para(1);
 	Real Kmax = global.io.double_para(2);
 	
@@ -84,10 +84,11 @@ void FluidIO::Init_cond_dynamo_full_velocity_field(FluidVF& U, FluidVF& W)
 					phase2W = 2*M_PI * SPECrand.random();
 					phase3W = 2*M_PI * SPECrand.random();
 					
-					Put_vector_amp_phase_comp_conj(W, lx, ly, lz, ampW, phase1W, phase2W, phase3W);
+					W.cvf.Put_or_add_vector(lx, ly, lz, ampW, phase1W, phase2W, phase3W);
 				}	
 			}
-	
+	*/
+    
 	if (my_id == master_id) 
 		W.cvf.V1(0,0,0) = W.cvf.V2(0,0,0) = W.cvf.V3(0,0,0) = 0.0;
 	

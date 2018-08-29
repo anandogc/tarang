@@ -761,9 +761,12 @@ void FluidIO::Output_global(FluidVF& U, FluidVF& W, FluidSF& T, FluidSF& C)
 void FluidIO::Output_cout(FluidVF &U)
 {	
 	U.cvf.Compute_total_energy();
-
+    
+    if (global.program.helicity_switch)
+        U.cvf.Compute_total_helicity();
+    
 	if (my_id == master_id)
-		cout  << global.time.now << " "  << U.cvf.total_energy << endl; 
+		cout  << global.time.now << " "  << U.cvf.total_energy <<  " " << U.cvf.total_helicity1 << endl;
 }
 
 
@@ -771,9 +774,12 @@ void FluidIO::Output_cout(FluidVF &U, FluidSF& T)
 {
 	U.cvf.Compute_total_energy();
 	T.csf.Compute_total_energy();
+    
+    if (global.program.helicity_switch)
+        U.cvf.Compute_total_helicity();
 	
 	if (my_id == master_id)
-		cout  << global.time.now << " "  << U.cvf.total_energy << " " << T.csf.total_energy  << endl;
+		cout  << global.time.now << " "  << U.cvf.total_energy << " " << T.csf.total_energy <<  " " << U.cvf.total_helicity1 << endl;
 }
 
 void FluidIO::Output_cout(FluidVF &U, FluidSF& T1, FluidSF& T2)
@@ -781,18 +787,26 @@ void FluidIO::Output_cout(FluidVF &U, FluidSF& T1, FluidSF& T2)
 	U.cvf.Compute_total_energy();
 	T1.csf.Compute_total_energy();
 	T2.csf.Compute_total_energy();
+    
+    if (global.program.helicity_switch)
+        U.cvf.Compute_total_helicity();
 	
 	if (my_id == master_id)
-		cout  << global.time.now << " "  << U.cvf.total_energy << " " << T1.csf.total_energy << " " << T2.csf.total_energy  << endl;
+		cout  << global.time.now << " "  << U.cvf.total_energy << " " << T1.csf.total_energy << " " << T2.csf.total_energy  <<  " " << U.cvf.total_helicity1 << endl;
 }
 
 void FluidIO::Output_cout(FluidVF &U, FluidVF &W)
 {
 	U.cvf.Compute_total_energy();
 	W.cvf.Compute_total_energy();
+    
+    if (global.program.helicity_switch) {
+        U.cvf.Compute_total_helicity();
+        W.cvf.Compute_total_helicity();
+    }
 	
 	if (my_id == master_id)
-		cout  << global.time.now << " "  << U.cvf.total_energy << " " << W.cvf.total_energy << endl;
+		cout  << global.time.now << " "  << U.cvf.total_energy << " " << W.cvf.total_energy <<  " " << U.cvf.total_helicity1 <<  " " << W.cvf.total_helicity2 << endl;
 }
 
 void FluidIO::Output_cout(FluidVF &U, FluidVF &W, FluidSF & T)		
@@ -800,10 +814,15 @@ void FluidIO::Output_cout(FluidVF &U, FluidVF &W, FluidSF & T)
 	U.cvf.Compute_total_energy();
 	W.cvf.Compute_total_energy();
 	T.csf.Compute_total_energy();
+    
+    if (global.program.helicity_switch) {
+        U.cvf.Compute_total_helicity();
+        W.cvf.Compute_total_helicity();
+    }
 	
 	if (my_id == master_id)
 		cout  << global.time.now << " "  << U.cvf.total_energy << " " << W.cvf.total_energy << " " 
-		<< T.csf.total_energy << endl;
+		<< T.csf.total_energy <<  " " << U.cvf.total_helicity1 <<  " " << W.cvf.total_helicity2 << endl;
 }
 
 
@@ -848,7 +867,40 @@ void FluidIO::Output_shell_spectrum(FluidVF& U)
 
 	}
 }  
+void FluidIO::Output_shell_spectrum_helical(FluidVF& U, FluidVF& helicalU)
+{
+	if (global.spectrum.shell.turnon) {
+		if (global.mpi.master) 
+			spectrum_file << "%% Time = " << global.time.now << "\n \n"; 	
 
+		
+		Correlation::Compute_shell_spectrum(U);
+		Print_array(spectrum_file, "Uek", Correlation::shell_ek1_force, Correlation::shell_ek2_force, Correlation::shell_ek3_force);
+		Print_array(spectrum_file, "UDk", Correlation::shell_dissk1, Correlation::shell_dissk2, Correlation::shell_dissk3);
+		
+		if (U.force_switch) {
+			  Correlation::Compute_force_shell_spectrum(U);
+			  Print_array(spectrum_file, "(Fv.v)(k)", Correlation::shell_ek1, Correlation::shell_ek2, Correlation::shell_ek3);
+			if (global.program.helicity_switch) {
+				Correlation::Compute_force_shell_spectrum_helical(U,helicalU);
+				Print_array(spectrum_file, "(Fv.w)(k)", Correlation::shell_ek1, Correlation::shell_ek2, Correlation::shell_ek3);
+			}
+		}
+		
+		if (global.program.helicity_switch) {
+			Correlation::Compute_shell_spectrum_helicity(U);
+			Print_array(spectrum_file, "hk", Correlation::shell_ek1, Correlation::shell_ek2, Correlation::shell_ek3);
+			Correlation::Compute_shell_spectrum_dissipation(U,helicalU);
+			Print_array(spectrum_file, "hDk", Correlation::shell_dissk1, Correlation::shell_dissk2, Correlation::shell_dissk3);
+		}
+		
+		if (master)
+			spectrum_file.flush();
+
+	}
+
+}  
+//shubhadeep
 //*********************************************************************************************  
 // scalar
 void FluidIO::Output_shell_spectrum(FluidVF& U, FluidSF& T)

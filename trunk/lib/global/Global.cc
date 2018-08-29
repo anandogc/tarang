@@ -114,6 +114,15 @@ Global::Global()
 	basis_table["FFF"]["FFF"]["VxVy"]="FFF";
 	basis_table["FFF"]["FFF"]["VxVz"]="FFF";
 	basis_table["FFF"]["FFF"]["VyVz"]="FFF";
+
+	basis_table["FFF"]["F0F"]["Vx"]  ="F0F";
+	basis_table["FFF"]["F0F"]["Vy"]  ="F0F";
+	basis_table["FFF"]["F0F"]["Vz"]  ="F0F";
+	basis_table["FFF"]["F0F"]["div"] ="F0F";
+	basis_table["FFF"]["F0F"]["Vi2"] ="F0F";
+	basis_table["FFF"]["F0F"]["VxVy"]="F0F";
+	basis_table["FFF"]["F0F"]["VxVz"]="F0F";
+	basis_table["FFF"]["F0F"]["VyVz"]="F0F";
 	
 	// ChFF: Chebyshev basis
 	basis_table["ChFF"]["ChFF"]["Vx"]  ="ChFF";
@@ -408,7 +417,33 @@ Global::Global()
     real_probe_packet_size_table["MHD_INCOMPRESS"]=10;
     real_probe_packet_size_table["KEPLERIAN"]=10;
 }
+// Shubhadeep & A. G. Chatterjee
+std::string ReplaceAll(std::string str, const std::string& from, const std::string& to) {
+    size_t start_pos = 0;
+    while((start_pos = str.find(from, start_pos)) != std::string::npos) {
+        str.replace(start_pos, from.length(), to);
+        start_pos += to.length(); // Handles case where 'to' is a substring of 'from'
+    }
+    return str;
+}
 
+
+void Global::force::Get_para(string format, ...) {
+    va_list args;
+    va_start(args, format);
+
+
+#ifdef REAL_DOUBLE
+    format = ReplaceAll(format,"%f", "%lf");
+#endif
+    
+    if (force_para_index >= parameters.size())
+    	force_para_index = 0;
+
+    vsscanf(parameters(force_para_index++).c_str(), format.c_str(), args);
+    va_end(args);
+}
+// Shubhadeep & A. G. Chatterjee
 void Global::io::Dump_buffer(ofstream& file, Array<Real,1> buffer, unsigned long& buffer_index, unsigned long packet_size){
 	unsigned long num_packets=buffer_index/packet_size;
 	unsigned long i=0;

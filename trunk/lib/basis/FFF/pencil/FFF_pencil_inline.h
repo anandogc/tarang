@@ -254,6 +254,7 @@ inline void FFF_PENCIL::Cartesian_to_Craya(int lx, int ly, int lz, Complex vpll,
  
 	U1 = (vh1*sin(phi) - vh2*cos(phi));
 	
+    // fabs(sin(theta)) > 0.1) is to avoid division by small number.  The code chooses better division.  0.1 is arbitrary.
 	if (fabs(sin(theta)) > 0.1) {	
 		U2 = - vpll/sin(theta);
 	}
@@ -511,18 +512,30 @@ inline int FFF_PENCIL::Max_radius_inside()
 	int ans = 1;
 	Real Kmag;
 	
-	if	(global.field.waveno_switch)	{
-		Kmag = min( (Nx/2)*kfactor[1], (Ny/2)*kfactor[2]);
-		Kmag = min(Kmag, (Nz/2)*kfactor[3]); 
+	if (Ny>1) {
+		if	(global.field.waveno_switch)	{
+			Kmag = min( (Nx/2)*kfactor[1], (Ny/2)*kfactor[2]);
+			Kmag = min(Kmag, (Nz/2)*kfactor[3]); 
 
-		ans = ((int) Kmag);
+			ans = ((int) Kmag);
+		}
+		
+		else  {
+			ans = min(Nx/2, Ny/2);
+			ans = min(ans, Nz/2);
+		}
 	}
-	
-	else  {
-		ans = min(Nx/2, Ny/2);
-		ans = min(ans, Nz/2);
+	else {
+		if	(global.field.waveno_switch)	{
+			Kmag = min( (Nx/2)*kfactor[1], (Nz/2)*kfactor[3]); 
+
+			ans = ((int) Kmag);
+		}
+		
+		else  {
+			ans = min(Nx/2, Nz/2);
+		}
 	}
-	
 	return ans;
 }
 
@@ -819,7 +832,7 @@ inline Real FFF_PENCIL::AnisKvect_polar_angle(int lx, int ly, int lz)
  * The range of angle is \f$ [0:\pi] \f$.
  *
  * \param  lx, ly, lz (3D)
- * \return \f$ \tan^{-1}(Ky}/Kx \f$.
+ * \return \f$ \cos^{-1}(K_{||1}/K_{\rho}) \f$.
  * \return \f$ \pi/2 \f$ if \f$ K_{||} = 0 \f$.
  */	
 inline Real FFF_PENCIL::AnisKvect_azimuthal_angle(int lx, int ly, int lz)

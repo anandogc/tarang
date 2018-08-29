@@ -93,6 +93,7 @@ void Global::Process_advanced_vars()
 	int max_cylinder_radius_inside = universal->Anis_max_Krho_radius_inside();
 
 	spectrum.shell.no_shells = min_radius_outside+1;
+    spectrum.shell.modes_in_shell.resize(spectrum.shell.no_shells);
 	
 	if (spectrum.ring.turnon) {
 		spectrum.ring.no_shells = max_radius_inside+1;

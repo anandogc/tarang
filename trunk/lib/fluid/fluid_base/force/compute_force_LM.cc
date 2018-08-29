@@ -104,7 +104,7 @@ void FORCE::Compute_force_Liquid_metal_const_energy_supply(FluidVF& U)
 	Real B0z = global.force.double_para(6);
 	
 	// first feed const eps force;
-	Force_energy_helicity_supply_or_level_basic_assign(U, "ENERGY_SUPPLY", inner_radius, outer_radius, energy_supply, epsh_by_k_epse); 
+//	Force_energy_helicity_supply_or_level_basic_assign(U, "ENERGY_SUPPLY", inner_radius, outer_radius, energy_supply, epsh_by_k_epse);
 	
 	// LM force
 	
@@ -119,7 +119,7 @@ void FORCE::Compute_force_Liquid_metal(FluidVF& U, FluidSF& T)
 	Real B0y = global.force.double_para(1);
 	Real B0z = global.force.double_para(2);
 	
-	Compute_force_RBC_basic_assign(U, T);
+	Compute_force_RBC_basic(U, T);
 	
 	Compute_force_Liquid_metal_basic_add(U, B0x, B0y, B0z);
 }

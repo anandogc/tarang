@@ -34,7 +34,7 @@
  *
  * @bug  No known bugs
  */
-
+#include <fstream>
 #include "Global.h"
 #include <getopt.h>
 #include <sys/types.h>
@@ -190,7 +190,7 @@ void Global::Assign_if_input_provided(const YAML::Node& node, const  string para
 //*********************************************************************************************
 
 
-void Global::Parse(int argc, char** argv, bool parse_para)
+void Global::Parse(int argc, char** argv,bool parse_para)
 {
 	mpi.master=(mpi.my_id==mpi.master_id);
 	mpi.num_p_rows=1;
@@ -424,13 +424,15 @@ void Global::Read()
 	time.dt = time.dt_fixed;
 	
 	// force
+
 	para["force"]["U_switch"] >> force.U_switch;
 	Assign_if_input_provided(para["force"], "W_switch", force.W_switch, false);
 	Assign_if_input_provided(para["force"], "T_switch", force.T_switch, false);
 	Assign_if_input_provided(para["force"], "C_switch", force.C_switch, false);
 	
 	para["force"]["field_procedure"] >> force.field_procedure;
-	
+
+	para["force"]["parameters"] >> force.parameters;
 	para["force"]["int_para"] >> force.int_para;
 	para["force"]["double_para"] >> force.double_para;
 	para["force"]["string_para"] >> force.string_para;
@@ -816,3 +818,35 @@ void Global::Read()
 	}
 }
 
+//Shubhadeep
+void Global::Read_IC_energy_supply_arrays()
+{
+	char init[]="/in/initial.txt";
+	char forces[]="/in/forcing.txt";
+    ifstream initial,forcing;
+	initial.open((io.data_dir+init).c_str());
+	forcing.open((io.data_dir+forces).c_str());
+	if (program.kind=="FLUID_INCOMPRESS")
+	{
+		initial >> io.U_IC_energy_spectrum >> io.U_IC_helicity_spectrum;
+        
+		forcing >> force.U_energy_supply_spectrum >> force.U_helicity_supply_spectrum;
+	}
+	else if (program.kind=="MHD_INCOMPRESS")
+	{
+		initial >> io.U_IC_energy_spectrum >> io.U_IC_helicity_spectrum  >> io.W_IC_energy_spectrum >> io.W_IC_helicity_spectrum >> io.W_IC_crosshelicity_spectrum;
+        
+		forcing >> force.U_energy_supply_spectrum >> force.U_helicity_supply_spectrum >> force.W_energy_supply_spectrum >> force.W_helicity_supply_spectrum >> force.W_crosshelicity_supply_spectrum;
+	}
+	else if (program.kind=="RBC")
+	{
+		initial >> io.U_IC_energy_spectrum >> io.U_IC_helicity_spectrum >> io.T_IC_energy_spectrum;
+        
+		forcing >> force.U_energy_supply_spectrum >> force.U_helicity_supply_spectrum >> force.T_energy_supply_spectrum;
+	}	
+	else
+	{
+		cout<<"Not Implemented"<<endl;
+	}
+}
+//Shubhadeep

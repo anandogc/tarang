@@ -60,7 +60,7 @@ void Time_advance_incompress::Euler(FluidVF &U, FluidVF& W, Pressure &P, FORCE& 
 {
     global.time.previous = global.time.now;
     global.time.keplerian = global.time.now;
-    
+
     Compute_force_TO_rhs(U,W,P,Force);
     
 	Single_time_step(U, W, 1, 1, 1);
