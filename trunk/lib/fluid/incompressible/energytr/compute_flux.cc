@@ -516,38 +516,68 @@ void EnergyTr::Compute_magnetic_helicity_flux(FluidVF& U, FluidVF& W, FluidVF& h
 
 void EnergyTr::Compute_enstrophy_flux(FluidVF& U)
 {
-
+	
 	//Compute_flux(U);									
 	// flux_self = (U.grad U<). U>
-	FluidVF helicalU("helicalU");
+	if (Ny>1) {
+		FluidVF helicalU("helicalU");
 
-	// cout << "A" << endl;
+		universal->Compute_vorticity(U.cvf.V1, U.cvf.V2, U.cvf.V3, helicalU.cvf.V1, helicalU.cvf.V2, helicalU.cvf.V3, 0, universal->Max_radius_inside());
 
-	
-	universal->Compute_vorticity(U.cvf.V1, U.cvf.V2, U.cvf.V3, helicalU.cvf.V1, helicalU.cvf.V2, helicalU.cvf.V3, 0, universal->Max_radius_inside());
-
-
-  flux_VF_Win_Wout = 0.0;
-  flux_VF_Uin_Wout = 0.0;
-	// U< to helicalU>;  U< to helicalU<
-	for (int sphere_index = 1; sphere_index <= global.energy_transfer.flux.no_spheres; sphere_index++) {	
-		Fill_in_sphere(sphere_index, helicalU);
+		cout << "max abs U = " << max(abs(U.cvf.V1)) << " " << max(abs(U.cvf.V2)) << " " << max(abs(U.cvf.V3)) << endl;
+		cout << "max abs W = " << max(abs(helicalU.cvf.V1)) << " " << max(abs(helicalU.cvf.V2)) << " " << max(abs(helicalU.cvf.V3)) << endl;
 		
-		Nlin_incompress::Compute_nlin(U, Giver);
-		// U.nlin = U.grad helicalU<
+		flux_VF_Win_Wout = 0.0;
+		flux_VF_Uin_Wout = 0.0;
+		// U< to helicalU>;  U< to helicalU<
+		for (int sphere_index = 1; sphere_index <= global.energy_transfer.flux.no_spheres; sphere_index++) {	
 
-		flux_VF_Win_Wout(sphere_index) = -Prod_out_sphere_nlinV(sphere_index, U, helicalU);	
-		// (U.graad helicalU<). helicalU>
+			Fill_in_sphere(sphere_index, helicalU);
+			
+			Nlin_incompress::Compute_nlin(U, Giver);
+			// U.nlin = U.grad helicalU<
 
-		Fill_in_sphere(sphere_index, U);
 
-		Nlin_incompress::Compute_nlin(helicalU, Giver);												
-		// helicalU.nlin = helicalU.grad U<
+			flux_VF_Win_Wout(sphere_index) = -Prod_out_sphere_nlinV(sphere_index, U, helicalU);	
+			// (U.graad helicalU<). helicalU>
+
+			 Fill_in_sphere(sphere_index, U);
+
+			 Nlin_incompress::Compute_nlin(helicalU, Giver);												
+			//  helicalU.nlin = helicalU.grad U<
+		
+			 flux_VF_Uin_Wout(sphere_index) = Prod_out_sphere_nlinV(sphere_index, helicalU, helicalU);
+			// (helicalU.graad U<). helicalU>
+		  
+		
+		}
+	}
+	else {
 	
-		flux_VF_Uin_Wout(sphere_index) = Prod_out_sphere_nlinV(sphere_index, helicalU, helicalU);
-		// (helicalU.graad U<). helicalU>
-      
-	
+		flux_VF_Win_Wout = 0.0;
+		flux_VF_Uin_Wout = 0.0;
+		
+		FluidVF helicalU("helicalU");
+		FluidSF helicalUT("helicalUT");
+
+		universal->Compute_vorticity(U.cvf.V1, U.cvf.V2, U.cvf.V3, helicalU.cvf.V1, helicalU.cvf.V2, helicalU.cvf.V3, 0, universal->Max_radius_inside());
+		
+		helicalUT.csf.F =  helicalU.cvf.V2;
+		
+		// flux_self = (U.grad U<). U>	
+		for (int sphere_index = 1; sphere_index <= global.energy_transfer.flux.no_spheres; sphere_index++) {	
+
+			Fill_in_sphere(sphere_index, helicalUT);	
+						
+			Nlin_incompress::Compute_nlin_first_component(U, Giver);												
+			// U.nlin1 = U.grad helicalU<
+
+
+			flux_VF_Win_Wout(sphere_index) = -Prod_out_sphere_nlinT(sphere_index, U, helicalUT);	
+			// (U.graad helicalU<). helicalU>
+			
+			
+		}
 	}
 }
 
