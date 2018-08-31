@@ -54,6 +54,7 @@
                 
    
 #include "Time_advance.h"
+#include "EnergyTr.h"
 
 //********************************************************************************************* 
 void Time_advance_incompress::Euler(FluidVF& U, FluidSF& T, Pressure& P, FORCE& Force)
@@ -150,7 +151,38 @@ void Time_advance_incompress::RK4(FluidVF& U, FluidSF& T, Pressure& P, FORCE& Fo
 	
 	U.cvf.Copy_from(Vcopy);		
 	T.csf.Copy_from(Scopy);	// Copy back into V[i],T
-	
+
+
+       if (global.program.LES_switch && global.time.iter % 5 == 0) 
+	{
+	    static Real dissipation_coefficient_initial = U.dissipation_coefficient;
+	    static Real diffusion_coefficient_initial =  T.diffusion_coefficient;
+
+
+	    Real nu_star = 0.38;
+	    Real K_k = 1.6;
+	    Real K_delta =  (1.0/3.0)*(Nx*M_PI); // (1/3)*Nx
+	    Real k_radii = (15.0)*(M_PI);
+
+	     int k_index;
+
+	    // U.cvf.Compute_total_k2energy();
+	    // Real total_dissipation = U.dissipation_coefficient*U.cvf.total_k2energy;
+
+	    k_index = first(global.energy_transfer.flux.radii > k_radii);
+	    EnergyTr energyTr; 
+	     
+	    Real flux = energyTr.Compute_flux_les(k_index, U); 
+		MPI_Bcast(&flux, 1, MPI_Real, 0, MPI_COMM_WORLD); 
+		
+	    Real dissipation_coefficient_les = nu_star*sqrt(K_k)*pow(abs(flux),ONE/THREE)*pow(K_delta, -FOUR/THREE);
+	    U.dissipation_coefficient = dissipation_coefficient_initial + dissipation_coefficient_les;
+	    T.diffusion_coefficient = diffusion_coefficient_initial + (dissipation_coefficient_les);
+
+	}
+    
+                                         
+  
 	U.Mult_field_exp_ksqr_dt(1.0);  
 	T.Mult_field_exp_ksqr_dt(1.0);
 	

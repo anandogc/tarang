@@ -54,6 +54,7 @@
  */                
    
 #include "Time_advance.h"
+#include "EnergyTr.h"
 
 //*********************************************************************************************
  
@@ -134,6 +135,33 @@ void Time_advance_incompress::RK4(FluidVF& U, Pressure& P, FORCE& Force)
 	
 	// Final result
 	U.cvf.Copy_from(Vcopy);
+
+  if (global.program.LES_switch && global.time.iter % 5 == 0) {
+    static Real dissipation_coefficient_initial = U.dissipation_coefficient;
+
+    Real nu_star = 0.38;
+    Real K_k = 1.6;
+    Real K_delta = 21 ; // (1/3)*Nx
+
+    Real k_radii = 10;
+
+    int k_index;
+
+    // U.cvf.Compute_total_k2energy();
+    // Real total_dissipation = U.dissipation_coefficient*U.cvf.total_k2energy;
+
+    k_index = first(global.energy_transfer.flux.radii > k_radii);
+    EnergyTr energyTr; //
+    Real flux = energyTr.Compute_flux_les(k_index, U); 
+ MPI_Bcast(&flux, 1, MPI_Real, 0, MPI_COMM_WORLD); 
+
+
+    Real dissipation_coefficient_les = nu_star*sqrt(K_k)*pow(abs(flux),ONE/THREE)*pow(K_delta, -FOUR/THREE);
+    U.dissipation_coefficient = dissipation_coefficient_initial + dissipation_coefficient_les;
+    //cout << global.time.now << " " << flux << endl;
+   
+  }
+
 	U.Mult_field_exp_ksqr_dt(1.0);
 		
 	U.cvf.V1 = U.cvf.V1 + (tot_Vrhs.V1);
