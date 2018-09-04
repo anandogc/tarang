@@ -237,6 +237,7 @@ public:
 	EnergyTr();
 	
 	void Compute_flux(FluidVF &U);
+	Real Compute_flux_les(int sphere_index, FluidVF &U);
 	void Compute_flux(FluidVF& U, FluidSF& T);
 	void Compute_flux_scalar(FluidVF& U, FluidSF& T);
 	void Compute_flux_RBC(FluidVF& U, FluidSF& T);

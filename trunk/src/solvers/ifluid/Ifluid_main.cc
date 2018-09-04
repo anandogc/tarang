@@ -109,7 +109,7 @@ int Ifluid_main()
 			global.io.output_pressure_spectrum_done = false;
 			global.io.output_pressure_done = false;
 			
-			iter++; 
+			global.time.iter++; 
 			
 			time_advance_incompress.Time_advance_step(U, P, Force);
 			

@@ -215,6 +215,8 @@ public:
 		Real keplerian;
 		bool dt_computation_done;
 		
+		int iter;
+		
 		clock_t job_time_final;
 		void Print(int my_level);
 	} time;
