@@ -394,6 +394,7 @@ void Nlin_incompress::Compute_nlin_offdiag(FluidVF& U, PlainFluidVF& W)
 		universal->Add_Xderiv(global.temp_array.X, U.nlin3);	// N3 += D1(V1r*W3r)
 	}
 	
+	/*
 	// 2D...
 	// *****
 	else  {
@@ -409,7 +410,7 @@ void Nlin_incompress::Compute_nlin_offdiag(FluidVF& U, PlainFluidVF& W)
         universal->Forward_transform(W.rvf.V3r, global.temp_array.X);
 		
 		universal->Add_Xderiv(global.temp_array.X, U.nlin3);	//N3 += D1(V1r*W3r)
-	}
+	}*/
 }
 
 
@@ -489,7 +490,7 @@ void Nlin_incompress::Compute_nlin_helical(FluidVF& U, PlainFluidVF& W)
   
   // 2D...
   else {
-    cout<<"2D will be implemented latter. "<<endl;
+    if (master) cout<<"2D 'Compute_nlin_helical' will be implemented latter. "<<endl;
 
   }
 }

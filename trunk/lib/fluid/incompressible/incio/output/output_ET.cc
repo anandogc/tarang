@@ -56,22 +56,18 @@ void FluidIO_incompress::Output_flux(FluidVF& U, Pressure& P, FluidVF& helicalU)
 	Print_array(flux_file, "sum(Fv.v)", energyTr->sphere_force_x_field);
 	
 	if (global.energy_transfer.helicity_flux_switch) {
-		// if (Ny > 1) // 3D
-			// energyTr->Compute_kinetic_helicity_flux(U);
-			// energyTr->Compute_enstrophy_flux(U);
+		
+		if (Ny > 1) // 3D
+			energyTr->Compute_kinetic_helicity_flux(U, helicalU);
 		// else if (Ny==1)	// 2D
+		
 		energyTr->Compute_enstrophy_flux(U);
 		
 		Print_array(flux_file, "flux: W2W_enstrophy", energyTr->flux_VF_Win_Wout);
 		Print_array(flux_file, "flux: U2W_enstrophy", energyTr->flux_VF_Uin_Wout);
       
-        energyTr->Compute_kinetic_helicity_flux(U, helicalU);
-        Print_array(flux_file, "flux: kinetic_helicity", energyTr->flux_VF);
-        /*energyTr->Compute_kinetic_helicity_flux_old(U, helicalU);
-        Print_array(flux_file, "flux: U2W_helicity", energyTr->flux_VF_Uin_Wout);
-        Print_array(flux_file, "flux: W2U_helicity", energyTr->flux_VF_Win_Uout);
-        Print_array(flux_file, "flux: U2U_helicity", energyTr->flux_VF_Uin_Uout);*/
-
+        //energyTr->Compute_kinetic_helicity_flux(U, helicalU);
+        //Print_array(flux_file, "flux: kinetic_helicity", energyTr->flux_VF);
 	}
     
     
