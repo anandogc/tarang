@@ -286,7 +286,6 @@ void FluidIO_incompress::Output_shell_to_shell(FluidVF& U, Pressure& P, FluidVF&
 		energyTr->Compute_enstrophy_shell_tr(U, helicalU);
 		Print_array(shell_to_shell_file, "Shell: W2W_enstrophy", energyTr->shelltoshell_hk_helicalU_to_helicalU(ra1,ra2));
 		Print_array(shell_to_shell_file, "Shell: U2W_enstrophy", energyTr->shelltoshell_hk_U_to_helicalU(ra1,ra2));
-
     }
 	
     

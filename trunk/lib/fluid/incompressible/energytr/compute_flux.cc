@@ -57,11 +57,27 @@ void EnergyTr::Compute_flux(FluidVF &U)
 		Fill_in_sphere(sphere_index, U);	
 		
 		Nlin_incompress::Compute_nlin(U, Giver);
-			//	U.nlin = U.grad Giver<	
+		//	U.nlin = U.grad Giver<	
 		
 		flux_self(sphere_index) = -Prod_out_sphere_nlinV(sphere_index, U, U);	
 		// flux_self = -(U.grad U<). U> = U.nlin< . U>
 	} 
+}
+
+// Fluid LES
+Real EnergyTr::Compute_flux_les(int sphere_index, FluidVF &U)
+{
+
+	flux_self = 0.0;
+
+	Fill_in_sphere(sphere_index, U);
+
+
+	Nlin_incompress::Compute_nlin(U, Giver);
+			//	U.nlin = U.grad Giver<
+
+	return -Prod_out_sphere_nlinV(sphere_index, U, U);
+		// flux_self = -(U.grad U<). U> = U.nlin< . U>
 }
 
 

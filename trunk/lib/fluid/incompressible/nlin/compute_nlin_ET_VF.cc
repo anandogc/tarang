@@ -79,6 +79,7 @@ void Nlin_incompress::Compute_nlin(FluidVF& U, PlainFluidVF& W)
 	U.Inverse_transform();		// Vir = Inv_transform(Vi)
 	W.Inverse_transform();		// Wir = Inv_transform(Wi)
 								// Vi, Wi are unaffected in this operation.
+
 	
 	Compute_nlin_diag(U, W);
 	
