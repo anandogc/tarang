@@ -509,8 +509,6 @@ void EnergyTr::Compute_enstrophy_shell_tr(FluidVF& U, FluidVF& helicalU)
 			
 			Nlin_incompress::Compute_nlin_first_component(U, Giver);										
 			// U.nlin = U.grad omega
-			universal->Print_large_Fourier_elements(U.nlin1, "U.nlin1");
-			universal->Print_large_Fourier_elements(helicalUT.csf.F, "helicalUT.csf.F");
 
 			universal->Shell_mult_all(U.nlin1, helicalUT.csf.F, global.energy_transfer.shell_to_shell.radii, temp_shell_tr);
 

@@ -345,7 +345,7 @@ void CVF::Put_or_add_vector(int lx, int lz,  Real amp, Real phase, bool add_flag
     // k != (0,0,0) : PS:(0,0,0) assigned before...while calling Init_cond_energy_helicity_spectrum()
     Kmag  = universal->Kmagnitude(lx, 0, lz);
     if (Kmag > MYEPS) {
-        V1 = amp * exp(I*phase);
+        V_ch1 = amp * exp(I*phase);
         kx = universal->Get_kx(lx) * kfactor[1];
         kz = universal->Get_kz(lz) * kfactor[3];
         phi = Get_azimuthal_angle(kx, kz);
