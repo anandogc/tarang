@@ -281,7 +281,7 @@ int FFF_PENCIL::Write(Array<Complex,3> A, h5::Plan plan, string access_mode, str
 
 int FFF_PENCIL::Write(Array<Real,3> Ar, h5::Plan plan, string access_mode, string folder_name, string file_name, string dataset_name)
 {
-	BasicIO::Write(global.temp_array.Xr_slab.data(), plan, access_mode, folder_name, file_name, dataset_name);
+	BasicIO::Write(Ar.data(), plan, access_mode, folder_name, file_name, dataset_name);
 	return 0;
 }
 
