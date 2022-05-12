@@ -117,17 +117,17 @@ void FORCE::Setup_ABC_force_field(FluidVF& U, int k0, Real amp, Real A, Real B, 
 		// initialize
 
 		if (basis_type == "FFF" || basis_type == "FFFW") {
-			universal->Assign_spectral_field(0, k0, 0, U.Force1, Complex(amp*B/2, 0));
-			universal->Assign_spectral_field(0, -k0, 0, U.Force1, Complex(amp*B/2, 0));
-			universal->Assign_spectral_field(0, 0, k0, U.Force1, Complex(0, -amp*C));
+			universal->Add_spectral_field(0, k0, 0, U.Force1, Complex(amp*B/2, 0));
+			universal->Add_spectral_field(0, -k0, 0, U.Force1, Complex(amp*B/2, 0));
+			universal->Add_spectral_field(0, 0, k0, U.Force1, Complex(0, -amp*C));
 			
-			universal->Assign_spectral_field(k0, 0, 0, U.Force2, Complex(0, -amp*A/2));
-			universal->Assign_spectral_field(-k0, 0, 0, U.Force2, Complex(0, amp*A/2));
-			universal->Assign_spectral_field(0, 0, k0, U.Force2, Complex(amp*C, 0));
+			universal->Add_spectral_field(k0, 0, 0, U.Force2, Complex(0, -amp*A/2));
+			universal->Add_spectral_field(-k0, 0, 0, U.Force2, Complex(0, amp*A/2));
+			universal->Add_spectral_field(0, 0, k0, U.Force2, Complex(amp*C, 0));
 			
-			universal->Assign_spectral_field(k0, 0, 0, U.Force3, Complex(amp*A/2, 0));
-			universal->Assign_spectral_field(-k0, 0, 0, U.Force3, Complex(amp*A/2, 0));
-			universal->Assign_spectral_field(0, k0, 0, U.Force3, Complex(0, -amp*B));
+			universal->Add_spectral_field(k0, 0, 0, U.Force3, Complex(amp*A/2, 0));
+			universal->Add_spectral_field(-k0, 0, 0, U.Force3, Complex(amp*A/2, 0));
+			universal->Add_spectral_field(0, k0, 0, U.Force3, Complex(0, -amp*B));
 		}
 		
 		else {

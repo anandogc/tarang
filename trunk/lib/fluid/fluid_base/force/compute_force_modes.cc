@@ -63,15 +63,15 @@ void FORCE::Compute_force_given_modes(FluidVF& U)
 		int kx, ky, kz;	
 		Complex Fx_complex, Fy_complex, Fz_complex;
 		Real Fx_real, Fy_real, Fz_real;
-		
+		/*
 		(U.Force1) = 0.0; 
 		(U.Force2) = 0.0; 
-		(U.Force3) = 0.0;
+		(U.Force3) = 0.0;*/
 		
 		for (int mode = 0; mode < global.force.modes.number; mode++) {
-			kx = global.force.modes.coords(mode,1); 
-			ky = global.force.modes.coords(mode,2); 
-			kz = global.force.modes.coords(mode,3);
+			kx = global.force.modes.coords(mode,0); 
+			ky = global.force.modes.coords(mode,1); 
+			kz = global.force.modes.coords(mode,2);
 			
 			if (basis_type == "SSS") {
 				Fx_real = global.force.modes.field_array_real(mode,0); 
@@ -139,10 +139,10 @@ void FORCE::Compute_force_given_modes(FluidVF& U, FluidSF& T)
 		Complex Fx_complex, Fy_complex, Fz_complex, G_complex;
 		Real Fx_real, Fy_real, Fz_real, G_real;
 		
-		(U.Force1) = 0.0; 
-		(U.Force2) = 0.0; 
-		(U.Force3) = 0.0;
-		(T.Force) = 0.0;
+		// (U.Force1) = 0.0; 
+		// (U.Force2) = 0.0; 
+		// (U.Force3) = 0.0;
+		// (T.Force) = 0.0;
 		
 		for (int mode = 0; mode < global.force.modes.number; mode++) {
 			kx = global.force.modes.coords(mode,1); 
@@ -231,13 +231,14 @@ void FORCE::Compute_force_given_modes(FluidVF& U, FluidVF& W)
 		Real Fx_real, Fy_real, Fz_real;
 		Real FxW_real, FyW_real, FzW_real;
 		
+		/*
 		(U.Force1) = 0.0; 
 		(U.Force2) = 0.0; 
 		(U.Force3) = 0.0;
 		(W.Force1) = 0.0; 
 		(W.Force2) = 0.0; 
 		(W.Force3) = 0.0;
-		
+		*/
 		for (int mode = 0; mode < global.force.modes.number; mode++) {
 			kx = global.force.modes.coords(mode,1); 
 			ky = global.force.modes.coords(mode,2); 
@@ -338,6 +339,7 @@ void FORCE::Compute_force_given_modes(FluidVF& U, FluidVF& W, FluidSF& T)
 		Real Fx_real, Fy_real, Fz_real;
 		Real FxW_real, FyW_real, FzW_real, G_real;
 		
+		/*
 		(U.Force1) = 0.0; 
 		(U.Force2) = 0.0; 
 		(U.Force3) = 0.0;
@@ -345,6 +347,7 @@ void FORCE::Compute_force_given_modes(FluidVF& U, FluidVF& W, FluidSF& T)
 		(W.Force2) = 0.0; 
 		(W.Force3) = 0.0;
 		(T.Force) = 0.0;
+		*/
 		
 		for (int mode = 0; mode < global.force.modes.number; mode++) {
 			kx = global.force.modes.coords(mode,1); 

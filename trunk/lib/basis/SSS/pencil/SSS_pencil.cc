@@ -97,7 +97,7 @@ SSS_PENCIL::SSS_PENCIL()
 	}
 	
 	//global.mpi.num_p_hor is assigned in global via mpirun argument
-	fftk.Init("SSS", Nx, Ny, Nz, global.mpi.num_p_rows);
+	fftk.Init("SSS", Nx, Ny, Nz, global.mpi.num_p_rows, MPI_COMM_WORLD);
 	
 	global.field.shape_complex_array = fftk.Get_FA_shape();
 	global.field.shape_real_array = fftk.Get_RA_shape();

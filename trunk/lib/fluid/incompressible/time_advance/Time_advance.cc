@@ -55,7 +55,7 @@ void Time_advance_incompress::Time_advance_step(FluidVF& U, Pressure& P, FORCE& 
 		BDF1(U, P, Force);
 	
 	else if (global.program.integration_scheme == "Adam_Bashforth")
-		BDF1(U, P, Force);
+		Adam_Bashforth(U, P, Force);
     
     if (global.program.apply_strong_realitycond_alltime_switch == true)
         U.Satisfy_strong_reality_condition_field();
@@ -80,7 +80,7 @@ void Time_advance_incompress::Time_advance_step(FluidVF& U, FluidSF& T, Pressure
 		BDF1(U, T, P,Force);
 	
 	else if (global.program.integration_scheme == "Adam_Bashforth")
-		BDF1(U, T, P,Force);
+		Adam_Bashforth(U, T, P,Force);
     
     if (global.program.apply_strong_realitycond_alltime_switch == true) {
         U.Satisfy_strong_reality_condition_field();

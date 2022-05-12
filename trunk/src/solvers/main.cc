@@ -46,7 +46,7 @@ Universal *universal = NULL;
 
 Global global;
 
-FFTK fftk;
+FFTK::FFTK fftk;
 
 Uniform<Real> SPECrand;
 

@@ -539,9 +539,6 @@ void EnergyTr::Compute_enstrophy_flux(FluidVF& U)
 		FluidVF helicalU("helicalU");
 
 		universal->Compute_vorticity(U.cvf.V1, U.cvf.V2, U.cvf.V3, helicalU.cvf.V1, helicalU.cvf.V2, helicalU.cvf.V3, 0, universal->Max_radius_inside());
-
-		cout << "max abs U = " << max(abs(U.cvf.V1)) << " " << max(abs(U.cvf.V2)) << " " << max(abs(U.cvf.V3)) << endl;
-		cout << "max abs W = " << max(abs(helicalU.cvf.V1)) << " " << max(abs(helicalU.cvf.V2)) << " " << max(abs(helicalU.cvf.V3)) << endl;
 		
 		flux_VF_Win_Wout = 0.0;
 		flux_VF_Uin_Wout = 0.0;
