@@ -99,7 +99,7 @@ SSF_PENCIL::SSF_PENCIL()
 	
 	
 	//global.mpi.num_p_rows is set in global via mpirun argument
-	fftk.Init("SSF", Nx, Ny, Nz, global.mpi.num_p_rows);
+	fftk.Init("SSF", Nx, Ny, Nz, global.mpi.num_p_rows, MPI_COMM_WORLD);
 
 	global.field.shape_complex_array = fftk.Get_FA_shape();
 	global.field.shape_real_array = fftk.Get_RA_shape();

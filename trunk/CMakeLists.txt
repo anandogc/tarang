@@ -28,7 +28,7 @@
  # @author  M. K. Verma, A. G. Chatterjee
 
 
-PROJECT(TARANG CXX)
+PROJECT(TARANG CXX C)
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8.2)
 
 ######################
@@ -64,8 +64,8 @@ SET (LIBRARY_DIRS
 
 
 #Required libraries, One of FFTW_FLOAT_LIBS or FFTW_DOUBLE_LIBS is selected depending on REAL
-SET (FFTW_FLOAT_LIBS fftkf fftw3f_mpi fftw3f)
-SET (FFTW_DOUBLE_LIBS fftk fftw3_mpi fftw3)
+SET (FFTW_FLOAT_LIBS fftkf fftw3f)
+SET (FFTW_DOUBLE_LIBS fftk fftw3)
 SET (OTHER_LIBS blitz m hdf5 h5si dl yaml-cpp)
 
 

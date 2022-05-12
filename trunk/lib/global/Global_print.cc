@@ -169,7 +169,7 @@ void Global::force::Print(int my_level)
         <<'\n'<<Indent(my_level+1)<<"W_switch: "<<W_switch
         <<'\n'<<Indent(my_level+1)<<"T_switch: "<<T_switch
 		<<'\n'<<Indent(my_level+1)<<"C_switch: "<<C_switch
-        <<'\n'<<Indent(my_level+1)<<"field_procedure: "<<field_procedure
+        <<'\n'<<Indent(my_level+1)<<"field_procedure: "<< Print_linear_blitz_array<int>(field_procedure)
         <<'\n'<<Indent(my_level+1)<<"int_para : "<<Print_linear_blitz_array<int>(int_para)
         <<'\n'<<Indent(my_level+1)<<"double_para : "<<Print_linear_blitz_array<Real>(double_para)
         <<'\n'<<Indent(my_level+1)<<"string_para : "<<Print_linear_blitz_array<string>(string_para)

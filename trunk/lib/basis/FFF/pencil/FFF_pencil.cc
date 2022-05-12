@@ -88,7 +88,7 @@ FFF_PENCIL::FFF_PENCIL()
 	
 	//global.mpi.num_p_hor is set in global via mpirun argument
 
-	fftk.Init("FFF", Nx, Ny, Nz, global.mpi.num_p_rows);
+	fftk.Init("FFF", Nx, Ny, Nz, global.mpi.num_p_rows, MPI_COMM_WORLD);
 
 	global.field.shape_complex_array = fftk.Get_FA_shape();
 	global.field.shape_real_array = fftk.Get_RA_shape();

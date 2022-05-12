@@ -49,7 +49,7 @@
 
 /********************************************************************************************* */
 #include "fftk.h"
-extern FFTK fftk;
+extern FFTK::FFTK fftk;
 
 #include "universal.h"
 extern Universal *universal;
