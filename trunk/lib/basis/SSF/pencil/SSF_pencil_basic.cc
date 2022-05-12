@@ -257,7 +257,7 @@ int SSF_PENCIL::Read(Array<Real,3> Ar, h5::Plan plan, string file_name, string d
 
 int SSF_PENCIL::Write(Array<Complex,3> A, h5::Plan plan, string access_mode, string folder_name, string file_name, string dataset_name)
 {
-	BasicIO::Write(global.temp_array.Xr.data(), plan, access_mode, folder_name, file_name, dataset_name);
+	BasicIO::Write(A.data(), plan, access_mode, folder_name, file_name, dataset_name);
 	return 0;
 }
 
