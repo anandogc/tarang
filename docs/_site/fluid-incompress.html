@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="UTF-8">
+
+<!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Incompressible Fluid | tarang</title>
+<meta name="generator" content="Jekyll v3.9.2" />
+<meta property="og:title" content="Incompressible Fluid" />
+<meta property="og:locale" content="en_US" />
+<link rel="canonical" href="http://localhost:4000/fluid-incompress" />
+<meta property="og:url" content="http://localhost:4000/fluid-incompress" />
+<meta property="og:site_name" content="tarang" />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Incompressible Fluid" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebPage","headline":"Incompressible Fluid","url":"http://localhost:4000/fluid-incompress"}</script>
+<!-- End Jekyll SEO tag -->
+
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link rel="preload" href="https://fonts.googleapis.com/css?family=Open+Sans:400,700&display=swap" as="style" type="text/css" crossorigin>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#157878">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="stylesheet" href="/assets/css/style.css?v=f4f3290f4368c166439bbfa0bf26b0d42e8f24f9">
+    <!-- start custom head snippets, customize with your own _includes/head-custom.html file -->
+
+<!-- Setup Google Analytics -->
+
+
+
+<!-- You can set your favicon here -->
+<!-- link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" -->
+
+<!-- end custom head snippets -->
+
+  </head>
+  <body>
+    <a id="skip-to-content" href="#content">Skip to the content.</a>
+
+    <header class="page-header" role="banner">
+      <h1 class="project-name">Incompressible Fluid</h1>
+      <h2 class="project-tagline"></h2>
+      
+        <a href="https://github.com/anandogc/tarang" class="btn">View on GitHub</a>
+      
+      
+    </header>
+
+    <main id="content" class="main-content" role="main">
+      <head>
+  <!--KaTeX-->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css" integrity="sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X" crossorigin="anonymous" />
+  <script defer="" src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js" integrity="sha384-g7c+Jr9ZivxKLnZTDUhnkOnsh30B4H0rpLUpJ4jAIKs4fnJI+sEnkvrMWph2EDg4" crossorigin="anonymous"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/contrib/auto-render.min.js" integrity="sha384-mll67QQFJfxn0IYznZYonOWZ644AWYC+Pt2cHqMaRhXVrursRwvLnLaebdGIlYNa" crossorigin="anonymous"></script>
+  <script>
+      document.addEventListener("DOMContentLoaded", function() {
+          renderMathInElement(document.body, {
+              // ...options...
+          });
+      });
+  </script>
+</head>
+
+<h2 id="incompressible-fluid-solver">Incompressible Fluid Solver</h2>
+
+<p>This solves the Navier-Stokes equation for hydrodynamic turbulence in cube geometry.</p>
+
+<p>\[
+\begin{aligned}
+  \frac{\partial \bf u}{\partial t} + (\bf u \cdot \nabla)\bf u = &amp;- \nabla p  + \bf F + \nu \nabla^2 \bf u
+\end{aligned}
+\]</p>
+
+<p>where,<br />
+\(\bf u\) is the velocity field,<br />
+\(p\) is the pressure,<br />
+\(\bf F\) is the external Force,<br />
+\(\nu\) is the kinamatic viscocity.\</p>
+
+<p>program.kind: FLUID_INCOMPRESS</p>
+
+<h3 id="initial-conditions">Initial Conditions</h3>
+
+<h4 id="1-complex-field">1. Complex field</h4>
+<p>Reads from a complex array of size \(N_x \times N_y \times N_z/2+1\) stored in an HDF5 format.<br />
+\(u_x\) called as <code class="language-plaintext highlighter-rouge">V1</code> is stored in <code class="language-plaintext highlighter-rouge">U.V1.hdf5/U.V1</code><br />
+\(u_y\) called as <code class="language-plaintext highlighter-rouge">V2</code> is stored in <code class="language-plaintext highlighter-rouge">U.V1.hdf5/U.V2</code><br />
+\(u_z\) called as <code class="language-plaintext highlighter-rouge">V3</code> is stored in <code class="language-plaintext highlighter-rouge">U.V1.hdf5/U.V3</code></p>
+
+<h4 id="2-reduced-complex-field">2. Reduced complex field</h4>
+<p>Reads from a Complex array of lower grid resolution, file format is same as above.</p>
+
+<h4 id="3-real-field">3. Real field</h4>
+<p>Reads from real arrays of size \(N_x \times \y \times \N_z \).<br />
+<code class="language-plaintext highlighter-rouge">V1r</code> is stored in <code class="language-plaintext highlighter-rouge">U.V1r.h5/V1r</code><br />
+<code class="language-plaintext highlighter-rouge">V2r</code> is stored in <code class="language-plaintext highlighter-rouge">U.V2r.h5/V2r</code><br />
+<code class="language-plaintext highlighter-rouge">V3r</code> is stored in <code class="language-plaintext highlighter-rouge">U.V3r.h5/V3r</code></p>
+
+<h4 id="4-modes">4. Modes</h4>
+<p>Activates the given modes only</p>
+<table>
+	<thead>
+		<col />
+		<col pattern="\d+,\d+,\d+" />
+		<col pattern="(\d+,\d+)+" />
+	</thead>
+	<tbody>
+		<th>
+			<td></td>
+			<td>Mode</td>
+			<td>Amplitude</td>
+		</th>
+		<tr>
+			<td></td>
+			<td></td>
+			<td></td>
+		</tr>
+	</tbody>
+</table>
+
+<h4 id="5-energy-helicity-spectrum">5. Energy helicity spectrum</h4>
+
+<h4 id="6-taylor-green">6. Taylor Green</h4>
+
+<h4 id="7-abc">7. ABC</h4>
+
+<h4 id="8-non-helical-to-helical">8. Non helical to helical</h4>
+
+<h4 id="400-vortex">400. Vortex</h4>
+
+<h4 id="420-channel-flow">420. Channel flow</h4>
+
+<h4 id="501-user-defined1">501. User defined1</h4>
+<h4 id="502-user-defined2">502. User defined2</h4>
+
+<h3 id="forcing">Forcing</h3>
+<p>Following scenems are available:</p>
+<ol>
+  <li>decay</li>
+  <li>Carati_scheme</li>
+  <li>given_modes</li>
+  <li>Taylor Green</li>
+  <li>ABC</li>
+  <li>using_random_noise</li>
+  <li>Coriolis</li>
+  <li>Keplerian</li>
+  <li>Keplerian_SB</li>
+  <li>Liquid_metal</li>
+  <li>Kolmogorov_flow</li>
+  <li>Liquid_metal_const_energy_supply</li>
+  <li>Ekman_friction</li>
+  <li>Ekman_friction_const_energy_supply</li>
+  <li>pressure_grad</li>
+  <li>user_defined1</li>
+  <li>user_defined2</li>
+</ol>
+
+<h4 id="1-decay">1. Decay</h4>
+
+<p>No Forcing is applied</p>
+
+<p>field_procedure: 0</p>
+
+<h4 id="2-carati-scheme">2. Carati Scheme</h4>
+
+<h4 id="3-given-modes">3. Given modes</h4>
+<p>Only the given modes in the parameter file are exited.</p>
+
+<p>field_procedure: 3</p>
+
+<h4 id="4-taylor-green">4. Taylor Green</h4>
+
+<katex-block>
+
+\begin{align*}
+F_x &amp;= amp*sin(k_0 \cdot x)cos(k_0 \cdot y) cos(k_0 \cdot z)\\
+F_y &amp;= -amp*cos(k_0 \cdot x)sin(k_0 \cdot y) cos(k_0 \cdot z)\\
+F_z &amp;= 0
+\end{align*}
+
+</katex-block>
+
+<p>field_procedure: 4<br />
+parameters: ["\(k_0\ amp\)"]</p>
+
+<h4 id="5-abc">5. ABC</h4>
+
+<katex-block>
+
+\begin{align*}
+F_x &amp;= amp (B \cos(k_0 y) + C \sin(k_0 z))\\
+F_y &amp;= amp (A \sin(k_0 x) + C \cos(k_0 z))\\
+F_z &amp;= amp (A \cos(k_0 x) + C \cos(k_0 y))
+\end{align*}
+
+</katex-block>
+
+<p>field_procedure: 5<br />
+parameters: ["\(k_0\ A\ B\ C\ amp\)"]</p>
+
+<h4 id="6-random-noise">6. Random Noise</h4>
+
+<ul>
+  <li>Initially, a 1D energy spectrum is created using Pre.py, typically using Pope/Pow model.</li>
+  <li>A 3D loop is made on \(k_x\), \(k_y\) and \(k_z\), \(|K|\) is found for each mode,</li>
+  <li>it’s ceiling is taken to get the 1D energy spectrum index, such that \(k_{i-1} &lt; |K| \le k_i\),</li>
+  <li>to find the modal energy, the shell energy id divided by number of moded in the shell,</li>
+  <li>amplitude and phase are found in Craya-Herring basis then put to the Force array.</li>
+</ul>
+
+<p>The random seed is updated every random_interval in eddy turn over time units.</p>
+
+<katex-block>
+
+\begin{align*}
+Kmag &amp;= \sqrt{kx^2 + ky^2 + kz^2}\\
+index &amp;= ceil(Kmag)\\
+energy\_supply\_k &amp;= U.energy\_supply\_spectrum(index)/ global.spectrum.shell.modes\_in\_shell(index);\\
+amp\_plus &amp;= sqrt((energy\_supply\_k+helicity\_supply\_k/Kmag)/random\_interval);\\
+amp\_minus &amp;= sqrt((energy\_supply\_k-helicity\_supply\_k/Kmag)/random\_interval);\\
+phase\_plus &amp;= 2*M\_PI * rand\_struct.random();\\
+phase\_minus &amp;= 2*M\_PI * rand\_struct.random();
+\end{align*}
+
+</katex-block>
+
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Put_or_add_force_vector</span><span class="p">(</span><span class="n">U</span><span class="p">,</span> <span class="n">lx</span><span class="p">,</span> <span class="n">ly</span><span class="p">,</span> <span class="n">lz</span><span class="p">,</span> <span class="n">amp_plus</span><span class="p">,</span> <span class="n">amp_minus</span><span class="p">,</span> <span class="n">phase_plus</span><span class="p">,</span> <span class="n">phase_minus</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>field_procedure: 6<br />
+parameters: [inner_radius, outer_radius, random_interval]</p>
+
+<h4 id="7-coreolis-forcing">7. Coreolis Forcing</h4>
+
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">if</span> <span class="p">(</span><span class="n">abs</span><span class="p">(</span><span class="n">two_omega1</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">MYEPS</span><span class="p">){</span>
+	<span class="n">U</span><span class="p">.</span><span class="n">Force2</span> <span class="o">+=</span>  <span class="n">two_omega1</span><span class="o">*</span><span class="p">(</span><span class="n">U</span><span class="p">.</span><span class="n">cvf</span><span class="p">.</span><span class="n">V3</span><span class="p">);</span>
+	<span class="n">U</span><span class="p">.</span><span class="n">Force3</span> <span class="o">+=</span> <span class="o">-</span><span class="n">two_omega1</span><span class="o">*</span><span class="p">(</span><span class="n">U</span><span class="p">.</span><span class="n">cvf</span><span class="p">.</span><span class="n">V2</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="k">if</span><span class="p">(</span><span class="n">abs</span><span class="p">(</span><span class="n">two_omega2</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">MYEPS</span><span class="p">){</span>
+	<span class="n">U</span><span class="p">.</span><span class="n">Force1</span> <span class="o">+=</span> <span class="o">-</span><span class="n">two_omega2</span><span class="o">*</span><span class="p">(</span><span class="n">U</span><span class="p">.</span><span class="n">cvf</span><span class="p">.</span><span class="n">V3</span><span class="p">);</span>
+	<span class="n">U</span><span class="p">.</span><span class="n">Force3</span> <span class="o">+=</span> <span class="n">two_omega2</span><span class="o">*</span><span class="p">(</span><span class="n">U</span><span class="p">.</span><span class="n">cvf</span><span class="p">.</span><span class="n">V1</span><span class="p">);</span>
+
+<span class="p">}</span>
+<span class="k">if</span><span class="p">(</span><span class="n">abs</span><span class="p">(</span><span class="n">two_omega3</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">MYEPS</span><span class="p">){</span>
+	<span class="n">U</span><span class="p">.</span><span class="n">Force1</span> <span class="o">+=</span> <span class="n">two_omega3</span><span class="o">*</span><span class="p">(</span><span class="n">U</span><span class="p">.</span><span class="n">cvf</span><span class="p">.</span><span class="n">V2</span><span class="p">);</span>
+	<span class="n">U</span><span class="p">.</span><span class="n">Force2</span> <span class="o">+=</span> <span class="o">-</span><span class="n">two_omega3</span><span class="o">*</span><span class="p">(</span><span class="n">U</span><span class="p">.</span><span class="n">cvf</span><span class="p">.</span><span class="n">V1</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>field_procedure: 21<br />
+parameters: [\(\omega_1\), \(\omega_2\), \(\omega_3\)]<br />
+Enable: <input type="checkbox" class="force coreolis" /><br />
+\(\omega_1\) = <input type="text" match="\d+\.\d+" /><br />
+\(\omega_2\) = <input type="text" match="\d+\.\d+" /><br />
+\(\omega_3\) = <input type="text" match="\d+\.\d+" /></p>
+
+
+      <footer class="site-footer">
+        
+          <span class="site-footer-owner"><a href="https://github.com/anandogc/tarang">tarang</a> is maintained by <a href="https://github.com/anandogc">anandogc</a>.</span>
+        
+        <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a>.</span>
+      </footer>
+    </main>
+  </body>
+</html>

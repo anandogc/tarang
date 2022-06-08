@@ -1,37 +1,50 @@
-## Welcome to GitHub Pages
+---
+title: "Tarang"
+---
+{% include head.html %}
 
-You can use the [editor on GitHub](https://github.com/anandogc/tarang/edit/master/docs/index.md) to maintain and preview the content for your website in Markdown files.
+## Welcome to Tarang
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+Tarang is a pseudo-spectra fluid solver in a regular cube geometry. Basically is solves this Navier-Stokes equation.
 
-### Markdown
+\\[
+\begin{aligned}
+  \frac{\partial \bf u}{\partial t} + (\bf u \cdot \nabla)\bf u = &- \nabla p  + \bf F + \nu \nabla^2 \bf u
+\end{aligned}
+\\]
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+where,\
+\\(\bf u\\) is the velocity field,\
+\\(p\\) is the pressure,\
+\\(\bf F\\) is the external Force,\
+\\(\nu\\) is the kinamatic viscocity.
 
-```markdown
-Syntax highlighted code block
+For timestepping, *Euler*, *RK2*, and *RK4* integration schemes are available. Dealiasing is done using \\(2/3\\) dealiaing scheme. The viscous term is solved using exponential method.
 
-# Header 1
-## Header 2
-### Header 3
+The following solvers are available
 
-- Bulleted
-- List
++ [Incompressible Fluid](/fluid-incompress)
++ Incompressible Scalar
++ RBC
 
-1. Numbered
-2. List
 
-**Bold** and _Italic_ and `Code` text
+### Boundary Conditions
 
-[Link](url) and ![Image](src)
-```
+#### FFF
+#### SFF
+#### SSF
+#### SSS
 
-For more details see [Basic writing and formatting syntax](https://docs.github.com/en/github/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax).
+### Diagnostics
 
-### Jekyll Themes
+### Aliasing
 
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/anandogc/tarang/settings/pages). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
+### Integration Scheme
 
-### Support or Contact
+### Large Eddy Simulation
 
-Having trouble with Pages? Check out our [documentation](https://docs.github.com/categories/github-pages-basics/) or [contact support](https://support.github.com/contact) and we’ll help you sort it out.
+### FFT
+
+### Field
+
+### time

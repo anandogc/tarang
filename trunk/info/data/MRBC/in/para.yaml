@@ -3,7 +3,6 @@ program:
     version_minor: 9
     kind: MRBC
     basis_type: SFF   
-    decomposition: SLAB               #PENCIL, SLAB
     iter_or_diag: ITERATION             #ITERATION, DIAGNOSTICS
     alias_option: ALIAS
     integration_scheme: EULER

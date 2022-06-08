@@ -53,11 +53,13 @@ void FORCE::Compute_force_ABC(FluidVF& U)
 {
 	
 	if (!global.force.configuration_done) {
-		int k0 = ((int) global.force.double_para(0));
-		Real A = global.force.double_para(1);
-		Real B = global.force.double_para(2);
-		Real C = global.force.double_para(3);
-		Real force_amp = global.force.double_para(4);
+		int k0;
+		Real A;
+		Real B;
+		Real C;
+		Real force_amp;
+
+		global.force.Get_para("%d %f %f %f", &k0, &A, &B, &C, &force_amp);
 		
 		Setup_ABC_force_field(U, k0, force_amp, A, B, C);
 	

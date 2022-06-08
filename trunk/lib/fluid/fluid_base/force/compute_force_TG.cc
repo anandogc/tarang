@@ -51,8 +51,9 @@ void FORCE::Compute_force_Taylor_Green(FluidVF& U)
 {
 
 	if (!global.force.configuration_done)	{
-		int k0 = ((int) global.force.double_para(0));
-		Real force_amp = global.force.double_para(1);
+		global.force.Get_para("%f %f", &k0, &force_amp);
+		int k0;
+		Real force_amp;
 		global.force.configuration_done = true; // To read only once.
 		
 		Setup_Taylor_Green_force_field(U, k0, force_amp);
